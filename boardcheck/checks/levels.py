@@ -42,7 +42,8 @@ from ..units import parse_value
 # Standard characteristic keys (JSON_FORMAT.md). Anything else starting with
 # one of these plus "_" is a pin-group variant ("vi_abs_bus").
 STANDARD_KEYS = {"vi_abs", "vo_abs", "vo_abs_hiz", "vi_op", "vih", "vil", "vt_pos", "vt_neg", "voh", "vol",
-                 "vod", "voc_ss", "vit_pos", "vit_neg", "vth_pos", "vth_neg", "vid_op", "vic_op"}
+                 "vod", "voc_ss", "vit_pos", "vit_neg", "vth_pos", "vth_neg", "vid_op", "vic_op",
+                 "ii_clamp", "ii_clamp_package"}
 _LIMIT_RE = re.compile(r"^\s*(?:(\d+(?:\.\d+)?)\s*\*\s*)?([A-Za-z_]\w*)\s*(?:([+-])\s*(\d+(?:\.\d+)?))?\s*$")
 _EPS = 1e-9
 _RANGE_SLACK = 0.005     # a 3.3 V rail sits inside a 3.0-3.3 V range
@@ -409,11 +410,37 @@ def _high_sources(ctx, sig, lv, drivers):
         pl = lv.for_pin(d)
         v = lv.own_supply(pl) if pl else None
         if v is not None:
-            out.append((v, f"{_who(pl, d)} (supply {v:g} V)", d.component))
+            out.append((v, f"{_who(pl, d)} (supply {v:g} V)", d.component, d))
     level = sig.resistive_level()
     if level is not None:
-        out.append((*level, None))
+        out.append((*level, None, None))
     return out
+
+
+def series_ohms(ctx, sig, a, b):
+    """Least total resistance of series resistors between nets a and b of
+    a signal; 0 on the same net, None when they are not joined that way."""
+    if a == b:
+        return 0.0
+    import heapq
+    members = set(sig.nets)
+    best, heap = {a: 0.0}, [(0.0, a)]
+    while heap:
+        d, n = heapq.heappop(heap)
+        if n == b:
+            return d
+        if d > best.get(n, float("inf")):
+            continue
+        for q in ctx.design.nets[n].pins:
+            comp = q.component
+            if ctx.kind(comp) != "resistor" or len(comp.pins) != 2:
+                continue
+            other = next(x.net for x in comp.pins if x is not q)
+            ohms = _ohms(ctx, comp)
+            if other in members and ohms is not None and d + ohms < best.get(other, float("inf")):
+                best[other] = d + ohms
+                heapq.heappush(heap, (d + ohms, other))
+    return None
 
 
 @check("LVL001", "Driver high level below receiver threshold", ERROR, needs_partsdb=True)
@@ -490,6 +517,7 @@ def input_overvoltage(ctx):
     checked against inputs of its own part (an op amp's feedback). One
     finding per source and limit kind, naming every receiver it exceeds."""
     lv = _levels(ctx)
+    clamp_totals = defaultdict(list)
     for sig in signals(ctx):
         drivers, receivers = _roles(ctx, sig)
         highs = _high_sources(ctx, sig, lv, drivers)
@@ -507,23 +535,53 @@ def input_overvoltage(ctx):
                 if op_max is None:
                     op_max, key = lv.value(rl, "vih", "max", "low")
             limits.append((r, rs, rl, abs_max, op_max, key))
-        for v, label, source in highs:
-            over = {"absolute": [], "recommended": []}
+        for v, label, source, dpin in highs:
+            over = {"absolute": [], "clamped": [], "recommended": []}
             for r, rs, rl, abs_max, op_max, key in limits:
                 if r.component is source:
                     continue
                 if abs_max is not None and v > abs_max + _EPS:
-                    over["absolute"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V"))
+                    # Driven beyond the rating, but a series resistor may hold
+                    # the clamp current within what the data sheet allows.
+                    i_max = lv.value(rl, "ii_clamp", "max", "low")[0]
+                    ohms = series_ohms(ctx, sig, dpin.net, r.net) if dpin is not None else None
+                    amps = (v - abs_max) / ohms if ohms else None
+                    if amps is not None and i_max is not None and amps <= i_max + _EPS:
+                        over["clamped"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V through {ohms:g} ohm: "
+                                                          f"{amps * 1000:.2g} mA of clamp current, within its "
+                                                          f"{i_max * 1000:g} mA rating"))
+                        clamp_totals[r.component.designator].append((r, amps, rl))
+                    else:
+                        extra = ""
+                        if amps is not None:
+                            extra = f" ({amps * 1000:.2g} mA through {ohms:g} ohm" + (
+                                f", above its {i_max * 1000:g} mA clamp rating)" if i_max is not None
+                                else "; the data sheet gives no clamp current)")
+                        over["absolute"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V{extra}"))
                 elif op_max is not None and v > op_max + _EPS:
                     over["recommended"].append((r, rs, f"{_who(rl, r)} {op_max:.3g} V ({key})"))
             for kind, hits in over.items():
                 if hits:
-                    yield Finding("LVL003", f"'{sig.name}': {label} exceeds the {kind} maximum input of "
+                    word = "absolute" if kind == "clamped" else kind
+                    yield Finding("LVL003", f"'{sig.name}': {label} exceeds the {word} maximum input of "
                                             + ", ".join(h[2] for h in hits),
-                                  severity=_sev(*(h[1] for h in hits)),
+                                  severity=WARNING if kind == "clamped" else _sev(*(h[1] for h in hits)),
                                   refs=sorted({h[0].component.designator for h in hits}
                                               | ({source.designator} if source is not None else set()), key=natural_key),
                                   nets=list(sig.nets))
+    # Current-limited clamps add up in the package.
+    for desig, hits in sorted(clamp_totals.items(), key=lambda x: natural_key(x[0])):
+        pins = {}
+        for r, amps, rl in hits:
+            pins[r.designator] = max(amps, pins.get(r.designator, 0.0))
+        pkg = lv.value(hits[0][2], "ii_clamp_package", "max", "low")[0]
+        total = sum(pins.values())
+        if pkg is not None and len(pins) > 1 and total > pkg + _EPS:
+            comp = hits[0][0].component
+            yield Finding("LVL003", f"{desig} ({comp.part_number}): {len(pins)} inputs can be driven beyond its "
+                                    f"supplies at once through current-limiting resistors, {total * 1000:.3g} mA in "
+                                    f"total, above the {pkg * 1000:g} mA package rating",
+                          refs=[desig], part_number=comp.part_number)
 
 
 @check("LVL004", "FPGA I/O standard not supported at its bank voltage", ERROR, needs_partsdb=True)

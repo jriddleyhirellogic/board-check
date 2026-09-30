@@ -102,7 +102,7 @@ only. The Markdown output is meant for a pull request comment.
 | FIO011 | warning | Transceiver quad with used lanes and no reference clock on its own REFCLK pins or on a quad above it (part data `transceivers`); info when it relies on a cascade |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
 | LVL002 | error | Driver's VOL above a receiver's VIL / VT- |
-| LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input |
+| LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input. Above the absolute maximum through a series resistor that holds the clamp current within the part's `ii_clamp` rating: warning; such inputs of one part together above its `ii_clamp_package` rating: error |
 | LVL004 | error | FPGA I/O standard used on a bank whose rail is outside that standard's supply range |
 | LVL005 | info | Pins on logic signals whose levels could not be resolved (the work queue for level data) |
 | PWU001 | error | FPGA control output (enable, reset, chip select) that floats before the FPGA drives it |
