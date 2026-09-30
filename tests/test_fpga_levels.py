@@ -293,3 +293,21 @@ def test_level_coverage_reports_parts_without_data(tmp_path):
     assert gaps == {"NODATA": {"U7.1"}} and checked < total
     f = findings(levels.level_gaps, ctx)
     assert f[0].part_number == "NODATA" and f[0].severity is None
+
+
+def test_analog_pins_skip_logic_thresholds_but_not_overvoltage():
+    amp = {"pin_functions": {"V+": {"direction": "power", "pins": ["4"]}, "V-": {"direction": "power", "pins": ["11"]},
+                             "OUT A": {"direction": "output", "pins": ["1"], "supply": "V+", "io_standard": "analog"}},
+           "electrical_characteristics": {}}
+    amp["electrical_characteristics"]["vo_abs"] = {"kind": "range_table", "unit": "V", "rows": [{"max": "V+"}]}
+    adc = {"pin_functions": {"VA": {"direction": "power", "pins": ["2"]},
+                             "IN0": {"direction": "input", "pins": ["4"], "supply": "VA", "io_standard": "analog"}},
+           "electrical_characteristics": {
+               "vi_abs": {"kind": "range_table", "unit": "V", "applies_to": ["IN0"], "rows": [{"min": -0.3, "max": "VA+0.3"}]}}}
+    ctx = build_ctx([("U1", "AMP", [("1", "VOUT 1", "SENSE"), ("4", "+VS", "15V0"), ("11", "-VS", "GND")]),
+                     ("U2", "ADC", [("2", "VA", "3V3"), ("4", "IN0", "SENSE")])],
+                    parts={"AMP": amp, "ADC": adc})
+    assert findings(levels.high_level, ctx) == [] and findings(levels.low_level, ctx) == []
+    assert levels.level_coverage(ctx) == (0, 0, {}), "an analog pair is not a logic pair"
+    f = findings(levels.input_overvoltage, ctx)
+    assert len(f) == 1 and "U1.1 VOUT 1 (supply 15 V) exceeds U2.4 IN0 absolute maximum input 3.6 V" in f[0].message

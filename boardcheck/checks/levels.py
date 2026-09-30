@@ -3,7 +3,10 @@
 Levels come from the part data in electronic-parts-repository: the
 `range_table` characteristics `voh`/`vol` of a driver against `vih`/`vil`
 (or Schmitt `vt_pos`/`vt_neg`) of a receiver, and the highest level on the
-signal against the receiver's `vi_abs` / `vi_op` maximum. Limits written
+signal against the receiver's `vi_abs` / `vi_op` maximum. A pin the part
+data marks analog (`io_standard: "analog"`) has no logic thresholds: it
+is left out of the high/low comparisons but still checked for overvoltage.
+Limits written
 relative to a supply ("0.65*VCC") are evaluated at the voltage of the rail
 the schematic connects that supply pin to.
 
@@ -343,6 +346,18 @@ def _levels(ctx):
     return ctx._levels
 
 
+def _analog(ctx, pin):
+    """True when the part data marks the pin analog (io_standard "analog"):
+    it has no logic thresholds, only voltage limits."""
+    pp = _pin_types(ctx).part_entry(pin)
+    return pp is not None and str(pp.entry.get("io_standard") or "").lower() == "analog"
+
+
+def _logic_pair(ctx, d, r):
+    """A driver/receiver pair that logic thresholds apply to."""
+    return r.component is not d.component and not _analog(ctx, d) and not _analog(ctx, r)
+
+
 def _roles(ctx, sig):
     """(drivers, receivers) as (pin, type, source) lists."""
     pt = _pin_types(ctx)
@@ -397,7 +412,7 @@ def high_level(ctx):
             if high is None:
                 continue
             for r, rt, rs in receivers:
-                if r.component is d.component:
+                if not _logic_pair(ctx, d, r):
                     continue
                 rl = lv.for_pin(r)
                 if rl is None:
@@ -425,7 +440,7 @@ def low_level(ctx):
             if vol is None:
                 continue
             for r, rt, rs in receivers:
-                if r.component is d.component:
+                if not _logic_pair(ctx, d, r):
                     continue
                 rl = lv.for_pin(r)
                 if rl is None:
@@ -530,7 +545,8 @@ def _input_levels(lv, pin):
 
 
 def level_coverage(ctx):
-    """(checked, total, gaps): driver/receiver pairs on signals, how many had
+    """(checked, total, gaps): logic driver/receiver pairs on signals (pairs
+    with an analog end are left out; LVL003 still covers them), how many had
     levels resolved at both ends (thresholds found and every supply they
     reference on a known rail), and {part number: pins that did not}."""
     if ctx.partsdb is None:
@@ -543,7 +559,7 @@ def level_coverage(ctx):
         drivers, receivers = _roles(ctx, sig)
         for d, dt, _ in drivers:
             for r, _, _ in receivers:
-                if r.component is d.component:
+                if not _logic_pair(ctx, d, r):
                     continue
                 total += 1
                 ends = [(d, _drive_levels(lv, sig, d, dt)), (r, _input_levels(lv, r))]
