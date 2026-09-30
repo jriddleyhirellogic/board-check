@@ -1,6 +1,7 @@
 """Check configuration: built-in defaults, overridden by a YAML file."""
 
 import copy
+import os
 import re
 
 import yaml
@@ -103,6 +104,21 @@ DEFAULTS = {
         # "components": 2366, "designators": {"U1": {"parts": 14, "pins": 1152}}}
         "expect": {},
     },
+    # FPGAs whose I/O configuration comes from the FPGA project's constraint
+    # files, read in place (relative paths resolve against this config
+    # file's directory). Per designator:
+    #   constraints: [files]  Libero .pdc/.tcl, as the FPGA build applies them
+    #   bank_pattern: regex on the schematic pin name; group 1 is the bank
+    #   bank_supply: schematic name of the bank's I/O supply pin, "{bank}"
+    #                replaced by the bank number ("VDDI{bank}")
+    #   bank_name: set_iobank name of a bank ("Bank{bank}"), when the
+    #              constraints set bank voltages
+    "fpga": {},
+    "levels": {
+        # Nets joined through a series resistor up to this value count as
+        # one signal for level checks (source terminations, current limits).
+        "series_max_ohms": 1000,
+    },
     "severity": {},   # per-check override: {"NET002": "warning"}
     "disabled": [],   # check ids to skip
     "waivers": [],    # [{check, ref|net|part_number, reason}]
@@ -119,8 +135,10 @@ def _merge(base, override):
 
 
 class Config:
-    def __init__(self, data=None):
+    def __init__(self, data=None, base_dir=""):
         self.data = _merge(copy.deepcopy(DEFAULTS), data or {})
+        # Directory that relative paths in the config resolve against.
+        self.base_dir = base_dir
         n = self.data["nets"]
         self.ground_nets = {g.upper() for g in n["ground"]}
         self._rail_re = re.compile(n["rail_pattern"])
@@ -138,7 +156,7 @@ class Config:
         if not path:
             return cls()
         with open(path, encoding="utf-8") as f:
-            return cls(yaml.safe_load(f) or {})
+            return cls(yaml.safe_load(f) or {}, base_dir=os.path.dirname(os.path.abspath(path)))
 
     def __getitem__(self, key):
         return self.data[key]

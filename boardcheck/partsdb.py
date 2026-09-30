@@ -51,18 +51,42 @@ class PartsDB:
             self._cache[part_number] = self._decode(part_number)
         return self._cache[part_number]
 
+    def _part_file(self, part_number):
+        """The part's JSON file contents (a dict), or None for parts that are
+        decoded rather than stored, or unknown."""
+        if not part_number:
+            return None
+        key = ("file", part_number)
+        if key not in self._cache:
+            try:
+                with contextlib.redirect_stdout(io.StringIO()):
+                    result = self._repo.lookup({"part_number": part_number})
+            except Exception:
+                result = None
+            self._cache[key] = result if isinstance(result, dict) else None
+        return self._cache[key]
+
     def pin_functions(self, part_number):
         """The part's `pin_functions` block ({pin name or number: {direction,
         function, description}}) from its JSON file, or None."""
-        if not part_number:
-            return None
-        try:
-            with contextlib.redirect_stdout(io.StringIO()):
-                result = self._repo.lookup({"part_number": part_number})
-        except Exception:
-            return None
-        if isinstance(result, dict) and isinstance(result.get("pin_functions"), dict):
-            return result["pin_functions"]
+        data = self._part_file(part_number)
+        if data and isinstance(data.get("pin_functions"), dict):
+            return data["pin_functions"]
+        return None
+
+    def io_standards(self, part_number):
+        """The part's `io_standards` block (programmable-I/O facts per I/O
+        standard, e.g. {"SHIELD12": {"tie_to": "ground"}}), or {}."""
+        data = self._part_file(part_number)
+        block = data.get("io_standards") if data else None
+        return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
+
+    def characteristics(self, part_number):
+        """The part's `electrical_characteristics` block from its JSON file,
+        or None."""
+        data = self._part_file(part_number)
+        if data and isinstance(data.get("electrical_characteristics"), dict):
+            return data["electrical_characteristics"]
         return None
 
     def _decode(self, part_number):

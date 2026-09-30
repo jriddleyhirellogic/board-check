@@ -64,8 +64,20 @@ repository even when installed.
 | PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net |
 | PIN005 | warning | Net with only inputs on it (nothing drives it) |
 | PIN006 | warning | Open-drain net without a pull-up to a rail |
+| FIO001 | warning | FPGA constraint or top-level file missing, or a command in it not understood |
+| FIO002 | error | Constrained FPGA port on a ball the symbol lacks, or on a supply/ground net (or a soft-ground standard such as SHIELD12 *not* on ground) |
+| FIO003 | warning | Constrained FPGA port on a pin that connects to nothing |
+| FIO004 | error | Bank VCCI set in the constraints differs from the rail on the bank's supply pins |
+| FIO005 | warning | FPGA bank I/O wired to other parts but assigned no port |
+| FIO006 | error | Constraint DIRECTION contradicts the FPGA design's port direction (warning when one side is inout) |
+| FIO007 | error | FPGA top-level port with no pin constraint (place-and-route picks the pin) |
+| LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
+| LVL002 | error | Driver's VOL above a receiver's VIL / VT- |
+| LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input |
+| LVL004 | error | FPGA I/O standard used on a bank whose rail is outside that standard's supply range |
+| LVL005 | info | Pins on logic signals whose levels could not be resolved (the work queue for level data) |
 
-PRT003, PRT004, PRT006 and PIN001-003 need
+PRT003, PRT004, PRT006, PIN001-003 and LVL001-005 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 
@@ -99,6 +111,42 @@ does not cover.
 
 The field reference for `pin_functions` is in the parts repository's
 JSON_FORMAT.md.
+
+### FPGA configuration: read from the FPGA project
+
+A programmable pin's type and levels are set by the FPGA design, so for an
+FPGA listed under `fpga` in the config, board-check reads the FPGA project's
+own files where they live (paths relative to the config file), never a copy:
+
+- `constraints`: the Libero `.pdc`/`.tcl` files the build applies. The
+  reader follows `source`, applies `dict set pins` maps only to the ports
+  collected by `lappend ports` (so commented-out ports are unconstrained,
+  as in Libero), and reads `set_io` and `set_iobank`. Anything it does not
+  understand is reported (FIO001), not guessed.
+- `top_level`: the design's top-level port declarations (SmartDesign
+  `sd_create_*_port` Tcl, or a Verilog/SystemVerilog module header). A
+  port's direction comes from here; the constraint's DIRECTION is checked
+  against it (FIO006).
+- `bank_pattern` / `bank_supply` / `bank_name` / `bank_type_pattern` tie
+  schematic pin names to banks, bank supply pins and `set_iobank` names.
+
+Constrained pins take their type from this configuration ahead of the part
+data and the symbol, so PIN004-006 see FPGA outputs and inputs as the
+bitstream makes them. If the FPGA repository is not checked out where the
+config expects it, FIO001 says so and the FPGA-specific checks are skipped.
+
+### Logic levels
+
+LVL001-004 compare `range_table` characteristics from the parts
+repository (`voh`, `vol`, `vih`, `vil`, `vt_pos`, `vt_neg`, `vi_abs`,
+`vi_op`, `supply_*`). Supply-relative limits (`0.65*VCC`, `VDDI-0.4`) are
+evaluated at the rail on that supply pin; an FPGA's rows are selected by
+the pin's constrained I/O standard, drive strength and bank type, with the
+bank's rail as the supply. A signal is a net plus the nets joined to it by
+series resistors up to `levels.series_max_ohms`; resistors from it to rails
+and ground give its undriven level (pull-up rail or divider output). Where
+several rows apply the least favourable limit is used, and outputs are
+taken at the smallest listed load current (logic inputs draw microamps).
 
 ### Net voltages
 
@@ -136,7 +184,8 @@ boardcheck/
   model.py        Design, Component, Pin, Net loaded from the export
   config.py       defaults, YAML overrides, net voltage and kind inference
   partsdb.py      optional electronic-parts-repository adapter
-  checks/         export.py, nets.py, parts.py, pins.py, power.py (one function per check)
+  fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
+  checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
   report.py       text / markdown / json output
 tests/            synthetic-export unit tests + a smoke test on the committed export

@@ -1,9 +1,11 @@
 """Render a check Result as text, Markdown, or JSON."""
 
 import json
+import os
 from collections import Counter
 
 from .checks import ERROR, INFO, REGISTRY, WARNING
+from .checks.levels import level_coverage
 from .checks.power import cap_voltage_coverage, rail_summary
 
 _ICON = {ERROR: "E", WARNING: "W", INFO: "I"}
@@ -74,6 +76,15 @@ def markdown(result):
     out.append(f"- Capacitor voltage derating: {checked} of {total} two-terminal capacitors have a known voltage "
                "on both nets and a rating" + (f"; highest stress {worst[0]:.0%} ({worst[1]}, {worst[2]:g} V on "
                                               f"{worst[3]:g} V)" if worst else "") + ".")
+    lv_checked, lv_total, lv_gaps = level_coverage(ctx)
+    if ctx.partsdb:
+        out.append(f"- Logic levels: {lv_checked} of {lv_total} driver/receiver pairs had levels at both ends"
+                   + (f"; parts without them: {', '.join(sorted(lv_gaps))}" if lv_gaps else "") + ".")
+    for desig, f in sorted(ctx.fpgas.items()):
+        io = f.io if hasattr(f, "io") else f
+        state = (f"{len(io.pins)} constrained pins from {', '.join(os.path.basename(p) for p in io.read)}"
+                 if io.available else "constraint files not found")
+        out.append(f"- FPGA {desig}: {state}.")
     out.append(f"- Parts repository: {'used' if ctx.partsdb else 'not installed'}.")
     out.append("")
 

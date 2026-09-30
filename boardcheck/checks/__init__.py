@@ -63,6 +63,26 @@ class Context:
     def kind(self, component):
         return self.config.kind(component)
 
+    @property
+    def fpgas(self):
+        """{designator: FpgaPins} from the `fpga` config, loaded once. A
+        designator missing from the design maps to its bare FpgaIO."""
+        if not hasattr(self, "_fpgas"):
+            from ..fpga import board_fpgas
+            self._fpgas = board_fpgas(self.design, self.config)
+        return self._fpgas
+
+    def fpga_for(self, component):
+        """FpgaPins for a configured FPGA whose constraints were read, else None."""
+        f = self.fpgas.get(component.designator)
+        return f if f is not None and hasattr(f, "constraint") and f.io.available else None
+
+    def io_standard_info(self, component, io_std):
+        """Part data for an FPGA I/O standard ({"tie_to": "ground", ...}), or {}."""
+        if self.partsdb is None or not io_std:
+            return {}
+        return self.partsdb.io_standards(component.part_number).get(str(io_std).upper(), {})
+
     def decoded(self, component):
         if self.partsdb is None:
             return None
@@ -71,5 +91,5 @@ class Context:
 
 def load_all():
     # Importing the modules registers their checks.
-    from . import export, nets, parts, pins, power  # noqa: F401
+    from . import export, fpga, levels, nets, parts, pins, power  # noqa: F401
     return REGISTRY

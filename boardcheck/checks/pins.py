@@ -7,18 +7,26 @@ Two sources describe what a pin does:
 - the schematic symbol's pin type (export script >= 2.3.0). Designers set
   these by hand and they are often wrong, so they are a claim to verify.
 
-Every check resolves a pin's type from the part data first and falls back
-to the symbol only when the part has no entry for it. Findings built on
-symbol-only types are marked "schematic only" and held to warning; the
-same finding backed by part data is an error.
+A third source covers programmable pins: for an FPGA configured under
+`fpga`, the FPGA project's constraint files assign each port to a pin and
+set its pull, and the design's top-level port declarations (or, without
+them, the constraints) set its direction. They take precedence over both,
+because they are what the bitstream does.
+
+Every check resolves a pin's type from the constraints, then the part
+data, and falls back to the symbol only when neither covers the pin.
+Findings built on symbol-only types are marked "schematic only" and held to
+warning; the same finding backed by part data or constraints is an error.
 """
 
+import re
 from dataclasses import dataclass
 
 from . import ERROR, INFO, WARNING, Finding, check
 from ..model import natural_key
 
-PART, SCHEMATIC, KIND = "part", "schematic only", "kind"
+PART, CONSTRAINTS, SCHEMATIC, KIND = "part", "constraints", "schematic only", "kind"
+_CONSTRAINT_TYPES = {"input": "input", "output": "output", "inout": "io"}
 
 # Kinds that have no active pins; their pins count as passive when neither
 # source says otherwise.
@@ -59,6 +67,15 @@ class PartPin:
     def internal_bias(self):
         return self.entry.get("internal_bias")
 
+    @property
+    def per_bank(self):
+        """One supply per I/O bank, named on the symbol with the bank number
+        appended ("VDDI" -> VDDI0, VDDI1, ...)."""
+        return bool(self.entry.get("per_bank"))
+
+    def names_bank_pin(self, pin_name):
+        return self.per_bank and re.fullmatch(re.escape(_norm(self.key)) + r"\d+", _norm(pin_name)) is not None
+
 
 class PinTypes:
     """Resolves each pin's type, remembering where it came from."""
@@ -76,7 +93,7 @@ class PinTypes:
             raw = self.ctx.partsdb.pin_functions(part_number) if self.ctx.partsdb else None
             table = None
             if raw:
-                table = {"by_name": {}, "by_number": {}, "entries": []}
+                table = {"by_name": {}, "by_number": {}, "entries": [], "per_bank": []}
                 for key, entry in raw.items():
                     if str(key).startswith("_"):
                         continue
@@ -85,6 +102,8 @@ class PinTypes:
                     pp = PartPin(key, direction, self.dmap.get(str(direction or "").strip().lower()), entry)
                     table["entries"].append(pp)
                     table["by_name"][_norm(key)] = pp
+                    if pp.per_bank:
+                        table["per_bank"].append(pp)
                     for n in pp.numbers:
                         table["by_number"][n] = pp
             self._tables[part_number] = table
@@ -96,16 +115,31 @@ class PinTypes:
             return None
         # Name first (the parts repo keys by name), then package pin number,
         # then a key that is itself a pin number.
-        return (table["by_name"].get(_norm(pin.name)) or table["by_number"].get(str(pin.designator))
-                or table["by_name"].get(_norm(pin.designator)))
+        found = (table["by_name"].get(_norm(pin.name)) or table["by_number"].get(str(pin.designator))
+                 or table["by_name"].get(_norm(pin.designator)))
+        if found is None:
+            found = next((pp for pp in table["per_bank"] if pp.names_bank_pin(pin.name)), None)
+        return found
 
     @staticmethod
     def schematic(pin):
         e = pin.electrical
         return e if e and not e.startswith("unknown") else None
 
+    def constraint(self, pin):
+        """The FPGA constraint for this pin, or None."""
+        fpga = self.ctx.fpga_for(pin.component)
+        return fpga.constraint(pin) if fpga else None
+
     def base(self, pin):
         """(type, source) ignoring 3-state enables."""
+        c = self.constraint(pin)
+        if c is not None and self.ctx.io_standard_info(pin.component, c.io_std).get("tie_to") == "ground":
+            return "power", CONSTRAINTS     # a soft ground (e.g. PolarFire SHIELD12)
+        if c is not None:
+            direction = self.ctx.fpga_for(pin.component).direction(c)
+            if direction in _CONSTRAINT_TYPES:
+                return _CONSTRAINT_TYPES[direction], CONSTRAINTS
         pp = self.part_entry(pin)
         if pp and pp.mapped:
             return pp.mapped, PART
@@ -131,6 +165,9 @@ class PinTypes:
         return ptype, source
 
     def internal_bias(self, pin):
+        c = self.constraint(pin)
+        if c is not None and c.pull:
+            return c.pull
         pp = self.part_entry(pin)
         return pp.internal_bias if pp else None
 
@@ -194,7 +231,7 @@ def _label(pin, ptype, source):
 
 
 def _severity(sources):
-    return ERROR if all(s == PART for s in sources) else WARNING
+    return ERROR if all(s in (PART, CONSTRAINTS) for s in sources) else WARNING
 
 
 def _nets(ctx):
@@ -264,7 +301,8 @@ def pin_data_alignment(ctx):
                                     f"{'/'.join(pp.numbers)} in the part data")
         unmatched = sorted(pp.key for pp in table["entries"]
                            if _norm(pp.key) not in names and not set(pp.numbers) & numbers
-                           and _norm(pp.key) not in numbers)
+                           and _norm(pp.key) not in numbers
+                           and not any(pp.names_bank_pin(n) for n in names))
         unknown = sorted({str(pp.direction) for pp in table["entries"] if pp.mapped is None})
         problems = []
         if misnumbered:

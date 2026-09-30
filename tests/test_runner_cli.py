@@ -66,3 +66,17 @@ def test_farsight_export_is_complete():
     config = Config.load(os.path.join(FARSIGHT_DIR, "boardcheck.yaml"))
     result = run(design, config, only={"EXP001", "EXP002", "EXP003", "EXP004", "EXP005", "EXP006"})
     assert [f.message for f in result.active] == []
+
+
+@pytest.mark.skipif(not FARSIGHT, reason="Farsight export not present")
+def test_farsight_fpga_constraints_read_cleanly():
+    """The FPGA constraint and top-level files the config points at parse
+    with nothing ignored, when the FPGA repository is checked out beside
+    this one."""
+    config = Config.load(os.path.join(FARSIGHT_DIR, "boardcheck.yaml"))
+    missing = [p for spec in config["fpga"].values() for p in spec["constraints"]
+               if not os.path.isfile(os.path.join(FARSIGHT_DIR, p))]
+    if missing:
+        pytest.skip("FPGA repository not checked out next to board-check")
+    result = run(Design.load(FARSIGHT[-1]), config, only={"FIO001"})
+    assert [f.message for f in result.active] == []

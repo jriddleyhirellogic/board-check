@@ -66,6 +66,15 @@ class FakePartsDB:
         part = self.parts.get(pn)
         return part.get("pin_functions") if isinstance(part, dict) else None
 
+    def characteristics(self, pn):
+        part = self.parts.get(pn)
+        return part.get("electrical_characteristics") if isinstance(part, dict) else None
+
+    def io_standards(self, pn):
+        part = self.parts.get(pn)
+        block = part.get("io_standards") if isinstance(part, dict) else None
+        return {k.upper(): v for k, v in (block or {}).items()}
+
 
 def findings(check_func, ctx):
     return list(check_func(ctx))

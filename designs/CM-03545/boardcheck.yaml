@@ -38,3 +38,28 @@ waivers: []
 #  - check: PWR005
 #    ref: U2
 #    reason: unused ProASIC3 PLL supplies VCCPLx tied to GND per datasheet
+
+# FPGA I/O configuration, read from the FPGA projects' own files where they
+# live: the farsight_claude repository checked out next to board-check.
+# constraints give pin assignment, I/O standard, pull, drive and bank
+# voltages; top_level gives each port's direction as the design declares it.
+# These are the files the bitstreams are built from, so the checks always
+# see the current configuration.
+fpga:
+  U1:   # PolarFire MPF500TS-FC1152M
+    constraints:
+      - ../../../farsight_claude/farsight-fpga-main/constr/mpf500ts-fc1152m/io/io_constraints.pdc
+    top_level:
+      - ../../../farsight_claude/farsight-fpga-main/bd/mpf500ts-fc1152m/top/components/top.tcl
+    bank_pattern: '(?:GPIO|HSIO)\d+[PN]B(\d+)'   # HSIO162PB0 -> bank 0, GPIO261PB4 -> bank 4
+    bank_supply: 'VDDI{bank}'
+    bank_name: 'Bank{bank}'
+    bank_type_pattern: '^(GPIO|HSIO)'         # I/O bank type for the part data
+  U2:   # ProASIC3L A3PE3000L-FG484M (housekeeper)
+    constraints:
+      - ../../../farsight_claude/farsight-fpga-house-keeper-main/constr/a3pe3000l-fg484m/io/io_constraints.pdc
+    top_level:
+      - ../../../farsight_claude/farsight-fpga-house-keeper-main/src/top.sv
+    top_module: top
+    bank_pattern: 'IO\d+[PN][A-Z]B(\d+)V\d'   # IO40PDB0V4 -> bank 0
+    bank_supply: 'VCCIB{bank}'
