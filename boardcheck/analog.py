@@ -35,8 +35,9 @@ def pin_key(pin):
 
 def opamp_roles(ctx, comp):
     """{pin key: (channel, role, pin)} with role "+", "-" or "out", for an
-    op-amp recognised by its part data functions or its pin names; {}
-    otherwise. Pin keys are `pin_key(pin)`."""
+    op-amp recognised by its part data functions (OPAMP_OUT, OPAMP_IN_P,
+    OPAMP_IN_N) or, for pins without part data, its pin names; {} otherwise.
+    Pin keys are `pin_key(pin)`."""
     from .checks.pins import _pin_types
     pt = _pin_types(ctx)
     roles = {}
@@ -46,6 +47,8 @@ def opamp_roles(ctx, comp):
         if func in _OPAMP_FUNCS:
             ch = re.sub(r"^[+-]?\s*(IN|OUT)\s*", "", pp.key, flags=re.I).strip() or "0"
             roles[pin_key(p)] = (ch, _OPAMP_FUNCS[func], p)
+            continue
+        if pp is not None:      # the part data says what the pin is: a comparator is no op-amp
             continue
         m = _OPAMP_IN.match(p.name or "")
         if m:
@@ -77,16 +80,31 @@ def shunt_terminals(ctx, comp, max_ohms):
     return None
 
 
+_OPEN_KINDS = {"capacitor", "testpoint", "mechanical"}
+_SHORT_KINDS = {"inductor", "ferrite"}     # DC: a short
+_SHORT_OHMS = 1e-3
+
+
 class Network:
-    """The resistor / op-amp network grown from a net."""
+    """The resistor / op-amp network grown from a net.
+
+    `unknown` lists pins on the network's nodes that may drive it with
+    something other than a resistor, a fixed rail or an op-amp: outputs of
+    other parts, connectors, diodes, parts without pin types. The small-signal
+    gain from a shunt ignores them; a DC operating point is only meaningful
+    without them."""
 
     def __init__(self, ctx, start, shunt_max_ohms=0.1, max_nodes=60):
+        from .checks.pins import _pin_types
         self.ctx = ctx
+        pt = _pin_types(ctx)
         self.nodes = [start]
         self.fixed = {}             # net -> nominal volts (rails, ground, sense)
         self.shunts = {}            # designator -> (net a, net b, ohms)
         self.edges = []             # (net, net, ohms, comp)
         self.opamps = {}            # output net -> (+ net, - net, comp)
+        self.outputs = {}           # output net -> op-amp output pin
+        self.unknown = []           # pins that may drive a node some other way
         self.ok = True
         seen = set()
         i = 0
@@ -95,16 +113,17 @@ class Network:
             i += 1
             for q in ctx.design.nets[net].pins:
                 comp = q.component
+                kind = ctx.kind(comp)
                 sh = shunt_terminals(ctx, comp, shunt_max_ohms)
                 if sh:
                     self.shunts[comp.designator] = sh
                     self.fixed.setdefault(net, None)
                     continue
-                if ctx.kind(comp) == "resistor" and len(comp.pins) == 2:
+                if kind in {"resistor"} | _SHORT_KINDS and len(comp.pins) == 2:
                     if comp.designator in seen:
                         continue
                     seen.add(comp.designator)
-                    ohms = resistance(ctx, comp)
+                    ohms = resistance(ctx, comp) if kind == "resistor" else _SHORT_OHMS
                     other = next(p.net for p in comp.pins if p is not q)
                     if ohms is None:
                         self.ok = False
@@ -112,14 +131,21 @@ class Network:
                     self.edges.append((net, other, max(ohms, 1e-4), comp))
                     self._visit(other)
                     continue
+                if kind in _OPEN_KINDS:
+                    continue
                 roles = opamp_roles(ctx, comp)
                 role = roles.get(pin_key(q))
-                if role and role[1] == "out":
-                    ch = role[0]
-                    pins = {r: p for c, r, p in roles.values() if c == ch}
-                    self.opamps[net] = (pins["+"].net, pins["-"].net, comp)
-                    self._visit(pins["+"].net)
-                    self._visit(pins["-"].net)
+                if role:
+                    if role[1] == "out":
+                        ch = role[0]
+                        pins = {r: p for c, r, p in roles.values() if c == ch}
+                        self.opamps[net] = (pins["+"].net, pins["-"].net, comp)
+                        self.outputs[net] = q
+                        self._visit(pins["+"].net)
+                        self._visit(pins["-"].net)
+                    continue
+                if pt.base(q)[0] != "input":
+                    self.unknown.append(q)
             if len(self.nodes) > max_nodes:
                 self.ok = False
         # Kelvin sense nets are often named after their rail ("1V1_RSENSE_P")
@@ -194,19 +220,19 @@ def current_gain(ctx, adc_net, shunt_max_ohms=0.1):
     return abs(sol[adc_net]), desig, ohms, net
 
 
-def zero_output(net, adc_net):
-    """Volts at adc_net with no shunt current: every fixed net at its
-    nominal voltage and both shunt terminals at the same voltage. None when
-    a fixed net's voltage is unknown or the network cannot be solved."""
-    sources = {}
-    for n, v in net.fixed.items():
-        sources[n] = v
+def operating_point(net):
+    """{net: volts} with no shunt current: every fixed net at its nominal
+    voltage and both terminals of each shunt at the same voltage. None when
+    the network cannot be solved (singular, e.g. an op-amp without
+    feedback)."""
+    sources = {n: v for n, v in net.fixed.items() if v is not None}
     for a, b, _ in net.shunts.values():
         v = sources.get(a) if sources.get(a) is not None else sources.get(b)
-        if v is None:
-            v = 0.0
-        sources[a] = sources[b] = v
-    if any(v is None for v in sources.values()):
-        return None
-    sol = net.solve(sources)
+        sources[a] = sources[b] = v if v is not None else 0.0
+    return net.solve(sources)
+
+
+def zero_output(net, adc_net):
+    """Volts at adc_net with no shunt current, or None."""
+    sol = operating_point(net)
     return sol.get(adc_net) if sol else None

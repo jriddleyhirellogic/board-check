@@ -120,8 +120,11 @@ only. The Markdown output is meant for a pull request comment.
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
 | STP004 | info | The configuration each part's straps select (e.g. a PHY's managed mode and address) |
+| ANA001 | error | Op-amp or comparator input outside its common-mode range (`vi_op`) or absolute maximum at the circuit's nominal operating point; for comparators whose part data marks `either_input`, only when both inputs of a channel are out of range (warning when the other's level is unknown) |
+| ANA002 | warning | Op-amp output beyond its guaranteed swing (`voh`/`vol`, row chosen by the DC load) at the nominal operating point |
+| ANA003 | info | Op-amp or comparator inputs whose operating point could not be worked out (the network is also driven by another part, a connector or a diode) |
 
-PRT003, PRT004, PRT006, PIN001-003, LVL001-005, PWU001-004 and STP001-004 need
+PRT003, PRT004, PRT006, PIN001-003, LVL001-005, PWU001-004, STP001-004 and ANA001-003 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 
@@ -225,6 +228,18 @@ ends of its range), and compare it with the loads' VIL/VIH. Loads without
 level data are judged against `power_up.assumed_thresholds` of the FPGA
 bank voltage, and those findings are held to warning. The Markdown report
 lists every such signal and its level in each window.
+
+### Analog operating points
+
+`analog.py` solves the resistor and op-amp network around a net by nodal
+analysis. Op-amps are ideal (their inputs equal, from part data functions
+`OPAMP_OUT`/`OPAMP_IN_P`/`OPAMP_IN_N`, or op-amp style pin names for parts
+without pin data); inductors and ferrites are shorts, capacitors open; rails
+and ground are fixed at their nominal voltages, and shunts (two-terminal at
+or below 0.1 ohm, or four-terminal with E1/E2 sense pins) carry no current.
+ANA001-003 use it for every op-amp and comparator input: rails at nominal,
+no load current. FW009/FW010 use the same network for the small-signal gain
+from a shunt to an ADC input.
 
 ### Net voltages
 
