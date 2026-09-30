@@ -5,6 +5,8 @@ explicit overrides in the config; see Config.net_voltage. A part is only
 checked when the voltage on both of its terminals is known.
 """
 
+import re
+
 from . import ERROR, INFO, WARNING, Finding, check
 from ..model import natural_key
 from ..units import format_value, parse_value
@@ -221,14 +223,15 @@ def supply_pin_decoupling(ctx):
             pp = pt.part_entry(pin)
             if pp is not None:
                 is_supply = pp.direction == "power" and not cfg.ground_pin_re.match(pp.key) \
-                    and not cfg.ground_pin_re.match(pin.name or "")
+                    and not cfg.ground_pin_re.match(pin.name or "") \
+                    and not re.search(r"GROUND|SENSE|CHARGE|PUMP|BOOT|SWITCH|PHASE", str(pp.entry.get("function") or ""), re.I)
             else:
                 is_supply = bool(cfg.power_pin_re.match(pin.name or "")) and not cfg.ground_pin_re.match(pin.name or "")
             net = ctx.design.nets.get(pin.net)
             if not is_supply or net is None or len(net.pins) < 2:
                 continue        # an unconnected supply pin is NET003's
-            if any(ctx.kind(c) == "capacitor" and any(cfg.is_ground(n) for n in c.nets()) for c in net.components()):
-                continue
+            if any(ctx.kind(c) == "capacitor" for c in net.components()):
+                continue        # decoupled to ground, or a charge-pump / bootstrap capacitor to another node
             found.setdefault(pin.net, []).append(pin)
     for net, pins in sorted(found.items()):
         yield Finding("PWR007", f"'{net}' supplies {', '.join(f'{p.ref} {p.name}' for p in pins[:6])} "

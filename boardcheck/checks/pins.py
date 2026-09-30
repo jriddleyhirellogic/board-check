@@ -300,7 +300,9 @@ def pin_data_alignment(ctx):
                     misnumbered.add(f"{p.name} is pin {p.designator} on the symbol, "
                                     f"{'/'.join(pp.numbers)} in the part data")
         unmatched = sorted(pp.key for pp in table["entries"]
-                           if _norm(pp.key) not in names and not set(pp.numbers) & numbers
+                           if not (not pp.numbers and "pins" not in pp.entry
+                                   and pp.entry.get("function") in ("GROUND", "THERMAL_PAD"))   # unnumbered pad
+                           and _norm(pp.key) not in names and not set(pp.numbers) & numbers
                            and _norm(pp.key) not in numbers
                            and not any(pp.names_bank_pin(n) for n in names))
         unknown = sorted({str(pp.direction) for pp in table["entries"] if pp.mapped is None})
