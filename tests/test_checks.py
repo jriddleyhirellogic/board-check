@@ -226,3 +226,15 @@ def test_i2c_pullups():
         res("R1", "X", "I2C0_SCL", "3V3_A"),
     ])
     assert [f.nets for f in findings(power.i2c_pullups, ctx)] == [["I2C0_SDA"]]
+
+
+def test_pwr007_local_supply_without_capacitor():
+    from boardcheck.checks import power
+    ctx = build_ctx([("U1", "LDO", [("1", "VOUT", "NetU1_1"), ("2", "GND", "GND")]),
+                     ("U2", "IC", [("1", "VDD", "NetU1_1"), ("2", "VSENSE", "FB"), ("3", "GND", "GND")]),
+                     ("U3", "IC", [("1", "VSENSE", "FB")])])
+    f = findings(power.supply_pin_decoupling, ctx)
+    assert len(f) == 1 and "'NetU1_1' supplies U2.1 VDD" in f[0].message, "VSENSE is not a supply pin"
+    ctx = build_ctx([("U2", "IC", [("1", "VDD", "NetU1_1"), ("2", "GND", "GND")]),
+                     ("U1", "LDO", [("1", "VOUT", "NetU1_1")]), cap("C1", "CAP", "NetU1_1", "GND")])
+    assert findings(power.supply_pin_decoupling, ctx) == []

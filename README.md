@@ -74,6 +74,7 @@ only. The Markdown output is meant for a pull request comment.
 | PWR004 | info | Supply rail with no test point |
 | PWR005 | warning | Ground-named pin off ground, or power-named pin on ground |
 | PWR006 | warning | I2C SCL/SDA without a pull-up to a rail |
+| PWR007 | warning | IC supply pin on a local (non-rail) net with no capacitor to ground |
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |
 | PIN003 | warning | Part pin data names a pin the symbol does not have, or uses an unknown direction word |

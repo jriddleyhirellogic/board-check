@@ -6,6 +6,7 @@ checked when the voltage on both of its terminals is known.
 """
 
 from . import ERROR, INFO, WARNING, Finding, check
+from ..model import natural_key
 from ..units import format_value, parse_value
 
 
@@ -198,3 +199,38 @@ def i2c_pullups(ctx):
                     pulled = True
         if not pulled:
             yield Finding("PWR006", f"'{net.name}' has no resistor to a supply rail", nets=[net.name])
+
+
+@check("PWR007", "IC supply pin on a net with no capacitor to ground", WARNING)
+def supply_pin_decoupling(ctx):
+    """An IC supply pin (power in the part data, else a power-like name) on
+    a net that is not a named rail and has no capacitor to ground: a local
+    supply (filtered, switched, or a reference) left undecoupled. Named
+    rails are PWR003's."""
+    from .pins import _pin_types
+    pt = _pin_types(ctx)
+    cfg = ctx.config
+    verify = set(cfg["pins"]["verify_kinds"])
+    found = {}
+    for comp in ctx.design.components.values():
+        if ctx.kind(comp) not in verify:
+            continue
+        for pin in comp.pins:
+            if cfg.is_ground(pin.net) or cfg.is_rail(pin.net):
+                continue
+            pp = pt.part_entry(pin)
+            if pp is not None:
+                is_supply = pp.direction == "power" and not cfg.ground_pin_re.match(pp.key) \
+                    and not cfg.ground_pin_re.match(pin.name or "")
+            else:
+                is_supply = bool(cfg.power_pin_re.match(pin.name or "")) and not cfg.ground_pin_re.match(pin.name or "")
+            net = ctx.design.nets.get(pin.net)
+            if not is_supply or net is None or len(net.pins) < 2:
+                continue        # an unconnected supply pin is NET003's
+            if any(ctx.kind(c) == "capacitor" and any(cfg.is_ground(n) for n in c.nets()) for c in net.components()):
+                continue
+            found.setdefault(pin.net, []).append(pin)
+    for net, pins in sorted(found.items()):
+        yield Finding("PWR007", f"'{net}' supplies {', '.join(f'{p.ref} {p.name}' for p in pins[:6])} "
+                                "but has no capacitor to ground",
+                      refs=sorted({p.component.designator for p in pins}, key=natural_key), nets=[net])

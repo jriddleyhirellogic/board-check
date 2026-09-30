@@ -72,7 +72,8 @@ DEFAULTS = {
             "open_source": "open_emitter", "open_emitter": "open_emitter",
             "hiz": "hiz", "tristate": "hiz", "tri_state": "hiz", "nc": "nc",
         },
-        "power_names": r"^(VDD|VCC|AVDD|DVDD|VDDQ|VDDIO|VCCIO|VCCA|VCCO|VIN|PVIN|VPP|VS)\w*$",
+        # VS alone or numbered (VS, VS1, VS_A); not VSENSE, VSS or VSYNC.
+        "power_names": r"^(VDD|VCC|AVDD|DVDD|VDDQ|VDDIO|VCCIO|VCCA|VCCO|VIN|PVIN|VPP|VS(?![A-Z]))\w*$",
         "ground_names": r"^(GND|VSS|AGND|DGND|PGND|VSSQ|VSSA)\w*$",
     },
     "parts": {
