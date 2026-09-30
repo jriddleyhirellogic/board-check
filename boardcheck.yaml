@@ -1,0 +1,40 @@
+# Board check configuration for CM-03545 FARSIGHT flight model.
+# Values here override boardcheck/config.py DEFAULTS; see that file for
+# every option.
+
+export:
+  min_version: "2.2.1"
+  # Title and hierarchy sheets: no components by design.
+  empty_sheets_ok:
+    - CM-03543.SchDoc
+    - FARSIGHT TOP LEVEL.SchDoc
+    - PROASIC3 TOP LEVEL.SchDoc
+  # From the ExportAllSchematicsToJSON v2.2 notes: what a complete export
+  # of CM-03545 looks like. Update when the design changes.
+  expect:
+    sheets: 37
+    part_numbers: 254
+    designators:
+      U1: {parts: 14, pins: 1152}
+      U2: {parts: 10, pins: 484}
+      U5: {parts: 2}
+      U6: {parts: 2}
+      U7: {parts: 2}
+      U8: {parts: 2}
+      U9: {parts: 2}
+      U10: {parts: 2}
+      U11: {parts: 2}
+      U12: {parts: 2}
+      U13: {parts: 2}
+
+derating:
+  capacitor_voltage: {ceramic: 0.60, tantalum: 0.50, default: 0.60}
+  resistor_power: 0.50
+
+# Accepted findings. Each needs a reason; a waiver that stops matching is
+# reported (CFG001) so stale ones get cleaned up. Match on check plus any
+# of ref / net / part_number (glob patterns) or match (message substring).
+waivers: []
+#  - check: PWR005
+#    ref: U2
+#    reason: unused ProASIC3 PLL supplies VCCPLx tied to GND per datasheet

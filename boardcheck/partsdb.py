@@ -1,0 +1,92 @@
+"""Optional adapter to electronic-parts-repository (the `epr` package).
+
+The package decodes commodity part numbers (MLCCs, chip resistors, MIL-PRF
+parts) into typed values. Checks that need it degrade to "not checked" when
+it is not installed, so the checker still runs on a bare Python install.
+"""
+
+import contextlib
+import io
+from dataclasses import dataclass
+
+from .units import parse_value
+
+_CAP_UNITS = {"pf": 1e-12, "nf": 1e-9, "uf": 1e-6, "µf": 1e-6, "mf": 1e-3, "f": 1.0}
+
+
+@dataclass
+class DecodedPart:
+    part_number: str
+    kind: str                     # "capacitor" | "resistor" | "other"
+    source: str = ""
+    capacitance: float = None     # farads
+    resistance: float = None      # ohms
+    voltage_rated: float = None   # volts (working voltage for resistors)
+    power_max: float = None       # watts
+    tolerance: float = None       # percent
+    size: str = None              # "0603"
+    dielectric: str = None        # "X7R"
+
+
+class PartsDB:
+    def __init__(self, repo=None):
+        self._repo = repo
+        self._cache = {}
+
+    @classmethod
+    def open(cls):
+        """Return a PartsDB, or None if electronic-parts-repository is absent."""
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                from electronic_parts_repository import ElectronicPartsRepository
+                repo = ElectronicPartsRepository()
+        except ImportError:
+            return None
+        return cls(repo)
+
+    def decode(self, part_number):
+        if not part_number:
+            return None
+        if part_number not in self._cache:
+            self._cache[part_number] = self._decode(part_number)
+        return self._cache[part_number]
+
+    def _decode(self, part_number):
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = self._repo.lookup({"part_number": part_number})
+        except Exception:  # decoders raise on malformed input
+            return None
+        if result is None or isinstance(result, dict) or not hasattr(result, "get_template"):
+            return None
+        t = result.get_template()
+        ptype = str(t.get("type") or "").upper()
+        if ptype in ("CAPACITOR", "MLCC"):
+            kind = "capacitor"
+        elif ptype == "RESISTOR":
+            kind = "resistor"
+        else:
+            kind = "other"
+        part = DecodedPart(part_number=part_number, kind=kind, source=t.get("source") or t.get("spec") or "")
+        part.tolerance = _num(t.get("tolerance")) if (t.get("tolerance_units") or "%") == "%" else None
+        part.voltage_rated = _num(t.get("voltage_rated"))
+        if kind == "capacitor":
+            cap = _num(t.get("capacitance"))
+            unit = str(t.get("capacitance_units") or "").lower()
+            if cap is not None and unit in _CAP_UNITS:
+                part.capacitance = cap * _CAP_UNITS[unit]
+            part.size = t.get("case_size") or None
+            part.dielectric = t.get("dielectric") or None
+        elif kind == "resistor":
+            part.resistance = _num(t.get("resistance"))
+            part.power_max = _num(t.get("power_max"))
+            part.size = t.get("style") or t.get("case_size") or None
+        return part
+
+
+def _num(v):
+    if v is None or v == "":
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    return parse_value(v)

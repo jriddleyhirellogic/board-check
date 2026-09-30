@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boardcheck"
+version = "0.1.0"
+description = "Automated schematic checks on Altium JSON exports"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["PyYAML>=6.0"]
+
+[project.optional-dependencies]
+# Part number decoding for parameter cross-checks and derating ratings.
+parts = ["electronic-parts-repository @ git+https://github.com/jriddleyhirellogic/electronic-parts-repository"]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+boardcheck = "boardcheck.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["boardcheck*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
