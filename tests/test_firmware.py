@@ -141,3 +141,57 @@ def test_firmware_limit_beyond_board_full_scale(tmp_path):
     f = findings(fw.pwm_limits, ctx)
     assert len(f) == 1 and "I_MAX_MA = 2500 mA" in f[0].message and "at most 0.704 A (kv 1.254 minimum, 0.668 typical)" \
         in f[0].message
+
+
+CURRENT_ENUM = """
+typedef enum
+{
+    TLM_3V3_MISC_ISENSE,
+    TLM_1V8_FPGA,
+    NUMBER_TLM
+} TLM_Signal_t;
+"""
+# Shunt R200 (10 mOhm, Kelvin nets named after the rail), difference amplifier
+# U20 with 1k / 100k (gain 100) referenced to 0V3_REF, 1k into the ADC.
+AMP = [res("R200", "R0.01", "3V3_MISC_RSENSE_P", "3V3_MISC_RSENSE_N"),
+       res("R201", "R1K", "3V3_MISC_RSENSE_N", "AMP_N"), res("R202", "R100K", "AMP_N", "AMP_OUT"),
+       res("R203", "R1K", "3V3_MISC_RSENSE_P", "AMP_P"), res("R204", "R100K", "AMP_P", "0V3_REF"),
+       res("R205", "R1K", "AMP_OUT", "3V3_MISC_ISENSE_ADC"),
+       ("U20", "OPAMP", [("1", "OUT A", "AMP_OUT"), ("2", "-IN A", "AMP_N"), ("3", "+IN A", "AMP_P")])]
+
+
+def _current(tmp_path, cal_rows):
+    ctx = _ctx(tmp_path, adc1_in0="3V3_MISC_ISENSE_ADC", extra=AMP,
+               values={"R0.01": "0R01", "R1K": "1k", "R100K": "100k"})
+    (tmp_path / "tlm.h").write_text(CURRENT_ENUM)
+    from boardcheck.model import Pin
+    ctx.design.components["U10"].pins.append(Pin("2", "VA", "3V3", ctx.design.components["U10"]))
+    (tmp_path / "cal.csv").write_text("Signal,Gain,Offset\n" + "".join(f"{r}\n" for r in cal_rows))
+    ctx.config["firmware"]["adc_channel_maps"][0]["calibration"] = {"file": str(tmp_path / "cal.csv")}
+    return ctx
+
+
+def test_current_channel_scaling_through_difference_amplifier(tmp_path):
+    ctx = _current(tmp_path, ["TLM_3V3_MISC_ISENSE,1,0", "TLM_1V8_FPGA,1,0"])
+    (f,) = findings(fw.current_scaling, ctx)
+    # 3.3 V / 4096 / (100 * 0.01 Ohm) = 0.8057 mA/count; 0.3 V = 372 counts; (3.3 - 0.3) / 1 = 3 A
+    assert f.message == ("tlm: 'TLM_3V3_MISC_ISENSE' reads shunt R200 (10 mOhm) with gain 100: 0.8057 mA/count, "
+                         "zero current at 0.3 V (372 counts), full scale 3 A")
+    assert f.refs == ["R200", "U10"]
+
+
+def test_current_calibration_offset_must_remove_zero_output(tmp_path):
+    ctx = _current(tmp_path, ["TLM_3V3_MISC_ISENSE,1,0", "TLM_1V8_FPGA,1,0"])
+    (f,) = findings(fw.current_offsets, ctx)
+    assert "TLM_3V3_MISC_ISENSE gain 1 offset 0 (zero current at 0 counts; board: 372 counts, 0.3 V)" in f.message
+    # mA units: gain 0.8057, offset -0.8057 * 372.4 = -300; A units give the same ratio
+    for row in ("TLM_3V3_MISC_ISENSE,0.8057,-300", "TLM_3V3_MISC_ISENSE,0.0008057,-0.3"):
+        ctx = _current(tmp_path, [row, "TLM_1V8_FPGA,1,0"])
+        assert findings(fw.current_offsets, ctx) == []
+
+
+def test_current_channel_without_a_shunt_is_reported(tmp_path):
+    ctx = _current(tmp_path, ["TLM_3V3_MISC_ISENSE,1,0", "TLM_1V8_FPGA,1,0"])
+    ctx.design.part_params["R0.01"]["R_Value"] = "1k"
+    (f,) = findings(fw.current_scaling, ctx)
+    assert "could not trace '3V3_MISC_ISENSE_ADC'" in f.message

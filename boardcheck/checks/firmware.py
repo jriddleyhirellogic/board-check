@@ -190,11 +190,14 @@ def channel_scaling(ctx, m, pin):
     return ratio, top[0][1], [top[0][0].designator] + ([bottom[0][0].designator] if bottom else [])
 
 
+_CURRENT = r"(ISENSE|_I$|CURRENT)"
+
+
 def _stem_volts(ctx, stem):
     """Nominal volts of the rail a channel is named after ("28V0_EPS"), by
     the rail naming convention; None for current and other channels."""
     m = ctx.config._rail_re.match(stem)
-    if not m or re.search(r"(ISENSE|_I$|CURRENT)", stem, re.I):
+    if not m or re.search(_CURRENT, stem, re.I):
         return None
     return float(f"{m.group('int')}.{m.group('frac') or '0'}")
 
@@ -466,3 +469,116 @@ def pwm_limits(ctx):
                                            f"which gives at most {best:.3g} {lim.get('result_unit', 'A')} "
                                            f"({lim['gain']} {g_min:g} minimum{typ})",
                                   refs=sorted({spec["fpga"], load.component.designator}, key=natural_key))
+
+
+# -- current channels ------------------------------------------------------------------
+
+class CurrentChannel:
+    """A current telemetry channel's scaling, worked out from the board: the
+    shunt, the amplifier gain (ADC volts per shunt volt) and the ADC input
+    with no current flowing (the amplifier's reference offset)."""
+
+    def __init__(self, entry, gain, shunt, ohms, zero, ref, bits):
+        self.entry = entry
+        self.gain = gain
+        self.shunt = shunt
+        self.ohms = ohms
+        self.zero = zero            # volts at the ADC input at zero current, None if unknown
+        self.ref = ref              # ADC reference volts, None if unknown
+        self.bits = bits
+
+    @property
+    def amps_per_count(self):
+        return self.ref / (1 << self.bits) / (self.gain * self.ohms) if self.ref else None
+
+    @property
+    def zero_counts(self):
+        return self.zero * (1 << self.bits) / self.ref if self.ref and self.zero is not None else None
+
+    @property
+    def full_scale_amps(self):
+        return (self.ref - (self.zero or 0.0)) / (self.gain * self.ohms) if self.ref else None
+
+
+def current_channels(ctx, m):
+    """[(entry, CurrentChannel or None)] for the map's current channels
+    (names matching `current_pattern`), each traced from its ADC input back
+    through resistors and op-amps to one shunt (at most `shunt_max_ohms`)."""
+    from ..analog import current_gain, zero_output
+    pattern = re.compile(m.spec.get("current_pattern", _CURRENT), re.I)
+    shunt_max = float(m.spec.get("shunt_max_ohms", 0.1))
+    bits = int(m.spec.get("adc_bits", 12))
+    out = []
+    for entry in m.entries:
+        name, stem, select, ch, pin, net = entry
+        if pin is None or not pattern.search(stem):
+            continue
+        r = current_gain(ctx, net, shunt_max)
+        if r is None or r[0] == 0:
+            out.append((entry, None))
+            continue
+        gain, shunt, ohms, network = r
+        out.append((entry, CurrentChannel(entry, gain, shunt, ohms, zero_output(network, net),
+                                          _reference_volts(ctx, m, pin.component), bits)))
+    return out
+
+
+@check("FW009", "Current channel scaling from the board", INFO)
+def current_scaling(ctx):
+    """For each current channel: the shunt, the amplifier gain, and what that
+    makes one ADC count, the zero-current reading and the full-scale current.
+    The calibration gain for a current channel should be the A/count (or
+    mA/count) figure, in whatever unit the firmware reports."""
+    for m in _maps(ctx):
+        for (name, stem, select, ch, pin, net), cc in current_channels(ctx, m):
+            if cc is None:
+                yield Finding("FW009", f"{m.name}: '{name}' ({pin.ref} {pin.name}): could not trace '{net}' back "
+                                       "through resistors and op-amps to a single shunt",
+                              refs=[pin.component.designator], nets=[net])
+                continue
+            text = f"{m.name}: '{name}' reads shunt {cc.shunt} ({cc.ohms * 1000:g} mOhm) with gain {cc.gain:.4g}"
+            if cc.ref:
+                text += (f": {cc.amps_per_count * 1000:.4g} mA/count, "
+                         + (f"zero current at {cc.zero:.3g} V ({cc.zero_counts:.0f} counts), " if cc.zero is not None
+                            else "")
+                         + f"full scale {cc.full_scale_amps:.3g} A")
+            yield Finding("FW009", text, refs=sorted({cc.shunt, pin.component.designator}, key=natural_key),
+                          nets=[net])
+
+
+@check("FW010", "Calibration offset differs from the board's zero-current reading", WARNING)
+def current_offsets(ctx):
+    """tlm_adc.c scales a reading as raw * gain + offset. When the current
+    amplifier's output sits at a reference voltage with no current flowing,
+    that reads as zero_counts counts, so the offset must be -gain *
+    zero_counts whatever unit the gain is in. Compared by position in the
+    firmware enum, as the calibration table is loaded."""
+    for m in _maps(ctx):
+        rows, _ = _cal_rows(ctx, m)
+        if not rows:
+            continue
+        tol = float(m.spec.get("calibration", {}).get("tolerance", 0.05))
+        index = {e[0]: i for i, e in enumerate(m.entries)}
+        off = []
+        refs = set()
+        for entry, cc in current_channels(ctx, m):
+            i = index[entry[0]]
+            if cc is None or cc.zero_counts is None or i >= len(rows):
+                continue
+            try:
+                gain, offset = float(rows[i][1]), float(rows[i][2])
+            except (TypeError, ValueError):
+                continue
+            if gain == 0:
+                continue
+            implied = -offset / gain + 0.0  # counts the calibration treats as zero current
+            if abs(implied - cc.zero_counts) > max(tol * cc.zero_counts, 2.0):
+                off.append(f"{entry[0]} gain {gain:g} offset {offset:g} (zero current at {implied:.0f} counts; "
+                           f"board: {cc.zero_counts:.0f} counts, {cc.zero:.3g} V)")
+                refs.add(cc.shunt)
+        if off:
+            yield Finding("FW010", f"{m.name}: {len(off)} current channel offset(s) in "
+                                   f"{os.path.basename(m.spec['calibration']['file'])} do not remove the "
+                                   "amplifier's zero-current output: " + "; ".join(off[:8])
+                                   + (f"; ... {len(off) - 8} more" if len(off) > 8 else ""),
+                          refs=sorted(refs, key=natural_key))

@@ -114,6 +114,8 @@ only. The Markdown output is meant for a pull request comment.
 | FW007 | error | A firmware constant for a PWM output's full scale (e.g. `PWM_VREF_mV`) differs from what the board delivers at the load: the FPGA bank rail through the RC filter's divider |
 | FW008 | warning | A firmware maximum (e.g. `I_MAX_MA`) beyond what the PWM output's full scale can produce through the load's characteristic (e.g. DRV8434 I_FS = VREF / KV) |
 | FW006 | warning | Calibration file rows that do not name the firmware enum's signal at their position (the table is loaded by position) |
+| FW009 | info | Each current channel's scaling from the board: the ADC input traced back through resistors and op-amps (ideal, solved by nodal analysis) to one shunt (two-terminal, or Kelvin E1/E2 sense pins, at most `shunt_max_ohms`), giving the gain, mA/count, zero-current reading and full-scale current |
+| FW010 | warning | Current channel calibration offsets that do not remove the amplifier's zero-current output (the firmware computes raw * gain + offset, so offset must be -gain * zero counts in any unit) |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
