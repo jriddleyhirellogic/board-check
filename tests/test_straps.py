@@ -61,3 +61,20 @@ def test_floating_divided_and_driven_straps():
 def test_fields_outside_their_mode_are_not_reported():
     ctx = _ctx([res("R1", "R10K", "S_CLK", "3V3"), res("R2", "R10K", "S_D0", "3V3"), res("R3", "R10K", "S_D1", "GND")])
     assert findings(straps.strapped_configuration, ctx)[0].message == "U1 (PHY): managed_mode = 1 (unmanaged)"
+
+
+def test_internal_pull_defines_an_unstrapped_pin():
+    import copy
+    phy = copy.deepcopy(PHY)
+    phy["pin_functions"]["RXD1"]["internal_bias"] = "pull_down"
+    phy["electrical_characteristics"]["r_weak_pull_down"] = {
+        "kind": "range_table", "unit": "ohm", "applies_to": ["RXD1"], "rows": [{"min": 26000, "max": 79000}]}
+    ctx = _ctx([res("R1", "R10K", "S_CLK", "GND"), res("R2", "R10K", "S_D0", "3V3")], parts_extra={"PHY": phy})
+    assert findings(straps.floating_straps, ctx) == []
+    assert findings(straps.strapped_configuration, ctx)[0].message == \
+        "U1 (PHY): managed_mode = 0 (managed); phy_address = 1"
+    # A 10k pull-up against the 26k-79k internal pull-down: 2.38-2.92 V, high
+    ctx = _ctx([res("R1", "R10K", "S_CLK", "GND"), res("R2", "R10K", "S_D0", "3V3"), res("R3", "R10K", "S_D1", "3V3")],
+               parts_extra={"PHY": phy})
+    assert findings(straps.undefined_straps, ctx) == []
+    assert "phy_address = 3" in findings(straps.strapped_configuration, ctx)[0].message
