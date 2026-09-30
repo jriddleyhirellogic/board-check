@@ -152,6 +152,11 @@ DEFAULTS = {
         # adc_input_pin ("IN{ch}"), net_strip (regexes removed from the input
         # net name before comparing).
         "adc_channel_maps": [],
+        # PWM outputs whose full scale firmware assumes: name, constant_file,
+        # constant (a #define), constant_unit (mV or V), fpga, ports,
+        # tolerance. FW007 compares the constant with the bank rail through
+        # the output's RC filter divider.
+        "pwm_outputs": [],
     },
     "severity": {},   # per-check override: {"NET002": "warning"}
     "disabled": [],   # check ids to skip

@@ -311,3 +311,102 @@ def calibration_names(ctx):
             yield Finding("FW006", f"{m.name}: calibration rows that do not name the enum signal at their position: "
                                    + "; ".join(f"row {i + 1} '{c}' (enum: {n})" for i, c, n in bad[:10])
                                    + (f"; ... {len(bad) - 10} more" if len(bad) > 10 else ""))
+
+
+# -- PWM / DAC full scale ---------------------------------------------------------
+
+def parse_define(path, macro):
+    """The numeric value of `#define MACRO value` in a C header, or None."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            m = re.match(r"\s*#\s*define\s+" + re.escape(macro) + r"\s+\(?\s*([-+]?(?:0x[0-9a-fA-F]+|\d+(?:\.\d*)?))", line)
+            if m:
+                return float(int(m.group(1), 0)) if m.group(1).lower().startswith(("0x", "-0x")) else float(m.group(1))
+    return None
+
+
+def pwm_full_scale(ctx, f, pin):
+    """(volts at the load at 100% duty, load pins, resistors, rail) for an
+    FPGA PWM output filtered by a series resistor into a node with resistors
+    to ground. The high level is the pin's bank rail. None when the path is
+    not that shape or a value is unknown."""
+    from .levels import _ohms
+    cfg = ctx.config
+    bank = f.bank(pin)
+    nets = f.bank_supply_nets(bank) if bank is not None else set()
+    rails = {cfg.net_voltage(n) for n in nets} - {None}
+    if len(rails) != 1:
+        return None
+    v_high = rails.pop()
+    first = ctx.design.nets[pin.net]
+    series = [q for q in first.pins if q.component is not pin.component and ctx.kind(q.component) == "resistor"
+              and len(q.component.pins) == 2]
+    if len(series) != 1:
+        return None
+    rs_comp = series[0].component
+    node = next(p.net for p in rs_comp.pins if p is not series[0])
+    if cfg.is_ground(node) or cfg.is_rail(node):
+        return None
+    rs = _ohms(ctx, rs_comp)
+    downs = []
+    for q in ctx.design.nets[node].pins:
+        c = q.component
+        if c is rs_comp or ctx.kind(c) != "resistor" or len(c.pins) != 2:
+            continue
+        other = next(p.net for p in c.pins if p is not q)
+        if not cfg.is_ground(other):
+            return None         # another source or series path: not a simple filter
+        downs.append(c)
+    ohms = [_ohms(ctx, c) for c in downs]
+    if rs is None or any(o is None for o in ohms):
+        return None
+    if ohms:
+        rb = 1.0 / sum(1.0 / o for o in ohms)
+        ratio = rb / (rs + rb)
+    else:
+        ratio = 1.0
+    loads = [q for q in ctx.design.nets[node].pins if ctx.kind(q.component) not in ("resistor", "capacitor")]
+    return v_high * ratio, loads, [rs_comp.designator] + [c.designator for c in downs], v_high
+
+
+@check("FW007", "Firmware full-scale constant differs from the board", ERROR)
+def pwm_constants(ctx):
+    """firmware.pwm_outputs: a firmware constant stating the voltage a PWM
+    output produces at its load at 100% duty (e.g. PWM_VREF_mV) against the
+    board: the FPGA bank rail through the RC filter's divider."""
+    for spec in ctx.config["firmware"]["pwm_outputs"] or []:
+        path = os.path.normpath(os.path.join(ctx.config.base_dir, os.path.expanduser(spec["constant_file"])))
+        name = spec.get("name", spec["constant"])
+        if not os.path.isfile(path):
+            yield Finding("FW007", f"{name}: firmware file not found: {path}", severity=WARNING)
+            continue
+        value = parse_define(path, spec["constant"])
+        if value is None:
+            yield Finding("FW007", f"{name}: #define {spec['constant']} not found in {os.path.basename(path)}",
+                          severity=WARNING)
+            continue
+        volts_fw = value * {"mV": 1e-3, "V": 1.0}[spec.get("constant_unit", "mV")]
+        comp = ctx.design.components.get(spec["fpga"])
+        f = ctx.fpga_for(comp) if comp is not None else None
+        if f is None:
+            continue
+        by_port = {c.port: c for c in f.io.pins.values()}
+        pins = {str(p.designator): p for p in comp.pins}
+        tol = float(spec.get("tolerance", 0.05))
+        for port in spec["ports"]:
+            c = by_port.get(port)
+            pin = pins.get(c.ball) if c else None
+            fs = pwm_full_scale(ctx, f, pin) if pin else None
+            if fs is None:
+                yield Finding("FW007", f"{name}: could not work out the full scale of '{port}' "
+                                       "(expected FPGA pin -> series resistor -> node with resistors to ground)",
+                              severity=INFO, refs=[spec["fpga"]])
+                continue
+            volts, loads, rs, v_high = fs
+            if abs(volts - volts_fw) > tol * volts_fw:
+                where = ", ".join(q.ref + (f" {q.name}" if q.name else "") for q in loads) or "its filter node"
+                yield Finding("FW007", f"{name}: {spec['constant']} = {value:g} {spec.get('constant_unit', 'mV')} "
+                                       f"({os.path.basename(path)}) but '{port}' reaches {where} at "
+                                       f"{volts:.3g} V full scale ({v_high:g} V bank rail through "
+                                       f"{'/'.join(rs)}); setpoints are scaled by {volts / volts_fw:.3g}",
+                              refs=sorted({spec["fpga"]} | {q.component.designator for q in loads}, key=natural_key))

@@ -91,3 +91,11 @@ firmware:
         file: ../../../farsight_claude/farsight-avionics-sw-main/Cal_spreadsheets/default_cals.xlsx
         sheet: TLM
         columns: [Signal, Gain, Offset]
+  pwm_outputs:
+    - name: stepper VREF
+      # Camera/src/hal/hal_pwm.c: VREF = PWM_VREF_mV * duty, I_FS = VREF / K_V
+      constant_file: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/pwm.h
+      constant: PWM_VREF_mV
+      constant_unit: mV
+      fpga: U1
+      ports: [pri_stp_motor_vref_pwm, sec_stp_motor_vref_pwm]

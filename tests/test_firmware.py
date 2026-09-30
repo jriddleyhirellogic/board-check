@@ -103,3 +103,27 @@ def test_calibration_rows_must_follow_the_enum(tmp_path):
     ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", "TLM_1V8_FPGA_,1,0", "TLM_5V0,1,0"])
     f = findings(fw.calibration_names, ctx)
     assert len(f) == 1 and "row 2 'TLM_1V8_FPGA_' (enum: TLM_1V8_FPGA)" in f[0].message
+
+
+def _pwm_ctx(tmp_path, bottom="3k65", constant="3200"):
+    (tmp_path / "pwm.h").write_text(f"#define PWM_VREF_mV    {constant}\n#define OTHER 1\n")
+    (tmp_path / "io.pdc").write_text('set_io {vref_pwm} -pinname "A1" -iostd "LVCMOS33" -direction "OUTPUT"\n')
+    comps = [("U1", "FPGA", [("A1", "GPIO1PB2", "R_VREF"), ("V2", "VDDI2", "3V3")]),
+             res("R10", "R10K", "R_VREF", "VREF"), res("R11", "RB", "VREF", "GND"),
+             ("U5", "DRV", [("17", "VREF", "VREF")])]
+    ctx = build_ctx(comps, config={
+        "fpga": {"U1": {"constraints": [str(tmp_path / "io.pdc")], "bank_pattern": r"(?:GPIO|HSIO)\d+[PN]B(\d+)",
+                        "bank_supply": "VDDI{bank}"}},
+        "firmware": {"pwm_outputs": [{"name": "vref", "constant_file": str(tmp_path / "pwm.h"),
+                                      "constant": "PWM_VREF_mV", "fpga": "U1", "ports": ["vref_pwm"]}]}})
+    ctx.design.part_params["R10K"]["R_Value"] = "10k"
+    ctx.design.part_params["RB"]["R_Value"] = bottom
+    return ctx
+
+
+def test_pwm_full_scale_against_firmware_constant(tmp_path):
+    assert fw.parse_define(__file__.replace("test_firmware.py", "helpers.py"), "NOPE") is None
+    f = findings(fw.pwm_constants, _pwm_ctx(tmp_path))
+    assert len(f) == 1 and "reaches U5.17 VREF at 0.882 V full scale (3.3 V bank rail through R10/R11)" in \
+        f[0].message and "scaled by 0.276" in f[0].message
+    assert findings(fw.pwm_constants, _pwm_ctx(tmp_path, constant="882")) == [], "a matching constant passes"
