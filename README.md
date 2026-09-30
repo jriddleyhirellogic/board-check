@@ -32,6 +32,22 @@ any unwaived error), so the same command can gate a CI job later.
 `--only NET001,PWR001` runs a subset; `--no-partsdb` skips the parts
 repository even when installed.
 
+## Comparing two exports
+
+```
+python -m boardcheck diff OLD.json NEW.json -c designs/CM-03545/boardcheck.yaml -f markdown -o diff.md
+```
+
+reports what changed between two exports of a design: components added or
+removed, part number and comment changes, every pin that moved to another
+net, nets renamed, part parameter changes, sheets added or removed, and the
+check findings the new export introduces or resolves. Nets are matched by
+their pins, not their names: a net whose pins are unchanged under a new name
+is a rename, so Altium's auto-named nets (`NetR345_2`) do not show up as
+changes when designators shift. `--fail-on error` exits 1 when the new
+export introduces an error, for CI; `--no-findings` compares connectivity
+only. The Markdown output is meant for a pull request comment.
+
 ## Checks
 
 | Id | Default | What it catches |
@@ -211,6 +227,7 @@ boardcheck/
   config.py       defaults, YAML overrides, net voltage and kind inference
   partsdb.py      optional electronic-parts-repository adapter
   fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
+  diff.py         net-level comparison of two exports
   checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
   report.py       text / markdown / json output
