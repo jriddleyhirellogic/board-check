@@ -13,6 +13,8 @@ symbol-only types are marked "schematic only" and held to warning; the
 same finding backed by part data is an error.
 """
 
+from dataclasses import dataclass
+
 from . import ERROR, INFO, WARNING, Finding, check
 from ..model import natural_key
 
@@ -28,7 +30,34 @@ _EXTERNAL_KINDS = {"connector"}
 
 
 def _norm(name):
-    return str(name).replace("\\", "").strip().upper()
+    """Comparable pin name. Altium draws an overbar as a backslash after each
+    character ("C\\E\\"); an overbarred name keeps a trailing "#" so that
+    "G" and "G\\" stay different pins and "CE#" still matches "C\\E\\"."""
+    name = str(name).strip().upper()
+    if "\\" in name:
+        name = name.replace("\\", "").rstrip("#") + "#"
+    return name
+
+
+@dataclass
+class PartPin:
+    """One pin_functions entry."""
+    key: str                 # key as written, e.g. "1\\O\\E\\"
+    direction: str           # direction word as written
+    mapped: str              # schematic-vocabulary type, None if unrecognised
+    entry: dict
+
+    @property
+    def numbers(self):
+        return [str(n) for n in self.entry.get("pins", [])]
+
+    @property
+    def three_state(self):
+        return self.entry.get("three_state")
+
+    @property
+    def internal_bias(self):
+        return self.entry.get("internal_bias")
 
 
 class PinTypes:
@@ -40,16 +69,24 @@ class PinTypes:
         self._tables = {}
 
     def table(self, part_number):
-        """{normalised key: (raw key, raw direction, mapped type or None)}."""
+        """{"by_name": {norm key: PartPin}, "by_number": {pin: PartPin},
+        "entries": [PartPin]}, or None when the part has no pin data.
+        Underscore keys (_source, _note, ...) are annotations, not pins."""
         if part_number not in self._tables:
             raw = self.ctx.partsdb.pin_functions(part_number) if self.ctx.partsdb else None
             table = None
             if raw:
-                table = {}
+                table = {"by_name": {}, "by_number": {}, "entries": []}
                 for key, entry in raw.items():
-                    direction = entry.get("direction") if isinstance(entry, dict) else entry
-                    mapped = self.dmap.get(str(direction or "").strip().lower())
-                    table[_norm(key)] = (key, direction, mapped)
+                    if str(key).startswith("_"):
+                        continue
+                    entry = entry if isinstance(entry, dict) else {"direction": entry}
+                    direction = entry.get("direction")
+                    pp = PartPin(key, direction, self.dmap.get(str(direction or "").strip().lower()), entry)
+                    table["entries"].append(pp)
+                    table["by_name"][_norm(key)] = pp
+                    for n in pp.numbers:
+                        table["by_number"][n] = pp
             self._tables[part_number] = table
         return self._tables[part_number]
 
@@ -57,20 +94,21 @@ class PinTypes:
         table = self.table(pin.component.part_number)
         if not table:
             return None
-        # Name first (the parts repo keys by name), then pin number.
-        return table.get(_norm(pin.name)) or table.get(_norm(pin.designator))
+        # Name first (the parts repo keys by name), then package pin number,
+        # then a key that is itself a pin number.
+        return (table["by_name"].get(_norm(pin.name)) or table["by_number"].get(str(pin.designator))
+                or table["by_name"].get(_norm(pin.designator)))
 
     @staticmethod
     def schematic(pin):
         e = pin.electrical
         return e if e and not e.startswith("unknown") else None
 
-    def effective(self, pin):
-        """(type, source) with source PART, SCHEMATIC or KIND; (None, None)
-        when nothing is known."""
-        entry = self.part_entry(pin)
-        if entry and entry[2]:
-            return entry[2], PART
+    def base(self, pin):
+        """(type, source) ignoring 3-state enables."""
+        pp = self.part_entry(pin)
+        if pp and pp.mapped:
+            return pp.mapped, PART
         sch = self.schematic(pin)
         if sch:
             return sch, SCHEMATIC
@@ -80,6 +118,67 @@ class PinTypes:
         if kind in _EXTERNAL_KINDS:
             return "external", KIND
         return None, None
+
+    def effective(self, pin):
+        """(type, source) with source PART, SCHEMATIC or KIND; (None, None)
+        when nothing is known. A 3-state output counts as "output" only when
+        its enable is strapped active; otherwise it is "hiz"."""
+        ptype, source = self.base(pin)
+        if ptype == "output" and source == PART:
+            ts = self.part_entry(pin).three_state
+            if ts and not self.always_enabled(pin.component, ts):
+                return "hiz", PART
+        return ptype, source
+
+    def internal_bias(self, pin):
+        pp = self.part_entry(pin)
+        return pp.internal_bias if pp else None
+
+    def always_enabled(self, component, three_state):
+        terms = three_state.get("enable") or []
+        if not terms:
+            return True
+        hits = []
+        for term in terms:
+            pin = self._pin_named(component, term.get("pin", ""))
+            hits.append(pin is not None and self.static_level(pin.net) == term.get("active"))
+        return all(hits) if three_state.get("logic") == "all" else any(hits)
+
+    def _pin_named(self, component, key):
+        for p in component.pins:
+            if _norm(p.name) == _norm(key):
+                return p
+        pp = (self.table(component.part_number) or {}).get("by_name", {}).get(_norm(key))
+        for p in component.pins:
+            if pp and str(p.designator) in pp.numbers:
+                return p
+        return None
+
+    def static_level(self, net_name):
+        """"high" or "low" when a net is tied to a rail or ground, directly or
+        through resistors, with nothing else but inputs on it; else None."""
+        cfg = self.ctx.config
+        if cfg.is_ground(net_name):
+            return "low"
+        if cfg.is_rail(net_name):
+            return "high"
+        net = self.ctx.design.nets.get(net_name)
+        if net is None:
+            return None
+        levels = set()
+        for p in net.pins:
+            comp = p.component
+            if self.ctx.kind(comp) == "resistor" and len(comp.pins) == 2:
+                other = [q.net for q in comp.pins if q is not p][0]
+                if cfg.is_ground(other):
+                    levels.add("low")
+                elif cfg.is_rail(other):
+                    levels.add("high")
+                else:
+                    return None
+            elif self.base(p)[0] != "input":
+                return None
+        return levels.pop() if len(levels) == 1 else None
 
 
 def _pin_types(ctx):
@@ -105,6 +204,16 @@ def _nets(ctx):
             yield net, pins
 
 
+def _types_agree(pp, sch):
+    """Whether a symbol pin type is an acceptable drawing of the part data.
+    Altium's HiZ type is its 3-state output; it has no no-connect type."""
+    if pp.mapped == sch:
+        return True
+    if pp.mapped == "output" and pp.three_state and sch == "hiz":
+        return True
+    return pp.mapped == "nc" and sch == "passive"
+
+
 @check("PIN001", "Schematic pin type disagrees with part data", WARNING,
        needs_partsdb=True, needs_pin_types=True)
 def schematic_vs_part(ctx):
@@ -112,10 +221,11 @@ def schematic_vs_part(ctx):
     for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
         diffs = []
         for pin in sorted(comp.pins, key=lambda p: natural_key(p.designator)):
-            entry, sch = pt.part_entry(pin), pt.schematic(pin)
-            if entry and entry[2] and sch and entry[2] != sch:
+            pp, sch = pt.part_entry(pin), pt.schematic(pin)
+            if pp and pp.mapped and sch and not _types_agree(pp, sch):
                 name = f" {pin.name}" if pin.name and pin.name != pin.designator else ""
-                diffs.append(f"{pin.designator}{name}: symbol {sch}, part data {entry[1]}")
+                diffs.append(f"{pin.designator}{name}: symbol {sch}, part data {pp.direction}"
+                             + (" (3-state)" if pp.three_state else ""))
         if diffs:
             shown = diffs[:12] + ([f"... {len(diffs) - 12} more"] if len(diffs) > 12 else [])
             yield Finding("PIN001", f"{comp.designator} ({comp.part_number}): " + "; ".join(shown),
@@ -142,13 +252,23 @@ def pin_data_alignment(ctx):
         table = pt.table(pn)
         if not table:
             continue
-        on_symbol = set()
+        names, numbers = set(), set()
+        misnumbered = set()
         for c in comps:
             for p in c.pins:
-                on_symbol.update((_norm(p.name), _norm(p.designator)))
-        unmatched = sorted(raw for key, (raw, _, _) in table.items() if key not in on_symbol)
-        unknown = sorted({str(d) for _, d, m in table.values() if m is None})
+                names.add(_norm(p.name))
+                numbers.add(str(p.designator))
+                pp = table["by_name"].get(_norm(p.name))
+                if pp and pp.numbers and str(p.designator) not in pp.numbers:
+                    misnumbered.add(f"{p.name} is pin {p.designator} on the symbol, "
+                                    f"{'/'.join(pp.numbers)} in the part data")
+        unmatched = sorted(pp.key for pp in table["entries"]
+                           if _norm(pp.key) not in names and not set(pp.numbers) & numbers
+                           and _norm(pp.key) not in numbers)
+        unknown = sorted({str(pp.direction) for pp in table["entries"] if pp.mapped is None})
         problems = []
+        if misnumbered:
+            problems.append("pin numbers differ: " + "; ".join(sorted(misnumbered)))
         if unmatched:
             problems.append("pin_functions entries matching no pin on the symbol: " + ", ".join(unmatched))
         if unknown:
@@ -183,11 +303,16 @@ def contention(ctx):
 @check("PIN005", "Input with nothing to drive it", WARNING)
 def floating_inputs(ctx):
     """Every pin on the net is an input (an unconnected input pin included).
-    A net with any pin of unknown type is skipped: that pin may drive it."""
+    A net with any pin of unknown type is skipped: that pin may drive it.
+    So is a net where the part data gives an input an internal pull or
+    fail-safe bias: it has a defined level."""
     pt = _pin_types(ctx)
+    cfg = ctx.config
     for net, pins in _nets(ctx):
+        if cfg.is_ground(net.name) or cfg.net_voltage(net.name) is not None:
+            continue  # tied to a supply, ground or sense node
         typed = [(p, *pt.effective(p)) for p in pins]
-        if all(t == "input" for _, t, _ in typed):
+        if all(t == "input" for _, t, _ in typed) and not any(pt.internal_bias(p) for p in pins):
             yield Finding("PIN005", f"'{net.name}' has only inputs: " + ", ".join(_label(*x) for x in typed[:8])
                           + (f", ... {len(typed) - 8} more" if len(typed) > 8 else ""),
                           severity=_severity([s for _, _, s in typed]),

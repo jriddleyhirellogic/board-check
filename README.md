@@ -87,8 +87,18 @@ does not cover.
   `schematic only`.
 - PIN002 lists the ICs with no part pin data: that list is the work queue
   for filling in `pin_functions`.
-- Tri-state and bidirectional pins are never counted as contention; whether
-  they fight depends on firmware and FPGA configuration.
+- A 3-state output (`three_state` in the part data) counts as a driver only
+  when its enable pin is strapped to its active level, directly or through a
+  resistor to a rail or ground; otherwise it is treated as high impedance.
+  Bidirectional pins are never counted as contention; whether they fight
+  depends on firmware and FPGA configuration.
+- An input the part data gives an `internal_bias` (pull-up, pull-down,
+  fail-safe) is never reported as floating.
+- PIN003 also compares each pin's number on the symbol with the package pin
+  numbers in the part data (`pins`), which catches symbol pinout errors.
+
+The field reference for `pin_functions` is in the parts repository's
+JSON_FORMAT.md.
 
 ### Net voltages
 

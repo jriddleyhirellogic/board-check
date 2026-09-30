@@ -25,7 +25,7 @@ def test_exp007_when_export_has_no_pin_types():
 def test_part_data_wins_and_names_match_with_overbars():
     ctx = build_ctx([("U1", "UART", [("1", "TXD", "N1", "input"), ("2", "R\\T\\S\\", "N2", "output"),
                                      ("3", "EXTRA", "N3", "io")])],
-                    parts={"UART": pf(TXD="output", RTS="output")})
+                    parts={"UART": pf(TXD="output", **{"RTS#": "output"})})
     pt = pins.PinTypes(ctx)
     u1 = ctx.design.components["U1"]
     assert pt.effective(u1.pins[0]) == ("output", pins.PART)
@@ -74,6 +74,11 @@ def test_contention_ignores_tristate_and_flags_output_on_rail():
     assert [x.nets for x in f] == [["3V3_A"]] and "supply net" in f[0].message
 
 
+def test_inputs_tied_to_supply_are_not_floating():
+    ctx = build_ctx([("U1", "A", [("1", "EN", "3V3_A", "input"), ("2", "SEL", "GND", "input")])])
+    assert findings(pins.floating_inputs, ctx) == []
+
+
 def test_floating_inputs():
     ctx = build_ctx([
         ("U1", "A", [("1", "IN", "ONLY_INPUTS", "input"), ("2", "IN2", "PULLED", "input"),
@@ -91,3 +96,81 @@ def test_open_drain_needs_pullup():
         res("R1", "R", "IRQ_A", "3V3_A"),
     ], parts={"A": pf(INT="open_drain", INT2="open_drain")})
     assert [f.nets for f in findings(pins.open_drain_pullups, ctx)] == [["IRQ_B"]]
+
+
+def buf(oe_net, y_net, a_net="A_IN"):
+    """A one-channel 3-state buffer with an active-low enable."""
+    return ("U1", "BUF", [("1", "O\\E\\", oe_net), ("2", "A", a_net), ("3", "Y", y_net)])
+
+
+BUF_DATA = {"BUF": {"pin_functions": {
+    "_source": "test datasheet",
+    "O\\E\\": {"direction": "input", "pins": ["1"]},
+    "A": {"direction": "input", "pins": ["2"], "internal_bias": "pull_down"},
+    "Y": {"direction": "output", "pins": ["3"],
+          "three_state": {"enable": [{"pin": "O\\E\\", "active": "low"}], "logic": "any"}},
+}}}
+
+
+def test_underscore_keys_are_annotations():
+    ctx = build_ctx([buf("GND", "OUT")], parts=BUF_DATA)
+    table = pins.PinTypes(ctx).table("BUF")
+    assert [pp.key for pp in table["entries"]] == ["O\\E\\", "A", "Y"]
+
+
+def test_three_state_output_counts_only_when_enable_strapped():
+    y = lambda ctx: ctx.design.components["U1"].pins[2]  # noqa: E731
+    # Enable tied straight to ground: always driving.
+    ctx = build_ctx([buf("GND", "OUT")], parts=BUF_DATA)
+    assert pins.PinTypes(ctx).effective(y(ctx)) == ("output", pins.PART)
+    # Enable pulled to ground through a resistor with only inputs on the net: still strapped.
+    ctx = build_ctx([buf("OE_STRAP", "OUT"), res("R1", "R", "OE_STRAP", "GND")], parts=BUF_DATA)
+    assert pins.PinTypes(ctx).effective(y(ctx))[0] == "output"
+    # Enable driven by something else: may be off, so not counted as a driver.
+    ctx = build_ctx([buf("OE_CTRL", "OUT"), ("U2", "MCU", [("1", "GPIO", "OE_CTRL", "io")])],
+                    parts=BUF_DATA)
+    assert pins.PinTypes(ctx).effective(y(ctx))[0] == "hiz"
+    # Enable pulled to the inactive level: disabled.
+    ctx = build_ctx([buf("OE_STRAP", "OUT"), res("R1", "R", "OE_STRAP", "3V3_A")], parts=BUF_DATA)
+    assert pins.PinTypes(ctx).effective(y(ctx))[0] == "hiz"
+
+
+def test_disabled_three_state_outputs_do_not_contend():
+    data = dict(BUF_DATA)
+    ctx = build_ctx([buf("OE1", "BUS"), ("U2", "BUF", [("1", "O\\E\\", "OE2"), ("2", "A", "A2"), ("3", "Y", "BUS")]),
+                     ("U3", "MCU", [("1", "G1", "OE1", "io"), ("2", "G2", "OE2", "io")])], parts=data)
+    assert findings(pins.contention, ctx) == []
+    ctx = build_ctx([buf("GND", "BUS"), ("U2", "BUF", [("1", "O\\E\\", "GND"), ("2", "A", "A2"), ("3", "Y", "BUS")])],
+                    parts=data)
+    assert findings(pins.contention, ctx)[0].severity == ERROR
+
+
+def test_internal_bias_means_not_floating():
+    ctx = build_ctx([buf("GND", "OUT", a_net="NetU1_2")], parts=BUF_DATA)
+    assert findings(pins.floating_inputs, ctx) == []
+
+
+def test_overbar_is_part_of_the_name_and_pin_numbers_are_checked():
+    data = {"LVDS": {"pin_functions": {
+        "G": {"direction": "input", "pins": ["4"]},
+        "G\\": {"direction": "input", "pins": ["12"]},
+    }}}
+    ok = build_ctx([("U1", "LVDS", [("4", "G", "3V3_A"), ("12", "G\\", "GND")])], parts=data)
+    assert findings(pins.pin_data_alignment, ok) == []
+    swapped = build_ctx([("U1", "LVDS", [("12", "G", "3V3_A"), ("4", "G\\", "GND")])], parts=data)
+    msg = findings(pins.pin_data_alignment, swapped)[0].message
+    assert "G is pin 12 on the symbol, 4 in the part data" in msg
+
+
+def test_match_by_package_pin_number_when_names_differ():
+    data = {"X": {"pin_functions": {"DATA_OUT": {"direction": "output", "pins": ["7"]}}}}
+    ctx = build_ctx([("U1", "X", [("7", "DOUT", "N1")])], parts=data)
+    pin = ctx.design.components["U1"].pins[0]
+    assert pins.PinTypes(ctx).effective(pin) == ("output", pins.PART)
+    assert findings(pins.pin_data_alignment, ctx) == []
+
+
+def test_three_state_symbol_drawn_as_hiz_agrees():
+    ctx = build_ctx([("U1", "BUF", [("1", "O\\E\\", "GND", "input"), ("2", "A", "N", "input"),
+                                    ("3", "Y", "OUT", "hiz")])], parts=BUF_DATA)
+    assert findings(pins.schematic_vs_part, ctx) == []
