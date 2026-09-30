@@ -109,3 +109,18 @@ def test_quad_reference_clock_reach(tmp_path):
     ctx.partsdb = FakePartsDB({"FPGA": {"transceivers": {"quads_top_to_bottom": ["4", "2"], "refclk_cascade": "none"}}})
     f = findings(fio.quad_reference_clocks, ctx)
     assert len(f) == 1 and f[0].severity is None and "quad 2" in f[0].message and "fabric CDR" in f[0].message
+
+
+def test_unused_refclk_pins_need_a_resistor_to_ground(tmp_path):
+    from helpers import FakePartsDB
+    ctx = _ctx(tmp_path, pin("refclk_p", "R1") + pin("refclk_n", "R2"))
+    u1 = ctx.design.components["U1"]
+    from boardcheck.model import Pin
+    u1.pins.append(Pin("S1", "XCVR_1B_REFCLK_P", "NetU1_S1", u1))
+    u1.pins.append(Pin("S2", "XCVR_1B_REFCLK_N", "SPARE_N", u1))
+    ctx.design.nets.setdefault("SPARE_N", __import__("boardcheck.model", fromlist=["Net"]).Net("SPARE_N"))
+    ctx.partsdb = FakePartsDB({"FPGA": {"unused_pins": [
+        {"pattern": r"^XCVR_\w+_REFCLK_[PN]$", "connect": "resistor_to_ground", "ohms": 100000}]}})
+    f = findings(fio.unused_pin_termination, ctx)
+    assert len(f) == 1 and "2 unused pin(s)" in f[0].message and "no resistor to ground (recommended 100 kohm)" in f[0].message
+    assert "XCVR_1B_REFCLK_N (S2" in f[0].message and "XCVR_1B_REFCLK_P (S1, floating)" in f[0].message

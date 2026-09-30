@@ -341,3 +341,36 @@ def quad_reference_clocks(ctx):
                 yield Finding("FIO011", f"{desig} quad {quad} ({ports}) has no reference clock on its own REFCLK pins "
                                         "or on a quad above it; its lanes would need a fabric CDR reference",
                               refs=[desig])
+
+
+@check("FIO012", "Unused FPGA pin not terminated as the vendor recommends", WARNING, needs_partsdb=True)
+def unused_pin_termination(ctx):
+    """FPGA pins no constraint uses, matched against the part data's
+    `unused_pins` rules. For `connect: resistor_to_ground` the pin's net
+    must have a resistor to ground (any value; the rule's value is quoted)
+    or be tied to ground. One finding per rule, listing the pins."""
+    cfg = ctx.config
+    for desig, f in _fpgas(ctx):
+        rules = ctx.partsdb.unused_pins(f.component.part_number)
+        for rule in rules:
+            rx = re.compile(rule["pattern"])
+            loose = []
+            for pin in sorted(f.component.pins, key=lambda p: natural_key(p.name or "")):
+                if not rx.search(pin.name or "") or f.constraint(pin) is not None:
+                    continue
+                if rule.get("connect") != "resistor_to_ground" or cfg.is_ground(pin.net):
+                    continue
+                net = ctx.design.nets.get(pin.net)
+                grounded = net is not None and any(
+                    ctx.kind(c) == "resistor" and len(c.pins) == 2 and any(cfg.is_ground(n) for n in c.nets())
+                    for c in net.components())
+                if not grounded:
+                    others = len(net.pins) - 1 if net else 0
+                    loose.append(f"{pin.name} ({pin.designator}{', floating' if others == 0 else ', ' + pin.net})")
+            if loose:
+                ohms = rule.get("ohms")
+                what = f" (recommended {ohms / 1000:g} kohm)" if ohms else ""
+                yield Finding("FIO012", f"{desig}: {len(loose)} unused pin(s) matching {rule['pattern']} have no "
+                                        f"resistor to ground{what}: {', '.join(loose[:12])}"
+                                        f"{' ...' if len(loose) > 12 else ''}. "
+                                        f"{rule.get('_source', '')}".strip(), refs=[desig])

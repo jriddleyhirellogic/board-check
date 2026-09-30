@@ -70,6 +70,10 @@ class FakePartsDB:
         part = self.parts.get(pn)
         return part.get("electrical_characteristics") if isinstance(part, dict) else None
 
+    def unused_pins(self, pn):
+        part = self.parts.get(pn)
+        return (part.get("unused_pins") or []) if isinstance(part, dict) else []
+
     def transceivers(self, pn):
         part = self.parts.get(pn)
         return part.get("transceivers") if isinstance(part, dict) else None

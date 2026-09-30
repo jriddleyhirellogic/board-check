@@ -92,6 +92,7 @@ only. The Markdown output is meant for a pull request comment.
 | FIO008 | error | Differential port pair (`_p`/`_n`, `_t`/`_c`, `x`/`x_n`) not on the P and N balls of one pair (swapped, split, or single-ended); warning for a `_p` port whose partner is unconstrained |
 | FIO009 | error | Board nets on a differential pair's balls cross it (positive port on the `_N` net) |
 | FIO010 | error | Transceiver reference clock not on a REFCLK pin, or a port of the wrong direction on an XCVR RX/TX pin; warning for a REFCLK pin carrying something else |
+| FIO012 | warning | Unused FPGA pins not terminated as the part data's `unused_pins` rules say (e.g. PolarFire unused REFCLK/RX pins: 100 kohm to VSS) |
 | FIO011 | warning | Transceiver quad with used lanes and no reference clock on its own REFCLK pins or on a quad above it (part data `transceivers`); info when it relies on a cascade |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
 | LVL002 | error | Driver's VOL above a receiver's VIL / VT- |

@@ -81,6 +81,12 @@ class PartsDB:
         block = data.get("io_standards") if data else None
         return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
 
+    def unused_pins(self, part_number):
+        """The part's `unused_pins` rules ([{pattern, connect, ohms, ...}]), or []."""
+        data = self._part_file(part_number)
+        rules = data.get("unused_pins") if data else None
+        return [r for r in rules if isinstance(r, dict) and r.get("pattern")] if isinstance(rules, list) else []
+
     def transceivers(self, part_number):
         """The part's `transceivers` block (quad order, reference clock cascade), or None."""
         data = self._part_file(part_number)
