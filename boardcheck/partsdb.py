@@ -51,6 +51,20 @@ class PartsDB:
             self._cache[part_number] = self._decode(part_number)
         return self._cache[part_number]
 
+    def pin_functions(self, part_number):
+        """The part's `pin_functions` block ({pin name or number: {direction,
+        function, description}}) from its JSON file, or None."""
+        if not part_number:
+            return None
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = self._repo.lookup({"part_number": part_number})
+        except Exception:
+            return None
+        if isinstance(result, dict) and isinstance(result.get("pin_functions"), dict):
+            return result["pin_functions"]
+        return None
+
     def _decode(self, part_number):
         try:
             with contextlib.redirect_stdout(io.StringIO()):

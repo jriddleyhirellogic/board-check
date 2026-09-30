@@ -55,13 +55,14 @@ def test_cli_json_output_and_exit_code(tmp_path, capsys):
     assert main([str(export), "--no-partsdb", "--fail-on", "never"]) == 0
 
 
-FARSIGHT = sorted(glob.glob(os.path.join(REPO, "CM-03545*_sch_*.json")))
+FARSIGHT_DIR = os.path.join(REPO, "designs", "CM-03545")
+FARSIGHT = sorted(glob.glob(os.path.join(FARSIGHT_DIR, "CM-03545*_sch_*.json")))
 
 
 @pytest.mark.skipif(not FARSIGHT, reason="Farsight export not present")
 def test_farsight_export_is_complete():
     """The committed export passes every export-integrity check."""
     design = Design.load(FARSIGHT[-1])
-    config = Config.load(os.path.join(REPO, "boardcheck.yaml"))
+    config = Config.load(os.path.join(FARSIGHT_DIR, "boardcheck.yaml"))
     result = run(design, config, only={"EXP001", "EXP002", "EXP003", "EXP004", "EXP005", "EXP006"})
     assert [f.message for f in result.active] == []

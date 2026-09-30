@@ -5,7 +5,7 @@ components skipped) is structurally valid JSON; these checks catch it
 before every other check reports on a partial netlist.
 """
 
-from . import ERROR, Finding, check
+from . import ERROR, INFO, Finding, check
 from ..model import split_part_suffix
 
 
@@ -91,3 +91,10 @@ def expected_totals(ctx):
             yield Finding("EXP006", f"{desig} has {len(comp.parts)} parts, expected {want['parts']}", refs=[desig])
         if "pins" in want and len(comp.pins) != want["pins"]:
             yield Finding("EXP006", f"{desig} has {len(comp.pins)} pins, expected {want['pins']}", refs=[desig])
+
+
+@check("EXP007", "Export has no pin electrical types", INFO)
+def pin_types_present(ctx):
+    if not ctx.design.has_pin_types:
+        yield Finding("EXP007", "no pin carries an electricalType; re-export with script >= 2.3.0 so symbol "
+                                "pin types can be checked against the part data. Pin checks use part data only.")

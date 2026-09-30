@@ -41,14 +41,15 @@ class CheckInfo:
     severity: str
     func: object
     needs_partsdb: bool = False
+    needs_pin_types: bool = False
 
 
 REGISTRY = {}
 
 
-def check(check_id, title, severity=WARNING, needs_partsdb=False):
+def check(check_id, title, severity=WARNING, needs_partsdb=False, needs_pin_types=False):
     def wrap(func):
-        REGISTRY[check_id] = CheckInfo(check_id, title, severity, func, needs_partsdb)
+        REGISTRY[check_id] = CheckInfo(check_id, title, severity, func, needs_partsdb, needs_pin_types)
         return func
     return wrap
 
@@ -70,5 +71,5 @@ class Context:
 
 def load_all():
     # Importing the modules registers their checks.
-    from . import export, parts, nets, power  # noqa: F401
+    from . import export, nets, parts, pins, power  # noqa: F401
     return REGISTRY

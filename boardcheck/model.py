@@ -18,6 +18,10 @@ class Pin:
     net: str
     component: "Component" = field(repr=False, default=None)
     part: str = ""        # sub-part designator, e.g. "U1C"
+    # Electrical type drawn on the schematic symbol ("input", "io", ...), or
+    # None when the export predates script v2.3. A claim, not the truth:
+    # checks prefer the part data and flag disagreements.
+    electrical: str = None
 
     @property
     def ref(self):
@@ -117,10 +121,17 @@ class Design:
                         if key in pins_seen:
                             continue
                         pins_seen.add(key)
-                        pin = Pin(p["designator"], p.get("name", ""), p.get("netName", ""),
-                                  comp, part_desig)
+                        # A null net is an unconnected pin; name it the way Altium
+                        # names unlabelled nets so it reads as a one-pin auto net.
+                        net = p.get("netName") or f"Net{desig}_{p['designator']}"
+                        pin = Pin(p["designator"], p.get("name") or "", net, comp, part_desig,
+                                  p.get("electricalType"))
                         comp.pins.append(pin)
                         self.nets.setdefault(pin.net, Net(pin.net)).pins.append(pin)
+
+    @property
+    def has_pin_types(self):
+        return any(p.electrical for c in self.components.values() for p in c.pins)
 
     # -- lookups -----------------------------------------------------------
 

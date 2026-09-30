@@ -59,6 +59,9 @@ def run(design, config, partsdb=None, only=None):
         if info.needs_partsdb and partsdb is None:
             skipped.append((check_id, "electronic-parts-repository not installed"))
             continue
+        if info.needs_pin_types and not design.has_pin_types:
+            skipped.append((check_id, "export has no pin electrical types (needs export script >= 2.3.0)"))
+            continue
         for f in info.func(ctx):
             f.severity = overrides.get(check_id) or f.severity or info.severity
             findings.append(f)

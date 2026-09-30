@@ -60,6 +60,17 @@ DEFAULTS = {
         "i2c_pattern": r"(^|_)(I2C\w*_)?(SCL|SDA)(\d*)(_|$)",
     },
     "pins": {
+        # Component kinds whose pin types must be backed by part data
+        # (pin_functions in electronic-parts-repository).
+        "verify_kinds": ["ic"],
+        # Part-data direction words -> schematic electrical type names.
+        "direction_map": {
+            "input": "input", "output": "output", "bidir": "io", "bidirectional": "io", "io": "io",
+            "power": "power", "ground": "power", "passive": "passive",
+            "open_drain": "open_collector", "open_collector": "open_collector",
+            "open_source": "open_emitter", "open_emitter": "open_emitter",
+            "hiz": "hiz", "tristate": "hiz", "tri_state": "hiz", "nc": "nc",
+        },
         "power_names": r"^(VDD|VCC|AVDD|DVDD|VDDQ|VDDIO|VCCIO|VCCA|VCCO|VIN|PVIN|VPP|VS)\w*$",
         "ground_names": r"^(GND|VSS|AGND|DGND|PGND|VSSQ|VSSA)\w*$",
     },

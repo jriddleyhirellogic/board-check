@@ -1,9 +1,21 @@
 {==============================================================================}
 { Altium DelphiScript: Export All Schematics to JSON                          }
-{ Version: 2.2.1                                                               }
+{ Version: 2.3.0                                                               }
 { Author: J.Riddley                                                           }
 { Description: Exports all schematic documents with part number dictionary    }
 {              to avoid duplicate parameter data. Fully JSON-compliant.       }
+{                                                                              }
+{ 2.3 changes:                                                                 }
+{                                                                              }
+{  1. Every pin carries "electricalType", read from the schematic pin's        }
+{     Electrical property: input, io, output, open_collector, passive, hiz,    }
+{     open_emitter or power ("unknown:<n>" for a value this script does not    }
+{     name, "unknown" if the property could not be read). boardcheck compares  }
+{     it against the part data in electronic-parts-repository and flags        }
+{     differences: the symbol's pin types are not trusted on their own.        }
+{                                                                              }
+{  2. Hand-edited from the generated v2.2.1: make_v2.2.py is not in this       }
+{     repository. If the generator is found, port this change into it.         }
 {                                                                              }
 { 2.2 changes:                                                                 }
 {                                                                              }
@@ -71,10 +83,10 @@
 {==============================================================================}
 
 const
-    // Bumped by make_v2.2.py on every regeneration. Emitted into the JSON, the
+    // Bumped on every change (by make_v2.2.py up to 2.2.1). Emitted into the JSON, the
     // warnings file and the completion dialog so that an export can always be
     // traced back to the script that produced it.
-    SCRIPT_VERSION = '2.2.1';
+    SCRIPT_VERSION = '2.3.0';
 
 var
     ExportWarnings : TStringList;
@@ -90,6 +102,7 @@ function ProcessComponents(PhysDoc : IDocument; SchDoc : ISch_Document; PartNumb
 function ProcessNets(SchDoc : ISch_Document) : String; forward;
 function CleanFileName(FileName : String) : String; forward;
 function EscapeJsonString(Str : String) : String; forward;
+function PinElectricalToString(APin : ISch_Pin) : String; forward;
 function OpenSchDoc(FullPath : String) : ISch_Document; forward;
 procedure CloseDocsWeOpened; forward;
 function AddNetEntry(Dict : TStringList; Key : String; PinsData : TStringList) : Boolean; forward;
@@ -141,6 +154,36 @@ begin
         end;
     end;
     Result := EscapedStr;
+end;
+
+{------------------------------------------------------------------------------}
+{ PinElectricalToString: Schematic pin electrical type as a JSON-friendly name }
+{                                                                              }
+{ This is the type drawn on the symbol, which may be wrong; boardcheck treats   }
+{ it as a claim to verify against the part data, not as the truth.             }
+{------------------------------------------------------------------------------}
+function PinElectricalToString(APin : ISch_Pin) : String;
+var
+    E : Integer;
+begin
+    Result := 'unknown';
+    try
+        E := APin.Electrical;
+        case E of
+            eElectricInput:         Result := 'input';
+            eElectricIO:            Result := 'io';
+            eElectricOutput:        Result := 'output';
+            eElectricOpenCollector: Result := 'open_collector';
+            eElectricPassive:       Result := 'passive';
+            eElectricHiZ:           Result := 'hiz';
+            eElectricOpenEmitter:   Result := 'open_emitter';
+            eElectricPower:         Result := 'power';
+        else
+            Result := 'unknown:' + IntToStr(E);
+        end;
+    except
+        Result := 'unknown';
+    end;
 end;
 
 {------------------------------------------------------------------------------}
@@ -1041,6 +1084,7 @@ begin
                                                     PinData := '                {' + #13#10;
                                                     PinData := PinData + '                  "designator": "' + EscapeJsonString(PinDesig) + '",' + #13#10;
                                                     PinData := PinData + '                  "name": "' + EscapeJsonString(APin.Name) + '",' + #13#10;
+                                                    PinData := PinData + '                  "electricalType": "' + PinElectricalToString(APin) + '",' + #13#10;
                                                     if (NetName = '') or (NetName = '?') then
                                                         PinData := PinData + '                  "netName": null' + #13#10
                                                     else

@@ -1,10 +1,19 @@
 # board-check
 
 Automated checks on the Farsight avionics board schematic, run against the
-JSON netlist that `ExportAllSchematicsToJSON_v2.2.pas` writes from Altium.
+JSON netlist that `altium/ExportAllSchematicsToJSON_v2.3.pas` writes from
+Altium.
 
 The Altium export is a manual step (DelphiScript inside Altium). Commit the
-JSON it produces; everything after that runs on any machine with Python.
+JSON it produces under `designs/<assembly>/`; everything after that runs on
+any machine with Python.
+
+```
+altium/                     Altium export script (run inside Altium)
+designs/CM-03545/           Farsight FM: export JSON, schematic PDF, boardcheck.yaml
+boardcheck/                 the checker
+tests/                      unit tests + a smoke test on the committed export
+```
 
 ## Usage
 
@@ -12,8 +21,9 @@ JSON it produces; everything after that runs on any machine with Python.
 pip install -e ".[dev]"                 # checker + pytest
 pip install -e ".[parts]"               # optional: electronic-parts-repository decoders
 
+cd designs/CM-03545
 boardcheck CM-03545_*_sch_*.json -c boardcheck.yaml                    # text to stdout
-boardcheck CM-03545_*_sch_*.json -c boardcheck.yaml -f markdown -o reports/board-check.md
+boardcheck CM-03545_*_sch_*.json -c boardcheck.yaml -f markdown -o ../../reports/CM-03545.md
 boardcheck --list-checks
 ```
 
@@ -26,6 +36,7 @@ repository even when installed.
 
 | Id | Default | What it catches |
 |---|---|---|
+| EXP007 | info | Export has no pin electrical types (script older than 2.3.0) |
 | EXP001-006 | error | Export not trustworthy: old script version, sheets with no components, multi-part components missing part A, part numbers missing from the dictionary, a designator with two part numbers, totals differing from `export.expect` |
 | NET001 | warning | Labelled net reaching one pin (typo'd net label or port, unfinished wire). `UNUSED`/`SPARE` stubs are allowed |
 | NET002 | info | Unconnected pins, per component, for review |
@@ -47,10 +58,37 @@ repository even when installed.
 | PWR004 | info | Supply rail with no test point |
 | PWR005 | warning | Ground-named pin off ground, or power-named pin on ground |
 | PWR006 | warning | I2C SCL/SDA without a pull-up to a rail |
+| PIN001 | warning | Symbol pin type differs from the part data |
+| PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |
+| PIN003 | warning | Part pin data names a pin the symbol does not have, or uses an unknown direction word |
+| PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net |
+| PIN005 | warning | Net with only inputs on it (nothing drives it) |
+| PIN006 | warning | Open-drain net without a pull-up to a rail |
 
-PRT003, PRT004 and PRT006 need
+PRT003, PRT004, PRT006 and PIN001-003 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
+
+### Pin types: part data first, symbol second
+
+Schematic symbol pin types are set by hand and are not reliable on their
+own. The export (script >= 2.3.0) records each pin's symbol type as
+`electricalType`, but the pin checks take a pin's type from the part data
+first: the `pin_functions` block of the part's JSON file in
+electronic-parts-repository, keyed by pin name (overbar backslashes
+ignored) or pin number, with `direction` one of input, output, bidir,
+power, passive, open_drain, open_source, tristate (see
+`pins.direction_map`). The symbol's type is used only for pins the part data
+does not cover.
+
+- Where both exist and differ, PIN001 reports it.
+- PIN004-006 findings built only on part data are errors; any finding that
+  relies on a symbol-only type is held to warning and labelled
+  `schematic only`.
+- PIN002 lists the ICs with no part pin data: that list is the work queue
+  for filling in `pin_functions`.
+- Tri-state and bidirectional pins are never counted as contention; whether
+  they fight depends on firmware and FPGA configuration.
 
 ### Net voltages
 
@@ -88,7 +126,7 @@ boardcheck/
   model.py        Design, Component, Pin, Net loaded from the export
   config.py       defaults, YAML overrides, net voltage and kind inference
   partsdb.py      optional electronic-parts-repository adapter
-  checks/         export.py, nets.py, parts.py, power.py (one function per check)
+  checks/         export.py, nets.py, parts.py, pins.py, power.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
   report.py       text / markdown / json output
 tests/            synthetic-export unit tests + a smoke test on the committed export
