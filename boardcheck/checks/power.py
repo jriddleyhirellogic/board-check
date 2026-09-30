@@ -234,3 +234,56 @@ def supply_pin_decoupling(ctx):
         yield Finding("PWR007", f"'{net}' supplies {', '.join(f'{p.ref} {p.name}' for p in pins[:6])} "
                                 "but has no capacitor to ground",
                       refs=sorted({p.component.designator for p in pins}, key=natural_key), nets=[net])
+
+
+@check("PWR008", "IC supply rail outside the part's recommended range", ERROR, needs_partsdb=True)
+def supply_in_range(ctx):
+    """Each supply pin's rail against the part data's `supply_<pin>`
+    recommended operating range (a range_table applying to that pin, or
+    named after it). Rows conditioned on an I/O standard or bank type are
+    FPGA bank rules, checked by LVL004."""
+    from .levels import PinLevels, _levels
+    from .pins import _norm, _pin_types
+    pt = _pin_types(ctx)
+    lv = _levels(ctx)
+    cfg = ctx.config
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        chars = ctx.partsdb.characteristics(comp.part_number) or {}
+        table = pt.table(comp.part_number)
+        if not chars or not table:
+            continue
+        for key, char in chars.items():
+            if not key.startswith("supply_") or not isinstance(char, dict) or char.get("kind") != "range_table":
+                continue
+            targets = char.get("applies_to") or [k for k in table["by_name"].values()
+                                                 if _norm(k.key) == _norm(key[len("supply_"):])]
+            targets = [t if isinstance(t, str) else t.key for t in targets]
+            rows = [r for r in char.get("rows") or []
+                    if not set(r.get("conditions") or {}) - {"ambient_temperature", "junction_temperature"}]
+            if not rows:
+                continue
+            for target in targets:
+                pp = table["by_name"].get(_norm(target))
+                if pp is None or pp.per_bank:
+                    continue
+                pins = [p for p in comp.pins if str(p.designator) in pp.numbers or _norm(p.name) == _norm(target)]
+                rails = {p.net for p in pins if cfg.net_voltage(p.net) is not None}
+                if not pins:
+                    continue
+                # Limits may name another supply of the part ("2.7 V to VA").
+                pl = PinLevels(pins[0], chars, key=pp.key)
+                bounds = []
+                for r in rows:
+                    lo = lv._limit(pl, r["min"]) if "min" in r else float("-inf")
+                    hi = lv._limit(pl, r["max"]) if "max" in r else float("inf")
+                    if lo is not None and hi is not None:
+                        bounds.append((lo, hi))
+                if not bounds:
+                    continue
+                for rail in sorted(rails):
+                    v = cfg.net_voltage(rail)
+                    if not any(lo - 1e-9 <= v <= hi + 1e-9 for lo, hi in bounds):
+                        span = ", ".join(f"{lo:g}-{hi:g} V" for lo, hi in bounds)
+                        yield Finding("PWR008", f"{comp.designator} ({comp.part_number}) {target} is on '{rail}' "
+                                                f"({v:g} V); recommended {span} ({char.get('_source', 'part data')})",
+                                      refs=[comp.designator], nets=[rail], part_number=comp.part_number)

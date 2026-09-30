@@ -238,3 +238,21 @@ def test_pwr007_local_supply_without_capacitor():
     ctx = build_ctx([("U2", "IC", [("1", "VDD", "NetU1_1"), ("2", "GND", "GND")]),
                      ("U1", "LDO", [("1", "VOUT", "NetU1_1")]), cap("C1", "CAP", "NetU1_1", "GND")])
     assert findings(power.supply_pin_decoupling, ctx) == []
+
+
+def test_pwr008_supply_outside_recommended_range():
+    from helpers import FakePartsDB
+    from boardcheck.checks import Context
+    from boardcheck.config import Config
+    from boardcheck.model import Design
+    from helpers import make_export
+    part = {"pin_functions": {"VA": {"direction": "power", "pins": ["2"]}, "VD": {"direction": "power", "pins": ["3"]}},
+            "electrical_characteristics": {
+                "supply_va": {"kind": "range_table", "unit": "V", "applies_to": ["VA"], "rows": [{"min": 2.7, "max": 5.25}]},
+                "supply_vd": {"kind": "range_table", "unit": "V", "rows": [{"min": 2.7, "max": "VA"}]}}}
+    d = Design(make_export([("U1", "ADC", [("2", "VA", "1V8"), ("3", "VD", "3V3")])]))
+    ctx = Context(d, Config(), FakePartsDB({"ADC": part}))
+    f = findings(power.supply_in_range, ctx)
+    msgs = sorted(x.message for x in f)
+    assert len(f) == 2 and "U1 (ADC) VA is on '1V8' (1.8 V); recommended 2.7-5.25 V" in msgs[0]
+    assert "U1 (ADC) VD is on '3V3' (3.3 V); recommended 2.7-1.8 V" in msgs[1], "VD may not exceed VA"
