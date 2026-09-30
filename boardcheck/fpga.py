@@ -59,6 +59,8 @@ class FpgaIO:
     top_files: list = field(default_factory=list)
     ports: dict = field(default_factory=dict)
     port_bases: dict = field(default_factory=dict)
+    # SmartDesign connections of each top-level port: {port: {"inst:PIN", ...}}
+    port_links: dict = field(default_factory=dict)
 
     def port_direction(self, port):
         """Direction the FPGA design gives a port ("input", "output",
@@ -357,6 +359,12 @@ def _read_top(fpga, path, top_module):
         # SmartDesign: sd_create_scalar_port / sd_create_bus_port
         for line, cmd in _commands(text):
             w = _words(cmd)
+            if w and w[0][1] == "sd_connect_pins":
+                opts = {w[i][1].lstrip("-"): w[i + 1][1] for i in range(1, len(w) - 1, 2)}
+                names = [x[1] for x in _words(opts.get("pin_names", ""))]
+                for port in (n for n in names if ":" not in n):
+                    fpga.port_links.setdefault(port, set()).update(n for n in names if ":" in n)
+                continue
             if not w or w[0][1] not in ("sd_create_scalar_port", "sd_create_bus_port"):
                 continue
             opts = {w[i][1].lstrip("-"): w[i + 1][1] for i in range(1, len(w) - 1, 2)}
@@ -408,6 +416,8 @@ class FpgaPins:
         self._bank_type_re = re.compile(cfg["bank_type_pattern"]) if cfg.get("bank_type_pattern") else None
         self._supply = cfg.get("bank_supply")
         self._bank_name = cfg.get("bank_name")
+        self._pair_res = [re.compile(x) for x in cfg.get("pair_patterns") or []]
+        self._xcvr_re = re.compile(cfg["transceiver_pattern"]) if cfg.get("transceiver_pattern") else None
 
     def constraint(self, pin):
         return self.io.pins.get(str(pin.designator))
@@ -430,6 +440,20 @@ class FpgaPins:
             return None
         m = self._bank_type_re.search(pin.name or "")
         return m.group(1).upper() if m else None
+
+    def pair(self, pin):
+        """(pair id, "P" or "N") from the schematic pin name, or None when
+        the pin is not half of a differential pair."""
+        for rx in self._pair_res:
+            m = rx.search(pin.name or "")
+            if m:
+                return m.group("pair"), m.group("pol").upper()
+        return None
+
+    def transceiver(self, pin):
+        """(quad, role) for a transceiver pin ("RX", "TX", "REFCLK"), or None."""
+        m = self._xcvr_re.search(pin.name or "") if self._xcvr_re else None
+        return (m.group("quad"), m.group("role").upper()) if m else None
 
     def supply_pin_name(self, bank):
         return self._supply.format(bank=bank) if self._supply else None

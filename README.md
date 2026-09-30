@@ -71,6 +71,9 @@ repository even when installed.
 | FIO005 | warning | FPGA bank I/O wired to other parts but assigned no port |
 | FIO006 | error | Constraint DIRECTION contradicts the FPGA design's port direction (warning when one side is inout) |
 | FIO007 | error | FPGA top-level port with no pin constraint (place-and-route picks the pin) |
+| FIO008 | error | Differential port pair (`_p`/`_n`, `_t`/`_c`, `x`/`x_n`) not on the P and N balls of one pair (swapped, split, or single-ended); warning for a `_p` port whose partner is unconstrained |
+| FIO009 | error | Board nets on a differential pair's balls cross it (positive port on the `_N` net) |
+| FIO010 | error | Transceiver reference clock not on a REFCLK pin, or a port of the wrong direction on an XCVR RX/TX pin; warning for a REFCLK pin carrying something else |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
 | LVL002 | error | Driver's VOL above a receiver's VIL / VT- |
 | LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input |
@@ -133,6 +136,11 @@ own files where they live (paths relative to the config file), never a copy:
   against it (FIO006).
 - `bank_pattern` / `bank_supply` / `bank_name` / `bank_type_pattern` tie
   schematic pin names to banks, bank supply pins and `set_iobank` names.
+- `pair_patterns` and `transceiver_pattern` read differential pairs and
+  transceiver roles off the schematic pin names (`HSIO162PB0`,
+  `XCVR_4A_REFCLK_P`). A port is a transceiver reference clock when the
+  SmartDesign top level connects it to a `REF_CLK_PAD_P/N` pin
+  (`fpga_pins.refclk_pads`), or, without SmartDesign, by name.
 
 Constrained pins take their type from this configuration ahead of the part
 data and the symbol, so PIN004-006 see FPGA outputs and inputs as the

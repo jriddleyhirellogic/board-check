@@ -7,6 +7,8 @@ disagrees with the rail feeding them, and wired I/O the constraints leave
 unassigned.
 """
 
+import re
+
 from . import ERROR, WARNING, Finding, check
 from ..model import natural_key
 
@@ -151,3 +153,148 @@ def unplaced_ports(ctx):
             if port not in placed:
                 yield Finding("FIO007", f"{desig}: top-level port '{port}' ({f.io.ports[port]}) has no pin "
                                         "constraint; Libero will place it on any free I/O", refs=[desig])
+
+
+def _split_index(port):
+    m = re.match(r"^(.*?)(\[\d+\])?$", port)
+    return m.group(1), m.group(2) or ""
+
+
+def diff_port_pairs(ctx, f):
+    """([(positive port, negative port)], [(port, missing partner)]): pairs
+    among the constrained ports by the configured name suffixes (first
+    matching rule wins), and positive halves whose partner is not
+    constrained."""
+    ports = {c.port for c in f.io.pins.values()}
+    rules = ctx.config["fpga_pins"]["diff_port_suffixes"]
+    pairs, used, halves = [], set(), []
+    for name in sorted(ports, key=natural_key):
+        if name in used:
+            continue
+        base, idx = _split_index(name)
+        for pos, neg in rules:
+            if not neg or not base.lower().endswith(neg.lower()):
+                continue
+            partner = base[:len(base) - len(neg)] + pos + idx
+            if partner in ports and partner != name and partner not in used:
+                pairs.append((partner, name))
+                used.update((partner, name))
+                break
+    # A lone positive half (_p, _t) is suspicious; a lone _n is usually an
+    # active-low signal, not half a pair.
+    for name in sorted(ports - used, key=natural_key):
+        base, idx = _split_index(name)
+        for pos, neg in rules:
+            if pos and base.lower().endswith(pos.lower()):
+                halves.append((name, base[:len(base) - len(pos)] + neg + idx))
+                break
+    return pairs, halves
+
+
+def _ball_of(f):
+    by_port = {c.port: c for c in f.io.pins.values()}
+    pins = {str(p.designator): p for p in f.component.pins}
+    return by_port, pins
+
+
+@check("FIO008", "FPGA differential pair not on a P/N ball pair", ERROR)
+def diff_pair_balls(ctx):
+    """Two ports that form a differential pair (by name suffix) must land on
+    the P and N pins of one pair, as the schematic pin names give them
+    (`pair_patterns`); a _p (or _t) port whose partner has no constraint is
+    a warning."""
+    for desig, f in _fpgas(ctx):
+        if not f._pair_res:
+            continue
+        by_port, pins = _ball_of(f)
+        pairs, halves = diff_port_pairs(ctx, f)
+        for pos, neg in pairs:
+            cp, cn = by_port[pos], by_port[neg]
+            pp, pn = pins.get(cp.ball), pins.get(cn.ball)
+            if pp is None or pn is None:
+                continue        # FIO002 reports balls missing from the symbol
+            ap, an = f.pair(pp), f.pair(pn)
+            where = f"'{pos}' on {cp.ball} ({pp.name}), '{neg}' on {cn.ball} ({pn.name})"
+            if ap is None or an is None:
+                yield Finding("FIO008", f"{desig}: {where}: "
+                                        f"{'neither ball' if ap is None and an is None else 'one ball'} is half of a "
+                                        "differential pair", refs=[desig], nets=[pp.net, pn.net])
+            elif ap[0] != an[0]:
+                yield Finding("FIO008", f"{desig}: {where}: the balls belong to different pairs "
+                                        f"({ap[0]}{ap[1]} and {an[0]}{an[1]})", refs=[desig], nets=[pp.net, pn.net])
+            elif (ap[1], an[1]) != ("P", "N"):
+                yield Finding("FIO008", f"{desig}: {where}: positive and negative are swapped on pair {ap[0]}",
+                              refs=[desig], nets=[pp.net, pn.net])
+        for port, partner in halves:
+            yield Finding("FIO008", f"{desig}: '{port}' is constrained but its partner '{partner}' is not",
+                          severity=WARNING, refs=[desig])
+
+
+def _net_polarity(ctx, net):
+    """("stem", "P" or "N") when a net name carries a diff-pair suffix."""
+    for pos, neg in ctx.config["nets"]["diff_pair_suffixes"]:
+        for suffix, pol in ((pos, "P"), (neg, "N")):
+            if suffix and net.upper().endswith(suffix.upper()):
+                return net[:len(net) - len(suffix)].upper(), pol
+    return None
+
+
+@check("FIO009", "Board swaps a differential pair's polarity at the FPGA", ERROR)
+def diff_pair_nets(ctx):
+    """The schematic nets on a differential port pair's balls: when both
+    carry pair suffixes of one stem (DDR4_CK_P / DDR4_CK_N), the positive
+    port's ball must be on the positive net."""
+    for desig, f in _fpgas(ctx):
+        by_port, pins = _ball_of(f)
+        pairs, _ = diff_port_pairs(ctx, f)
+        for pos, neg in pairs:
+            pp, pn = pins.get(by_port[pos].ball), pins.get(by_port[neg].ball)
+            if pp is None or pn is None:
+                continue
+            np_, nn = _net_polarity(ctx, pp.net), _net_polarity(ctx, pn.net)
+            if np_ and nn and np_[0] == nn[0] and (np_[1], nn[1]) == ("N", "P"):
+                yield Finding("FIO009", f"{desig}: '{pos}' ({by_port[pos].ball}) is on '{pp.net}' and '{neg}' "
+                                        f"({by_port[neg].ball}) on '{pn.net}': the board crosses the pair",
+                              refs=[desig], nets=[pp.net, pn.net])
+
+
+def _is_refclk(ctx, f, port):
+    fp = ctx.config["fpga_pins"]
+    if f.io.port_links:
+        pads = re.compile(fp["refclk_pads"])
+        base, idx = _split_index(port)
+        links = f.io.port_links.get(port) or f.io.port_links.get(base) or set()
+        return any(pads.search(link) for link in links)
+    return re.search(fp["refclk_ports"], port, re.I) is not None
+
+
+@check("FIO010", "Transceiver pin carries the wrong kind of port", ERROR)
+def transceiver_pins(ctx):
+    """Reference clock ports (connected to a reference-clock pad in the
+    SmartDesign top level, or named like one without it) must be on REFCLK
+    pins; ports on transceiver RX pins must be inputs and on TX pins
+    outputs. A REFCLK pin carrying a port that is not a reference clock is a
+    warning."""
+    for desig, f in _fpgas(ctx):
+        if f._xcvr_re is None:
+            continue
+        _, pins = _ball_of(f)
+        for ball, c in sorted(f.io.pins.items(), key=lambda kv: natural_key(kv[0])):
+            pin = pins.get(ball)
+            if pin is None:
+                continue
+            xc = f.transceiver(pin)
+            ref = _is_refclk(ctx, f, c.port)
+            direction = f.direction(c)
+            where = f"{desig}.{ball} ({pin.name}) carries '{c.port}'"
+            if ref and (xc is None or xc[1] != "REFCLK"):
+                yield Finding("FIO010", f"{where}, a transceiver reference clock, but it is not a REFCLK pin",
+                              refs=[desig], nets=[pin.net])
+            elif xc and xc[1] == "REFCLK" and not ref:
+                yield Finding("FIO010", f"{where}, which is not connected to a reference clock pad",
+                              severity=WARNING, refs=[desig], nets=[pin.net])
+            elif xc and xc[1] in ("RX", "TX") and direction:
+                want = "input" if xc[1] == "RX" else "output"
+                if direction != want:
+                    yield Finding("FIO010", f"{where} ({direction}) on a transceiver {xc[1]} pin, which needs "
+                                            f"an {want}", refs=[desig], nets=[pin.net])

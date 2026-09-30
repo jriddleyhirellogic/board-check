@@ -55,6 +55,10 @@ fpga:
     bank_supply: 'VDDI{bank}'
     bank_name: 'Bank{bank}'
     bank_type_pattern: '^(GPIO|HSIO)'         # I/O bank type for the part data
+    pair_patterns:                            # differential pairs: HSIO162PB0 / HSIO162NB0, XCVR_4_RX3_P / _N
+      - '^(?:GPIO|HSIO)(?P<pair>\d+)(?P<pol>[PN])B\d+'
+      - '^(?P<pair>XCVR_\w+?)_(?P<pol>[PN])$'
+    transceiver_pattern: '^XCVR_(?P<quad>\d+)[A-Z]?_(?P<role>RX|TX|REFCLK)'
   U2:   # ProASIC3L A3PE3000L-FG484M (housekeeper)
     constraints:
       - ../../../farsight_claude/farsight-fpga-house-keeper-main/constr/a3pe3000l-fg484m/io/io_constraints.pdc
@@ -63,3 +67,5 @@ fpga:
     top_module: top
     bank_pattern: 'IO\d+[PN][A-Z]B(\d+)V\d'   # IO40PDB0V4 -> bank 0
     bank_supply: 'VCCIB{bank}'
+    pair_patterns:                            # IO40PDB0V4 / IO40NDB0V4
+      - 'IO(?P<pair>\d+)(?P<pol>[PN])[A-Z]B\d+V\d'

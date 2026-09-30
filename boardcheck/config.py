@@ -113,7 +113,22 @@ DEFAULTS = {
     #                replaced by the bank number ("VDDI{bank}")
     #   bank_name: set_iobank name of a bank ("Bank{bank}"), when the
     #              constraints set bank voltages
+    #   pair_patterns: regexes on the schematic pin name with named groups
+    #              `pair` (the pair's id) and `pol` (P or N)
+    #   transceiver_pattern: regex on the schematic pin name with named
+    #              groups `quad` and `role` (RX, TX or REFCLK)
     "fpga": {},
+    "fpga_pins": {
+        # Port name suffixes that make two ports one differential pair
+        # (positive, negative); "" pairs ddr4_ck0 with ddr4_ck0_n.
+        "diff_port_suffixes": [["_p", "_n"], ["_t", "_c"], ["", "_n"]],
+        # A top-level port connected to an instance pin matching this is a
+        # transceiver reference clock (SmartDesign PF_XCVR_REF_CLK pads).
+        "refclk_pads": r"(^|:)REF_CLK_PAD_[PN]$",
+        # Without a SmartDesign top level, ports whose names match this are
+        # taken as reference clocks.
+        "refclk_ports": r"ref_?clk",
+    },
     "levels": {
         # Nets joined through a series resistor up to this value count as
         # one signal for level checks (source terminations, current limits).
