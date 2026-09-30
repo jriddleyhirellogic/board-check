@@ -130,6 +130,11 @@ DEFAULTS = {
         # taken as reference clocks.
         "refclk_ports": r"ref_?clk",
     },
+    "power": {
+        # PWR009: a regulator's set output may differ from its rail's
+        # nominal (from the name) by this fraction.
+        "regulator_tolerance": 0.03,
+    },
     "levels": {
         # Nets joined through a series resistor up to this value count as
         # one signal for level checks (source terminations, current limits).

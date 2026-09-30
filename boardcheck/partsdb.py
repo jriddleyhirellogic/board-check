@@ -81,6 +81,13 @@ class PartsDB:
         block = data.get("io_standards") if data else None
         return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
 
+    def regulator(self, part_number):
+        """The part's `regulator` block (enable, input/output/feedback pins,
+        divider, output equation), or None."""
+        data = self._part_file(part_number)
+        block = data.get("regulator") if data else None
+        return block if isinstance(block, dict) and block.get("feedback_pin") else None
+
     def unused_pins(self, part_number):
         """The part's `unused_pins` rules ([{pattern, connect, ohms, ...}]), or []."""
         data = self._part_file(part_number)

@@ -287,3 +287,150 @@ def supply_in_range(ctx):
                         yield Finding("PWR008", f"{comp.designator} ({comp.part_number}) {target} is on '{rail}' "
                                                 f"({v:g} V); recommended {span} ({char.get('_source', 'part data')})",
                                       refs=[comp.designator], nets=[rail], part_number=comp.part_number)
+
+
+def _solve(a, b):
+    """Gaussian elimination for a small dense system; None when singular."""
+    n = len(b)
+    m = [row[:] + [b[i]] for i, row in enumerate(a)]
+    for c in range(n):
+        piv = max(range(c, n), key=lambda r: abs(m[r][c]))
+        if abs(m[piv][c]) < 1e-18:
+            return None
+        m[c], m[piv] = m[piv], m[c]
+        for r in range(n):
+            if r != c and m[r][c]:
+                f = m[r][c] / m[c][c]
+                m[r] = [x - f * y for x, y in zip(m[r], m[c])]
+    return [m[i][n] / m[i][i] for i in range(n)]
+
+
+def feedback_network(ctx, fb_net, max_nodes=30):
+    """(k, rth, output net, resistors) for the resistor network around a
+    feedback node: Vfb = k * Vout + rth * I, where Vout is the one rail (with
+    its sense nets) the network reaches besides ground and I is a current
+    injected into the feedback node. Capacitors and IC pins are open. None
+    when the network reaches no rail, more than one rail voltage, or a
+    resistor of unknown value."""
+    from .levels import _ohms
+    cfg = ctx.config
+    nodes, sources, edges, seen_res = [fb_net], {}, [], set()
+    i = 0
+    while i < len(nodes):
+        net = nodes[i]
+        i += 1
+        for q in ctx.design.nets[net].pins:
+            c = q.component
+            if ctx.kind(c) != "resistor" or len(c.pins) != 2 or c.designator in seen_res:
+                continue
+            seen_res.add(c.designator)
+            other = next((p.net for p in c.pins if p is not q), None)
+            ohms = _ohms(ctx, c)
+            if ohms is None or other is None:
+                return None
+            edges.append((net, other, max(ohms, 1e-3), c))
+            v = cfg.net_voltage(other)
+            if cfg.is_ground(other) or v is not None:
+                sources[other] = 0.0 if cfg.is_ground(other) else v
+            elif other not in nodes:
+                nodes.append(other)
+                if len(nodes) > max_nodes:
+                    return None
+    live = {n for n, v in sources.items() if v}
+    if not live or len({round(sources[n], 3) for n in live}) != 1:
+        return None
+    idx = {n: j for j, n in enumerate(nodes)}
+
+    def fb_voltage(v_out, inject):
+        a = [[0.0] * len(nodes) for _ in nodes]
+        b = [0.0] * len(nodes)
+        b[0] += inject
+        for x, y, r, _ in edges:
+            g = 1.0 / r
+            for n1, n2 in ((x, y), (y, x)):
+                if n1 not in idx:
+                    continue
+                a[idx[n1]][idx[n1]] += g
+                if n2 in idx:
+                    a[idx[n1]][idx[n2]] -= g
+                else:
+                    b[idx[n1]] += g * (v_out if n2 in live else 0.0)
+        sol = _solve(a, b)
+        return sol[0] if sol else None
+
+    k = fb_voltage(1.0, 0.0)
+    rth = fb_voltage(0.0, 1.0)
+    if not k or rth is None:
+        return None
+    out = min(live, key=lambda n: (not cfg.is_rail(n), n))
+    return k, rth, out, [e[3] for e in edges]
+
+
+def regulator_setpoint(ctx, comp, block):
+    """(vout typ, vout min, vout max, output net, network resistors, [])
+    for a regulator whose feedback pin sits in a resistor network between
+    its output rail (and its sense nets) and ground, from the
+    part data's v_feedback and `regulator` block; None when the feedback
+    network is not that shape or a value is unknown."""
+    from .levels import PinLevels, _levels, _ohms
+    from .pins import _norm, _pin_types
+    cfg = ctx.config
+    pt = _pin_types(ctx)
+    table = pt.table(comp.part_number)
+    fb_entry = table["by_name"].get(_norm(block["feedback_pin"])) if table else None
+    if fb_entry is None:
+        return None
+    fb_pins = [p for p in comp.pins if str(p.designator) in fb_entry.numbers or _norm(p.name) == _norm(fb_entry.key)]
+    if not fb_pins:
+        return None
+    fb_net = fb_pins[0].net
+    net_model = feedback_network(ctx, fb_net)
+    if net_model is None:
+        return None
+    k, rth, out, resistors = net_model
+    chars = ctx.partsdb.characteristics(comp.part_number) or {}
+    rows = (chars.get("v_feedback") or {}).get("rows") or []
+    typs = [r["typ"] for r in rows if isinstance(r.get("typ"), (int, float))]
+    lows = [r["min"] for r in rows if isinstance(r.get("min"), (int, float))]
+    highs = [r["max"] for r in rows if isinstance(r.get("max"), (int, float))]
+    if not typs:
+        return None
+    ibias = float(block.get("feedback_bias_current") or 0.0)
+    # Vfb = k * Vout + I * Rth at regulation equals Vref; for a plain divider
+    # this is the data sheet's VOUT = VREF (1 + Rtop/Rbottom) - I x Rtop.
+    f = lambda v: (v - ibias * rth) / k            # noqa: E731
+    typ = f(sorted(typs)[len(typs) // 2])
+    return (typ, f(min(lows)) if lows else None, f(max(highs)) if highs else None, out, resistors, [])
+
+
+@check("PWR009", "Regulator feedback divider sets a different voltage than the rail's name", ERROR, needs_partsdb=True)
+def regulator_output(ctx):
+    """For each regulator with part data (`regulator` block, `v_feedback`),
+    the output its feedback divider sets (the data sheet's equation, with
+    the typical reference and the min/max span) against the nominal voltage
+    of the rail it regulates, from the rail's name. Tolerance:
+    `power.regulator_tolerance`."""
+    cfg = ctx.config
+    tol = float(cfg["power"]["regulator_tolerance"])
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.regulator(comp.part_number)
+        if not block:
+            continue
+        sp = regulator_setpoint(ctx, comp, block)
+        if sp is None:
+            yield Finding("PWR009", f"{comp.designator} ({comp.part_number}): feedback network at "
+                                    f"{block['feedback_pin']} not recognised (it must reach one rail voltage and "
+                                    "ground through resistors of known value)", severity=INFO, refs=[comp.designator])
+            continue
+        typ, lo, hi, out, top, bottom = sp
+        nominal = cfg.net_voltage(out)
+        span = f" ({lo:.3f}-{hi:.3f} V over the reference tolerance)" if lo is not None and hi is not None else ""
+        divider = ", ".join(c.designator for c in sorted(top, key=lambda c: natural_key(c.designator)))
+        if nominal is None:
+            yield Finding("PWR009", f"{comp.designator} ({comp.part_number}) sets {typ:.3f} V{span} through "
+                                    f"{divider} on '{out}', whose voltage the net name does not give",
+                          severity=INFO, refs=[comp.designator], nets=[out])
+        elif abs(typ - nominal) > tol * nominal:
+            yield Finding("PWR009", f"{comp.designator} ({comp.part_number}) sets '{out}' to {typ:.3f} V{span} "
+                                    f"through {divider}, but the rail is named for {nominal:g} V",
+                          refs=[comp.designator] + [c.designator for c in top], nets=[out], part_number=comp.part_number)

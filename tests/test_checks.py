@@ -256,3 +256,46 @@ def test_pwr008_supply_outside_recommended_range():
     msgs = sorted(x.message for x in f)
     assert len(f) == 2 and "U1 (ADC) VA is on '1V8' (1.8 V); recommended 2.7-5.25 V" in msgs[0]
     assert "U1 (ADC) VD is on '3V3' (3.3 V); recommended 2.7-1.8 V" in msgs[1], "VD may not exceed VA"
+
+
+def _ldo_ctx(top="120k", bottom="60k", extra=()):
+    from boardcheck.checks import Context
+    from boardcheck.config import Config
+    from boardcheck.model import Design
+    from helpers import FakePartsDB, make_export
+    ldo = {"pin_functions": {"IN": {"direction": "power", "pins": ["1"]}, "OUT": {"direction": "power", "pins": ["9"]},
+                             "ADJ": {"direction": "input", "pins": ["8"]}},
+           "electrical_characteristics": {"v_feedback": {"kind": "range_table", "unit": "V", "applies_to": ["ADJ"],
+                                                         "rows": [{"min": 0.594, "typ": 0.6, "max": 0.606}]}},
+           "regulator": {"feedback_pin": "ADJ", "feedback_bias_current": 1.6e-08}}
+    comps = [("U1", "LDO", [("1", "IN", "3V3"), ("9", "OUT", "1V8_X"), ("8", "ADJ", "FB")]),
+             res("R1", "RT", "1V8_X", "FB"), res("R2", "RB", "FB", "GND")] + list(extra)
+    d = Design(make_export(comps))
+    d.part_params["RT"]["R_Value"] = top
+    d.part_params["RB"]["R_Value"] = bottom
+    for pn in ("RS", "RK"):
+        if pn in d.part_params:
+            d.part_params[pn]["R_Value"] = {"RS": "100", "RK": "2k"}[pn]
+    return Context(d, Config(), FakePartsDB({"LDO": ldo}))
+
+
+def test_pwr009_regulator_setpoint_against_rail_name():
+    # 0.6 V x (1 + 120k/60k) - 16 nA x 120k = 1.798 V: matches 1V8_X
+    ctx = _ldo_ctx()
+    assert findings(power.regulator_output, ctx) == []
+    from boardcheck.checks.power import regulator_setpoint
+    sp = regulator_setpoint(ctx, ctx.design.components["U1"], ctx.partsdb.regulator("LDO"))
+    assert abs(sp[0] - (0.6 * 3 - 1.6e-8 * 120e3)) < 1e-9
+    # a 1.5 V divider on a rail named 1V8
+    f = findings(power.regulator_output, _ldo_ctx(top="90k"))
+    assert len(f) == 1 and "sets '1V8_X' to 1.499 V" in f[0].message and "named for 1.8 V" in f[0].message
+
+
+def test_pwr009_sense_nets_are_part_of_the_output():
+    # a resistor from the feedback node to the rail's sense net is solved with the rail (both 1.8 V nominal)
+    ctx = _ldo_ctx(extra=[res("R3", "RS", "FB", "1V8_X_SNS")])
+    ctx.design.part_params["RT"]["R_Value"] = "120k"
+    from boardcheck.checks.power import feedback_network
+    k, rth, out, rs = feedback_network(ctx, "FB")
+    assert out == "1V8_X" and {r.designator for r in rs} == {"R1", "R2", "R3"}
+    assert findings(power.regulator_output, ctx)[0].message.startswith("U1 (LDO) sets '1V8_X' to")
