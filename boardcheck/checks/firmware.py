@@ -159,3 +159,155 @@ def channel_map(ctx):
         if rows:
             yield Finding("FW003", f"{m.name}: {len(rows)} channels traced firmware -> board "
                                    f"({', '.join(sorted({a.designator for a in m.adcs.values()}, key=natural_key))})")
+
+
+# -- scaling ------------------------------------------------------------------------
+
+def channel_scaling(ctx, m, pin):
+    """(ratio, upstream net, resistor designators) for an ADC input fed
+    through a series resistor from an upstream net, with an optional
+    resistor to ground: ratio = Rbottom / (Rtop + Rbottom), 1.0 without a
+    bottom resistor. None when the input is not wired that way or a value is
+    unknown."""
+    from .levels import _ohms
+    cfg = ctx.config
+    net = ctx.design.nets[pin.net]
+    top, bottom = [], []
+    for q in net.pins:
+        comp = q.component
+        if ctx.kind(comp) != "resistor" or len(comp.pins) != 2:
+            continue
+        other = next(x.net for x in comp.pins if x is not q)
+        (bottom if cfg.is_ground(other) else top).append((comp, other))
+    if len(top) != 1 or len(bottom) > 1:
+        return None
+    rt = _ohms(ctx, top[0][0])
+    rb = _ohms(ctx, bottom[0][0]) if bottom else None
+    if rt is None or (bottom and rb is None):
+        return None
+    ratio = rb / (rt + rb) if bottom else 1.0
+    return ratio, top[0][1], [top[0][0].designator] + ([bottom[0][0].designator] if bottom else [])
+
+
+def _stem_volts(ctx, stem):
+    """Nominal volts of the rail a channel is named after ("28V0_EPS"), by
+    the rail naming convention; None for current and other channels."""
+    m = ctx.config._rail_re.match(stem)
+    if not m or re.search(r"(ISENSE|_I$|CURRENT)", stem, re.I):
+        return None
+    return float(f"{m.group('int')}.{m.group('frac') or '0'}")
+
+
+def _reference_volts(ctx, m, adc):
+    ref = m.spec.get("adc_reference_pin", "VA")
+    nets = {p.net for p in adc.pins if p.name == ref}
+    volts = {ctx.config.net_voltage(n) for n in nets} - {None}
+    return volts.pop() if len(volts) == 1 else None
+
+
+@check("FW004", "ADC channel's nominal input exceeds the ADC reference", ERROR)
+def channel_full_scale(ctx):
+    """A voltage channel named after a rail ("TLM_3V3_MISC") reads that
+    rail through its divider; at the rail's nominal voltage the ADC input
+    must stay below the ADC reference (`adc_reference_pin`)."""
+    for m in _maps(ctx):
+        for name, stem, select, ch, pin, net in m.entries:
+            if pin is None:
+                continue
+            volts = _stem_volts(ctx, stem)
+            sc = channel_scaling(ctx, m, pin)
+            ref = _reference_volts(ctx, m, pin.component)
+            if volts is None or sc is None or ref is None:
+                continue
+            at_pin = volts * sc[0]
+            if at_pin > ref:
+                yield Finding("FW004", f"{m.name}: '{name}' ({stem}, {volts:g} V nominal) reaches {pin.ref} "
+                                       f"{pin.name} at {at_pin:.2f} V through {'/'.join(sc[2])} (ratio {sc[0]:.4g}), "
+                                       f"above the {ref:g} V reference", refs=[pin.component.designator], nets=[net])
+
+
+def _read_cal(path, sheet, columns):
+    """[(signal, gain, offset)] from a calibration spreadsheet (.xlsx or .csv)."""
+    names = [c.lower() for c in columns]
+    rows = []
+    if path.lower().endswith(".csv"):
+        import csv
+        with open(path, newline="", encoding="utf-8") as f:
+            rows = [tuple(r) for r in csv.reader(f)]
+    else:
+        import openpyxl     # optional dependency: only needed for .xlsx calibration files
+        wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
+        rows = list(wb[sheet].iter_rows(values_only=True))
+    header = [str(h or "").strip().lower() for h in rows[0]]
+    idx = [header.index(n) for n in names]
+    return [tuple(r[i] for i in idx) for r in rows[1:] if r and r[idx[0]] not in (None, "")]
+
+
+def _cal_rows(ctx, m):
+    spec = m.spec.get("calibration")
+    if not spec:
+        return None, None
+    path = m._path(spec["file"])
+    if not os.path.isfile(path):
+        return None, f"calibration file not found: {path}"
+    try:
+        return _read_cal(path, spec.get("sheet"), spec.get("columns", ["Signal", "Gain", "Offset"])), None
+    except ImportError:
+        return None, "reading .xlsx calibration files needs openpyxl (pip install openpyxl)"
+    except (KeyError, ValueError) as e:
+        return None, f"calibration file {os.path.basename(path)}: {e}"
+
+
+@check("FW005", "Calibration gain differs from the board's scaling", WARNING)
+def calibration_gains(ctx):
+    """For each voltage channel, the gain the board implies (reference / 2^bits
+    / divider ratio: millivolts at the rail per count, the scaling
+    tlm_adc.c's comment describes) against the calibration file's gain, by
+    position in the firmware enum. Current channels are not computed."""
+    for m in _maps(ctx):
+        rows, problem = _cal_rows(ctx, m)
+        if problem:
+            yield Finding("FW005", f"{m.name}: {problem}", severity=INFO)
+        if not rows:
+            continue
+        bits = int(m.spec.get("adc_bits", 12))
+        tol = float(m.spec.get("calibration", {}).get("tolerance", 0.05))
+        off = []
+        for (name, stem, select, ch, pin, net), row in zip(m.entries, rows):
+            volts = _stem_volts(ctx, stem)
+            sc = channel_scaling(ctx, m, pin) if pin is not None else None
+            ref = _reference_volts(ctx, m, pin.component) if pin is not None else None
+            if volts is None or sc is None or ref is None:
+                continue
+            expected = ref * 1000.0 / (1 << bits) / sc[0]
+            try:
+                gain = float(row[1])
+            except (TypeError, ValueError):
+                continue
+            if abs(gain - expected) > tol * expected:
+                off.append(f"{name} {gain:g} (board: {expected:.4g} mV/count, ratio {sc[0]:.4g})")
+        if off:
+            yield Finding("FW005", f"{m.name}: {len(off)} voltage channel gain(s) in "
+                                   f"{os.path.basename(m.spec['calibration']['file'])} differ from the board's "
+                                   f"scaling by more than {tol:.0%}: " + "; ".join(off[:8])
+                                   + (f"; ... {len(off) - 8} more" if len(off) > 8 else ""))
+
+
+@check("FW006", "Calibration file signals differ from the firmware enum", WARNING)
+def calibration_names(ctx):
+    """The calibration table is loaded by position (cal.c copies it into
+    TLM_Cal_t[] indexed by the enum), so its rows must list the enum's
+    signals in the same order."""
+    for m in _maps(ctx):
+        rows, _ = _cal_rows(ctx, m)
+        if not rows:
+            continue
+        names = [e[0] for e in m.entries]
+        cal = [str(r[0]).strip() for r in rows]
+        if len(cal) != len(names):
+            yield Finding("FW006", f"{m.name}: calibration file has {len(cal)} rows, the enum {len(names)} signals")
+        bad = [(i, c, n) for i, (c, n) in enumerate(zip(cal, names)) if c != n]
+        if bad:
+            yield Finding("FW006", f"{m.name}: calibration rows that do not name the enum signal at their position: "
+                                   + "; ".join(f"row {i + 1} '{c}' (enum: {n})" for i, c, n in bad[:10])
+                                   + (f"; ... {len(bad) - 10} more" if len(bad) > 10 else ""))

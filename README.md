@@ -105,6 +105,9 @@ only. The Markdown output is meant for a pull request comment.
 | FW001 | error | A firmware ADC channel (C enum, e.g. `TLM_1V5_ASIC`) reads an input the schematic wires to a different signal |
 | FW002 | warning | ADC input wired to a signal no firmware channel reads, or a firmware channel on an unconnected input |
 | FW003 | info | Firmware channel map traced to the board |
+| FW004 | error | A voltage channel's rail, at its nominal voltage, reaches the ADC above the ADC reference (divider too weak) |
+| FW005 | warning | Calibration file gains that differ from the board's scaling (reference / 2^bits / divider ratio, mV at the rail per count) |
+| FW006 | warning | Calibration file rows that do not name the firmware enum's signal at their position (the table is loaded by position) |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
@@ -183,6 +186,10 @@ the SmartDesign pin `select_link` (`temp_tlm_spi_inst:SPISS[n:n]`), whose
 top-level port the constraints put on an FPGA ball, wired (through series
 resistors) to one ADC's `CS`; the channel picks `IN<ch>`, and the net on
 it, less `net_strip` suffixes, must be the name the firmware gives it.
+With `calibration` pointing at the calibration spreadsheet (`.xlsx` needs
+`pip install openpyxl`, or the `xlsx` extra; `.csv` works without it),
+each voltage channel's gain is compared with the divider the board puts in
+front of the ADC.
 
 ### Logic levels
 

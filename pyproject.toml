@@ -13,6 +13,8 @@ dependencies = ["PyYAML>=6.0"]
 [project.optional-dependencies]
 # Part number decoding for parameter cross-checks and derating ratings.
 parts = ["electronic-parts-repository @ git+https://github.com/jriddleyhirellogic/electronic-parts-repository"]
+# Reading .xlsx firmware calibration files (FW005/FW006).
+xlsx = ["openpyxl>=3.0"]
 dev = ["pytest>=7.0"]
 
 [project.scripts]

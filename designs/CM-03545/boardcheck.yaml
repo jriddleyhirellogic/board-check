@@ -85,3 +85,9 @@ firmware:
       adc_select_pin: CS
       adc_input_pin: 'IN{ch}'
       net_strip: ['_ADC$', '_TLM$']
+      adc_reference_pin: VA
+      adc_bits: 12
+      calibration:
+        file: ../../../farsight_claude/farsight-avionics-sw-main/Cal_spreadsheets/default_cals.xlsx
+        sheet: TLM
+        columns: [Signal, Gain, Offset]
