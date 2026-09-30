@@ -58,3 +58,33 @@ def test_clamp_current_over_rating_and_package_total():
     assert len(pkg) == 1 and pkg[0].message == ("U9 (ADC): 3 inputs can be driven beyond its supplies at once through "
                                                 "current-limiting resistors, 23.4 mA in total, above the 20 mA package "
                                                 "rating")
+
+
+OD = {"pin_functions": {"OUT": {"direction": "open_drain", "pins": ["1"], "supply": "VCC"},
+                        "VCC": {"direction": "power", "pins": ["2"]}},
+      "electrical_characteristics": {
+          "vol": _rt(["OUT"], [{"max": 0.175, "conditions": {"load_current": {"value": 4, "unit": "mA"}}}]),
+          "i_pullup_recommended": _rt(["OUT"], [{"min": 0.0001, "max": 0.001}], "A")}}
+
+
+def _od_ctx(*pullups):
+    comps = [("U1", "OD", [("1", "OUT", "FLAG"), ("2", "VCC", "3V3")])]
+    values = {}
+    for i, (rail, r) in enumerate(pullups):
+        comps.append(res(f"R{i + 1}", f"R{r}", rail, "FLAG"))
+        values[f"R{r}"] = r
+    ctx = build_ctx(comps, parts={"OD": OD})
+    for pn, v in values.items():
+        ctx.design.part_params[pn]["R_Value"] = v
+    return ctx
+
+
+def test_open_drain_pullup_current():
+    assert findings(levels.pullup_current, _od_ctx(("3V3", "10k"))) == []        # 0.33 mA
+    (f,) = findings(levels.pullup_current, _od_ctx(("5V0", "1k")))                # 5 mA
+    assert f.message == ("U1.1 OUT on 'FLAG' sinks 5 mA when low (R1 to 5V0), more than the 4 mA its VOL is "
+                         "specified at")
+    (w,) = findings(levels.pullup_current, _od_ctx(("3V3", "68k")))               # 49 uA
+    assert w.message.endswith("the data sheet recommends 0.1-1 mA") and "0.0485 mA" in w.message
+    (p,) = findings(levels.pullup_current, _od_ctx(("3V3", "10k"), ("3V3", "1k")))  # 3.63 mA together
+    assert "sinks 3.63 mA when low (R1 to 3V3, R2 to 3V3)" in p.message

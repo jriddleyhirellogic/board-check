@@ -43,7 +43,7 @@ from ..units import parse_value
 # one of these plus "_" is a pin-group variant ("vi_abs_bus").
 STANDARD_KEYS = {"vi_abs", "vo_abs", "vo_abs_hiz", "vi_op", "vih", "vil", "vt_pos", "vt_neg", "voh", "vol",
                  "vod", "voc_ss", "vit_pos", "vit_neg", "vth_pos", "vth_neg", "vid_op", "vic_op",
-                 "ii_clamp", "ii_clamp_package"}
+                 "ii_clamp", "ii_clamp_package", "i_pullup_recommended"}
 _LIMIT_RE = re.compile(r"^\s*(?:(\d+(?:\.\d+)?)\s*\*\s*)?([A-Za-z_]\w*)\s*(?:([+-])\s*(\d+(?:\.\d+)?))?\s*$")
 _EPS = 1e-9
 _RANGE_SLACK = 0.005     # a 3.3 V rail sits inside a 3.0-3.3 V range
@@ -582,6 +582,55 @@ def input_overvoltage(ctx):
                                     f"supplies at once through current-limiting resistors, {total * 1000:.3g} mA in "
                                     f"total, above the {pkg * 1000:g} mA package rating",
                           refs=[desig], part_number=comp.part_number)
+
+
+def _vol_test_current(lv, pl):
+    """Largest load current (A) a VOL row of the pin is specified at, or None."""
+    amps = []
+    for _, char in lv._tables(pl, "vol"):
+        for row in char.get("rows") or []:
+            lc = (row.get("conditions") or {}).get("load_current") or {}
+            if "value" in lc:
+                amps.append(abs(float(lc["value"])) * {"mA": 1e-3, "uA": 1e-6, "A": 1.0}.get(lc.get("unit", "mA"), 1e-3))
+    return max(amps) if amps else None
+
+
+@check("LVL006", "Open-drain pull-up current outside the output's rating", WARNING, needs_partsdb=True)
+def pullup_current(ctx):
+    """With an open-drain output low, every resistor from its signal to a
+    rail pulls current into it (rail / R; each output of a wired-OR must sink
+    it alone). Beyond the largest load current its VOL is specified at, the
+    low level is not guaranteed; outside the part data's
+    `i_pullup_recommended` range, the pull-up is stronger or weaker than the
+    data sheet recommends."""
+    lv = _levels(ctx)
+    pt = _pin_types(ctx)
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        for pin in sorted(comp.pins, key=lambda p: natural_key(p.designator)):
+            if pt.effective(pin)[0] != "open_collector":
+                continue
+            pl, sig = lv.for_pin(pin), by_net.get(pin.net)
+            if pl is None or sig is None:
+                continue
+            ups = [t for t in sig.ties if t[2] and t[2] > 0]
+            if not ups or any(t[3] is None for t in ups):
+                continue
+            amps = sum(t[2] / t[3] for t in ups if t[3] > 0)
+            via = ", ".join(f"{t[0].designator} to {t[1]}" for t in ups)
+            where = f"{pin.ref} {pin.name} on '{sig.name}' sinks {amps * 1000:.3g} mA when low ({via})"
+            spec = _vol_test_current(lv, pl)
+            if spec is not None and amps > spec * (1 + 1e-6):
+                yield Finding("LVL006", f"{where}, more than the {spec * 1000:g} mA its VOL is specified at",
+                              refs=[comp.designator] + [t[0].designator for t in ups], nets=list(sig.nets),
+                              part_number=comp.part_number)
+                continue
+            lo = lv.value(pl, "i_pullup_recommended", "min", "high")[0]
+            hi = lv.value(pl, "i_pullup_recommended", "max", "low")[0]
+            if (lo is not None and amps < lo) or (hi is not None and amps > hi):
+                yield Finding("LVL006", f"{where}; the data sheet recommends {lo * 1000:g}-{hi * 1000:g} mA",
+                              refs=[comp.designator] + [t[0].designator for t in ups], nets=list(sig.nets),
+                              part_number=comp.part_number)
 
 
 @check("LVL004", "FPGA I/O standard not supported at its bank voltage", ERROR, needs_partsdb=True)
