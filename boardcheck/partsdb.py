@@ -81,6 +81,12 @@ class PartsDB:
         block = data.get("io_standards") if data else None
         return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
 
+    def straps(self, part_number):
+        """The part's `straps` block ({latched_by, must_not_be_driven, fields}), or None."""
+        data = self._part_file(part_number)
+        block = data.get("straps") if data else None
+        return block if isinstance(block, dict) and block.get("fields") else None
+
     def power_up_io(self, part_number):
         """The part's `power_up_io` states ([{phase, state, description}]), or []."""
         data = self._part_file(part_number)

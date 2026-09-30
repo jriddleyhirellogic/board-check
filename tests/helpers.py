@@ -70,6 +70,10 @@ class FakePartsDB:
         part = self.parts.get(pn)
         return part.get("electrical_characteristics") if isinstance(part, dict) else None
 
+    def straps(self, pn):
+        part = self.parts.get(pn)
+        return part.get("straps") if isinstance(part, dict) else None
+
     def power_up_io(self, pn):
         part = self.parts.get(pn)
         return ((part.get("power_up_io") or {}).get("states", [])) if isinstance(part, dict) else []

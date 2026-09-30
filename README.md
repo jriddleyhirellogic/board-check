@@ -100,8 +100,12 @@ only. The Markdown output is meant for a pull request comment.
 | PWU002 | error | ... that sits between the receivers' VIL and VIH before the FPGA drives it (warning when the thresholds are assumed) |
 | PWU003 | warning | ... whose level changes between the pre-drive windows (e.g. low while high-Z, high once the weak pull-up is on) |
 | PWU004 | info | ... whose level could not be evaluated (resistor value or pull data missing) |
+| STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
+| STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
+| STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
+| STP004 | info | The configuration each part's straps select (e.g. a PHY's managed mode and address) |
 
-PRT003, PRT004, PRT006, PIN001-003, LVL001-005 and PWU001-004 need
+PRT003, PRT004, PRT006, PIN001-003, LVL001-005, PWU001-004 and STP001-004 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 
@@ -229,7 +233,8 @@ boardcheck/
   partsdb.py      optional electronic-parts-repository adapter
   fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
   diff.py         net-level comparison of two exports
-  checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py (one function per check)
+  checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py,
+                  straps.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
   report.py       text / markdown / json output
 tests/            synthetic-export unit tests + a smoke test on the committed export
