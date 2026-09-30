@@ -437,3 +437,117 @@ def regulator_output(ctx):
             yield Finding("PWR009", f"{comp.designator} ({comp.part_number}) sets '{out}' to {typ:.3f} V{span} "
                                     f"through {divider}, but the rail is named for {nominal:g} V",
                           refs=[comp.designator] + [c.designator for c in top], nets=[out], part_number=comp.part_number)
+
+
+def _setpoints(ctx):
+    """{rail: (typ, min, max, regulator designator)} for every regulator whose
+    output PWR009 can work out."""
+    if hasattr(ctx, "_setpoints"):
+        return ctx._setpoints
+    out = {}
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.regulator(comp.part_number) if ctx.partsdb else None
+        sp = regulator_setpoint(ctx, comp, block) if block else None
+        if sp:
+            out[sp[3]] = (sp[0], sp[1] if sp[1] is not None else sp[0], sp[2] if sp[2] is not None else sp[0],
+                          comp.designator)
+    ctx._setpoints = out
+    return out
+
+
+def _dropout(chars, amps):
+    """Worst (largest) data sheet maximum dropout at `amps`, interpolated
+    between the v_dropout rows' load currents (clamped at the ends); None
+    without data."""
+    points = {}
+    for row in (chars.get("v_dropout") or {}).get("rows") or []:
+        lc = (row.get("conditions") or {}).get("load_current") or {}
+        if isinstance(row.get("max"), (int, float)) and "value" in lc:
+            a = float(lc["value"]) * (1e-3 if lc.get("unit", "mA") == "mA" else 1.0)
+            points[a] = max(points.get(a, 0.0), float(row["max"]))
+    if not points:
+        return None
+    xs = sorted(points)
+    if amps <= xs[0]:
+        return points[xs[0]]
+    for a, b in zip(xs, xs[1:]):
+        if amps <= b:
+            return points[a] + (points[b] - points[a]) * (amps - a) / (b - a)
+    return points[xs[-1]]
+
+
+def _current_limit(ctx, comp, block):
+    """(amps, how) the regulator can deliver: its programmed current limit
+    (resistor from the limit pin to ground), else its rating."""
+    from .levels import _ohms
+    from .pins import _norm
+    rating = block.get("output_current_max")
+    cl = block.get("current_limit") or {}
+    pins = [p for p in comp.pins if cl.get("pin") and _norm(p.name) == _norm(cl["pin"])]
+    if pins:
+        net = pins[0].net
+        if ctx.config.is_ground(net):
+            amps = cl.get("internal")
+            if amps is not None:
+                return float(amps), f"{cl['pin']} grounded: internal limit"
+        rs = [q.component for q in ctx.design.nets[net].pins if ctx.kind(q.component) == "resistor"
+              and len(q.component.pins) == 2 and any(ctx.config.is_ground(x.net) for x in q.component.pins)]
+        if len(rs) == 1 and _ohms(ctx, rs[0]) and cl.get("k"):
+            amps = float(cl["k"]) / _ohms(ctx, rs[0])
+            how = f"{rs[0].designator} programs a {amps * 1000:.0f} mA limit"
+            if rating is not None and amps > float(rating):
+                return float(rating), how + f", above the {float(rating) * 1000:.0f} mA rating"
+            return amps, how
+    if rating is not None:
+        return float(rating), "rated output current"
+    return None, None
+
+
+@check("PWR010", "Linear regulator input too close to its output", WARNING, needs_partsdb=True)
+def ldo_headroom(ctx):
+    """For each linear regulator (part data `regulator.topology: linear`),
+    the input rail less the output it sets against the data sheet's
+    maximum dropout (`v_dropout`) at the most current it can deliver: its
+    programmed current limit (`regulator.current_limit`) or its rating.
+    Rails set by other regulators are taken at their worst case (input at
+    its minimum, output at its maximum, over the references' tolerance);
+    other rails at their named voltage. Error when the headroom is below
+    the dropout at the lightest tabulated load, warning when it only
+    covers part of the current the limit allows."""
+    sps = _setpoints(ctx)
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.regulator(comp.part_number)
+        if not block or block.get("topology") != "linear":
+            continue
+        chars = ctx.partsdb.characteristics(comp.part_number) or {}
+        sp = regulator_setpoint(ctx, comp, block)
+        ins = [p for p in comp.pins if p.name in (block.get("input_pins") or [])]
+        if sp is None or not ins:
+            continue
+        vin_net = ins[0].net
+        up = sps.get(vin_net)
+        vin = up[1] if up else ctx.config.net_voltage(vin_net)
+        if vin is None:
+            continue
+        vout = sp[2] if sp[2] is not None else sp[0]
+        head = vin - vout
+        amps, how = _current_limit(ctx, comp, block)
+        light = _dropout(chars, 0.0)
+        full = _dropout(chars, amps) if amps else None
+        if light is None:
+            continue
+        src = f"'{vin_net}' at {vin:.3f} V" + (f" ({up[3]} minimum)" if up else "")
+        where = f"{comp.designator} ({comp.part_number}): {src} feeds '{sp[3]}' at up to {vout:.3f} V, {head:.3f} V of headroom"
+        if head < light:
+            yield Finding("PWR010", f"{where}, below the {light * 1000:.0f} mV maximum dropout at the lightest "
+                                    "tabulated load", severity=ERROR, refs=[comp.designator], nets=[vin_net, sp[3]],
+                          part_number=comp.part_number)
+        elif full is not None and head < full:
+            # the most current whose maximum dropout still fits
+            lo, hi = 0.0, amps
+            for _ in range(40):
+                mid = (lo + hi) / 2
+                lo, hi = (mid, hi) if _dropout(chars, mid) <= head else (lo, mid)
+            yield Finding("PWR010", f"{where}; the maximum dropout reaches that at about {lo * 1000:.0f} mA, but "
+                                    f"{how} ({full * 1000:.0f} mV dropout there)",
+                          refs=[comp.designator], nets=[vin_net, sp[3]], part_number=comp.part_number)

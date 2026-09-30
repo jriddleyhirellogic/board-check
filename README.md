@@ -76,6 +76,7 @@ only. The Markdown output is meant for a pull request comment.
 | PWR006 | warning | I2C SCL/SDA without a pull-up to a rail |
 | PWR007 | warning | IC supply pin on a local (non-rail) net with no capacitor to ground |
 | PWR009 | error | A regulator's feedback network sets a different voltage than its rail's name (part data `regulator` and `v_feedback`; the resistor network around the feedback pin is solved, so sense resistors, chains and remote sense count) |
+| PWR010 | warning | Linear regulator (part data `topology: linear`) whose input rail, less the output it sets, is below the data sheet's maximum dropout at its programmed current limit (error: below the light-load dropout); rails set by other regulators taken at their worst case |
 | PWR008 | error | IC supply pin's rail outside the part data's recommended `supply_<pin>` range (limits relative to another supply, like VD <= VA, are evaluated) |
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |

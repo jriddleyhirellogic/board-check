@@ -299,3 +299,32 @@ def test_pwr009_sense_nets_are_part_of_the_output():
     k, rth, out, rs = feedback_network(ctx, "FB")
     assert out == "1V8_X" and {r.designator for r in rs} == {"R1", "R2", "R3"}
     assert findings(power.regulator_output, ctx)[0].message.startswith("U1 (LDO) sets '1V8_X' to")
+
+
+def _headroom_ctx(vin_net="2V2", rimax="1k"):
+    ctx = _ldo_ctx(extra=[("U1", "LDO", [("5", "IMAX", "ILIM")]), res("R9", "RIMAX", "ILIM", "GND")])
+    ctx.design.part_params["RIMAX"]["R_Value"] = rimax
+    u1 = ctx.design.components["U1"]
+    next(p for p in u1.pins if p.name == "IN").net = vin_net
+    ldo = ctx.partsdb.parts["LDO"]
+    ldo["pin_functions"]["IMAX"] = {"direction": "input", "pins": ["5"]}
+    ldo["electrical_characteristics"]["v_dropout"] = {"kind": "range_table", "unit": "V", "rows": [
+        {"max": 0.21, "conditions": {"load_current": {"value": 10, "unit": "mA"}}},
+        {"max": 0.51, "conditions": {"load_current": {"value": 500, "unit": "mA"}}}]}
+    ldo["regulator"].update(topology="linear", input_pins=["IN"], output_current_max=0.5,
+                            current_limit={"pin": "IMAX", "k": 300.0, "internal": 0.9})
+    return ctx
+
+
+def test_pwr010_ldo_headroom_at_its_current_limit():
+    # 1V8_X at up to 0.606 x 3 - 16 nA x 120k = 1.816 V from 2.2 V: 0.384 V of headroom.
+    # R9 = 1k programs 300 mA, where the maximum dropout is 0.21 + 0.3 x 290/490 = 0.388 V.
+    (f,) = findings(power.ldo_headroom, _headroom_ctx())
+    assert f.severity is None or f.severity == "warning"
+    assert "U1 (LDO): '2V2' at 2.200 V feeds '1V8_X' at up to 1.816 V, 0.384 V of headroom" in f.message
+    assert "R9 programs a 300 mA limit (388 mV dropout there)" in f.message and "about 294 mA" in f.message
+    # 1.5k: 200 mA, 0.326 V dropout: fits
+    assert findings(power.ldo_headroom, _headroom_ctx(rimax="1k5")) == []
+    # 1.9 V in: below even the light-load dropout
+    (e,) = findings(power.ldo_headroom, _headroom_ctx(vin_net="1V9"))
+    assert e.severity == "error" and "below the 210 mV maximum dropout" in e.message
