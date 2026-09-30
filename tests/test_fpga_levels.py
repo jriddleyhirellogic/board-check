@@ -245,7 +245,7 @@ def test_level_overvoltage_into_hsio_and_through_series_resistor(tmp_path):
                  parts={"MPF": PF_PART, "BUF": BUF_PART, "RES": {}})
     ctx.design.part_params["RES"]["R_Value"] = "33"
     f = findings(levels.input_overvoltage, ctx)
-    assert any("U5.3 Y (supply 3.3 V) exceeds U1.A1 HSIO1PB1 LVCMOS18 absolute maximum input 2.2 V" in x.message
+    assert any("U5.3 Y (supply 3.3 V) exceeds the absolute maximum input of U1.A1 HSIO1PB1 LVCMOS18 2.2 V" in x.message
                for x in f), [x.message for x in f]
     assert "SIG18" in f[0].nets and "OUT" in f[0].nets
 
@@ -261,12 +261,12 @@ def test_divider_level_is_not_a_pull_up_to_the_rail(tmp_path):
                         parts={"MPF": PF_PART, "BUF": BUF_PART, "R10K": {}})
     levels_ctx.design.part_params["R10K"]["R_Value"] = "10k"
     f = findings(levels.input_overvoltage, levels_ctx)
-    assert len(f) == 1 and "pull-up R1 to 5V0 exceeds U1.B1 GPIO1PB2 LVCMOS33 absolute maximum input 3.8 V" in f[0].message
+    assert len(f) == 1 and "pull-up R1 to 5V0 exceeds the absolute maximum input of U1.B1 GPIO1PB2 LVCMOS33 3.8 V" in f[0].message
     # 3.6 V through the same pull-up: above VIH max 3.45 V, below the 3.8 V absolute maximum
     levels_ctx.design.components["R1"].pins[0].net = "3V6"
     del levels_ctx._signals
     f = findings(levels.input_overvoltage, levels_ctx)
-    assert len(f) == 1 and "recommended maximum input 3.45 V (vih)" in f[0].message
+    assert len(f) == 1 and "recommended maximum input of U1.B1 GPIO1PB2 LVCMOS33 3.45 V (vih)" in f[0].message
 
 
 def test_io_standard_vs_bank_rail_and_drive_rows(tmp_path):
@@ -304,10 +304,17 @@ def test_analog_pins_skip_logic_thresholds_but_not_overvoltage():
                              "IN0": {"direction": "input", "pins": ["4"], "supply": "VA", "io_standard": "analog"}},
            "electrical_characteristics": {
                "vi_abs": {"kind": "range_table", "unit": "V", "applies_to": ["IN0"], "rows": [{"min": -0.3, "max": "VA+0.3"}]}}}
-    ctx = build_ctx([("U1", "AMP", [("1", "VOUT 1", "SENSE"), ("4", "+VS", "15V0"), ("11", "-VS", "GND")]),
-                     ("U2", "ADC", [("2", "VA", "3V3"), ("4", "IN0", "SENSE")])],
+    amp["pin_functions"]["-IN A"] = {"direction": "input", "pins": ["2"], "supply": "V+", "io_standard": "analog"}
+    amp["electrical_characteristics"]["vi_abs"] = {"kind": "range_table", "unit": "V", "applies_to": ["-IN A"],
+                                                   "rows": [{"max": 3.0}]}
+    ctx = build_ctx([("U1", "AMP", [("1", "VOUT 1", "SENSE"), ("2", "-IN 1", "SENSE"), ("4", "+VS", "15V0"),
+                                    ("11", "-VS", "GND")]),
+                     ("U2", "ADC", [("2", "VA", "3V3"), ("4", "IN0", "SENSE")]),
+                     ("U3", "ADC", [("2", "VA", "3V3"), ("4", "IN0", "SENSE")])],
                     parts={"AMP": amp, "ADC": adc})
     assert findings(levels.high_level, ctx) == [] and findings(levels.low_level, ctx) == []
     assert levels.level_coverage(ctx) == (0, 0, {}), "an analog pair is not a logic pair"
     f = findings(levels.input_overvoltage, ctx)
-    assert len(f) == 1 and "U1.1 VOUT 1 (supply 15 V) exceeds U2.4 IN0 absolute maximum input 3.6 V" in f[0].message
+    assert len(f) == 1, "one finding per source, and the amplifier's own feedback input is not a victim"
+    assert "U1.1 VOUT 1 (supply 15 V) exceeds the absolute maximum input of U2.4 IN0 3.6 V, U3.4 IN0 3.6 V" \
+        in f[0].message and f[0].refs == ["U1", "U2", "U3"]

@@ -111,12 +111,15 @@ class Levels:
             volts = {cfg.net_voltage(n) for n in nets} - {None}
             return volts.pop() if len(volts) == 1 else None
         numbers = set(pp.numbers) if pp else set()
+        grounded = False
         for p in comp.pins:
             if _norm(p.name) == _norm(name) or str(p.designator) in numbers:
                 v = cfg.net_voltage(p.net)
                 if v is not None and not cfg.is_ground(p.net):
                     return v
-        return None
+                grounded = grounded or cfg.is_ground(p.net)
+        # A supply tied to ground (an op amp's VEE in single-supply use) is 0 V.
+        return 0.0 if grounded else None
 
     def own_supply(self, pl):
         return self.supply_volts(pl, pl.supply) if pl.supply else None
@@ -382,7 +385,8 @@ def _who(pl, pin):
 
 
 def _high_sources(ctx, sig, lv, drivers):
-    """[(volts, label)] for everything that can pull the signal high."""
+    """[(volts, label, component or None)] for everything that can pull the
+    signal high: a driver's supply, or the resistive level."""
     out = []
     for d, t, _ in drivers:
         if t == "open_collector":
@@ -390,10 +394,10 @@ def _high_sources(ctx, sig, lv, drivers):
         pl = lv.for_pin(d)
         v = lv.own_supply(pl) if pl else None
         if v is not None:
-            out.append((v, f"{_who(pl, d)} (supply {v:g} V)"))
+            out.append((v, f"{_who(pl, d)} (supply {v:g} V)", d.component))
     level = sig.resistive_level()
     if level is not None:
-        out.append(level)
+        out.append((*level, None))
     return out
 
 
@@ -457,15 +461,18 @@ def low_level(ctx):
 
 @check("LVL003", "Input driven above its rated voltage", ERROR, needs_partsdb=True)
 def input_overvoltage(ctx):
-    """The highest level on the signal (a driver's supply, or a pull-up
-    rail) against each receiver's absolute maximum (vi_abs) and recommended
-    maximum (vi_op, else the VIH row's maximum)."""
+    """The highest level on the signal (a driver's supply, or the pull-up /
+    divider level) against each receiver's absolute maximum (vi_abs) and
+    recommended maximum (vi_op, else the VIH row's maximum). A driver is not
+    checked against inputs of its own part (an op amp's feedback). One
+    finding per source and limit kind, naming every receiver it exceeds."""
     lv = _levels(ctx)
     for sig in signals(ctx):
         drivers, receivers = _roles(ctx, sig)
         highs = _high_sources(ctx, sig, lv, drivers)
         if not highs:
             continue
+        limits = []
         for r, rt, rs in receivers:
             rl = lv.for_pin(r)
             if rl is None:
@@ -474,17 +481,24 @@ def input_overvoltage(ctx):
             op_max, key = lv.value(rl, "vi_op", "max", "low")
             if op_max is None:
                 op_max, key = lv.value(rl, "vih", "max", "low")
-            for v, label in highs:
-                if label.startswith(r.ref):
+            limits.append((r, rs, rl, abs_max, op_max, key))
+        for v, label, source in highs:
+            over = {"absolute": [], "recommended": []}
+            for r, rs, rl, abs_max, op_max, key in limits:
+                if r.component is source:
                     continue
                 if abs_max is not None and v > abs_max + _EPS:
-                    yield Finding("LVL003", f"'{sig.name}': {label} exceeds {_who(rl, r)} absolute maximum input "
-                                            f"{abs_max:.3g} V", severity=_sev(rs),
-                                  refs=[r.component.designator], nets=list(sig.nets))
+                    over["absolute"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V"))
                 elif op_max is not None and v > op_max + _EPS:
-                    yield Finding("LVL003", f"'{sig.name}': {label} exceeds {_who(rl, r)} recommended maximum input "
-                                            f"{op_max:.3g} V ({key})", severity=_sev(rs),
-                                  refs=[r.component.designator], nets=list(sig.nets))
+                    over["recommended"].append((r, rs, f"{_who(rl, r)} {op_max:.3g} V ({key})"))
+            for kind, hits in over.items():
+                if hits:
+                    yield Finding("LVL003", f"'{sig.name}': {label} exceeds the {kind} maximum input of "
+                                            + ", ".join(h[2] for h in hits),
+                                  severity=_sev(*(h[1] for h in hits)),
+                                  refs=sorted({h[0].component.designator for h in hits}
+                                              | ({source.designator} if source is not None else set()), key=natural_key),
+                                  nets=list(sig.nets))
 
 
 @check("LVL004", "FPGA I/O standard not supported at its bank voltage", ERROR, needs_partsdb=True)
