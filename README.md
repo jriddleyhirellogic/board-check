@@ -76,8 +76,12 @@ repository even when installed.
 | LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input |
 | LVL004 | error | FPGA I/O standard used on a bank whose rail is outside that standard's supply range |
 | LVL005 | info | Pins on logic signals whose levels could not be resolved (the work queue for level data) |
+| PWU001 | error | FPGA control output (enable, reset, chip select) that floats before the FPGA drives it |
+| PWU002 | error | ... that sits between the receivers' VIL and VIH before the FPGA drives it (warning when the thresholds are assumed) |
+| PWU003 | warning | ... whose level changes between the pre-drive windows (e.g. low while high-Z, high once the weak pull-up is on) |
+| PWU004 | info | ... whose level could not be evaluated (resistor value or pull data missing) |
 
-PRT003, PRT004, PRT006, PIN001-003 and LVL001-005 need
+PRT003, PRT004, PRT006, PIN001-003, LVL001-005 and PWU001-004 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 
@@ -148,6 +152,20 @@ and ground give its undriven level (pull-up rail or divider output). Where
 several rows apply the least favourable limit is used, and outputs are
 taken at the smallest listed load current (logic inputs draw microamps).
 
+### Power-up defaults
+
+An FPGA drives its pins only once its I/Os are active. Before that (while
+powering up, while blank, while being programmed) the part data's
+`power_up_io` block says each pin is high impedance or weakly pulled, and
+`r_weak_pull_up` gives the pull's range. PWU001-004 take every FPGA output
+whose port name marks it as a control signal (`power_up.control_ports`:
+`*_en`, `*_rst_n`, `*_cs_n`, `*_sleep_n`, ...), work out the level its loads
+see in each window from the board's resistors (plus the weak pull at both
+ends of its range), and compare it with the loads' VIL/VIH. Loads without
+level data are judged against `power_up.assumed_thresholds` of the FPGA
+bank voltage, and those findings are held to warning. The Markdown report
+lists every such signal and its level in each window.
+
 ### Net voltages
 
 Voltage-aware checks infer each net's voltage from the rail naming
@@ -185,7 +203,7 @@ boardcheck/
   config.py       defaults, YAML overrides, net voltage and kind inference
   partsdb.py      optional electronic-parts-repository adapter
   fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
-  checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py (one function per check)
+  checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
   report.py       text / markdown / json output
 tests/            synthetic-export unit tests + a smoke test on the committed export

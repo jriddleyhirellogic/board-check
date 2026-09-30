@@ -119,6 +119,15 @@ DEFAULTS = {
         # one signal for level checks (source terminations, current limits).
         "series_max_ohms": 1000,
     },
+    "power_up": {
+        # FPGA port names that are control signals: enables, resets, chip
+        # selects, sleep/shutdown. Their level before the FPGA drives them
+        # is checked (PWU001-004).
+        "control_ports": r"(^|_)(n?en|n?rst|n?reset|n?short|n?sleep|n?shdn|xce|xclr|cs\d*|oe)(_n)?(_|\d|\[|$)",
+        # Receiver thresholds, as fractions of the FPGA bank voltage, used
+        # for receivers without VIL/VIH part data (findings are then warnings).
+        "assumed_thresholds": [0.3, 0.7],
+    },
     "severity": {},   # per-check override: {"NET002": "warning"}
     "disabled": [],   # check ids to skip
     "waivers": [],    # [{check, ref|net|part_number, reason}]

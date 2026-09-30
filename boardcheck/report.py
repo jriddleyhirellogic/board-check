@@ -7,6 +7,7 @@ from collections import Counter
 from .checks import ERROR, INFO, REGISTRY, WARNING
 from .checks.levels import level_coverage
 from .checks.power import cap_voltage_coverage, rail_summary
+from .checks.powerup import power_up_summary
 
 _ICON = {ERROR: "E", WARNING: "W", INFO: "I"}
 
@@ -87,6 +88,16 @@ def markdown(result):
         out.append(f"- FPGA {desig}: {state}.")
     out.append(f"- Parts repository: {'used' if ctx.partsdb else 'not installed'}.")
     out.append("")
+
+    pu = power_up_summary(ctx)
+    if pu:
+        out += ["## Power-up defaults", "",
+                "FPGA control outputs, and the level their loads see before the FPGA drives them.", "",
+                "| Signal | FPGA pin | Port | Loads | Before the FPGA drives it |", "|---|---|---|---|---|"]
+        for sig, pin, port, loads, windows in pu:
+            states = "; ".join(f"{label}: {text}" for label, text in windows)
+            out.append(f"| {_md_escape(sig)} | {pin} | {port} | {loads} | {_md_escape(states)} |")
+        out.append("")
 
     rows = rail_summary(ctx)
     if rows:

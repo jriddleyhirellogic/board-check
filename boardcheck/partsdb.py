@@ -81,6 +81,12 @@ class PartsDB:
         block = data.get("io_standards") if data else None
         return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
 
+    def power_up_io(self, part_number):
+        """The part's `power_up_io` states ([{phase, state, description}]), or []."""
+        data = self._part_file(part_number)
+        block = data.get("power_up_io") if data else None
+        return [s for s in (block or {}).get("states", []) if isinstance(s, dict)] if isinstance(block, dict) else []
+
     def characteristics(self, part_number):
         """The part's `electrical_characteristics` block from its JSON file,
         or None."""
