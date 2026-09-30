@@ -69,3 +69,19 @@ fpga:
     bank_supply: 'VCCIB{bank}'
     pair_patterns:                            # IO40PDB0V4 / IO40NDB0V4
       - 'IO(?P<pair>\d+)(?P<pol>[PN])[A-Z]B\d+V\d'
+
+# Firmware read in place from farsight_claude, like the FPGA files.
+firmware:
+  adc_channel_maps:
+    - name: power telemetry
+      # Camera/src/tlm_adc.c: input = index & 7, chip select = index >> 3
+      enum_file: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/tlm_adc.h
+      enum: TLM_Signal_t
+      skip: [NUMBER_TLM_SENSORS]
+      strip_prefix: TLM_
+      channels_per_select: 8
+      fpga: U1
+      select_link: 'temp_tlm_spi_inst:SPISS\[{n}:{n}\]'
+      adc_select_pin: CS
+      adc_input_pin: 'IN{ch}'
+      net_strip: ['_ADC$', '_TLM$']

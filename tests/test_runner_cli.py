@@ -80,3 +80,7 @@ def test_farsight_fpga_constraints_read_cleanly():
         pytest.skip("FPGA repository not checked out next to board-check")
     result = run(Design.load(FARSIGHT[-1]), config, only={"FIO001"})
     assert [f.message for f in result.active] == []
+    # The firmware telemetry map traces every channel to an ADC input.
+    result = run(Design.load(FARSIGHT[-1]), config, only={"FW003"})
+    assert [f.message for f in result.active] == [
+        "power telemetry: 48 channels traced firmware -> board (U89, U90, U91, U92, U93, U94)"]

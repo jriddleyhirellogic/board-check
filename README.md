@@ -102,6 +102,9 @@ only. The Markdown output is meant for a pull request comment.
 | PWU002 | error | ... that sits between the receivers' VIL and VIH before the FPGA drives it (warning when the thresholds are assumed) |
 | PWU003 | warning | ... whose level changes between the pre-drive windows (e.g. low while high-Z, high once the weak pull-up is on) |
 | PWU004 | info | ... whose level could not be evaluated (resistor value or pull data missing) |
+| FW001 | error | A firmware ADC channel (C enum, e.g. `TLM_1V5_ASIC`) reads an input the schematic wires to a different signal |
+| FW002 | warning | ADC input wired to a signal no firmware channel reads, or a firmware channel on an unconnected input |
+| FW003 | info | Firmware channel map traced to the board |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
@@ -169,6 +172,17 @@ Constrained pins take their type from this configuration ahead of the part
 data and the symbol, so PIN004-006 see FPGA outputs and inputs as the
 bitstream makes them. If the FPGA repository is not checked out where the
 config expects it, FIO001 says so and the FPGA-specific checks are skipped.
+
+### Firmware: read from the firmware repository
+
+`firmware.adc_channel_maps` points at a C enum whose position selects an
+ADC chip select and input (CM-03545: `Camera/include/tlm_adc.h`
+`TLM_Signal_t`, input = index & 7, select = index >> 3 per `tlm_adc.c`).
+Each entry is traced through the source files to the board: select `n` is
+the SmartDesign pin `select_link` (`temp_tlm_spi_inst:SPISS[n:n]`), whose
+top-level port the constraints put on an FPGA ball, wired (through series
+resistors) to one ADC's `CS`; the channel picks `IN<ch>`, and the net on
+it, less `net_strip` suffixes, must be the name the firmware gives it.
 
 ### Logic levels
 

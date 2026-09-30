@@ -144,6 +144,15 @@ DEFAULTS = {
         # for receivers without VIL/VIH part data (findings are then warnings).
         "assumed_thresholds": [0.3, 0.7],
     },
+    "firmware": {
+        # ADC channel maps written in firmware as a C enum (see
+        # checks/firmware.py). Each: name, enum_file, enum, skip, strip_prefix,
+        # channels_per_select, fpga, select_link (regex on the SmartDesign pin
+        # a select drives, "{n}" = select number), adc_select_pin,
+        # adc_input_pin ("IN{ch}"), net_strip (regexes removed from the input
+        # net name before comparing).
+        "adc_channel_maps": [],
+    },
     "severity": {},   # per-check override: {"NET002": "warning"}
     "disabled": [],   # check ids to skip
     "waivers": [],    # [{check, ref|net|part_number, reason}]
