@@ -79,7 +79,7 @@ only. The Markdown output is meant for a pull request comment.
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |
 | PIN003 | warning | Part pin data names a pin the symbol does not have, or uses an unknown direction word |
-| PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net |
+| PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net; warning when two parts' outputs meet through small series resistors (a part's output split over several pins counts once) |
 | PIN005 | warning | Net with only inputs on it (nothing drives it) |
 | PIN006 | warning | Open-drain net without a pull-up to a rail |
 | FIO001 | warning | FPGA constraint or top-level file missing, or a command in it not understood |
@@ -92,6 +92,8 @@ only. The Markdown output is meant for a pull request comment.
 | FIO008 | error | Differential port pair (`_p`/`_n`, `_t`/`_c`, `x`/`x_n`) not on the P and N balls of one pair (swapped, split, or single-ended); warning for a `_p` port whose partner is unconstrained |
 | FIO009 | error | Board nets on a differential pair's balls cross it (positive port on the `_N` net) |
 | FIO010 | error | Transceiver reference clock not on a REFCLK pin, or a port of the wrong direction on an XCVR RX/TX pin; warning for a REFCLK pin carrying something else |
+| FIO013 | error | Signal between two configured FPGAs driven by both (warning: driven by neither, or unconstrained on one side) |
+| FIO014 | error | A bus bit wired between two FPGAs lands on a port other than the same bit of its namesake bus (`pa3_fw_version[0]` vs `fw_version[0]`) |
 | FIO012 | warning | Unused FPGA pins not terminated as the part data's `unused_pins` rules say (e.g. PolarFire unused REFCLK/RX pins: 100 kohm to VSS) |
 | FIO011 | warning | Transceiver quad with used lanes and no reference clock on its own REFCLK pins or on a quad above it (part data `transceivers`); info when it relies on a cascade |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |

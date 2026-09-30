@@ -8,6 +8,7 @@ unassigned.
 """
 
 import re
+from collections import defaultdict
 
 from . import ERROR, INFO, WARNING, Finding, check
 from ..model import natural_key
@@ -374,3 +375,104 @@ def unused_pin_termination(ctx):
                                         f"resistor to ground{what}: {', '.join(loose[:12])}"
                                         f"{' ...' if len(loose) > 12 else ''}. "
                                         f"{rule.get('_source', '')}".strip(), refs=[desig])
+
+
+def _fpga_links(ctx):
+    """[(signal, [(desig, FpgaPins, pin, constraint or None, direction or None)])]
+    for signals that reach pins of two or more configured FPGAs."""
+    from .levels import signals
+    fpgas = dict(_fpgas(ctx))
+    out = []
+    for sig in signals(ctx):
+        ends = []
+        for p in sig.pins:
+            f = fpgas.get(p.component.designator)
+            if f is None:
+                continue
+            c = f.constraint(p)
+            ends.append((p.component.designator, f, p, c, f.direction(c) if c else None))
+        if len({e[0] for e in ends}) >= 2:
+            out.append((sig, ends))
+    return out
+
+
+@check("FIO013", "FPGA-to-FPGA signal with incompatible ends", ERROR)
+def fpga_interconnect(ctx):
+    """Signals between two configured FPGAs: both ends outputs is contention
+    (error); no output or inout end means nothing drives it, and an end with
+    no constraint means that FPGA does not use it (warnings)."""
+    for sig, ends in _fpga_links(ctx):
+        desc = "; ".join(f"{d} {p.designator} '{c.port}' ({dr})" if c else f"{d} {p.designator} (unconstrained)"
+                         for d, f, p, c, dr in ends)
+        dirs = [dr for *_, dr in ends]
+        refs = sorted({e[0] for e in ends}, key=natural_key)
+        if dirs.count("output") >= 2:
+            yield Finding("FIO013", f"'{sig.name}': both FPGAs drive it: {desc}", refs=refs, nets=list(sig.nets))
+        elif any(c is None for *_, c, _ in ends):
+            yield Finding("FIO013", f"'{sig.name}': {desc}", severity=WARNING, refs=refs, nets=list(sig.nets))
+        elif not any(dr in ("output", "inout") for dr in dirs):
+            yield Finding("FIO013", f"'{sig.name}': no FPGA drives it: {desc}", severity=WARNING, refs=refs,
+                          nets=list(sig.nets))
+
+
+_BUS_STOP = {"to", "from", "pf", "pa3", "fpga", "in", "out", "o", "i", "n", "p"}
+
+
+def _bus_tokens(base):
+    return {t for t in re.split(r"[^a-z0-9]+", base.lower()) if t and t not in _BUS_STOP}
+
+
+@check("FIO014", "FPGA-to-FPGA bus bits land on different ports", ERROR)
+def fpga_bus_alignment(ctx):
+    """When a bus on one FPGA (pa3_fw_version[2:0]) has a namesake on the
+    other (fw_version[2:0]: the bus names share all but prefix words), each
+    bit wired between them must connect the same bit of that bus."""
+    links = _fpga_links(ctx)
+    ports = defaultdict(dict)          # desig -> {port: signal name}
+    for sig, ends in links:
+        for d, f, p, c, dr in ends:
+            if c is not None:
+                ports[d][c.port] = sig.name
+    for desig in sorted(ports, key=natural_key):
+        f = dict(_fpgas(ctx))[desig]
+        buses = defaultdict(list)
+        for port in f.io.ports:
+            base, idx = _split_index(port)
+            if idx:
+                buses[base].append(port)
+        for c in f.io.pins.values():
+            base, idx = _split_index(c.port)
+            if idx and c.port not in buses[base]:
+                buses[base].append(c.port)
+        for other in sorted(ports, key=natural_key):
+            if other == desig:
+                continue
+            for base, bits in sorted(buses.items()):
+                mine = [b for b in bits if b in ports[desig]]
+                if not mine:
+                    continue
+                tb = _bus_tokens(base)
+                for obase, obits in sorted(_other_buses(dict(_fpgas(ctx))[other]).items()):
+                    ot = _bus_tokens(obase)
+                    if not tb or not ot or not (ot <= tb or tb <= ot):
+                        continue
+                    for bit in sorted(mine, key=natural_key):
+                        net = ports[desig][bit]
+                        want = obase + _split_index(bit)[1]
+                        got = [p for p, n in ports[other].items() if n == net]
+                        if want not in got:
+                            where = ports[other].get(want)
+                            yield Finding("FIO014", f"{desig} '{bit}' is wired to {other} "
+                                                    f"{', '.join(repr(g) for g in got) or 'nothing'} on '{net}', not to "
+                                                    f"{other} '{want}'" + (f" (which is on '{where}')" if where else
+                                                                          f" ({other} does not wire it to {desig})"),
+                                          refs=sorted({desig, other}, key=natural_key), nets=[net])
+
+
+def _other_buses(f):
+    buses = defaultdict(list)
+    for port in list(f.io.ports) + [c.port for c in f.io.pins.values()]:
+        base, idx = _split_index(port)
+        if idx and port not in buses[base]:
+            buses[base].append(port)
+    return buses

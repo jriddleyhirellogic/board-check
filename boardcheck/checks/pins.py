@@ -321,12 +321,26 @@ def pin_data_alignment(ctx):
 def contention(ctx):
     """Two push-pull outputs on one net, or a push-pull output on a supply
     rail or ground net. Tri-state and bidirectional pins are not counted:
-    whether they fight depends on firmware and FPGA configuration."""
+    whether they fight depends on firmware and FPGA configuration. Outputs
+    on different nets joined by small series resistors are a warning."""
     pt = _pin_types(ctx)
     cfg = ctx.config
+
+    def one_per_function(outs):
+        """A part's output split over several pins (one pin_functions entry,
+        or one pin name) is one driver."""
+        seen, kept = set(), []
+        for o in outs:
+            pp = pt.part_entry(o[0])
+            key = (o[0].component.designator, pp.key if pp else o[0].name)
+            if key not in seen:
+                seen.add(key)
+                kept.append(o)
+        return kept
+
     for net, pins in _nets(ctx):
         typed = [(p, *pt.effective(p)) for p in pins]
-        outputs = [(p, t, s) for p, t, s in typed if t == "output"]
+        outputs = one_per_function([(p, t, s) for p, t, s in typed if t == "output"])
         if len(outputs) >= 2:
             yield Finding("PIN004", f"'{net.name}' is driven by {len(outputs)} outputs: "
                           + ", ".join(_label(*o) for o in outputs),
@@ -336,6 +350,21 @@ def contention(ctx):
             yield Finding("PIN004", f"output on supply net '{net.name}': " + ", ".join(_label(*o) for o in outputs),
                           severity=_severity([s for _, _, s in outputs]),
                           refs=sorted({p.component.designator for p, _, _ in outputs}), nets=[net.name])
+    # Outputs on different nets of one signal (joined by small series
+    # resistors, levels.series_max_ohms) still fight, through the resistor.
+    from .levels import signals
+    for sig in signals(ctx):
+        if len(sig.nets) < 2:
+            continue
+        outputs = [(p, *pt.effective(p)) for p in sig.pins if not cfg.is_mechanical(p.component)]
+        outputs = one_per_function([o for o in outputs if o[1] == "output"])
+        # Two outputs of one part joined through a resistor are a
+        # termination (a differential pair's), not contention.
+        if len({o[0].component.designator for o in outputs}) >= 2 and len({o[0].net for o in outputs}) > 1:
+            yield Finding("PIN004", f"'{sig.name}' is driven by {len(outputs)} outputs through series resistors: "
+                          + ", ".join(_label(*o) for o in outputs),
+                          severity=WARNING, refs=sorted({p.component.designator for p, _, _ in outputs}),
+                          nets=list(sig.nets))
 
 
 @check("PIN005", "Input with nothing to drive it", WARNING)
