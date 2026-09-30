@@ -328,3 +328,37 @@ def test_pwr010_ldo_headroom_at_its_current_limit():
     # 1.9 V in: below even the light-load dropout
     (e,) = findings(power.ldo_headroom, _headroom_ctx(vin_net="1V9"))
     assert e.severity == "error" and "below the 210 mV maximum dropout" in e.message
+
+
+def _en_ctx(top="100k", bottom="20k", vin="12V0"):
+    from boardcheck.checks import Context
+    from boardcheck.config import Config
+    from boardcheck.model import Design
+    from helpers import FakePartsDB, make_export
+    rt = lambda applies, rows, unit="V": {"kind": "range_table", "unit": unit, "applies_to": applies, "rows": rows}  # noqa: E731
+    buck = {"pin_functions": {"VIN": {"direction": "power", "pins": ["1"]}, "EN": {"direction": "input", "pins": ["2"]}},
+            "electrical_characteristics": {
+                "supply_vin": rt(["VIN"], [{"min": 4.5, "max": 17}]),
+                "vt_pos": rt(["EN"], [{"typ": 1.21, "max": 1.26}]),
+                "vt_neg": rt(["EN"], [{"min": 1.1, "typ": 1.17}]),
+                "i_en_pullup": rt(["EN"], [{"typ": 1.15}], "uA")},
+            "regulator": {"enable_pin": "EN", "input_pins": ["VIN"], "feedback_pin": "FB"}}
+    comps = [("U1", "BUCK", [("1", "VIN", vin), ("2", "EN", "EN_DIV")]),
+             res("R1", "RT", vin, "EN_DIV"), res("R2", "RB", "EN_DIV", "GND")]
+    d = Design(make_export(comps))
+    d.part_params["RT"]["R_Value"] = top
+    d.part_params["RB"]["R_Value"] = bottom
+    return Context(d, Config(), FakePartsDB({"BUCK": buck}))
+
+
+def test_pwr011_enable_divider_turn_on_voltage():
+    # 100k / 20k: EN = Vin / 6 + 1.15 uA x 16.7k; on at (1.26 - 0.0192) x 6 = 7.45 V, off at 6.49 V
+    (f,) = findings(power.turn_on_voltage, _en_ctx())
+    assert f.severity == "info" and f.message == ("U1 (BUCK) EN on 'EN_DIV' (R1, R2 and its 1.15 uA pull-up): turns on "
+                                                  "at 7.45 V on '12V0', off at 6.49 V")
+    # 100k / 10k: on at 13.7 V, above the 12 V rail
+    (e,) = findings(power.turn_on_voltage, _en_ctx(bottom="10k"))
+    assert e.severity is None and e.message.endswith("above the rail's 12 V")
+    # 100k / 50k: off at 3.19 V, below the 4.5 V minimum input
+    (w,) = findings(power.turn_on_voltage, _en_ctx(bottom="50k"))
+    assert w.severity == "warning" and w.message.endswith("below the regulator's 4.5 V minimum input")

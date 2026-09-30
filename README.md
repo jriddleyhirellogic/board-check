@@ -77,6 +77,7 @@ only. The Markdown output is meant for a pull request comment.
 | PWR007 | warning | IC supply pin on a local (non-rail) net with no capacitor to ground |
 | PWR009 | error | A regulator's feedback network sets a different voltage than its rail's name (part data `regulator` and `v_feedback`; the resistor network around the feedback pin is solved, so sense resistors, chains and remote sense count) |
 | PWR010 | warning | Linear regulator (part data `topology: linear`) whose input rail, less the output it sets, is below the data sheet's maximum dropout at its programmed current limit (error: below the light-load dropout); rails set by other regulators taken at their worst case |
+| PWR011 | error | Regulator enable or UVLO pin (part data `enable_pin`, `uvlo_pin`) held by a divider from its own input: turn-on input voltage (rising threshold at its maximum, plus the pin's pull-up current) above the rail (error), turn-off below the regulator's minimum input (warning), otherwise listed (info) |
 | PWR008 | error | IC supply pin's rail outside the part data's recommended `supply_<pin>` range (limits relative to another supply, like VD <= VA, are evaluated) |
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |

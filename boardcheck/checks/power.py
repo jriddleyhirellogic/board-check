@@ -551,3 +551,117 @@ def ldo_headroom(ctx):
             yield Finding("PWR010", f"{where}; the maximum dropout reaches that at about {lo * 1000:.0f} mA, but "
                                     f"{how} ({full * 1000:.0f} mV dropout there)",
                           refs=[comp.designator], nets=[vin_net, sp[3]], part_number=comp.part_number)
+
+
+def _pin_by_key(ctx, comp, key):
+    from .pins import _norm, _pin_types
+    pt = _pin_types(ctx)
+    for p in comp.pins:
+        pp = pt.part_entry(p)
+        if (pp and _norm(pp.key) == _norm(key)) or _norm(p.name) == _norm(key):
+            return p
+    return None
+
+
+def _threshold(lv, pl, name, side, pick):
+    """A reference threshold's limit. Rows are tried as usual first; failing
+    that, a row rejected only for a supply test point above the rail (the
+    data sheet's general test condition, e.g. LM5116 VIN = 48 V) still
+    applies: the threshold comes from the part's reference, not its supply."""
+    v = lv.value(pl, name, side, "high" if pick is max else "low")[0]
+    if v is not None:
+        return v
+    vals = []
+    for _, char in lv._tables(pl, name):
+        for row in char.get("rows") or []:
+            cond = dict(row.get("conditions") or {})
+            sv = cond.pop("supply_voltage", None)
+            if side in row and (sv is None or "value" in sv) and not lv._row_ok(pl, dict(row, conditions=cond)):
+                vals.append(lv._limit(pl, row[side]))
+    vals = [v for v in vals if v is not None]
+    return pick(vals) if vals else None
+
+
+def turn_on_points(ctx, comp, block):
+    """[(pin, input net, V on, V off, how)] for a regulator's enable and UVLO
+    pins held only by resistors (and the pin's own pull-up current) from its
+    input rail: the input voltages where the pin crosses its rising
+    threshold (at its maximum) and its falling threshold (at its minimum)."""
+    from .levels import _levels, signals, _roles
+    lv = _levels(ctx)
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    ins = [p for p in comp.pins if p.name in (block.get("input_pins") or [])]
+    if not ins:
+        return []
+    vin_net = ins[0].net
+    out = []
+    for key in (block.get("enable_pin"), block.get("uvlo_pin")):
+        pin = _pin_by_key(ctx, comp, key) if key else None
+        sig = by_net.get(pin.net) if pin else None
+        if sig is None or any(t[3] is None or t[3] <= 0 for t in sig.ties):
+            continue
+        drivers, _ = _roles(ctx, sig)
+        if drivers or sig.external or not any(t[1] == vin_net for t in sig.ties):
+            continue
+        pl = lv.for_pin(pin)
+        if pl is None:
+            continue
+        on = _threshold(lv, pl, "vt_pos", "max", max)
+        off = _threshold(lv, pl, "vt_neg", "min", min)
+        if off is None:
+            off = _threshold(lv, pl, "vt_neg", "typ", min)
+        if on is None:
+            continue
+        # pin volts = a * Vin + b, from the ties' conductances and the pull-up current
+        g = sum(1.0 / t[3] for t in sig.ties)
+        a = sum(1.0 / t[3] for t in sig.ties if t[1] == vin_net) / g
+        b = sum((t[2] or 0.0) / t[3] for t in sig.ties if t[1] != vin_net) / g
+        ip = _threshold(lv, pl, "i_en_pullup", "typ", min)
+        if ip is not None:
+            b += ip * 1e-6 / g
+        how = ", ".join(t[0].designator for t in sig.ties) + (f" and its {ip:g} uA pull-up" if ip else "")
+        out.append((pin, vin_net, (on - b) / a, (off - b) / a if off is not None else None, how))
+    return out
+
+
+@check("PWR011", "Regulator enable or UVLO divider sets a turn-on outside its input range", ERROR,
+       needs_partsdb=True)
+def turn_on_voltage(ctx):
+    """For an enable or UVLO pin (regulator `enable_pin`, `uvlo_pin`) held by
+    resistors from the regulator's own input rail, the input voltage at
+    which it turns on (rising threshold at its maximum) must be below the
+    rail's nominal voltage (the rail at its minimum, when another
+    regulator sets it), or the regulator never starts; turning off
+    (falling threshold at its minimum) below the regulator's minimum input
+    lets it run outside its range (warning). Each result is also listed
+    (info)."""
+    from .levels import _levels
+    sps = _setpoints(ctx)
+    lv = _levels(ctx)
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.regulator(comp.part_number)
+        if not block:
+            continue
+        for pin, vin_net, von, voff, how in turn_on_points(ctx, comp, block):
+            up = sps.get(vin_net)
+            vin = up[1] if up else ctx.config.net_voltage(vin_net)
+            ins = [p for p in comp.pins if p.name in (block.get("input_pins") or [])]
+            pl = lv.for_pin(ins[0]) if ins else None
+            vmin = None
+            if pl is not None:
+                for _, char in lv._tables(pl, "supply"):
+                    for row in char.get("rows") or []:
+                        if isinstance(row.get("min"), (int, float)):
+                            vmin = max(vmin or 0.0, float(row["min"]))
+            where = (f"{comp.designator} ({comp.part_number}) {pin.name} on '{pin.net}' ({how}): turns on at "
+                     f"{von:.3g} V on '{vin_net}'" + (f", off at {voff:.3g} V" if voff is not None else ""))
+            refs = [comp.designator]
+            if vin is not None and von > vin:
+                yield Finding("PWR011", f"{where}, above the rail's {vin:.3g} V", refs=refs, nets=[vin_net, pin.net],
+                              part_number=comp.part_number)
+            elif vmin is not None and voff is not None and voff < vmin:
+                yield Finding("PWR011", f"{where}, below the regulator's {vmin:g} V minimum input",
+                              severity=WARNING, refs=refs, nets=[vin_net, pin.net], part_number=comp.part_number)
+            else:
+                yield Finding("PWR011", where, severity=INFO, refs=refs, nets=[vin_net, pin.net],
+                              part_number=comp.part_number)
