@@ -13,7 +13,7 @@ the part data has none (those findings are warnings).
 """
 
 from . import ERROR, INFO, WARNING, Finding, check
-from .levels import _levels, signals
+from .levels import _levels, input_thresholds, signals
 from .pins import _norm, _pin_types
 from .powerup import _thevenin
 from ..model import natural_key
@@ -86,8 +86,7 @@ def _component_straps(ctx):
             pins[pp.key] = sp
             sp.volts = min(volts) if volts else None
             sp.volts_range = (min(volts), max(volts)) if volts else None
-            vil = lv.value(pl, "vil", "max", "low")[0] if pl else None
-            vih = lv.value(pl, "vih", "min", "high")[0] if pl else None
+            vil, vih = input_thresholds(lv, pl)
             if vil is not None and vih is not None:
                 sp.thresholds = (vil, vih, False)
             else:

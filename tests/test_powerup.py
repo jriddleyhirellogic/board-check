@@ -66,3 +66,16 @@ def test_non_control_ports_and_parts_without_power_up_data_are_skipped(tmp_path)
     assert all(ev.port == "reg_en" for ev in powerup.evaluate(ctx)), "out18 / in33 are not control ports"
     ctx = _board(tmp_path, PINS, parts={"MPF": PF_PART, "BUF": BUF_PART})
     assert powerup.evaluate(ctx) == []
+
+
+def test_threshold_inputs_use_rising_and_falling_thresholds(tmp_path):
+    # a regulator enable with vt_pos/vt_neg instead of VIH/VIL: 0.97-1.32 V is between 0.9 V and 1.42 V
+    reg = {"pin_functions": {"EN": {"direction": "input", "pins": ["2"]}},
+           "electrical_characteristics": {
+               "vt_pos": {"kind": "range_table", "unit": "V", "applies_to": ["EN"], "rows": [{"typ": 1.3, "max": 1.42}]},
+               "vt_neg": {"kind": "range_table", "unit": "V", "applies_to": ["EN"], "rows": [{"min": 0.9, "typ": 1.1}]}}}
+    ctx = _board(tmp_path, PINS, extra=[res("R9", "R", "WIRED", "GND"), ("U7", "REG", [("2", "EN", "WIRED")])],
+                 parts={"MPF": FPGA, "BUF": BUF_PART, "R": {}, "REG": reg})
+    ctx.design.part_params["R"]["R_Value"] = "10k"
+    msgs = [f.message for f in findings(powerup.undefined_controls, ctx)]
+    assert any("(low <= 0.90 V, high >= 1.42 V, receiver data)" in m or "receiver data" in m for m in msgs)

@@ -19,7 +19,7 @@ from collections import defaultdict
 import re
 
 from . import ERROR, INFO, WARNING, Finding, check
-from .levels import _levels, signals
+from .levels import _levels, input_thresholds, signals
 from ..model import natural_key
 
 _NOT_LOADS = {"resistor", "capacitor", "inductor", "ferrite", "testpoint", "mechanical"}
@@ -115,8 +115,7 @@ def evaluate(ctx):
                 rl = lv.for_pin(p)
                 if rl is None:
                     continue
-                vil = lv.value(rl, "vil", "max", "low")[0]
-                vih = lv.value(rl, "vih", "min", "high")[0]
+                vil, vih = input_thresholds(lv, rl)
                 if vil is not None and vih is not None:
                     vils.append(vil)
                     vihs.append(vih)

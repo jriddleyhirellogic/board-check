@@ -212,6 +212,21 @@ class Levels:
         return (min if worst == "low" else max)(vals, key=lambda v: v[0])
 
 
+def input_thresholds(lv, pl):
+    """(low max, high min) an input recognises: VIL max / VIH min, or for a
+    threshold input with hysteresis the falling threshold's minimum and the
+    rising threshold's maximum (vt_neg / vt_pos). None parts when unknown."""
+    if pl is None:
+        return None, None
+    low = lv.value(pl, "vil", "max", "low")[0]
+    if low is None:
+        low = lv.value(pl, "vt_neg", "min", "low")[0]
+    high = lv.value(pl, "vih", "min", "high")[0]
+    if high is None:
+        high = lv.value(pl, "vt_pos", "max", "high")[0]
+    return low, high
+
+
 def _cond_value(row, name):
     c = (row.get("conditions") or {}).get(name)
     return c.get("value") if isinstance(c, dict) else None
