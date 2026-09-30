@@ -101,3 +101,19 @@ firmware:
       ports: [pri_stp_motor_vref_pwm, sec_stp_motor_vref_pwm]
       # DRV8434: I_FS = VREF / KV (SLOSE47A 7.3.5)
       limit: {constant: I_MAX_MA, unit: mA, gain: kv, result_unit: A}
+  gpio_maps:
+    - name: camera GPIO
+      # Camera/include/gpio_pin_def.h: each comment starts a group of bits of
+      # one CoreGPIO (GPIO_init base address in camera.c / hw_init.c, whose
+      # instance fpga_design_config.h names)
+      header: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/gpio_pin_def.h
+      source_dir: ../../../farsight_claude/farsight-avionics-sw-main/Camera/src
+      fpga: U1
+      blocks:
+        - {groups: [Cam ctrl], instance: cam_rx_inst/gpo_cam_ctrl_inst, pin: GPIO_OUT}                 # GPO_CAM
+        - {groups: [Eth PCIe sel], instance: eth_pcie_mux_hier_inst/eth_pcie_sel_coregpio_inst, pin: GPIO_OUT}
+        - {groups: [Async DDR4 rst], instance: rst_hier_inst/rst_ddr4_hier_16gb_inst/async_rst_ddr4_coregpio_inst, pin: GPIO_OUT}
+        - {groups: [Eth1 ctrl], instance: eth1_hier_inst/gpo_eth1_ctrl, pin: GPIO_OUT}                 # ETH1_CTRL
+        - {groups: [Eth1 status], instance: eth1_hier_inst/gpi_eth1_stat_inst, pin: GPIO_IN}           # ETH1_STAT
+        - {groups: [PWR Enable], instance: hk_hier_inst/gpo_hk_pwr_ctrl_inst, pin: GPIO_OUT}           # GPO_HK_PWR
+        - {groups: [PWR Status, The power status bits], instance: hk_hier_inst/gpi_hk_status_inst, pin: GPIO_IN}  # GPI_HK_STATUS

@@ -162,6 +162,7 @@ DEFAULTS = {
         # tolerance. FW007 compares the constant with the bank rail through
         # the output's RC filter divider.
         "pwm_outputs": [],
+        "gpio_maps": [],
     },
     "severity": {},   # per-check override: {"NET002": "warning"}
     "disabled": [],   # check ids to skip

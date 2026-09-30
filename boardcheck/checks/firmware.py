@@ -582,3 +582,154 @@ def current_offsets(ctx):
                                    "amplifier's zero-current output: " + "; ".join(off[:8])
                                    + (f"; ... {len(off) - 8} more" if len(off) > 8 else ""),
                           refs=sorted(refs, key=natural_key))
+
+
+# -- GPIO bit maps ---------------------------------------------------------------------
+
+def parse_gpio_header(path):
+    """{group comment: [(define, bit)]} from a header of `#define NAME GPIO_<n>`
+    lines, grouped under the comment line that precedes them."""
+    groups, group = {}, None
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            m = re.match(r"\s*//\s*(.+?)\s*$", line)
+            if m:
+                group = m.group(1)
+                continue
+            m = re.match(r"\s*#\s*define\s+(\w+)\s+GPIO_(\d+)\b", line)
+            if m:
+                groups.setdefault(group, []).append((m.group(1), int(m.group(2))))
+    return groups
+
+
+def _norm_name(s):
+    return re.sub(r"[^A-Z0-9]", "", str(s).upper())
+
+
+class GpioMap:
+    """A firmware GPIO header traced through the FPGA's SmartDesign
+    hierarchy to top-level ports, balls and nets."""
+
+    def __init__(self, ctx, spec):
+        from ..smartdesign import Hierarchy, SmartDesign
+        self.ctx = ctx
+        self.spec = spec
+        self.name = spec.get("name", "gpio map")
+        self.problems = []
+        self.entries = []       # (define, group, instance path, pin, bit, trace, board pin or None)
+        self.unmapped = []      # header groups no block claims
+        base = ctx.config.base_dir
+        path = os.path.normpath(os.path.join(base, os.path.expanduser(spec["header"])))
+        if not os.path.isfile(path):
+            self.problems.append(f"header not found: {path}")
+            return
+        groups = parse_gpio_header(path)
+        fspec = (ctx.config["fpga"] or {}).get(spec["fpga"]) or {}
+        tops = [p for p in fspec.get("top_level") or [] if p.lower().endswith(".tcl")]
+        if not tops:
+            self.problems.append(f"FPGA {spec['fpga']} has no SmartDesign top_level in the config")
+            return
+        top = os.path.normpath(os.path.join(base, tops[0]))
+        root = spec.get("design_root")
+        root = os.path.normpath(os.path.join(base, root)) if root else os.path.dirname(os.path.dirname(os.path.dirname(top)))
+        if not os.path.isfile(top):
+            self.problems.append(f"top level not found: {top}")
+            return
+        hier = Hierarchy(root, SmartDesign.read(top).name)
+        comp = ctx.design.components.get(spec["fpga"])
+        f = ctx.fpga_for(comp) if comp is not None else None
+        by_port = {c.port: c for c in f.io.pins.values()} if f else {}
+        balls = {str(p.designator): p for p in comp.pins} if comp is not None else {}
+        claimed = set()
+        for block in spec.get("blocks") or []:
+            inst = block["instance"].split("/")
+            for g in block.get("groups") or []:
+                matches = [k for k in groups if k and k.startswith(g)]
+                if not matches:
+                    self.problems.append(f"no group '{g}' in {os.path.basename(path)}")
+                for k in matches:
+                    claimed.add(k)
+                    for define, bit in groups[k]:
+                        tr = hier.trace_up(inst, block.get("pin", "GPIO_OUT"), bit)
+                        pin = None
+                        if tr[0] == "port":
+                            port = tr[1] if tr[2] is None else f"{tr[1]}[{tr[2]}]"
+                            c = by_port.get(port)
+                            pin = balls.get(c.ball) if c else None
+                        self.entries.append((define, k, block["instance"], block.get("pin", "GPIO_OUT"), bit, tr, pin))
+        self.unmapped = [k for k in groups if k not in claimed]
+        self.used = set()
+        src = spec.get("source_dir")
+        if src:
+            src = os.path.normpath(os.path.join(base, src))
+            names = {e[0] for e in self.entries}
+            for d, _, files in os.walk(src):
+                for n in files:
+                    p = os.path.join(d, n)
+                    if n.endswith((".c", ".h")) and os.path.normpath(p) != path:
+                        with open(p, encoding="utf-8", errors="replace") as fh:
+                            text = fh.read()
+                        self.used |= {x for x in names if re.search(r"\b" + x + r"\b", text)}
+
+    @staticmethod
+    def port_name(tr):
+        return tr[1] if tr[2] is None else f"{tr[1]}[{tr[2]}]"
+
+
+def _gpio_maps(ctx):
+    if not hasattr(ctx, "_gpio_maps"):
+        ctx._gpio_maps = [GpioMap(ctx, s) for s in (ctx.config["firmware"]["gpio_maps"] or [])]
+    return ctx._gpio_maps
+
+
+@check("FW011", "Firmware GPIO bit reaches an FPGA port of another name", ERROR)
+def gpio_names(ctx):
+    """Each `#define NAME GPIO_<n>` in the header names what bit n of its
+    CoreGPIO carries. Followed up the SmartDesign hierarchy (through buffer
+    and inverter macros) to the top-level port, the port's name must match
+    the define's, ignoring case and punctuation."""
+    for m in _gpio_maps(ctx):
+        for p in m.problems:
+            yield Finding("FW011", f"{m.name}: {p}", severity=WARNING)
+        for define, group, inst, pin, bit, tr, bpin in m.entries:
+            if tr[0] == "port" and _norm_name(define) != _norm_name(m.port_name(tr)):
+                where = f", ball {bpin.designator} '{bpin.net}'" if bpin else ""
+                inv = " (inverted)" if tr[3] else ""
+                yield Finding("FW011", f"{m.name}: firmware '{define}' is {inst}:{pin}[{bit}], which reaches top-level "
+                                       f"port '{m.port_name(tr)}'{inv}{where}", refs=[m.spec["fpga"]],
+                              nets=[bpin.net] if bpin else [])
+
+
+@check("FW012", "Firmware uses a GPIO bit the FPGA does not connect", WARNING)
+def gpio_unconnected(ctx):
+    """A define the firmware sources use (`source_dir`) whose bit the FPGA
+    design ties to a constant or leaves unconnected: writes go nowhere,
+    reads return a constant."""
+    for m in _gpio_maps(ctx):
+        for define, group, inst, pin, bit, tr, bpin in m.entries:
+            if define not in m.used:
+                continue
+            if tr[0] == "constant":
+                yield Finding("FW012", f"{m.name}: firmware uses '{define}' ({inst}:{pin}[{bit}]), which the FPGA "
+                                       f"design ties to {tr[1]}", refs=[m.spec["fpga"]])
+            elif tr[0] == "open":
+                yield Finding("FW012", f"{m.name}: firmware uses '{define}' ({inst}:{pin}[{bit}]), which connects to "
+                                       "nothing in the FPGA design", refs=[m.spec["fpga"]])
+
+
+@check("FW013", "Firmware GPIO map", INFO)
+def gpio_map(ctx):
+    for m in _gpio_maps(ctx):
+        if not m.entries:
+            continue
+        board = [e for e in m.entries if e[6] is not None]
+        internal = [e[0] for e in m.entries if e[5][0] == "internal"]
+        idle = [e[0] for e in m.entries if e[5][0] in ("constant", "open")]
+        text = f"{m.name}: {len(board)} of {len(m.entries)} defines traced to FPGA balls"
+        if internal:
+            text += f"; FPGA-internal: {', '.join(internal)}"
+        if idle:
+            text += f"; constant or unconnected in the FPGA: {', '.join(idle)}"
+        if m.unmapped:
+            text += f"; header groups with no CoreGPIO configured: {', '.join(m.unmapped)}"
+        yield Finding("FW013", text, refs=[m.spec["fpga"]])

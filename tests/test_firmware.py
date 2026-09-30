@@ -195,3 +195,54 @@ def test_current_channel_without_a_shunt_is_reported(tmp_path):
     ctx.design.part_params["R0.01"]["R_Value"] = "1k"
     (f,) = findings(fw.current_scaling, ctx)
     assert "could not trace '3V3_MISC_ISENSE_ADC'" in f.message
+
+
+GPIO_H = """\
+// Power
+#define A_PWR_EN   GPIO_0
+#define B_PWR_EN   GPIO_1
+#define SPARE_OUT  GPIO_3
+// Unmapped block
+#define OTHER      GPIO_0
+"""
+
+
+def _gpio_ctx(tmp_path, port0="a_pwr_en", use="SPARE_OUT"):
+    root = tmp_path / "bd"
+    (root / "top" / "components").mkdir(parents=True)
+    top = root / "top" / "components" / "top.tcl"
+    top.write_text(f"""set sd_name {{top}}
+sd_create_scalar_port -sd_name ${{sd_name}} -port_name {{{port0}}} -port_direction {{OUT}}
+sd_create_scalar_port -sd_name ${{sd_name}} -port_name {{b_pwr_en}} -port_direction {{OUT}}
+sd_instantiate_component -sd_name ${{sd_name}} -component_name {{CoreGPIO_C3}} -instance_name {{gpo}}
+sd_connect_pins -sd_name ${{sd_name}} -pin_names {{"gpo:GPIO_OUT[0:0]" "{port0}" }}
+sd_connect_pins -sd_name ${{sd_name}} -pin_names {{"gpo:GPIO_OUT[1:1]" "b_pwr_en" }}
+""")
+    (tmp_path / "io.pdc").write_text(f'set_io {{{port0}}} -pinname "A1" -iostd "LVCMOS33" -direction "OUTPUT"\n'
+                                     'set_io {b_pwr_en} -pinname "A2" -iostd "LVCMOS33" -direction "OUTPUT"\n')
+    (tmp_path / "gpio.h").write_text(GPIO_H)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "main.c").write_text(f"void f(void) {{ GPIO_set_output(&g, {use}, 1); }}\n")
+    spec = {"name": "gpio", "header": str(tmp_path / "gpio.h"), "source_dir": str(tmp_path / "src"), "fpga": "U1",
+            "blocks": [{"groups": ["Power"], "instance": "gpo", "pin": "GPIO_OUT"}]}
+    return build_ctx([("U1", "FPGA", [("A1", "GPIO1PB2", "PWR_A"), ("A2", "GPIO2PB2", "PWR_B")])],
+                     config={"fpga": {"U1": {"constraints": [str(tmp_path / "io.pdc")], "top_level": [str(top)]}},
+                             "firmware": {"gpio_maps": [spec]}})
+
+
+def test_gpio_map_traces_defines_to_balls(tmp_path):
+    ctx = _gpio_ctx(tmp_path)
+    assert findings(fw.gpio_names, ctx) == []
+    (f,) = findings(fw.gpio_unconnected, ctx)
+    assert f.message == "gpio: firmware uses 'SPARE_OUT' (gpo:GPIO_OUT[3]), which connects to nothing in the FPGA design"
+    (m,) = findings(fw.gpio_map, ctx)
+    assert m.message == ("gpio: 2 of 3 defines traced to FPGA balls; constant or unconnected in the FPGA: SPARE_OUT; "
+                         "header groups with no CoreGPIO configured: Unmapped block")
+
+
+def test_gpio_bit_on_a_differently_named_port(tmp_path):
+    ctx = _gpio_ctx(tmp_path, port0="lvds_pwr_en", use="A_PWR_EN")
+    (f,) = findings(fw.gpio_names, ctx)
+    assert f.message == ("gpio: firmware 'A_PWR_EN' is gpo:GPIO_OUT[0], which reaches top-level port 'lvds_pwr_en', "
+                         "ball A1 'PWR_A'")
+    assert findings(fw.gpio_unconnected, ctx) == []

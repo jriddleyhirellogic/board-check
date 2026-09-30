@@ -116,6 +116,9 @@ only. The Markdown output is meant for a pull request comment.
 | FW006 | warning | Calibration file rows that do not name the firmware enum's signal at their position (the table is loaded by position) |
 | FW009 | info | Each current channel's scaling from the board: the ADC input traced back through resistors and op-amps (ideal, solved by nodal analysis) to one shunt (two-terminal, or Kelvin E1/E2 sense pins, at most `shunt_max_ohms`), giving the gain, mA/count, zero-current reading and full-scale current |
 | FW010 | warning | Current channel calibration offsets that do not remove the amplifier's zero-current output (the firmware computes raw * gain + offset, so offset must be -gain * zero counts in any unit) |
+| FW011 | error | A firmware GPIO define (`#define NAME GPIO_<n>`) whose CoreGPIO bit reaches an FPGA top-level port of another name |
+| FW012 | warning | A GPIO define the firmware sources use whose bit the FPGA design ties to a constant or leaves unconnected |
+| FW013 | info | Firmware GPIO map: defines traced to FPGA balls, FPGA-internal, constant or unconnected, and header groups with no CoreGPIO configured |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |
@@ -201,6 +204,17 @@ With `calibration` pointing at the calibration spreadsheet (`.xlsx` needs
 `pip install openpyxl`, or the `xlsx` extra; `.csv` works without it),
 each voltage channel's gain is compared with the divider the board puts in
 front of the ADC.
+
+`firmware.gpio_maps` points at a header of `#define NAME GPIO_<n>` lines
+(CM-03545: `Camera/include/gpio_pin_def.h`), grouped under comment lines.
+Each block names the header groups one CoreGPIO serves and that core's
+instance path in the SmartDesign hierarchy (`hk_hier_inst/gpo_hk_pwr_ctrl_inst`).
+`smartdesign.py` reads every SmartDesign script under the FPGA's design root
+(three directories above the top-level `.tcl`, or `design_root`), joins pins
+bit by bit, and follows `GPIO_OUT[n]` / `GPIO_IN[n]` up through sub-designs,
+buffer macros (TRIBUFF, INBUF, BIBUF, ...) and inverters to the top-level
+port, whose constraint gives the ball and the board net. `source_dir` lets
+FW012 tell which defines the firmware actually uses.
 
 ### Logic levels
 
