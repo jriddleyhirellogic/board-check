@@ -106,6 +106,7 @@ only. The Markdown output is meant for a pull request comment.
 | LVL004 | error | FPGA I/O standard used on a bank whose rail is outside that standard's supply range |
 | LVL005 | info | Pins on logic signals whose levels could not be resolved (the work queue for level data) |
 | LVL006 | warning | Open-drain output whose pull-ups (rail / R, summed over the signal) draw more current when it is low than its VOL is specified at, or outside the part data's `i_pullup_recommended` range |
+| LVL007 | error | Undriven signal whose resistors to rails and ground hold a logic input between its VIL and VIH (VT-/VT+) |
 | PWU001 | error | FPGA control output (enable, reset, chip select) that floats before the FPGA drives it |
 | PWU002 | error | ... that sits between the receivers' VIL and VIH before the FPGA drives it (warning when the thresholds are assumed) |
 | PWU003 | warning | ... whose level changes between the pre-drive windows (e.g. low while high-Z, high once the weak pull-up is on) |
@@ -131,7 +132,7 @@ only. The Markdown output is meant for a pull request comment.
 | ANA002 | warning | Op-amp output beyond its guaranteed swing (`voh`/`vol`, row chosen by the DC load) at the nominal operating point |
 | ANA003 | info | Op-amp or comparator inputs whose operating point could not be worked out (the network is also driven by another part, a connector or a diode) |
 
-PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-006, PWU001-004, STP001-004 and ANA001-003 need
+PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-007, PWU001-004, STP001-004 and ANA001-003 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 

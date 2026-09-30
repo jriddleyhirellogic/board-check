@@ -633,6 +633,34 @@ def pullup_current(ctx):
                               part_number=comp.part_number)
 
 
+@check("LVL007", "Input held by resistors between its logic thresholds", ERROR, needs_partsdb=True)
+def resistive_inputs(ctx):
+    """A signal nothing drives (no outputs, no connector) whose only ties are
+    resistors to rails and ground: its level is their Thevenin voltage,
+    which must be below each logic receiver's VIL or above its VIH (VT-/VT+
+    for Schmitt inputs). Analog inputs are left to ANA001; floating inputs
+    to PIN005."""
+    from .powerup import _thevenin
+    lv = _levels(ctx)
+    for sig in signals(ctx):
+        drivers, receivers = _roles(ctx, sig)
+        if drivers or sig.external or not sig.ties or any(t[3] is None for t in sig.ties):
+            continue
+        volts = _thevenin([(t[2] or 0.0, t[3]) for t in sig.ties])
+        via = ", ".join(t[0].designator for t in sig.ties)
+        for r, rt, rs in receivers:
+            if _analog(ctx, r):
+                continue
+            rl = lv.for_pin(r)
+            vil, vih = input_thresholds(lv, rl) if rl else (None, None)
+            if vil is None or vih is None or volts <= vil + _EPS or volts >= vih - _EPS:
+                continue
+            yield Finding("LVL007", f"'{sig.name}': {via} hold {_who(rl, r)} at {volts:.3g} V, between its low "
+                                    f"({vil:.3g} V) and high ({vih:.3g} V) thresholds",
+                          severity=_sev(rs), refs=sorted({r.component.designator} | {t[0].designator for t in sig.ties},
+                                                         key=natural_key), nets=list(sig.nets))
+
+
 @check("LVL004", "FPGA I/O standard not supported at its bank voltage", ERROR, needs_partsdb=True)
 def io_standard_vs_bank(ctx):
     """Each constrained I/O standard's recommended bank supply range

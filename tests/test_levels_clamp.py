@@ -88,3 +88,26 @@ def test_open_drain_pullup_current():
     assert w.message.endswith("the data sheet recommends 0.1-1 mA") and "0.0485 mA" in w.message
     (p,) = findings(levels.pullup_current, _od_ctx(("3V3", "10k"), ("3V3", "1k")))  # 3.63 mA together
     assert "sinks 3.63 mA when low (R1 to 3V3, R2 to 3V3)" in p.message
+
+
+LOGIC = {"pin_functions": {"EN": {"direction": "input", "pins": ["1"], "supply": "VCC"},
+                           "VCC": {"direction": "power", "pins": ["2"]}},
+         "electrical_characteristics": {"vil": _rt(["EN"], [{"max": 0.8}]), "vih": _rt(["EN"], [{"min": 2.0}])}}
+
+
+def test_resistor_held_logic_input():
+    def ctx(*ties):
+        comps = [("U1", "LOG", [("1", "EN", "EN_NET"), ("2", "VCC", "3V3")])]
+        values = {}
+        for i, (rail, r) in enumerate(ties):
+            comps.append(res(f"R{i + 1}", f"R{r}", rail, "EN_NET"))
+            values[f"R{r}"] = r
+        c = build_ctx(comps, parts={"LOG": LOGIC})
+        for pn, v in values.items():
+            c.design.part_params[pn]["R_Value"] = v
+        return c
+    (f,) = findings(levels.resistive_inputs, ctx(("3V3", "10k"), ("GND", "10k")))
+    assert f.message == ("'EN_NET': R1, R2 hold U1.1 EN at 1.65 V, between its low (0.8 V) and high (2 V) "
+                         "thresholds")
+    assert findings(levels.resistive_inputs, ctx(("GND", "10k"))) == []
+    assert findings(levels.resistive_inputs, ctx(("3V3", "10k"), ("GND", "100k"))) == []   # 3.0 V
