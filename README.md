@@ -109,6 +109,7 @@ only. The Markdown output is meant for a pull request comment.
 | FW004 | error | A voltage channel's rail, at its nominal voltage, reaches the ADC above the ADC reference (divider too weak) |
 | FW005 | warning | Calibration file gains that differ from the board's scaling (reference / 2^bits / divider ratio, mV at the rail per count) |
 | FW007 | error | A firmware constant for a PWM output's full scale (e.g. `PWM_VREF_mV`) differs from what the board delivers at the load: the FPGA bank rail through the RC filter's divider |
+| FW008 | warning | A firmware maximum (e.g. `I_MAX_MA`) beyond what the PWM output's full scale can produce through the load's characteristic (e.g. DRV8434 I_FS = VREF / KV) |
 | FW006 | warning | Calibration file rows that do not name the firmware enum's signal at their position (the table is loaded by position) |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |

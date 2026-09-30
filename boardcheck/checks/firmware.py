@@ -17,6 +17,7 @@ import re
 
 from . import ERROR, INFO, WARNING, Finding, check
 from .levels import signals
+from .pins import _pin_types
 from ..model import natural_key
 
 
@@ -410,3 +411,58 @@ def pwm_constants(ctx):
                                        f"{volts:.3g} V full scale ({v_high:g} V bank rail through "
                                        f"{'/'.join(rs)}); setpoints are scaled by {volts / volts_fw:.3g}",
                               refs=sorted({spec["fpga"]} | {q.component.designator for q in loads}, key=natural_key))
+
+
+@check("FW008", "Firmware limit beyond what the board can produce", WARNING, needs_partsdb=True)
+def pwm_limits(ctx):
+    """firmware.pwm_outputs[].limit: a firmware maximum for the quantity the
+    PWM sets at its load (e.g. I_MAX_MA for a stepper driver whose current
+    is VREF / KV) against the most the board can produce: the output's full
+    scale divided by the load pin's characteristic (`gain`, e.g. kv),
+    taken at its most favourable limit."""
+    from .levels import PinLevels, _levels
+    lv = _levels(ctx)
+    for spec in ctx.config["firmware"]["pwm_outputs"] or []:
+        lim = spec.get("limit")
+        if not lim:
+            continue
+        path = os.path.normpath(os.path.join(ctx.config.base_dir, os.path.expanduser(spec["constant_file"])))
+        if not os.path.isfile(path):
+            continue
+        value = parse_define(path, lim["constant"])
+        if value is None:
+            yield Finding("FW008", f"{spec.get('name')}: #define {lim['constant']} not found", severity=INFO)
+            continue
+        scale = {"mA": 1e-3, "A": 1.0, "mV": 1e-3, "V": 1.0}[lim.get("unit", "mA")]
+        comp = ctx.design.components.get(spec["fpga"])
+        f = ctx.fpga_for(comp) if comp is not None else None
+        if f is None:
+            continue
+        by_port = {c.port: c for c in f.io.pins.values()}
+        pins = {str(p.designator): p for p in comp.pins}
+        for port in spec["ports"]:
+            c = by_port.get(port)
+            pin = pins.get(c.ball) if c else None
+            fs = pwm_full_scale(ctx, f, pin) if pin else None
+            if fs is None:
+                continue
+            volts, loads, rs, _ = fs
+            for load in loads:
+                chars = ctx.partsdb.characteristics(load.component.part_number) or {}
+                pp = _pin_types(ctx).part_entry(load)
+                if pp is None or not chars:
+                    continue
+                pl = PinLevels(load, chars, key=pp.key)
+                g_min = lv.value(pl, lim["gain"], "min", "low")[0]
+                g_typ = next((r.get("typ") for _, char in lv._tables(pl, lim["gain"]) for r in char.get("rows", [])
+                              if "typ" in r), None)
+                if not g_min:
+                    continue
+                best = volts / g_min
+                if value * scale > best * 1.0001:
+                    typ = f", {volts / g_typ:.3g} typical" if g_typ else ""
+                    yield Finding("FW008", f"{spec.get('name')}: {lim['constant']} = {value:g} {lim.get('unit', 'mA')} "
+                                           f"but '{port}' reaches {load.ref} {load.name} at {volts:.3g} V full scale, "
+                                           f"which gives at most {best:.3g} {lim.get('result_unit', 'A')} "
+                                           f"({lim['gain']} {g_min:g} minimum{typ})",
+                                  refs=sorted({spec["fpga"], load.component.designator}, key=natural_key))

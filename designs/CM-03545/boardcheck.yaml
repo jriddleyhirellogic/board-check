@@ -99,3 +99,5 @@ firmware:
       constant_unit: mV
       fpga: U1
       ports: [pri_stp_motor_vref_pwm, sec_stp_motor_vref_pwm]
+      # DRV8434: I_FS = VREF / KV (SLOSE47A 7.3.5)
+      limit: {constant: I_MAX_MA, unit: mA, gain: kv, result_unit: A}

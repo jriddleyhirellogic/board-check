@@ -127,3 +127,17 @@ def test_pwm_full_scale_against_firmware_constant(tmp_path):
     assert len(f) == 1 and "reaches U5.17 VREF at 0.882 V full scale (3.3 V bank rail through R10/R11)" in \
         f[0].message and "scaled by 0.276" in f[0].message
     assert findings(fw.pwm_constants, _pwm_ctx(tmp_path, constant="882")) == [], "a matching constant passes"
+
+
+def test_firmware_limit_beyond_board_full_scale(tmp_path):
+    from helpers import FakePartsDB
+    ctx = _pwm_ctx(tmp_path)
+    (tmp_path / "pwm.h").write_text("#define PWM_VREF_mV 3200\n#define I_MAX_MA 2500\n")
+    ctx.config["firmware"]["pwm_outputs"][0]["limit"] = {"constant": "I_MAX_MA", "unit": "mA", "gain": "kv"}
+    ctx.partsdb = FakePartsDB({"DRV": {
+        "pin_functions": {"VREF": {"direction": "input", "pins": ["17"], "io_standard": "analog"}},
+        "electrical_characteristics": {"kv": {"kind": "range_table", "unit": "V/A", "applies_to": ["VREF"],
+                                              "rows": [{"min": 1.254, "typ": 1.32, "max": 1.386}]}}}})
+    f = findings(fw.pwm_limits, ctx)
+    assert len(f) == 1 and "I_MAX_MA = 2500 mA" in f[0].message and "at most 0.704 A (kv 1.254 minimum, 0.668 typical)" \
+        in f[0].message
