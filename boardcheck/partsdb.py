@@ -81,6 +81,12 @@ class PartsDB:
         block = data.get("io_standards") if data else None
         return {str(k).upper(): v for k, v in block.items() if isinstance(v, dict)} if isinstance(block, dict) else {}
 
+    def transceivers(self, part_number):
+        """The part's `transceivers` block (quad order, reference clock cascade), or None."""
+        data = self._part_file(part_number)
+        block = data.get("transceivers") if data else None
+        return block if isinstance(block, dict) else None
+
     def straps(self, part_number):
         """The part's `straps` block ({latched_by, must_not_be_driven, fields}), or None."""
         data = self._part_file(part_number)

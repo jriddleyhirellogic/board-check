@@ -9,7 +9,7 @@ unassigned.
 
 import re
 
-from . import ERROR, WARNING, Finding, check
+from . import ERROR, INFO, WARNING, Finding, check
 from ..model import natural_key
 
 _TOLERANCE = 0.02   # fractional difference allowed between a bank VCCI and its rail
@@ -298,3 +298,46 @@ def transceiver_pins(ctx):
                 if direction != want:
                     yield Finding("FIO010", f"{where} ({direction}) on a transceiver {xc[1]} pin, which needs "
                                             f"an {want}", refs=[desig], nets=[pin.net])
+
+
+@check("FIO011", "Transceiver quad without a reachable reference clock", WARNING, needs_partsdb=True)
+def quad_reference_clocks(ctx):
+    """Each quad with used lanes needs a reference clock on its own REFCLK
+    pins or, where the part data says reference clocks cascade down
+    (`transceivers.refclk_cascade`), on a quad above it in
+    `quads_top_to_bottom`. Relying on a cascade is reported as info (confirm
+    the placement in the vendor tool); no reachable pin at all is a warning,
+    since the lanes' CDRs would then need a fabric clock."""
+    for desig, f in _fpgas(ctx):
+        info = ctx.partsdb.transceivers(f.component.part_number) if ctx.partsdb else None
+        if not info or f._xcvr_re is None:
+            continue
+        order = [str(q) for q in info.get("quads_top_to_bottom") or []]
+        _, pins = _ball_of(f)
+        lanes, refclks = {}, {}
+        for ball, c in f.io.pins.items():
+            pin = pins.get(ball)
+            xc = f.transceiver(pin) if pin is not None else None
+            if xc is None:
+                continue
+            quad, role = xc
+            if role in ("RX", "TX"):
+                lanes.setdefault(quad, []).append(c.port)
+            elif role == "REFCLK" and _is_refclk(ctx, f, c.port):
+                refclks.setdefault(quad, []).append(f"{pin.name} ('{c.port}')")
+        for quad in sorted(lanes, key=natural_key):
+            ports = ", ".join(sorted(lanes[quad], key=natural_key)[:4]) + (" ..." if len(lanes[quad]) > 4 else "")
+            if quad in refclks:
+                continue
+            above = order[:order.index(quad)] if quad in order else []
+            sources = [q for q in reversed(above) if q in refclks] if info.get("refclk_cascade") == "down" else []
+            if sources:
+                src = sources[0]
+                yield Finding("FIO011", f"{desig} quad {quad} ({ports}) has no reference clock pin of its own; it "
+                                        f"relies on the cascade from quad {src} ({', '.join(sorted(refclks[src]))}). "
+                                        "The part data gives no cascade reach table: confirm the placement in the "
+                                        "vendor tool", severity=INFO, refs=[desig])
+            else:
+                yield Finding("FIO011", f"{desig} quad {quad} ({ports}) has no reference clock on its own REFCLK pins "
+                                        "or on a quad above it; its lanes would need a fabric CDR reference",
+                              refs=[desig])

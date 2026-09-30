@@ -85,3 +85,27 @@ def test_reference_clocks_by_name_without_smartdesign(tmp_path):
     ctx = _ctx(tmp_path, pin("aux_ref_clk_p", "G1", "INPUT"))
     assert any("'aux_ref_clk_p', a transceiver reference clock" in f.message
                for f in findings(fio.transceiver_pins, ctx))
+
+
+def test_quad_reference_clock_reach(tmp_path):
+    from boardcheck.checks import INFO
+    from helpers import FakePartsDB
+    symbol = [("R1", "XCVR_4A_REFCLK_P", "REF_P"), ("R2", "XCVR_4A_REFCLK_N", "REF_N"),
+              ("A1", "XCVR_4_RX0_P", "A_P"), ("A2", "XCVR_4_RX0_N", "A_N"),
+              ("B1", "XCVR_2_RX0_P", "B_P"), ("B2", "XCVR_2_RX0_N", "B_N"),
+              ("C1", "XCVR_5_RX0_P", "C_P"), ("C2", "XCVR_5_RX0_N", "C_N")]
+    pins_tcl = "".join(pin(p, b, "INPUT") for p, b in [("refclk_p", "R1"), ("refclk_n", "R2"), ("a_p", "A1"),
+                                                         ("a_n", "A2"), ("b_p", "B1"), ("b_n", "B2")])
+    ctx = _ctx(tmp_path, pins_tcl)
+    ctx.design.components["U1"].pins[:] = []
+    from boardcheck.model import Pin
+    for ball, name, net in symbol:
+        ctx.design.components["U1"].pins.append(Pin(ball, name, net, ctx.design.components["U1"]))
+    ctx.partsdb = FakePartsDB({"FPGA": {"transceivers": {"quads_top_to_bottom": ["4", "2", "0", "1", "3", "5"],
+                                                         "refclk_cascade": "down"}}})
+    f = findings(fio.quad_reference_clocks, ctx)
+    assert len(f) == 1 and f[0].severity == INFO and "quad 2" in f[0].message and "cascade from quad 4" in f[0].message
+    # Without a downward cascade, quad 2 has no reference clock it can reach.
+    ctx.partsdb = FakePartsDB({"FPGA": {"transceivers": {"quads_top_to_bottom": ["4", "2"], "refclk_cascade": "none"}}})
+    f = findings(fio.quad_reference_clocks, ctx)
+    assert len(f) == 1 and f[0].severity is None and "quad 2" in f[0].message and "fabric CDR" in f[0].message
