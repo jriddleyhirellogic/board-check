@@ -98,3 +98,11 @@ def test_comparator_other_input_unknown_is_a_warning_and_reported():
     assert f.severity == "warning" and "the output is correct only while IN1+ is within range" in f.message
     (n,) = findings(opamps.not_evaluated, ctx)
     assert n.message == "U2: IN1+ on 'SIG': also driven by U3.1"
+
+
+def test_level_check_leaves_common_mode_to_ana001():
+    from boardcheck.checks import levels
+    # 2.6 V threshold on IN1- is above the 1.8 V common-mode maximum, but IN1+ (0.3 V) is in range
+    ctx = _ctx(_comparator("THR", "0V3_REF", [res("R111", "R2k7", "3V3", "THR"), res("R112", "R10k", "THR", "GND")]))
+    assert findings(levels.input_overvoltage, ctx) == []
+    assert findings(opamps.input_range, ctx) == []

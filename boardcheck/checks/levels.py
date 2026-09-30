@@ -474,11 +474,19 @@ def low_level(ctx):
                                                                      key=natural_key), nets=list(sig.nets))
 
 
+def _amplifier_input(ctx, pin):
+    pp = _pin_types(ctx).part_entry(pin)
+    return bool(pp) and pp.entry.get("function") in ("OPAMP_IN_P", "OPAMP_IN_N", "COMPARATOR_IN_P",
+                                                     "COMPARATOR_IN_N")
+
+
 @check("LVL003", "Input driven above its rated voltage", ERROR, needs_partsdb=True)
 def input_overvoltage(ctx):
     """The highest level on the signal (a driver's supply, or the pull-up /
     divider level) against each receiver's absolute maximum (vi_abs) and
-    recommended maximum (vi_op, else the VIH row's maximum). A driver is not
+    recommended maximum (vi_op, else the VIH row's maximum; for op-amp and
+    comparator inputs the common-mode range is left to ANA001, which judges
+    both inputs of a channel together). A driver is not
     checked against inputs of its own part (an op amp's feedback). One
     finding per source and limit kind, naming every receiver it exceeds."""
     lv = _levels(ctx)
@@ -493,9 +501,11 @@ def input_overvoltage(ctx):
             if rl is None:
                 continue
             abs_max, _ = lv.value(rl, "vi_abs", "max", "low")
-            op_max, key = lv.value(rl, "vi_op", "max", "low")
-            if op_max is None:
-                op_max, key = lv.value(rl, "vih", "max", "low")
+            op_max, key = None, None
+            if not _amplifier_input(ctx, r):     # their common-mode range is ANA001's, per channel
+                op_max, key = lv.value(rl, "vi_op", "max", "low")
+                if op_max is None:
+                    op_max, key = lv.value(rl, "vih", "max", "low")
             limits.append((r, rs, rl, abs_max, op_max, key))
         for v, label, source in highs:
             over = {"absolute": [], "recommended": []}
