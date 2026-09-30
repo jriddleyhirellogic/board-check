@@ -84,6 +84,8 @@ only. The Markdown output is meant for a pull request comment.
 | PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net; warning when two parts' outputs meet through small series resistors (a part's output split over several pins counts once) |
 | PIN005 | warning | Net with only inputs on it (nothing drives it) |
 | PIN006 | warning | Open-drain net without a pull-up to a rail |
+| PIN007 | error | Differential receiver input pair (part data `*_P` input with `diff_pair`) with no resistor across it in `pins.diff_termination_ohms` (direct or split through a centre tap) and no internal `termination_ohms`; terminated twice is a warning |
+| PIN008 | error | Differential receiver whose + input is on the pair's negative net and - input on the positive one |
 | FIO001 | warning | FPGA constraint or top-level file missing, or a command in it not understood |
 | FIO002 | error | Constrained FPGA port on a ball the symbol lacks, or on a supply/ground net (or a soft-ground standard such as SHIELD12 *not* on ground) |
 | FIO003 | warning | Constrained FPGA port on a pin that connects to nothing |
@@ -128,7 +130,7 @@ only. The Markdown output is meant for a pull request comment.
 | ANA002 | warning | Op-amp output beyond its guaranteed swing (`voh`/`vol`, row chosen by the DC load) at the nominal operating point |
 | ANA003 | info | Op-amp or comparator inputs whose operating point could not be worked out (the network is also driven by another part, a connector or a diode) |
 
-PRT003, PRT004, PRT006, PIN001-003, LVL001-005, PWU001-004, STP001-004 and ANA001-003 need
+PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-005, PWU001-004, STP001-004 and ANA001-003 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 

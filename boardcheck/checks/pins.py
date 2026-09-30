@@ -406,3 +406,92 @@ def open_drain_pullups(ctx):
             yield Finding("PIN006", f"'{net.name}' has open-drain pin(s) {', '.join(_label(*o) for o in od)} "
                                     "and no resistor to a supply rail",
                           refs=sorted({p.component.designator for p, _, _ in od}), nets=[net.name])
+
+
+def _diff_receivers(ctx):
+    """[(component, positive pin, negative pin, part entry)] for differential
+    receiver inputs in the part data: input pins whose function ends in _P
+    and whose `diff_pair` names the negative half."""
+    pt = _pin_types(ctx)
+    out = []
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        by_key = {}
+        for p in comp.pins:
+            pp = pt.part_entry(p)
+            if pp is not None:
+                by_key.setdefault(pp.key, (p, pp))
+        for key, (p, pp) in sorted(by_key.items()):
+            func = str(pp.entry.get("function") or "")
+            if pp.entry.get("direction") != "input" or not func.endswith("_P") or not pp.entry.get("diff_pair"):
+                continue
+            neg = by_key.get(pp.entry["diff_pair"])
+            if neg is not None:
+                out.append((comp, p, neg[0], pp))
+    return out
+
+
+def _terminations(ctx, a, b):
+    """[(ohms, [designators])] of resistors across nets a and b: direct, or
+    two in series through a node that nothing else but a capacitor uses
+    (a split termination)."""
+    from .levels import _ohms
+    found = []
+    for q in ctx.design.nets[a].pins:
+        comp = q.component
+        if ctx.kind(comp) != "resistor" or len(comp.pins) != 2:
+            continue
+        other = next(x.net for x in comp.pins if x is not q)
+        r1 = _ohms(ctx, comp)
+        if other == b:
+            found.append((r1, [comp.designator]))
+            continue
+        mid = ctx.design.nets.get(other)
+        if mid is None or other in (a, b):
+            continue
+        rest = [x for x in mid.pins if x.component is not comp]
+        rs = [x.component for x in rest if ctx.kind(x.component) == "resistor" and len(x.component.pins) == 2
+              and any(y.net == b for y in x.component.pins)]
+        if len(rs) == 1 and all(ctx.kind(x.component) in ("resistor", "capacitor") for x in rest):
+            r2 = _ohms(ctx, rs[0])
+            found.append((None if r1 is None or r2 is None else r1 + r2, [comp.designator, rs[0].designator]))
+    return found
+
+
+@check("PIN007", "Differential receiver pair not terminated", ERROR, needs_partsdb=True)
+def diff_termination(ctx):
+    """Each differential receiver input pair (part data function *_P with a
+    `diff_pair`) needs a resistor across it in `pins.diff_termination_ohms`
+    unless the part data gives the pin an internal `termination_ohms`. More
+    than one termination across the same pair is a warning."""
+    lo, hi = ctx.config["pins"]["diff_termination_ohms"]
+    for comp, p, n, pp in _diff_receivers(ctx):
+        if pp.entry.get("termination_ohms"):
+            continue
+        terms = _terminations(ctx, p.net, n.net)
+        good = [t for t in terms if t[0] is not None and lo <= t[0] <= hi]
+        pair = f"{comp.designator} {p.name}/{n.name} on '{p.net}'/'{n.net}'"
+        if not good:
+            what = "; ".join(f"{'/'.join(d)} {'?' if r is None else f'{r:g}'} ohm" for r, d in terms)
+            yield Finding("PIN007", f"{pair}: no {lo:g}-{hi:g} ohm termination across the pair"
+                                    + (f" (found {what})" if what else ""),
+                          refs=[comp.designator], nets=[p.net, n.net], part_number=comp.part_number)
+        elif len(good) > 1:
+            yield Finding("PIN007", f"{pair}: terminated more than once ("
+                                    + ", ".join(f"{'/'.join(d)} {r:g} ohm" for r, d in good) + ")",
+                          severity=WARNING, refs=[comp.designator] + [x for _, d in good for x in d],
+                          nets=[p.net, n.net], part_number=comp.part_number)
+
+
+@check("PIN008", "Differential receiver polarity differs from the net names", ERROR, needs_partsdb=True)
+def diff_polarity(ctx):
+    """A receiver's positive input on a net named as a pair's negative half
+    (by `nets.diff_pair_suffixes`) and the negative input on the positive
+    half: the pair is swapped."""
+    suffixes = ctx.config["nets"]["diff_pair_suffixes"]
+    for comp, p, n, pp in _diff_receivers(ctx):
+        for pos, neg in suffixes:
+            if p.net.endswith(neg) and n.net.endswith(pos) and p.net[:-len(neg)] == n.net[:-len(pos)]:
+                yield Finding("PIN008", f"{comp.designator} {p.name} (+) is on '{p.net}' and {n.name} (-) on "
+                                        f"'{n.net}': the pair is swapped", refs=[comp.designator],
+                              nets=[p.net, n.net], part_number=comp.part_number)
+                break

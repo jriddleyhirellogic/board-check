@@ -174,3 +174,42 @@ def test_three_state_symbol_drawn_as_hiz_agrees():
     ctx = build_ctx([("U1", "BUF", [("1", "O\\E\\", "GND", "input"), ("2", "A", "N", "input"),
                                     ("3", "Y", "OUT", "hiz")])], parts=BUF_DATA)
     assert findings(pins.schematic_vs_part, ctx) == []
+
+
+RX = {"pin_functions": {
+    "A": {"direction": "input", "function": "LVDS_IN_P", "diff_pair": "B", "pins": ["1"], "io_standard": "LVDS"},
+    "B": {"direction": "input", "function": "LVDS_IN_N", "diff_pair": "A", "pins": ["2"], "io_standard": "LVDS"}}}
+
+
+def _rx_ctx(extra, p="SIG_P", n="SIG_N", values=None):
+    from helpers import res
+    comps = [("U1", "RX", [("1", "A", p), ("2", "B", n)]), ("J1", "CONN", [("1", "1", "SIG_P"), ("2", "2", "SIG_N")])]
+    ctx = build_ctx(comps + list(extra), parts={"RX": RX})
+    for pn, v in (values or {}).items():
+        ctx.design.part_params[pn]["R_Value"] = v
+    return ctx
+
+
+def test_diff_receiver_termination():
+    from helpers import res
+    from boardcheck.checks import pins
+    ctx = _rx_ctx([])
+    (f,) = findings(pins.diff_termination, ctx)
+    assert f.message == "U1 A/B on 'SIG_P'/'SIG_N': no 80-150 ohm termination across the pair"
+    assert findings(pins.diff_termination, _rx_ctx([res("R1", "R100", "SIG_P", "SIG_N")], values={"R100": "100"})) == []
+    # split termination: 2 x 49.9 through a centre tap with a capacitor to ground
+    split = [res("R1", "R50", "SIG_P", "CT"), res("R2", "R50", "CT", "SIG_N"), ("C1", "CAP", [("1", "1", "CT"), ("2", "2", "GND")])]
+    assert findings(pins.diff_termination, _rx_ctx(split, values={"R50": "49.9"})) == []
+    # wrong value, and a second termination
+    (w,) = findings(pins.diff_termination, _rx_ctx([res("R1", "R1K", "SIG_P", "SIG_N")], values={"R1K": "1k"}))
+    assert "(found R1 1000 ohm)" in w.message
+    two = [res("R1", "R100", "SIG_P", "SIG_N"), res("R2", "R100", "SIG_P", "SIG_N")]
+    (d,) = findings(pins.diff_termination, _rx_ctx(two, values={"R100": "100"}))
+    assert d.severity == "warning" and "terminated more than once (R1 100 ohm, R2 100 ohm)" in d.message
+
+
+def test_diff_receiver_polarity():
+    from boardcheck.checks import pins
+    assert findings(pins.diff_polarity, _rx_ctx([])) == []
+    (f,) = findings(pins.diff_polarity, _rx_ctx([], p="SIG_N", n="SIG_P"))
+    assert f.message == "U1 A (+) is on 'SIG_N' and B (-) on 'SIG_P': the pair is swapped"

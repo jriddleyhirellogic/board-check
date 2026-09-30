@@ -75,6 +75,9 @@ DEFAULTS = {
         # VS alone or numbered (VS, VS1, VS_A); not VSENSE, VSS or VSYNC.
         "power_names": r"^(VDD|VCC|AVDD|DVDD|VDDQ|VDDIO|VCCIO|VCCA|VCCO|VIN|PVIN|VPP|VS(?![A-Z]))\w*$",
         "ground_names": r"^(GND|VSS|AGND|DGND|PGND|VSSQ|VSSA)\w*$",
+        # A differential receiver pair's termination: a resistor across the
+        # pair (or two in series through a centre tap) in this range (ohms).
+        "diff_termination_ohms": [80, 150],
     },
     "parts": {
         # Parameters every part of a kind must carry, non-empty.
