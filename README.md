@@ -78,6 +78,7 @@ resistors as the level checks do.
 | SYS004 | error | A signal driven by push-pull outputs on both boards (receivers with no driver on either board: warning); signals with parts lacking pin data are not judged |
 | SYS005 | error | A driver on one board against receivers on the other: VOH below VIH, VOL above VIL, supply above the input's absolute maximum |
 | SYS006 | info | Each link's pairing, wired pins left unpaired, and parts whose missing pin data keeps a signal from being judged |
+| SYS007 | warning | A wired signal the link's name pairing leaves without a partner, with what it would meet under the link's pin-numbering rule |
 
 A name map may also be a stem table (`map: {by: name, suffix: '_([PN])$',
 names: {GPOUT: GPO_FARSIGHT_TO_BP, ...}}`): the suffix is carried across
@@ -87,7 +88,6 @@ names it, and SYS007 reports a wired signal left without a partner together
 with the pin that rule would put it on. `unpaired_ok` lists net patterns
 expected to have no partner.
 
-| SYS007 | warning | A wired signal the link's name pairing leaves without a partner, with what it would meet under the link's pin-numbering rule |
 
 Farsight: CM-03545 J7 mates CM-02441 (sensor) J1 directly; to CM-03986
 (backplane), J3 reaches J2 through the Ethernet harness (MDI pair n to ETH5
