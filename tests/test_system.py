@@ -5,6 +5,7 @@ from helpers import make_export
 
 
 def _board(tmp_path, name, comps, cfg=""):
+    tmp_path.mkdir(parents=True, exist_ok=True)
     d = tmp_path / name
     d.mkdir()
     (d / "x.json").write_text(json.dumps(make_export(comps)))
@@ -16,6 +17,7 @@ def _system(tmp_path, a_conn, b_conn, a_extra=(), b_extra=(), mapping="pins"):
     boards = {"A": _board(tmp_path, "A", [("J1", "CONN", a_conn)] + list(a_extra)),
               "B": _board(tmp_path, "B", [("P1", "CONN", b_conn)] + list(b_extra))}
     import yaml
+    tmp_path.mkdir(parents=True, exist_ok=True)
     (tmp_path / "sys.yaml").write_text(yaml.safe_dump({
         "boards": boards, "links": [{"name": "L", "a": "A:J1", "b": "B:P1", "map": mapping}]}))
     return System.load(str(tmp_path / "sys.yaml"))
@@ -56,3 +58,19 @@ def test_contention_across_boards(tmp_path):
     b_extra = [("U2", "Y", [("1", "O", "SIG2", "output")])]
     (c,) = _by(run_system(_system(tmp_path, a, b, a_extra, b_extra)), "SYS004")
     assert "driven from both boards (A U1.1; B U2.1)" in c.message
+
+
+def test_drivers_found_through_ac_coupling(tmp_path):
+    # Lane: B's transmitter -> series capacitor -> connector; A's receiver on the other side.
+    a = [("1", "1", "LANE_P"), ("2", "2", "GND")]
+    b = [("1", "1", "LANE_P"), ("2", "2", "GND")]
+    a_extra = [("U1", "RX", [("1", "I", "LANE_P", "input"), ("2", "G", "GND", "power")])]
+    b_extra = [("C1", "CAP", [("1", "1", "LANE_P"), ("2", "2", "TX_P")]),
+               ("U2", "TX", [("1", "O", "TX_P", "output"), ("2", "G", "GND", "power")])]
+    found = run_system(_system(tmp_path, a, b, a_extra, b_extra))
+    assert not _by(found, "SYS004"), "U2 drives the lane through C1"
+    # without the capacitor's far side driven, nothing drives A's receiver
+    b_extra = [("C1", "CAP", [("1", "1", "LANE_P"), ("2", "2", "TX_P")]),
+               ("U2", "TX", [("1", "O", "TX_P", "input"), ("2", "G", "GND", "power")])]
+    (w,) = _by(run_system(_system(tmp_path / "x", a, b, a_extra, b_extra)), "SYS004")
+    assert "nothing drives A U1.1, B U2.1" in w.message

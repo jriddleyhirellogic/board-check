@@ -464,9 +464,12 @@ def diff_termination(ctx):
     unless the part data gives the pin an internal `termination_ohms`. More
     than one termination across the same pair is a warning."""
     lo, hi = ctx.config["pins"]["diff_termination_ohms"]
+    cfg = ctx.config
     for comp, p, n, pp in _diff_receivers(ctx):
         if pp.entry.get("termination_ohms"):
             continue
+        if all(cfg.is_ground(x) or cfg.net_voltage(x) is not None for x in (p.net, n.net)):
+            continue        # an unused receiver tied to fixed levels (e.g. A to VCC, B to GND)
         terms = _terminations(ctx, p.net, n.net)
         good = [t for t in terms if t[0] is not None and lo <= t[0] <= hi]
         pair = f"{comp.designator} {p.name}/{n.name} on '{p.net}'/'{n.net}'"

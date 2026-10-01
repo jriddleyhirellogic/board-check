@@ -213,3 +213,8 @@ def test_diff_receiver_polarity():
     assert findings(pins.diff_polarity, _rx_ctx([])) == []
     (f,) = findings(pins.diff_polarity, _rx_ctx([], p="SIG_N", n="SIG_P"))
     assert f.message == "U1 A (+) is on 'SIG_N' and B (-) on 'SIG_P': the pair is swapped"
+
+
+def test_unused_receiver_tied_to_rails_needs_no_termination():
+    from boardcheck.checks import pins
+    assert findings(pins.diff_termination, _rx_ctx([], p="3V3", n="GND")) == []

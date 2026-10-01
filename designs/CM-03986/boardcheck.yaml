@@ -4,6 +4,10 @@
 
 export:
   min_version: "2.4.0"
+  # Title and hierarchy sheets: no components by design.
+  empty_sheets_ok:
+    - CM-03984.SchDoc
+    - SV1 BACKPLANE TOP LEVEL.SchDoc
 
 # M1..M29 are mounting holes; RT1 is a thermistor.
 designator_kinds:

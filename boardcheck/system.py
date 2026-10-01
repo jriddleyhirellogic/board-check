@@ -126,8 +126,11 @@ def _is_open(board, pin):
 
 
 def _side(board, pin):
-    """(signal, drivers, receivers) on the board for the net at a connector pin;
-    None when the net is a rail or ground."""
+    """The signal on the board for the net at a connector pin, as
+    (signal, drivers, receivers, coupled drivers, coupled receivers,
+    signals). Coupled ones sit beyond series capacitors (AC coupling, as on
+    SLVS-EC and PCIe lanes): they count for who drives the line, not for DC
+    levels. None when the net is a rail or ground."""
     from .checks.levels import _roles, signals
     cfg = board.config
     if cfg.is_ground(pin.net) or cfg.net_voltage(pin.net) is not None:
@@ -139,7 +142,24 @@ def _side(board, pin):
     if sig is None:
         return None
     drivers, receivers = _roles(board.ctx, sig)
-    return sig, drivers, receivers
+    coupled = []
+    for n in sig.nets:
+        for q in board.design.nets[n].pins:
+            comp = q.component
+            if board.ctx.kind(comp) != "capacitor" or len(comp.pins) != 2:
+                continue
+            other = next(x.net for x in comp.pins if x is not q)
+            if cfg.is_ground(other) or cfg.net_voltage(other) is not None or other in sig.nets:
+                continue
+            far = by_net.get(other)
+            if far is not None and all(far is not c for c in coupled):
+                coupled.append(far)
+    cd, cr = [], []
+    for far in coupled:
+        d, r = _roles(board.ctx, far)
+        cd += d
+        cr += r
+    return sig, drivers, receivers, cd, cr, [sig] + coupled
 
 
 def check_open(system):
@@ -225,17 +245,18 @@ def check_drivers(system):
             sa, sb = _side(ba, pa), _side(bb, pb)
             if sa is None or sb is None:
                 continue
-            da = [d for d in sa[1] if d[1] == "output"]
-            db = [d for d in sb[1] if d[1] == "output"]
+            da = [d for d in sa[1] + sa[3] if d[1] == "output"]
+            db = [d for d in sb[1] + sb[3] if d[1] == "output"]
             refs = [f"{ba.name}:{pa.component.designator}", f"{bb.name}:{pb.component.designator}"]
             if da and db:
                 yield Finding("SYS004", f"{link.name}: {_where(ba, pa)} <-> {_where(bb, pb)}: driven from both boards "
                                         f"({', '.join(f'{ba.name} {d[0].ref}' for d in da)}; "
                                         f"{', '.join(f'{bb.name} {d[0].ref}' for d in db)})",
                               severity=ERROR, refs=refs, nets=[pa.net, pb.net])
-            elif not sa[1] and not sb[1] and (sa[2] or sb[2]) and not (sa[0].ties or sb[0].ties) \
-                    and not _unknown(ba, sa[0]) and not _unknown(bb, sb[0]):
-                rx = [f"{ba.name} {r[0].ref}" for r in sa[2]] + [f"{bb.name} {r[0].ref}" for r in sb[2]]
+            elif not (sa[1] or sa[3] or sb[1] or sb[3]) and (sa[2] or sa[4] or sb[2] or sb[4]) \
+                    and not (sa[0].ties or sb[0].ties) \
+                    and not any(_unknown(ba, g) for g in sa[5]) and not any(_unknown(bb, g) for g in sb[5]):
+                rx = [f"{ba.name} {r[0].ref}" for r in sa[2] + sa[4]] + [f"{bb.name} {r[0].ref}" for r in sb[2] + sb[4]]
                 yield Finding("SYS004", f"{link.name}: {_where(ba, pa)} <-> {_where(bb, pb)}: nothing drives "
                                         f"{', '.join(rx)} on either board", severity=WARNING, refs=refs,
                               nets=[pa.net, pb.net])
@@ -299,7 +320,7 @@ def check_map(system):
             text += f"; wired but unpaired: {', '.join(loose)}"
         unknown = sorted({f"{b.name} {p.component.designator} ({p.component.part_number})"
                           for pa, pb in link.pairs for b, pin in ((ba, pa), (bb, pb))
-                          for side in [_side(b, pin)] if side for p in _unknown(b, side[0])})
+                          for side in [_side(b, pin)] if side for g in side[5] for p in _unknown(b, g)})
         if unknown:
             text += f"; drive and levels not judged for parts without pin data: {', '.join(unknown)}"
         yield Finding("SYS006", text, severity=INFO,

@@ -72,7 +72,13 @@ def unconnected_supply_pins(ctx):
         if ctx.config.is_mechanical(comps[desig]):
             continue
         supply = [p for p in pins if _is_supply_pin(ctx, p)]
-        if supply:
+        if supply and ctx.kind(comps[desig]) == "connector":
+            # A connector's pin names come from whatever mates with it: a pin
+            # named like a supply may be a rail the mated module provides.
+            yield Finding("NET003", f"{desig}: pin(s) named as supplies not connected: {_pin_list(supply)}; "
+                                    "check whether the mated board or module expects them supplied",
+                          severity=WARNING, refs=[desig])
+        elif supply:
             yield Finding("NET003", f"{desig}: supply pin(s) not connected: {_pin_list(supply)}",
                           refs=[desig])
 
