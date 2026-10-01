@@ -1,8 +1,10 @@
 # board-check
 
 Automated checks on the Farsight avionics board schematic, run against the
-JSON netlist that `altium/ExportAllSchematicsToJSON_v2.3.pas` writes from
-Altium.
+JSON netlist that `altium/ExportAllSchematicsToJSON_v2.4.pas` writes from
+Altium. Version 2.4 adds each component's footprint; it has not yet been run
+in Altium, so keep `_v2.3.pas` (the last verified version) until a 2.4 export
+of CM-03545 has come back with no "footprint" lines in its warnings file.
 
 The Altium export is a manual step (DelphiScript inside Altium). Commit the
 JSON it produces under `designs/<assembly>/`; everything after that runs on
@@ -39,7 +41,8 @@ python -m boardcheck diff OLD.json NEW.json -c designs/CM-03545/boardcheck.yaml 
 ```
 
 reports what changed between two exports of a design: components added or
-removed, part number and comment changes, every pin that moved to another
+removed, part number, comment and footprint changes (both exports from
+script 2.4.0 or later), every pin that moved to another
 net, nets renamed, part parameter changes, sheets added or removed, and the
 check findings the new export introduces or resolves. Nets are matched by
 their pins, not their names: a net whose pins are unchanged under a new name
@@ -53,6 +56,7 @@ only. The Markdown output is meant for a pull request comment.
 | Id | Default | What it catches |
 |---|---|---|
 | EXP007 | info | Export has no pin electrical types (script older than 2.3.0) |
+| EXP008 | info | Export has no footprints (script older than 2.4.0); PRT008/PRT009 are skipped |
 | EXP001-006 | error | Export not trustworthy: old script version, sheets with no components, multi-part components missing part A, part numbers missing from the dictionary, a designator with two part numbers, totals differing from `export.expect` |
 | NET001 | warning | Labelled net reaching one pin (typo'd net label or port, unfinished wire). `UNUSED`/`SPARE` stubs are allowed |
 | NET002 | info | Unconnected pins, per component, for review |
@@ -68,6 +72,8 @@ only. The Markdown output is meant for a pull request comment.
 | PRT005 | warning | Qualification missing or not in the allowed list |
 | PRT006 | error | Designator prefix contradicts the decoded part type (a resistor PN on a `C` designator) |
 | PRT007 | warning | Design Item ID differs from Part Number |
+| PRT008 | warning | Component (other than `mechanical_kinds`) with no current footprint on its symbol |
+| PRT009 | error | One part number placed with different footprints |
 | PWR001 | warning | Capacitor over its derating limit; **error** over its rating |
 | PWR002 | warning | Resistor between two rails over power derating; **error** over rating, over working voltage, or 0 Ω between different rails |
 | PWR003 | warning | Supply rail with no capacitor to ground |

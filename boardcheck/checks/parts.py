@@ -169,3 +169,36 @@ def design_item_id(ctx):
         if item and item != pn:
             yield Finding("PRT007", f"Design Item ID '{item}' but Part Number '{pn}'",
                           refs=_refs(comps), part_number=pn)
+
+
+@check("PRT008", "Component without a footprint", WARNING, needs_footprints=True)
+def missing_footprint(ctx):
+    """Every component except mechanical ones (`mechanical_kinds`) needs a
+    current PCB footprint on its symbol (export script >= 2.4.0)."""
+    missing = [c for c in ctx.design.components.values()
+               if not c.footprint and not ctx.config.is_mechanical(c)]
+    by_pn = {}
+    for c in missing:
+        by_pn.setdefault(c.part_number, []).append(c)
+    for pn, comps in sorted(by_pn.items()):
+        yield Finding("PRT008", f"{', '.join(_refs(comps))} ({pn or 'no part number'}): no current footprint on the "
+                                "symbol", refs=_refs(comps), part_number=pn or None)
+
+
+@check("PRT009", "Same part number placed with different footprints", ERROR, needs_footprints=True)
+def footprint_consistency(ctx):
+    """All components of one part number must use the same footprint; a
+    different one usually means a symbol placed from another library or
+    with an alternate footprint selected."""
+    for pn, comps in sorted(ctx.design.components_by_part_number().items()):
+        if not pn:
+            continue
+        groups = {}
+        for c in comps:
+            if c.footprint:
+                groups.setdefault(c.footprint, []).append(c)
+        if len(groups) > 1:
+            parts = "; ".join(f"{fp}: {', '.join(_refs(cs))}"
+                              for fp, cs in sorted(groups.items(), key=lambda x: -len(x[1])))
+            yield Finding("PRT009", f"{pn} uses {len(groups)} footprints ({parts})",
+                          refs=_refs([c for cs in groups.values() for c in cs]), part_number=pn)

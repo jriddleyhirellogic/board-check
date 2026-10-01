@@ -38,6 +38,9 @@ class Component:
     parts: list = field(default_factory=list)        # sub-part designators
     pins: list = field(default_factory=list)
     part_numbers_seen: set = field(default_factory=set)
+    footprint: str = None             # current PCB footprint (export script >= 2.4.0)
+    footprint_library: str = None
+    footprint_alternates: list = field(default_factory=list)
 
     @property
     def prefix(self):
@@ -85,6 +88,7 @@ class Design:
         self.sheets = []
         self.components = {}
         self.nets = {}
+        self.has_footprints = False     # the export carries "footprint" (script >= 2.4.0)
         self._load(project.get("schematics", []))
 
     @classmethod
@@ -109,6 +113,12 @@ class Design:
                         library_reference=c.get("libraryReference") or "",
                     )
                     self.components[desig] = comp
+                if "footprint" in c:
+                    self.has_footprints = True
+                    if comp.footprint is None and c["footprint"]:
+                        comp.footprint = c["footprint"]
+                        comp.footprint_library = c.get("footprintLibrary")
+                        comp.footprint_alternates = list(c.get("footprintAlternates") or [])
                 comp.part_numbers_seen.add(c.get("partNumber") or "")
                 if sheet_name not in comp.sheets:
                     comp.sheets.append(sheet_name)

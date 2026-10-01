@@ -98,3 +98,10 @@ def pin_types_present(ctx):
     if not ctx.design.has_pin_types:
         yield Finding("EXP007", "no pin carries an electricalType; re-export with script >= 2.3.0 so symbol "
                                 "pin types can be checked against the part data. Pin checks use part data only.")
+
+
+@check("EXP008", "Export has no footprints", INFO)
+def footprints_present(ctx):
+    if not ctx.design.has_footprints:
+        yield Finding("EXP008", "no component carries a footprint; re-export with script >= 2.4.0 so footprints "
+                                "can be checked (PRT008, PRT009) and compared by `boardcheck diff`.")

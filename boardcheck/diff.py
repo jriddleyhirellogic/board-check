@@ -30,6 +30,7 @@ class DesignDiff:
     removed_components: list = field(default_factory=list)
     part_number_changes: list = field(default_factory=list)     # (desig, old pn, new pn)
     comment_changes: list = field(default_factory=list)         # (desig, old, new)
+    footprint_changes: list = field(default_factory=list)       # (desig, old, new), both exports >= 2.4.0
     renamed_nets: list = field(default_factory=list)            # (old name, new name)
     added_nets: list = field(default_factory=list)              # new names with no old counterpart
     removed_nets: list = field(default_factory=list)
@@ -43,7 +44,7 @@ class DesignDiff:
     @property
     def empty(self):
         return not any([self.added_components, self.removed_components, self.part_number_changes,
-                        self.comment_changes, self.renamed_nets, self.added_nets, self.removed_nets,
+                        self.comment_changes, self.footprint_changes, self.renamed_nets, self.added_nets, self.removed_nets,
                         self.moved_pins, self.param_changes, self.added_sheets, self.removed_sheets])
 
 
@@ -58,6 +59,8 @@ def diff(old, new):
             d.part_number_changes.append((desig, a.part_number, b.part_number))
         if a.comment != b.comment:
             d.comment_changes.append((desig, a.comment, b.comment))
+        if old.has_footprints and new.has_footprints and a.footprint != b.footprint:
+            d.footprint_changes.append((desig, a.footprint, b.footprint))
 
     old_sheets = {s.name for s in old.sheets}
     new_sheets = {s.name for s in new.sheets}
@@ -151,8 +154,8 @@ def markdown(d):
         return "\n".join(out + ["No connectivity, component or part data changes.", ""])
     counts = [("components added", d.added_components), ("removed", d.removed_components),
               ("pins moved", d.moved_pins), ("nets renamed", d.renamed_nets),
-              ("part number changes", d.part_number_changes), ("parameter changes", d.param_changes),
-              ("new findings", d.new_findings), ("resolved findings", d.resolved_findings)]
+              ("part number changes", d.part_number_changes), ("footprint changes", d.footprint_changes),
+              ("parameter changes", d.param_changes), ("new findings", d.new_findings), ("resolved findings", d.resolved_findings)]
     out += ["| " + " | ".join(k for k, _ in counts) + " |", "|" + "---:|" * len(counts),
             "| " + " | ".join(str(len(v)) for _, v in counts) + " |", ""]
     sev = {"error": "E", "warning": "W", "info": "I"}
@@ -167,6 +170,7 @@ def markdown(d):
                     lambda c: f"{c} {o.components[c].part_number}")
     out += _section("Part number changes", d.part_number_changes, lambda r: f"{r[0]}: {r[1]} -> {r[2]}")
     out += _section("Comment changes", d.comment_changes, lambda r: f"{r[0]}: {r[1]} -> {r[2]}")
+    out += _section("Footprint changes", d.footprint_changes, lambda r: f"{r[0]}: {r[1] or 'none'} -> {r[2] or 'none'}")
     out += _section("Pins moved to another net", d.moved_pins, lambda r: f"{r[0]}: {r[1]} -> {r[2]}")
     out += _section("Nets renamed (same pins)", d.renamed_nets, lambda r: f"{r[0]} -> {r[1]}")
     out += _section("Nets removed", d.removed_nets, str)
@@ -188,6 +192,7 @@ def as_json(d):
         "new": {"source": d.new.source, "version": d.new.export_version},
         "components_added": d.added_components, "components_removed": d.removed_components,
         "part_number_changes": d.part_number_changes, "comment_changes": d.comment_changes,
+        "footprint_changes": d.footprint_changes,
         "pins_moved": d.moved_pins, "nets_renamed": d.renamed_nets,
         "nets_added": d.added_nets, "nets_removed": d.removed_nets,
         "param_changes": d.param_changes, "sheets_added": d.added_sheets, "sheets_removed": d.removed_sheets,

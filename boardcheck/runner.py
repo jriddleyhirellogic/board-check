@@ -62,6 +62,9 @@ def run(design, config, partsdb=None, only=None):
         if info.needs_pin_types and not design.has_pin_types:
             skipped.append((check_id, "export has no pin electrical types (needs export script >= 2.3.0)"))
             continue
+        if info.needs_footprints and not design.has_footprints:
+            skipped.append((check_id, "export has no footprints (needs export script >= 2.4.0)"))
+            continue
         for f in info.func(ctx):
             f.severity = overrides.get(check_id) or f.severity or info.severity
             findings.append(f)

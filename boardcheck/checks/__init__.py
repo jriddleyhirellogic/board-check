@@ -42,14 +42,16 @@ class CheckInfo:
     func: object
     needs_partsdb: bool = False
     needs_pin_types: bool = False
+    needs_footprints: bool = False
 
 
 REGISTRY = {}
 
 
-def check(check_id, title, severity=WARNING, needs_partsdb=False, needs_pin_types=False):
+def check(check_id, title, severity=WARNING, needs_partsdb=False, needs_pin_types=False, needs_footprints=False):
     def wrap(func):
-        REGISTRY[check_id] = CheckInfo(check_id, title, severity, func, needs_partsdb, needs_pin_types)
+        REGISTRY[check_id] = CheckInfo(check_id, title, severity, func, needs_partsdb, needs_pin_types,
+                                       needs_footprints)
         return func
     return wrap
 

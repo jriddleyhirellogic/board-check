@@ -22,6 +22,10 @@ def make_export(components, part_numbers=None, sheets=None, version="2.2.1"):
             "partCount": len(c["parts"]),
             "parts": [{"designator": pd, "pins": [_pin(*pin) for pin in pins]} for pd, pins in c["parts"]],
         }
+        if "footprint" in c:      # export script >= 2.4.0
+            entry["footprint"] = c["footprint"]
+            entry["footprintLibrary"] = c.get("footprintLibrary")
+            entry["footprintAlternates"] = c.get("footprintAlternates", [])
         by_sheet.setdefault(c.get("sheet", "MAIN.SchDoc"), []).append(entry)
     for s in sheets or []:
         by_sheet.setdefault(s, [])
