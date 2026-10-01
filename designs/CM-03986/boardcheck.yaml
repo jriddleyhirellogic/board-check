@@ -1,0 +1,20 @@
+# Board check configuration for CM-03986 backplane (Q8J, SV1) flight model.
+# Values here override boardcheck/config.py DEFAULTS; see that file for
+# every option.
+
+export:
+  min_version: "2.4.0"
+
+# M1..M29 are mounting holes; RT1 is a thermistor.
+designator_kinds:
+  M: mechanical
+  RT: thermistor
+
+nets:
+  ground: [GND, CHASSIS, SRS4_GND, TOA_GND, AGND, DGND, PGND]
+
+derating:
+  capacitor_voltage: {ceramic: 0.60, tantalum: 0.50, default: 0.60}
+  resistor_power: 0.50
+
+waivers: []

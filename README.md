@@ -13,6 +13,9 @@ any machine with Python.
 ```
 altium/                     Altium export script (run inside Altium)
 designs/CM-03545/           Farsight FM: export JSON, schematic PDF, boardcheck.yaml
+designs/CM-03986/           backplane (Q8J, SV1) FM: export JSON, boardcheck.yaml
+designs/CM-02441/           IMX531 sensor board FM: export JSON, boardcheck.yaml
+designs/farsight_system.yaml  the boards above and the connectors joining them
 boardcheck/                 the checker
 tests/                      unit tests + a smoke test on the committed export
 ```
@@ -50,6 +53,33 @@ is a rename, so Altium's auto-named nets (`NetR345_2`) do not show up as
 changes when designators shift. `--fail-on error` exits 1 when the new
 export introduces an error, for CI; `--no-findings` compares connectivity
 only. The Markdown output is meant for a pull request comment.
+
+## Checking boards together
+
+```
+python -m boardcheck system designs/farsight_system.yaml
+```
+
+checks the connectors that join boards. `designs/farsight_system.yaml` names
+each board's export and boardcheck.yaml, and the links between them: a
+direct mate (`map: pins`, pin n to pin n) or a harness wired by signal name
+(`map: {by: name, a: REGEX, b: REGEX}`: the regex groups on each side's net
+names pair the pins). Each side is judged with its own board's
+configuration, pin types and level data, following signals through series
+resistors as the level checks do.
+
+| Check | Severity | What it finds |
+|---|---|---|
+| SYS001 | warning | A pin wired on one board that reaches a pin connected to nothing on the other |
+| SYS002 | error | Ground meeting a rail or signal, or rails of different nominal voltage, across a connector (a rail meeting a signal: warning) |
+| SYS003 | error | One half of a differential pair wired to the other half on the other board |
+| SYS004 | error | A signal driven by push-pull outputs on both boards (receivers with no driver on either board: warning); signals with parts lacking pin data are not judged |
+| SYS005 | error | A driver on one board against receivers on the other: VOH below VIH, VOL above VIL, supply above the input's absolute maximum |
+| SYS006 | info | Each link's pairing, wired pins left unpaired, and parts whose missing pin data keeps a signal from being judged |
+
+Farsight: CM-03545 J7 mates CM-02441 (sensor) J1 directly; CM-03545 J3
+reaches CM-03986 (backplane) J2 through the Ethernet harness, MDI pair n to
+backplane ETH5 TX pair n.
 
 ## Checks
 

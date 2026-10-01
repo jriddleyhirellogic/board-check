@@ -1,0 +1,21 @@
+# Board check configuration for CM-02441 sensor board (IMX531) flight model.
+# Values here override boardcheck/config.py DEFAULTS; see that file for
+# every option.
+
+export:
+  min_version: "2.4.0"
+
+# M1..M6 are mounting holes, S1/S2 screws.
+designator_kinds:
+  M: mechanical
+  S: mechanical
+
+# "ETH" is earth: the mounting holes and the J1 shell, RC-coupled to GND.
+nets:
+  ground: [GND, ETH]
+
+derating:
+  capacitor_voltage: {ceramic: 0.60, tantalum: 0.50, default: 0.60}
+  resistor_power: 0.50
+
+waivers: []

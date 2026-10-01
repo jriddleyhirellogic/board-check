@@ -1,0 +1,22 @@
+# Farsight boards and the connectors that join them. Run with
+#   python -m boardcheck system designs/farsight_system.yaml
+# Paths are relative to this file.
+
+boards:
+  CM-03545: {export: CM-03545/CM-03545.json, config: CM-03545/boardcheck.yaml}
+  CM-03986: {export: CM-03986/CM-03986.json, config: CM-03986/boardcheck.yaml}
+  CM-02441: {export: CM-02441/CM-02441.json, config: CM-02441/boardcheck.yaml}
+
+links:
+  - name: sensor (J7-J1)
+    a: CM-03545:J7
+    b: CM-02441:J1
+    map: pins                       # Omnetics A49256/A49255 mated directly, pin n to pin n
+
+  - name: ethernet (J3-J2)
+    a: CM-03545:J3
+    b: CM-03986:J2
+    map:                            # harness, wired by name: MDI pair n to backplane ETH5 TX pair n
+      by: name
+      a: 'ETH1_MX(\d)_([PN])$'
+      b: 'Q8J_ETH5_TX(\d)_([PN])$'

@@ -27,6 +27,10 @@ export:
       U12: {parts: 2}
       U13: {parts: 2}
 
+# S1..S8 are screws and standoffs (McMaster, Omnetics jackscrews), not switches.
+designator_kinds:
+  S: mechanical
+
 derating:
   capacitor_voltage: {ceramic: 0.60, tantalum: 0.50, default: 0.60}
   resistor_power: 0.50

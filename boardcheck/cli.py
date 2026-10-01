@@ -47,10 +47,37 @@ def diff_main(argv):
     return 1 if fails else 0
 
 
+def system_main(argv):
+    from . import system as sysmod
+    from .checks import SEVERITY_ORDER
+    ap = argparse.ArgumentParser(prog="boardcheck system",
+                                 description="Checks across boards joined by connectors (see boardcheck/system.py).")
+    ap.add_argument("system", help="system YAML: boards and connector links")
+    ap.add_argument("-f", "--format", choices=["text", "markdown"], default="text")
+    ap.add_argument("-o", "--output", help="write the report here instead of stdout")
+    ap.add_argument("--no-partsdb", action="store_true", help="do not use electronic-parts-repository")
+    ap.add_argument("--fail-on", choices=["error", "warning", "info", "never"], default="error")
+    args = ap.parse_args(argv)
+    partsdb = None if args.no_partsdb else PartsDB.open()
+    s = sysmod.System.load(args.system, partsdb)
+    found = sysmod.run_system(s)
+    rendered = sysmod.text(found) if args.format == "text" else sysmod.markdown(s, found)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(rendered)
+    else:
+        sys.stdout.write(rendered + "\n")
+    if args.fail_on == "never":
+        return 0
+    return 1 if any(SEVERITY_ORDER[f.severity] <= SEVERITY_ORDER[args.fail_on] for f in found) else 0
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv[:1] == ["diff"]:
         return diff_main(argv[1:])
+    if argv[:1] == ["system"]:
+        return system_main(argv[1:])
     ap = argparse.ArgumentParser(prog="boardcheck", description="Automated checks on an Altium schematic JSON export. "
                                                                 "Use 'boardcheck diff OLD NEW' to compare two exports.")
     ap.add_argument("export", nargs="?", help="JSON file written by ExportAllSchematicsToJSON")
