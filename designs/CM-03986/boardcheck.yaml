@@ -16,6 +16,13 @@ designator_kinds:
 
 nets:
   ground: [GND, CHASSIS, SRS4_GND, TOA_GND, AGND, DGND, PGND]
+  # Replaces the default list, so the default pattern is repeated. The
+  # HDRM_CTRL_BP_TO_MPS_P1..P4 / S1..S4 hold-down release controls are
+  # single-ended Q8J GPIOs to J12, numbered P (primary) and S (secondary),
+  # not differential pairs.
+  diff_pair_ignore:
+    - '_(RST|RESET|INT|INTERRUPT|IRQ|ALERT|FAULT|EN|CS|OE|WE|WP|HOLD)_N$'
+    - 'HDRM_CTRL_.*_[PS]\d$'
 
 derating:
   capacitor_voltage: {ceramic: 0.60, tantalum: 0.50, default: 0.60}
