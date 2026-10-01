@@ -31,6 +31,9 @@ def test_lone_non_first_subpart():
     ctx = build_ctx([{"designator": "U1", "partNumber": "FPGA",
                       "parts": [("U1A", [("A1", "IO", "X")]), ("U1B", [("A2", "IO", "Y")])]}])
     assert findings(export.lone_subparts, ctx) == []
+    # channel B of a multi-channel sheet: the component is C153B itself, not a sub-part
+    ctx = build_ctx([{"designator": "C153B", "partNumber": "CAP", "parts": [("C153B", [("1", "1", "X")])]}])
+    assert findings(export.lone_subparts, ctx) == []
 
 
 def test_part_number_missing_from_dictionary():

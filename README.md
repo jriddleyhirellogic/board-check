@@ -2,11 +2,10 @@
 
 Automated checks on the Farsight avionics board schematic, run against the
 JSON netlist that `altium/ExportAllSchematicsToJSON_v2.5.pas` writes from
-Altium. Version 2.5 exports every channel of a multi-channel sheet (2.4 and
-earlier kept only the first: CM-03986 RS422.SchDoc lost 8 of its 9 RS-422
-channels); it has not yet been run in Altium, so keep `_v2.4.pas` (verified on
-CM-03545, CM-03986 and CM-02441) until a 2.5 export of CM-03986 comes back
-with its RS-422 channels as U8A, U8B, ...
+Altium. Version 2.5 exports every channel of a multi-channel sheet under its
+physical designators (2.4 and earlier kept only the first: CM-03986
+RS422.SchDoc came through as U8 alone instead of U8A-U8L). Earlier versions
+are in the git history.
 
 The Altium export is a manual step (DelphiScript inside Altium). Commit the
 JSON it produces under `designs/<assembly>/`; everything after that runs on

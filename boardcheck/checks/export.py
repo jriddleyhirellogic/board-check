@@ -40,7 +40,10 @@ def empty_sheets(ctx):
 @check("EXP003", "Multi-part component missing its first part", ERROR)
 def lone_subparts(ctx):
     for comp in ctx.design.components.values():
-        suffixes = {split_part_suffix(p)[1] for p in comp.parts}
+        # A part named exactly like its component is the whole component, even
+        # when that designator ends in a letter (channel B of a multi-channel
+        # sheet exports as C153B).
+        suffixes = {split_part_suffix(p)[1] for p in comp.parts if p != comp.designator}
         suffixes.discard("")
         if suffixes and "A" not in suffixes:
             yield Finding("EXP003", f"{comp.designator} exported only as {', '.join(sorted(comp.parts))}; "
