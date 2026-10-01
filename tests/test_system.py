@@ -74,3 +74,11 @@ def test_drivers_found_through_ac_coupling(tmp_path):
                ("U2", "TX", [("1", "O", "TX_P", "input"), ("2", "G", "GND", "power")])]
     (w,) = _by(run_system(_system(tmp_path / "x", a, b, a_extra, b_extra)), "SYS004")
     assert "nothing drives A U1.1, B U2.1" in w.message
+
+
+def test_signal_leaving_through_another_connector_is_not_undriven(tmp_path):
+    a = [("1", "1", "SIG")]
+    b = [("1", "1", "SIG2")]
+    a_extra = [("U1", "RX", [("1", "I", "SIG", "input")])]
+    b_extra = [("J9", "MODULE", [("1", "1", "SIG2")])]       # the driver is on a module plugged into J9
+    assert not _by(run_system(_system(tmp_path, a, b, a_extra, b_extra)), "SYS004")

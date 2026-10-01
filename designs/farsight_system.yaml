@@ -20,3 +20,39 @@ links:
       by: name
       a: 'ETH1_MX(\d)_([PN])$'
       b: 'Q8J_ETH5_TX(\d)_([PN])$'
+    unpaired_ok: ['^Q8J_ETH5_LED']  # the RJ45 status LEDs are not carried to Farsight
+
+  - name: control (J1-J3)
+    a: CM-03545:J1
+    b: CM-03986:J3
+    map:                            # harness, wired by name; P/N carried across
+      by: name
+      suffix: '_([PN])$'
+      names:
+        RS422_BUS_TO_FARSIGHT: RS422_BP_TO_FARSIGHT
+        RS422_FARSIGHT_TO_BUS: RS422_FARSIGHT_TO_BP
+        PPS: PPS_RMT_TO_FARSIGHT
+        GPOUT: GPO_FARSIGHT_TO_BP
+        GPIN: GPI_BP_TO_FARSIGHT
+        TRIG: TRIG_BP_TO_FARSIGHT
+        INTERRUPT: INTERRUPT_FARSIGHT_TO_BP
+        PR_SS: PR_SS_BP_TO_FARSIGHT
+        PR_SDI: PR_SDI_BP_TO_FARSIGHT
+        PR_SDO: PR_SDO_FARSIGHT_TO_BP
+        PR_SCK: PR_SCK_BP_TO_FARSIGHT
+
+  - name: PCIe (J2-J4)
+    a: CM-03545:J2
+    b: CM-03986:J4
+    map:                            # Samtec ARF6 cable, wired by name
+      by: name
+      suffix: '_([PN])$'
+      names:
+        PCIE_REF_CLK: REFCLK_FARSIGHT
+        PCIE0_TX: PCIE_FARSIGHT_TO_BP_0
+        PCIE1_TX: PCIE_FARSIGHT_TO_BP_1
+        PCIE0_RX: PCIE_BP_TO_FARSIGHT_0
+        PCIE1_RX: PCIE_BP_TO_FARSIGHT_1
+        PCIE_nRESET: PCIE_nRESET_BP_TO_FARSIGHT
+        UNUSED0: UNUSED0
+        UNUSED1: UNUSED1

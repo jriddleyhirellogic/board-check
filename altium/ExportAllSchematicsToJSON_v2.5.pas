@@ -1,0 +1,1622 @@
+{==============================================================================}
+{ Altium DelphiScript: Export All Schematics to JSON                          }
+{ Version: 2.5.0                                                               }
+{ Author: J.Riddley                                                           }
+{ Description: Exports all schematic documents with part number dictionary    }
+{              to avoid duplicate parameter data. Fully JSON-compliant.       }
+{                                                                              }
+{ 2.5 changes:                                                                 }
+{                                                                              }
+{  1. Multi-channel sheets (a sheet symbol with Repeat(), or one .SchDoc      }
+{     placed several times) export every channel. The compiled project has    }
+{     one physical document per channel, all with the same file path; the     }
+{     earlier scripts keyed net data by logical designator, so every channel  }
+{     after the first was a duplicate and silently dropped. CM-03986          }
+{     RS422.SchDoc lost 8 of its 9 RS-422 channels that way (only U8, channel }
+{     A, came through). Components on such sheets are now exported under      }
+{     their physical designators (U8A, U8B, ... as the project's channel      }
+{     naming makes them), one component per channel, each with that channel's}
+{     nets. Sheets placed once keep their schematic designators, so exports   }
+{     of flat designs (CM-03545, CM-02441) are unchanged.                     }
+{                                                                              }
+{  2. The warnings file lists each multi-channel sheet and its channel count. }
+{                                                                              }
+{ 2.4 changes:                                                                 }
+{                                                                              }
+{  1. Every component carries its footprint, read from the symbol's PCB       }
+{     implementation models (eImplementation objects, ModelType PCBLIB):      }
+{       "footprint"           the current model's name, or null if none       }
+{       "footprintLibrary"    the library the current model links to, or null }
+{       "footprintAlternates" names of the other PCBLIB models on the symbol  }
+{     A component with no current footprint is reported in the warnings file. }
+{     boardcheck uses it to flag components without a footprint and the same  }
+{     part number placed with different footprints.                          }
+{                                                                              }
+{  2. Not yet run in Altium when written: check the first export's warnings  }
+{     file for "error reading a footprint model" lines.                       }
+{                                                                              }
+{ 2.3 changes:                                                                 }
+{                                                                              }
+{  1. Every pin carries "electricalType", read from the schematic pin's        }
+{     Electrical property: input, io, output, open_collector, passive, hiz,    }
+{     open_emitter or power ("unknown:<n>" for a value this script does not    }
+{     name, "unknown" if the property could not be read). boardcheck compares  }
+{     it against the part data in electronic-parts-repository and flags        }
+{     differences: the symbol's pin types are not trusted on their own.        }
+{                                                                              }
+{  2. Hand-edited from the generated v2.2.1: make_v2.2.py is not in this       }
+{     repository. If the generator is found, port this change into it.         }
+{                                                                              }
+{ 2.2 changes:                                                                 }
+{                                                                              }
+{  The subminor is bumped on every regeneration, so two builds that differ     }
+{  only by an attempted fix can be told apart. The version appears in the      }
+{  JSON as "exportScriptVersion", at the top of the warnings file, and in the  }
+{  completion dialog -- check it before trusting an export.                    }
+{                                                                              }
+{  1. Sheets are opened AND shown before being read.                           }
+{     Client.OpenDocument alone leaves SchServer.GetSchDocumentByPath          }
+{     returning nil, so which sheets exported could depend on which tabs       }
+{     happened to be open. A run that read only the title sheet produced a     }
+{     structurally valid JSON with one empty sheet and no part numbers --      }
+{     indistinguishable from a good export without reading the warnings.       }
+{     (A failed license checkout produces the same symptom, so this is not     }
+{     the only possible cause of that run; showing is correct regardless.)     }
+{                                                                              }
+{  2. Sheets this script opens are closed again when it finishes.              }
+{     Showing a sheet necessarily opens it as a tab. Sheets already open are   }
+{     detected and left untouched; only what the script opened is closed, and  }
+{     a document that comes back modified is left open and reported.           }
+{                                                                              }
+{  3. Multi-part components are read from the FLATTENED document.              }
+{     A per-sheet document does not return a multi-part component at all when  }
+{     the only part on that sheet is not the first part -- U1 is simply        }
+{     absent from FPGA BANK1's component list, so neither "U1B" nor "U1" was   }
+{     there to look up and the v2.1 base-designator fallback had nothing to    }
+{     fall back to. Walking every per-sheet document does NOT help: it reaches }
+{     the same set. The flattened document holds each component once with its  }
+{     full DM_SubPartCount, so DM_SubParts yields U1A..U1N and every part      }
+{     becomes reachable. Per-sheet documents are still walked afterwards as a  }
+{     supplement; duplicate keys are ignored, so flattened data wins.          }
+{     Measured on CM-03545 (2026-09-11 and 2026-09-15, both v2.1-era):         }
+{     19 component instances skipped -- U1 missing 10 of 14 parts (736 of      }
+{     1152 pins) across FPGA BANK1..BANK7 and the XCVR sheets, and U5..U13     }
+{     each missing their B part from the DDR4 16GB decoupling sheet.           }
+{                                                                              }
+{  4. A sheet left empty because its components were skipped is no longer      }
+{     reported as "expected for title/hierarchy-only sheets". FPGA XCVR2 and   }
+{     XCVR3 lost its only component, U1J, and was then described as normal.    }
+{                                                                              }
+{  5. The export is not written at all if no sheet could be read, rather than  }
+{     emitting a valid-looking but empty file.                                 }
+{                                                                              }
+{  Structural: FetchComponentNetData is replaced by BuildProjectNetData,       }
+{  AddDocComponents and AddNetEntry; OpenSchDoc and CloseDocsWeOpened are new. }
+{                                                                              }
+{  A good export of CM-03545 should show 37 sheets, 254 part numbers, U1 with  }
+{  14 parts and 1152 pins, U2 with 10 parts and 484 pins, U5..U13 with 2 parts }
+{  each, and no "skipped" lines in the warnings file. The check that           }
+{  generalises: no exported instance of a multi-part component should be a     }
+{  lone non-first part.                                                        }
+{                                                                              }
+{  Generated by make_v2.2.py from v2.1. Edit the generator, not this file.     }
+{ 2.1 changes:                                                                 }
+{  - Removed trailing comma after "components" (output was invalid JSON)      }
+{  - Multi-part components with only one part on a sheet are no longer        }
+{    dropped (e.g. U1X alone on a sheet)                                       }
+{  - Pins filtered to the placed part and display mode; no more repeated pins }
+{  - Part number dictionary now opens each sheet first, so it covers all      }
+{    sheets instead of only the ones already open in the editor               }
+{  - Skipped components, sheets, and part number conflicts are logged to      }
+{    <output>_warnings.txt instead of being silently discarded                }
+{  - ProcessNets is no longer called (its output was already discarded)       }
+{==============================================================================}
+
+const
+    // Bumped on every change (by make_v2.2.py up to 2.2.1). Emitted into the JSON, the
+    // warnings file and the completion dialog so that an export can always be
+    // traced back to the script that produced it.
+    SCRIPT_VERSION = '2.5.0';
+
+var
+    ExportWarnings : TStringList;
+    // Paths this script opened, so it can close them again and leave the
+    // editor as it found it. Sheets already open when the script started are
+    // never recorded here and never closed.
+    OpenedDocs : TStringList;
+    // Multi-channel sheets: "<UPPERCASE PATH>|<logical designator>" ->
+    // TStringList of "<physical base designator>#2<physical full designator>",
+    // one entry per channel. Built by BuildProjectNetData.
+    ChannelMap : TStringList;
+
+// Forward declarations
+procedure AddWarning(Msg : String); forward;
+function ProcessSchematicDocument(Doc : IDocument; PartNumberDict : TStringList; ProjectNetData : TStringList) : String; forward;
+function ProcessComponents(PhysDoc : IDocument; SchDoc : ISch_Document; PartNumberDict : TStringList; ProjectNetData : TStringList) : String; forward;
+function ProcessNets(SchDoc : ISch_Document) : String; forward;
+function CleanFileName(FileName : String) : String; forward;
+function EscapeJsonString(Str : String) : String; forward;
+function PinElectricalToString(APin : ISch_Pin) : String; forward;
+function GetFootprintJson(AComponent : ISch_Component; Where : String) : String; forward;
+function OpenSchDoc(FullPath : String) : ISch_Document; forward;
+procedure CloseDocsWeOpened; forward;
+function AddNetEntry(Dict : TStringList; Key : String; PinsData : TStringList) : Boolean; forward;
+procedure AddDocComponents(Dict : TStringList; Doc : IDocument); forward;
+procedure AddChannelComponents(Dict : TStringList; Doc : IDocument); forward;
+function PathChannelCount(Project : IProject; Path : String) : Integer; forward;
+function ChannelInstances(Path : String; LogicalFull : String; LogicalBase : String) : TStringList; forward;
+function BuildProjectNetData(Project : IProject) : TStringList; forward;
+function GetComponentParameters(AComponent : ISch_Component) : TStringList; forward;
+function BuildPartNumberDictionary(Project : IProject) : TStringList; forward;
+function PartNumberDictionaryToJson(PartNumberDict : TStringList) : String; forward;
+
+{------------------------------------------------------------------------------}
+{ AddWarning: Records a problem so it is reported instead of silently skipped }
+{------------------------------------------------------------------------------}
+procedure AddWarning(Msg : String);
+begin
+    if ExportWarnings <> nil then
+        ExportWarnings.Add(Msg);
+end;
+
+{------------------------------------------------------------------------------}
+{ EscapeJsonString: Escapes special characters for JSON (RFC 8259 compliant)  }
+{------------------------------------------------------------------------------}
+function EscapeJsonString(Str : String) : String;
+var
+    i : Integer;
+    EscapedStr : String;
+    c : Char;
+    CharCode : Integer;
+begin
+    EscapedStr := '';
+    for i := 1 to Length(Str) do
+    begin
+        c := Str[i];
+        CharCode := Ord(c);
+
+        case c of
+            '\': EscapedStr := EscapedStr + '\\';
+            '"': EscapedStr := EscapedStr + '\"';
+            '/': EscapedStr := EscapedStr + '\/';
+            #8:  EscapedStr := EscapedStr + '\b';
+            #9:  EscapedStr := EscapedStr + '\t';
+            #10: EscapedStr := EscapedStr + '\n';
+            #12: EscapedStr := EscapedStr + '\f';
+            #13: EscapedStr := EscapedStr + '\r';
+        else
+            if CharCode < 32 then
+                EscapedStr := EscapedStr + '\u00' + IntToHex(CharCode, 2)
+            else
+                EscapedStr := EscapedStr + c;
+        end;
+    end;
+    Result := EscapedStr;
+end;
+
+{------------------------------------------------------------------------------}
+{ PinElectricalToString: Schematic pin electrical type as a JSON-friendly name }
+{                                                                              }
+{ This is the type drawn on the symbol, which may be wrong; boardcheck treats   }
+{ it as a claim to verify against the part data, not as the truth.             }
+{------------------------------------------------------------------------------}
+function PinElectricalToString(APin : ISch_Pin) : String;
+var
+    E : Integer;
+begin
+    Result := 'unknown';
+    try
+        E := APin.Electrical;
+        case E of
+            eElectricInput:         Result := 'input';
+            eElectricIO:            Result := 'io';
+            eElectricOutput:        Result := 'output';
+            eElectricOpenCollector: Result := 'open_collector';
+            eElectricPassive:       Result := 'passive';
+            eElectricHiZ:           Result := 'hiz';
+            eElectricOpenEmitter:   Result := 'open_emitter';
+            eElectricPower:         Result := 'power';
+        else
+            Result := 'unknown:' + IntToStr(E);
+        end;
+    except
+        Result := 'unknown';
+    end;
+end;
+
+{------------------------------------------------------------------------------}
+{ GetFootprintJson: The component's footprint as JSON properties              }
+{                                                                              }
+{ Footprints are not parameters: they are implementation models attached to   }
+{ the symbol (Properties > Footprint). Each PCBLIB model is one footprint; the }
+{ current one is what goes to the PCB. Returns three property lines, each     }
+{ ending in a comma, ready to insert into the component object. The result    }
+{ never contains #1, so it can travel in the #1-separated part record.        }
+{------------------------------------------------------------------------------}
+function GetFootprintJson(AComponent : ISch_Component; Where : String) : String;
+var
+    ImplIterator : ISch_Iterator;
+    Impl : ISch_Implementation;
+    ModelName : String;
+    CurrentName : String;
+    CurrentLib : String;
+    AltJson : String;
+    Found : Boolean;
+begin
+    CurrentName := '';
+    CurrentLib := '';
+    AltJson := '';
+    Found := False;
+
+    ImplIterator := AComponent.SchIterator_Create;
+    if ImplIterator <> nil then
+    begin
+        try
+            ImplIterator.AddFilter_ObjectSet(MkSet(eImplementation));
+
+            Impl := ImplIterator.FirstSchObject;
+            while Impl <> nil do
+            begin
+                try
+                    if UpperCase(Impl.ModelType) = 'PCBLIB' then
+                    begin
+                        ModelName := Impl.ModelName;
+                        if Impl.IsCurrent and (not Found) then
+                        begin
+                            CurrentName := ModelName;
+                            Found := True;
+                            // The library link is optional (a model can be found by
+                            // name in any installed library), so a failure here only
+                            // loses the library, not the footprint.
+                            // DatafileLink is an indexed property; the call form is
+                            // tried too in case this Altium version exposes a method.
+                            try
+                                if Impl.DatafileLinkCount > 0 then
+                                    CurrentLib := Impl.DatafileLink[0].Location;
+                            except
+                                try
+                                    CurrentLib := Impl.DatafileLink(0).Location;
+                                except
+                                    CurrentLib := '';
+                                end;
+                            end;
+                        end
+                        else
+                        begin
+                            if AltJson <> '' then
+                                AltJson := AltJson + ', ';
+                            AltJson := AltJson + '"' + EscapeJsonString(ModelName) + '"';
+                        end;
+                    end;
+                except
+                    AddWarning(Where + ' - error reading a footprint model');
+                end;
+
+                Impl := ImplIterator.NextSchObject;
+            end;
+        finally
+            AComponent.SchIterator_Destroy(ImplIterator);
+        end;
+    end;
+
+    if not Found then
+        AddWarning(Where + ' - no current footprint (PCBLIB model)');
+
+    if Found then
+        Result := '            "footprint": "' + EscapeJsonString(CurrentName) + '",' + #13#10
+    else
+        Result := '            "footprint": null,' + #13#10;
+
+    if CurrentLib <> '' then
+        Result := Result + '            "footprintLibrary": "' + EscapeJsonString(CurrentLib) + '",' + #13#10
+    else
+        Result := Result + '            "footprintLibrary": null,' + #13#10;
+
+    Result := Result + '            "footprintAlternates": [' + AltJson + '],' + #13#10;
+end;
+
+{------------------------------------------------------------------------------}
+{ CleanFileName: Sanitizes filename                                           }
+{------------------------------------------------------------------------------}
+function CleanFileName(FileName : String) : String;
+var
+    i : Integer;
+    CleanName : String;
+    c : Char;
+begin
+    CleanName := '';
+    for i := 1 to Length(FileName) do
+    begin
+        c := FileName[i];
+        if ((c >= 'A') and (c <= 'Z')) or
+           ((c >= 'a') and (c <= 'z')) or
+           ((c >= '0') and (c <= '9')) or
+           (c = '_') or (c = '-') then
+            CleanName := CleanName + c
+        else
+            CleanName := CleanName + '_';
+    end;
+    Result := CleanName;
+end;
+
+{------------------------------------------------------------------------------}
+{ OpenSchDoc: Opens a sheet and makes SchServer aware of it.                  }
+{                                                                              }
+{ Client.OpenDocument alone is not enough. It returns a server document, but   }
+{ until that document is shown, SchServer.GetSchDocumentByPath still returns   }
+{ nil -- so only sheets that already happened to be open in the editor could   }
+{ be read. That made export coverage depend on which tabs were open when the   }
+{ script ran, which is not a property of the project at all.                   }
+{                                                                              }
+{ Showing a sheet necessarily opens it as a tab, so this is also why an export }
+{ fills the editor. Sheets that were already open are returned untouched and   }
+{ are never recorded; anything opened here is recorded in OpenedDocs and is    }
+{ closed again by CloseDocsWeOpened when the export finishes.                  }
+{------------------------------------------------------------------------------}
+function OpenSchDoc(FullPath : String) : ISch_Document;
+var
+    ServerDoc : IServerDocument;
+begin
+    Result := nil;
+    if SchServer = nil then Exit;
+
+    // Already loaded, for example because the user had it open. Leave it alone
+    // so the script does not close a tab it did not open.
+    Result := SchServer.GetSchDocumentByPath(FullPath);
+    if Result <> nil then Exit;
+
+    ServerDoc := Client.OpenDocument('SCH', FullPath);
+    if ServerDoc = nil then Exit;
+
+    Client.ShowDocument(ServerDoc);
+
+    if OpenedDocs <> nil then
+        if OpenedDocs.IndexOf(FullPath) < 0 then
+            OpenedDocs.Add(FullPath);
+
+    Result := SchServer.GetSchDocumentByPath(FullPath);
+end;
+
+{------------------------------------------------------------------------------}
+{ CloseDocsWeOpened: Puts the editor back the way it was found.               }
+{                                                                              }
+{ Only closes sheets this script opened. A document that somehow came back     }
+{ modified is left open and reported, rather than being closed behind the      }
+{ user's back or triggering a save prompt mid-export.                          }
+{------------------------------------------------------------------------------}
+procedure CloseDocsWeOpened;
+var
+    i : Integer;
+    ServerDoc : IServerDocument;
+begin
+    if OpenedDocs = nil then Exit;
+
+    for i := 0 to OpenedDocs.Count - 1 do
+    begin
+        ServerDoc := Client.GetDocumentByPath(OpenedDocs[i]);
+        if ServerDoc <> nil then
+        begin
+            if ServerDoc.Modified then
+                AddWarning(ExtractFileName(OpenedDocs[i]) + ': left open because it is modified; the export does not modify sheets, so check why')
+            else
+                Client.CloseDocument(ServerDoc);
+        end;
+    end;
+
+    OpenedDocs.Clear;
+end;
+
+{------------------------------------------------------------------------------}
+{ AddNetEntry: Adds one designator -> pin/net list entry, ignoring duplicates  }
+{                                                                              }
+{ Takes ownership of PinsData: it is stored on success and freed on duplicate, }
+{ so the caller never has to decide.                                           }
+{------------------------------------------------------------------------------}
+function AddNetEntry(Dict : TStringList; Key : String; PinsData : TStringList) : Boolean;
+begin
+    if Dict.IndexOf(Key) < 0 then
+    begin
+        Dict.AddObject(Key, PinsData);
+        Result := True;
+    end
+    else
+    begin
+        PinsData.Free;
+        Result := False;
+    end;
+end;
+
+{------------------------------------------------------------------------------}
+{ AddDocComponents: Keys every component and sub-part of one document.        }
+{------------------------------------------------------------------------------}
+procedure AddDocComponents(Dict : TStringList; Doc : IDocument);
+var
+    J : Integer;
+    K : Integer;
+    MultiPartCnt : Integer;
+    Comp : Component;
+    MultiPart : IPart;
+    Pin : IPin;
+    PinsData : TStringList;
+begin
+    if Doc = nil then Exit;
+
+    For J := 0 to Doc.DM_ComponentCount - 1 Do
+    Begin
+        Comp := Doc.DM_Components(J);
+
+        // Key the component's own designator. For a single-part component this
+        // is the only entry needed.
+        PinsData := TStringList.Create;
+        For K := 0 to Comp.DM_PinCount - 1 Do
+        Begin
+            Pin := Comp.DM_Pins(K);
+            PinsData.Add(Pin.DM_PinNumber + ':' + Pin.DM_FlattenedNetName);
+        End;
+        AddNetEntry(Dict, Comp.DM_FullLogicalDesignator, PinsData);
+
+        // Key every sub-part as well, so a part drawn alone on some other sheet
+        // still resolves.
+        If Comp.DM_SubPartCount > 1 Then
+        Begin
+            For MultiPartCnt := 0 to Comp.DM_SubPartCount - 1 Do
+            Begin
+                MultiPart := Comp.DM_SubParts(MultiPartCnt);
+                PinsData := TStringList.Create;
+                For K := 0 to MultiPart.DM_PinCount - 1 Do
+                Begin
+                    Pin := MultiPart.DM_Pins(K);
+                    PinsData.Add(Pin.DM_PinNumber + ':' + Pin.DM_FlattenedNetName);
+                End;
+                AddNetEntry(Dict, MultiPart.DM_FullLogicalDesignator, PinsData);
+            End;
+        End;
+    End;
+end;
+
+{------------------------------------------------------------------------------}
+{ PathChannelCount: How many physical documents (channels) share a sheet file. }
+{------------------------------------------------------------------------------}
+function PathChannelCount(Project : IProject; Path : String) : Integer;
+var
+    D : Integer;
+begin
+    Result := 0;
+    For D := 0 to Project.DM_PhysicalDocumentCount - 1 Do
+        if UpperCase(Project.DM_PhysicalDocuments(D).DM_FullPath) = UpperCase(Path) then
+            Result := Result + 1;
+end;
+
+{------------------------------------------------------------------------------}
+{ AddChannelEntry: Records one channel instance of a logical designator.      }
+{------------------------------------------------------------------------------}
+procedure AddChannelEntry(Key : String; Value : String);
+var
+    Idx : Integer;
+    Instances : TStringList;
+begin
+    if ChannelMap = nil then Exit;
+    Idx := ChannelMap.IndexOf(Key);
+    if Idx < 0 then
+    begin
+        Instances := TStringList.Create;
+        ChannelMap.AddObject(Key, Instances);
+    end
+    else
+        Instances := TStringList(ChannelMap.Objects[Idx]);
+    if Instances.IndexOf(Value) < 0 then
+        Instances.Add(Value);
+end;
+
+{------------------------------------------------------------------------------}
+{ AddChannelComponents: Keys one channel of a multi-channel sheet.            }
+{                                                                              }
+{ Every channel holds the same logical designators (U8), so they are keyed    }
+{ here by physical designator (U8A, U8B, ...), and ChannelMap records which   }
+{ physical instances each logical designator of the sheet has.               }
+{------------------------------------------------------------------------------}
+procedure AddChannelComponents(Dict : TStringList; Doc : IDocument);
+var
+    J : Integer;
+    K : Integer;
+    MultiPartCnt : Integer;
+    Comp : Component;
+    MultiPart : IPart;
+    Pin : IPin;
+    PinsData : TStringList;
+    Path : String;
+    PhysBase : String;
+    PhysFull : String;
+begin
+    if Doc = nil then Exit;
+    Path := UpperCase(Doc.DM_FullPath);
+
+    For J := 0 to Doc.DM_ComponentCount - 1 Do
+    Begin
+        Comp := Doc.DM_Components(J);
+        PhysBase := Comp.DM_PhysicalDesignator;
+
+        PinsData := TStringList.Create;
+        For K := 0 to Comp.DM_PinCount - 1 Do
+        Begin
+            Pin := Comp.DM_Pins(K);
+            PinsData.Add(Pin.DM_PinNumber + ':' + Pin.DM_FlattenedNetName);
+        End;
+        PhysFull := Comp.DM_FullPhysicalDesignator;
+        AddNetEntry(Dict, PhysFull, PinsData);
+        AddChannelEntry(Path + '|' + Comp.DM_FullLogicalDesignator, PhysBase + #2 + PhysFull);
+
+        If Comp.DM_SubPartCount > 1 Then
+        Begin
+            For MultiPartCnt := 0 to Comp.DM_SubPartCount - 1 Do
+            Begin
+                MultiPart := Comp.DM_SubParts(MultiPartCnt);
+                PinsData := TStringList.Create;
+                For K := 0 to MultiPart.DM_PinCount - 1 Do
+                Begin
+                    Pin := MultiPart.DM_Pins(K);
+                    PinsData.Add(Pin.DM_PinNumber + ':' + Pin.DM_FlattenedNetName);
+                End;
+                PhysFull := MultiPart.DM_FullPhysicalDesignator;
+                AddNetEntry(Dict, PhysFull, PinsData);
+                AddChannelEntry(Path + '|' + MultiPart.DM_FullLogicalDesignator, PhysBase + #2 + PhysFull);
+            End;
+        End;
+    End;
+end;
+
+{------------------------------------------------------------------------------}
+{ ChannelInstances: The instances to export for one placed schematic part:    }
+{ every channel's "physical base#2physical full" for a multi-channel sheet,   }
+{ else the logical designators themselves. The caller frees the list.         }
+{------------------------------------------------------------------------------}
+function ChannelInstances(Path : String; LogicalFull : String; LogicalBase : String) : TStringList;
+var
+    Idx : Integer;
+    Key : String;
+begin
+    Result := TStringList.Create;
+    Idx := -1;
+    if ChannelMap <> nil then
+    begin
+        Key := UpperCase(Path) + '|';
+        Idx := ChannelMap.IndexOf(Key + LogicalFull);
+        if (Idx < 0) and (LogicalFull <> LogicalBase) then
+            Idx := ChannelMap.IndexOf(Key + LogicalBase);
+    end;
+    if Idx >= 0 then
+        Result.AddStrings(TStringList(ChannelMap.Objects[Idx]))
+    else
+        Result.Add(LogicalBase + #2 + LogicalFull);
+end;
+
+{------------------------------------------------------------------------------}
+{ BuildProjectNetData: One pin/net dictionary for the WHOLE project.          }
+{                                                                              }
+{ The flattened document is the source that matters. A per-sheet document does }
+{ not return a multi-part component at all when the only part on that sheet is }
+{ not the first part -- U1 is simply absent from FPGA BANK1's component list,  }
+{ so no amount of walking the per-sheet documents can reach U1B. In the        }
+{ flattened document the component appears once with its full DM_SubPartCount, }
+{ so DM_SubParts yields U1A..U1N and every part becomes reachable.             }
+{                                                                              }
+{ The per-sheet documents are walked afterwards as a supplement, for anything  }
+{ the flattened view does not carry. Duplicate keys are ignored, so the        }
+{ flattened data wins.                                                         }
+{                                                                              }
+{ The returned list owns its objects. Free it with the loop in                }
+{ ExportAllSchematicsToJSON, not per sheet.                                   }
+{------------------------------------------------------------------------------}
+function BuildProjectNetData(Project : IProject) : TStringList;
+var
+    D : Integer;
+    Channels : Integer;
+    FlatDoc : IDocument;
+    Doc : IDocument;
+    Reported : TStringList;
+begin
+    Result := TStringList.Create;
+    Result.Sorted := True;
+    Result.Duplicates := dupIgnore;
+
+    FlatDoc := Project.DM_DocumentFlattened;
+    if FlatDoc = nil then
+        AddWarning('flattened document unavailable; multi-part components drawn alone on a sheet may be skipped. Compile the project (Project > Compile) and re-run.')
+    else
+        AddDocComponents(Result, FlatDoc);
+
+    // A sheet placed more than once (multi-channel) has one physical document
+    // per channel; those are keyed by physical designator, the rest as before.
+    Reported := TStringList.Create;
+    try
+        For D := 0 to Project.DM_PhysicalDocumentCount - 1 Do
+        Begin
+            Doc := Project.DM_PhysicalDocuments(D);
+            Channels := PathChannelCount(Project, Doc.DM_FullPath);
+            if Channels > 1 then
+            begin
+                AddChannelComponents(Result, Doc);
+                if Reported.IndexOf(UpperCase(Doc.DM_FullPath)) < 0 then
+                begin
+                    Reported.Add(UpperCase(Doc.DM_FullPath));
+                    AddWarning(ExtractFileName(Doc.DM_FullPath) + ': multi-channel sheet, ' + IntToStr(Channels) +
+                               ' channels exported under their physical designators');
+                end;
+            end
+            else
+                AddDocComponents(Result, Doc);
+        End;
+    finally
+        Reported.Free;
+    end;
+end;
+
+{------------------------------------------------------------------------------}
+{ GetComponentParameters: Gets all parameters from a component                }
+{------------------------------------------------------------------------------}
+function GetComponentParameters(AComponent : ISch_Component) : TStringList;
+var
+    PIterator : ISch_Iterator;
+    Parameter : ISch_Parameter;
+    ParamName : String;
+    ParamValue : String;
+begin
+    Result := TStringList.Create;
+
+    if AComponent = nil then Exit;
+
+    PIterator := AComponent.SchIterator_Create;
+    if PIterator <> nil then
+    begin
+        try
+            PIterator.AddFilter_ObjectSet(MkSet(eParameter));
+
+            Parameter := PIterator.FirstSchObject;
+            while Parameter <> nil do
+            begin
+                try
+                    ParamName := Parameter.Name;
+                    ParamValue := Parameter.Text;
+
+                    if (ParamName <> '') then
+                        Result.Add(ParamName + '=' + ParamValue);
+                except
+                end;
+
+                Parameter := PIterator.NextSchObject;
+            end;
+        finally
+            AComponent.SchIterator_Destroy(PIterator);
+        end;
+    end;
+end;
+
+{------------------------------------------------------------------------------}
+{ BuildPartNumberDictionary: Scans all components and builds dictionary       }
+{ Stores parameters along with library source information                     }
+{------------------------------------------------------------------------------}
+function BuildPartNumberDictionary(Project : IProject) : TStringList;
+var
+    Doc : IDocument;
+    SchDoc : ISch_Document;
+    Iterator : ISch_Iterator;
+    AComponent : ISch_Component;
+    PartNumber : String;
+    Parameters : TStringList;
+    SourceInfo : String;
+    BaseDesig : String;
+    PrevPartNumber : String;
+    DesigPartNumbers : TStringList;
+    ConflictDesigs : TStringList;
+    Added : Boolean;
+    i : Integer;
+    j : Integer;
+begin
+    Result := TStringList.Create;
+    Result.Sorted := True;
+    Result.Duplicates := dupIgnore;
+
+    // Designator -> first part number seen, used to flag designators whose
+    // parts (or duplicate components) carry different part numbers
+    DesigPartNumbers := TStringList.Create;
+    ConflictDesigs := TStringList.Create;
+    ConflictDesigs.Sorted := True;
+    ConflictDesigs.Duplicates := dupIgnore;
+
+    try
+        for i := 0 to Project.DM_LogicalDocumentCount - 1 do
+        begin
+            Doc := Project.DM_LogicalDocuments(i);
+
+            if (Doc.DM_DocumentKind = 'SCH') or (Doc.DM_DocumentKind = 'SCHEMATIC') then
+            begin
+                SchDoc := OpenSchDoc(Doc.DM_FullPath);
+
+                if SchDoc = nil then
+                begin
+                    AddWarning(ExtractFileName(Doc.DM_FullPath) + ': could not open sheet while building part number dictionary');
+                end
+                else
+                begin
+                    Iterator := SchDoc.SchIterator_Create;
+                    try
+                        Iterator.AddFilter_ObjectSet(MkSet(eSchComponent));
+
+                        AComponent := Iterator.FirstSchObject;
+                        while AComponent <> nil do
+                        begin
+                            BaseDesig := '?';
+                            Added := False;
+                            Parameters := GetComponentParameters(AComponent);
+                            try
+                                try
+                                    BaseDesig := AComponent.Designator.Text;
+                                except
+                                    BaseDesig := '?';
+                                end;
+
+                                // Get the actual Source field from component properties
+                                SourceInfo := '';
+                                try
+                                    // Try SourceLibraryName first (matches the Source field in properties)
+                                    SourceInfo := AComponent.SourceLibraryName;
+                                    if SourceInfo = '' then
+                                    begin
+                                        // Try ComponentDescription
+                                        SourceInfo := AComponent.ComponentDescription;
+                                        if SourceInfo = '' then
+                                        begin
+                                            // Try DatabaseLibraryName for database components
+                                            SourceInfo := AComponent.DatabaseLibraryName;
+                                            if SourceInfo = '' then
+                                            begin
+                                                // Try LibraryPath and extract filename
+                                                SourceInfo := AComponent.LibraryPath;
+                                                if SourceInfo <> '' then
+                                                    SourceInfo := ExtractFileName(SourceInfo)
+                                                else
+                                                    SourceInfo := 'Unknown';
+                                            end;
+                                        end;
+                                    end;
+                                except
+                                    SourceInfo := 'Unknown';
+                                end;
+
+                                PartNumber := '';
+                                for j := 0 to Parameters.Count - 1 do
+                                begin
+                                    if Pos('Part Number=', Parameters[j]) = 1 then
+                                    begin
+                                        PartNumber := Copy(Parameters[j], Length('Part Number=') + 1, Length(Parameters[j]));
+                                        Break;
+                                    end;
+                                end;
+
+                                // Flag designators whose parts carry different part numbers.
+                                // The component-level "partNumber" in the JSON only reflects
+                                // the first part found on each sheet.
+                                if (PartNumber <> '') and (BaseDesig <> '?') then
+                                begin
+                                    if DesigPartNumbers.IndexOfName(BaseDesig) < 0 then
+                                        DesigPartNumbers.Add(BaseDesig + '=' + PartNumber)
+                                    else
+                                    begin
+                                        PrevPartNumber := DesigPartNumbers.Values[BaseDesig];
+                                        if (PrevPartNumber <> PartNumber) and (ConflictDesigs.IndexOf(BaseDesig) < 0) then
+                                        begin
+                                            ConflictDesigs.Add(BaseDesig);
+                                            AddWarning(BaseDesig + ': parts/components with this designator carry different part numbers (' +
+                                                       PrevPartNumber + ' vs ' + PartNumber + ', found on ' +
+                                                       ExtractFileName(Doc.DM_FullPath) + ')');
+                                        end;
+                                    end;
+                                end;
+
+                                if (PartNumber <> '') and (Result.IndexOf(PartNumber) < 0) then
+                                begin
+                                    // Add source library info as first item in the parameters list
+                                    Parameters.Insert(0, '__SOURCE__=' + SourceInfo);
+                                    Result.AddObject(PartNumber, Parameters);
+                                    Added := True;
+                                end;
+                            except
+                                AddWarning(ExtractFileName(Doc.DM_FullPath) + ': ' + BaseDesig + ' - error reading component while building part number dictionary');
+                            end;
+
+                            if not Added then
+                                Parameters.Free;
+
+                            AComponent := Iterator.NextSchObject;
+                        end;
+                    finally
+                        SchDoc.SchIterator_Destroy(Iterator);
+                    end;
+                end;
+            end;
+        end;
+    finally
+        DesigPartNumbers.Free;
+        ConflictDesigs.Free;
+    end;
+end;
+
+{------------------------------------------------------------------------------}
+{ PartNumberDictionaryToJson: Converts part number dictionary to JSON         }
+{ Includes source component designator for each part number                   }
+{------------------------------------------------------------------------------}
+function PartNumberDictionaryToJson(PartNumberDict : TStringList) : String;
+var
+    JsonData : String;
+    IsFirst : Boolean;
+    PartNumber : String;
+    Parameters : TStringList;
+    ParamJson : String;
+    IsFirstParam : Boolean;
+    ParamName : String;
+    ParamValue : String;
+    SourceDesignator : String;
+    i : Integer;
+    j : Integer;
+    Idx : Integer;
+    StartIdx : Integer;
+begin
+    JsonData := '';
+    IsFirst := True;
+
+    for i := 0 to PartNumberDict.Count - 1 do
+    begin
+        PartNumber := PartNumberDict[i];
+        Parameters := TStringList(PartNumberDict.Objects[i]);
+
+        if not IsFirst then
+            JsonData := JsonData + ',' + #13#10;
+
+        // Extract source designator (first item if present)
+        SourceDesignator := 'Unknown';
+        StartIdx := 0;
+        if Parameters.Count > 0 then
+        begin
+            if Pos('__SOURCE__=', Parameters[0]) = 1 then
+            begin
+                SourceDesignator := Copy(Parameters[0], Length('__SOURCE__=') + 1, Length(Parameters[0]));
+                StartIdx := 1; // Skip the source entry when building parameters
+            end;
+        end;
+
+        ParamJson := '';
+        IsFirstParam := True;
+
+        for j := StartIdx to Parameters.Count - 1 do
+        begin
+            Idx := Pos('=', Parameters[j]);
+            if Idx > 0 then
+            begin
+                ParamName := Copy(Parameters[j], 1, Idx - 1);
+                ParamValue := Copy(Parameters[j], Idx + 1, Length(Parameters[j]));
+
+                if not IsFirstParam then
+                    ParamJson := ParamJson + ',' + #13#10;
+
+                ParamJson := ParamJson + '        {' + #13#10;
+                ParamJson := ParamJson + '          "name": "' + EscapeJsonString(ParamName) + '",' + #13#10;
+                ParamJson := ParamJson + '          "value": "' + EscapeJsonString(ParamValue) + '"' + #13#10;
+                ParamJson := ParamJson + '        }';
+
+                IsFirstParam := False;
+            end;
+        end;
+
+        JsonData := JsonData + '      {' + #13#10;
+        JsonData := JsonData + '        "partNumber": "' + EscapeJsonString(PartNumber) + '",' + #13#10;
+        JsonData := JsonData + '        "source": "' + EscapeJsonString(SourceDesignator) + '",' + #13#10;
+        JsonData := JsonData + '        "parameters": [' + #13#10 + ParamJson + #13#10 + '        ]' + #13#10;
+        JsonData := JsonData + '      }';
+
+        IsFirst := False;
+    end;
+
+    Result := JsonData;
+end;
+
+{------------------------------------------------------------------------------}
+{ MAIN EXPORT PROCEDURE                                                        }
+{------------------------------------------------------------------------------}
+procedure ExportAllSchematicsToJSON;
+var
+    Project : IProject;
+    Doc : IDocument;
+    i : Integer;
+    DocCount : Integer;
+    JsonOutput : String;
+    SchematicData : String;
+    IsFirstSchematic : Boolean;
+    FileName : String;
+    ProjectDir : String;
+    ProjectName : String;
+    TimeStamp : String;
+    OutputFile : TextFile;
+    PartNumberDict : TStringList;
+    ProjectNetData : TStringList;
+    PartNumberJson : String;
+    WarningsFileName : String;
+    WarningSummary : String;
+begin
+    Project := GetWorkSpace.DM_FocusedProject;
+    if Project = nil then
+    begin
+        ShowError('No project is currently open');
+        Exit;
+    end;
+
+    ExportWarnings := TStringList.Create;
+    OpenedDocs := TStringList.Create;
+    ChannelMap := TStringList.Create;
+    ChannelMap.Sorted := True;
+    ChannelMap.Duplicates := dupIgnore;
+
+    Project.DM_Compile;
+
+    ProjectDir := ExtractFilePath(Project.DM_ProjectFullPath);
+    ProjectName := ChangeFileExt(ExtractFileName(Project.DM_ProjectFullPath), '');
+    ProjectName := CleanFileName(ProjectName);
+
+    TimeStamp := FormatDateTime('YYYYMMDD_HHNNSS', Now);
+    FileName := ProjectDir + ProjectName + '_sch_' + TimeStamp + '.json';
+    WarningsFileName := ProjectDir + ProjectName + '_sch_' + TimeStamp + '_warnings.txt';
+
+    PartNumberDict := BuildPartNumberDictionary(Project);
+
+    // Refuse to write a plausible-looking but empty export. If no sheet could be
+    // read, the JSON would still be valid and would still name the project,
+    // which is exactly the failure that is easy to miss downstream.
+    if PartNumberDict.Count = 0 then
+    begin
+        ShowError('No schematic sheet could be read.' + #13#10 + #13#10 +
+                  'The project lists ' + IntToStr(Project.DM_LogicalDocumentCount) +
+                  ' documents but none could be opened, so the export was not written.' + #13#10 + #13#10 +
+                  'Check that the project compiles cleanly (Project > Compile) and that ' +
+                  'the .SchDoc files are present at the path the project references.');
+        PartNumberDict.Free;
+        ChannelMap.Free;
+        ChannelMap := nil;
+        CloseDocsWeOpened;
+        OpenedDocs.Free;
+        OpenedDocs := nil;
+        ExportWarnings.Free;
+        ExportWarnings := nil;
+        Exit;
+    end;
+
+    // One net dictionary for the whole project. Built after DM_Compile so every
+    // physical document is available, and before any sheet is processed.
+    ProjectNetData := BuildProjectNetData(Project);
+
+    JsonOutput := '{' + #13#10;
+    JsonOutput := JsonOutput + '  "project": {' + #13#10;
+    JsonOutput := JsonOutput + '    "name": "' + EscapeJsonString(ExtractFileName(Project.DM_ProjectFileName)) + '",' + #13#10;
+    JsonOutput := JsonOutput + '    "created": "' + EscapeJsonString(DateTimeToStr(Now)) + '",' + #13#10;
+    JsonOutput := JsonOutput + '    "exportScriptVersion": "' + SCRIPT_VERSION + '",' + #13#10;
+
+    PartNumberJson := PartNumberDictionaryToJson(PartNumberDict);
+    JsonOutput := JsonOutput + '    "partNumbers": [' + #13#10 + PartNumberJson + #13#10 + '    ],' + #13#10;
+
+    JsonOutput := JsonOutput + '    "schematics": [' + #13#10;
+
+    DocCount := Project.DM_LogicalDocumentCount;
+    IsFirstSchematic := True;
+
+    for i := 0 to DocCount - 1 do
+    begin
+        Doc := Project.DM_LogicalDocuments(i);
+
+        if (Doc.DM_DocumentKind = 'SCH') or (Doc.DM_DocumentKind = 'SCHEMATIC') then
+        begin
+            SchematicData := ProcessSchematicDocument(Doc, PartNumberDict, ProjectNetData);
+            if SchematicData <> '' then
+            begin
+                if not IsFirstSchematic then
+                    JsonOutput := JsonOutput + ',' + #13#10;
+                JsonOutput := JsonOutput + SchematicData;
+                IsFirstSchematic := False;
+            end
+            else
+                AddWarning(ExtractFileName(Doc.DM_FullPath) + ': sheet omitted from JSON');
+        end;
+    end;
+
+    JsonOutput := JsonOutput + #13#10 + '    ]' + #13#10;
+    JsonOutput := JsonOutput + '  }' + #13#10;
+    JsonOutput := JsonOutput + '}';
+
+    for i := 0 to PartNumberDict.Count - 1 do
+        TStringList(PartNumberDict.Objects[i]).Free;
+    PartNumberDict.Free;
+
+    AssignFile(OutputFile, FileName);
+
+    try
+        Rewrite(OutputFile);
+        Write(OutputFile, JsonOutput);
+        CloseFile(OutputFile);
+
+        if ExportWarnings.Count = 0 then
+            WarningSummary := 'No warnings.'
+        else
+        begin
+            try
+                ExportWarnings.Insert(0, '# ExportAllSchematicsToJSON v' + SCRIPT_VERSION + ' -- ' + DateTimeToStr(Now));
+                ExportWarnings.Insert(1, '# ' + FileName);
+                ExportWarnings.Insert(2, '');
+                ExportWarnings.SaveToFile(WarningsFileName);
+                WarningSummary := IntToStr(ExportWarnings.Count) + ' warning(s) written to: ' + WarningsFileName;
+            except
+                WarningSummary := IntToStr(ExportWarnings.Count) + ' warning(s); could not write ' + WarningsFileName;
+            end;
+            for i := 0 to ExportWarnings.Count - 1 do
+            begin
+                if i >= 10 then
+                begin
+                    WarningSummary := WarningSummary + #13#10 + '  ...';
+                    Break;
+                end;
+                WarningSummary := WarningSummary + #13#10 + '  ' + ExportWarnings[i];
+            end;
+        end;
+
+        ShowInfo('Export complete (script v' + SCRIPT_VERSION + ')' + #13#10 + #13#10 +
+                'Saved to: ' + FileName + #13#10 + #13#10 +
+                'File size: ' + IntToStr(Length(JsonOutput)) + ' characters' + #13#10 + #13#10 +
+                WarningSummary);
+    except
+        CloseFile(OutputFile);
+        ShowError('Failed to save file to: ' + FileName + #13#10 + #13#10 +
+                 'Please ensure the project directory is writable.');
+    end;
+
+    if ProjectNetData <> nil then
+    begin
+        for i := 0 to ProjectNetData.Count - 1 do
+            TStringList(ProjectNetData.Objects[i]).Free;
+        ProjectNetData.Free;
+        ProjectNetData := nil;
+    end;
+
+    if ChannelMap <> nil then
+    begin
+        for i := 0 to ChannelMap.Count - 1 do
+            TStringList(ChannelMap.Objects[i]).Free;
+        ChannelMap.Free;
+        ChannelMap := nil;
+    end;
+
+    // Close the sheets this run opened, leaving any the user already had open.
+    CloseDocsWeOpened;
+    OpenedDocs.Free;
+    OpenedDocs := nil;
+
+    ExportWarnings.Free;
+    ExportWarnings := nil;
+end;
+
+{------------------------------------------------------------------------------}
+{ ProcessSchematicDocument: Processes a single schematic document             }
+{------------------------------------------------------------------------------}
+function ProcessSchematicDocument(Doc : IDocument; PartNumberDict : TStringList; ProjectNetData : TStringList) : String;
+var
+    SchDoc : ISch_Document;
+    PhysicalDoc : IDocument;
+    Project : IProject;
+    i : Integer;
+    JsonData : String;
+    ComponentsJson : String;
+    NetsJson : String;
+    SheetNumber : String;
+    DocumentNumber : String;
+    SheetTotal : String;
+    Iterator : ISch_Iterator;
+    Parameter : ISch_Parameter;
+    CurrentFileName : String;
+    CurrentFullPath : String;
+    CurrentDocName : String;
+    WarningsBefore : Integer;
+begin
+    Result := '';
+
+    CurrentFileName := ExtractFileName(Doc.DM_FullPath);
+    CurrentFullPath := Doc.DM_FullPath;
+    CurrentDocName := Doc.DM_FileName;
+
+    Project := GetWorkSpace.DM_FocusedProject;
+    if Project = nil then Exit;
+
+    PhysicalDoc := nil;
+    for i := 0 to Project.DM_PhysicalDocumentCount - 1 do
+    begin
+        PhysicalDoc := Project.DM_PhysicalDocuments(i);
+        if PhysicalDoc.DM_FullPath = CurrentFullPath then Break;
+    end;
+
+    if (PhysicalDoc = nil) or (PhysicalDoc.DM_FullPath <> CurrentFullPath) then
+    begin
+        AddWarning(CurrentFileName + ': no matching compiled (physical) document; is it a multi-channel or device sheet?');
+        Exit;
+    end;
+
+    SchDoc := OpenSchDoc(CurrentFullPath);
+    if SchDoc = nil then
+    begin
+        AddWarning(CurrentFileName + ': could not open schematic document at ' + CurrentFullPath);
+        Exit;
+    end;
+
+    SheetNumber := 'N/A';
+    DocumentNumber := 'N/A';
+    SheetTotal := 'N/A';
+
+    Iterator := SchDoc.SchIterator_Create;
+    try
+        Iterator.SetState_IterationDepth(eIterateFirstLevel);
+        Iterator.AddFilter_ObjectSet(MkSet(eParameter));
+
+        Parameter := Iterator.FirstSchObject;
+        while Parameter <> nil do
+        begin
+            if Parameter.Name = 'SheetNumber' then
+                SheetNumber := Parameter.Text
+            else if Parameter.Name = 'DocumentNumber' then
+                DocumentNumber := Parameter.Text
+            else if Parameter.Name = 'SheetTotal' then
+                SheetTotal := Parameter.Text;
+
+            Parameter := Iterator.NextSchObject;
+        end;
+    finally
+        SchDoc.SchIterator_Destroy(Iterator);
+    end;
+
+    JsonData := '      {' + #13#10;
+    JsonData := JsonData + '        "filename": "' + EscapeJsonString(CurrentFileName) + '",' + #13#10;
+    JsonData := JsonData + '        "fullPath": "' + EscapeJsonString(CurrentFullPath) + '",' + #13#10;
+    JsonData := JsonData + '        "documentName": "' + EscapeJsonString(CurrentDocName) + '",' + #13#10;
+    JsonData := JsonData + '        "sheetNumber": "' + EscapeJsonString(SheetNumber) + '",' + #13#10;
+    JsonData := JsonData + '        "documentNumber": "' + EscapeJsonString(DocumentNumber) + '",' + #13#10;
+    JsonData := JsonData + '        "sheetTotal": "' + EscapeJsonString(SheetTotal) + '",' + #13#10;
+
+    // Remember the warning count before this sheet, so a sheet left empty by a
+    // skipped component is not reported as expected. In v2.1 FPGA XCVR2 and
+    // XCVR3 lost its only component, U1J, and was then described as title-only.
+    WarningsBefore := ExportWarnings.Count;
+
+    ComponentsJson := ProcessComponents(PhysicalDoc, SchDoc, PartNumberDict, ProjectNetData);
+    if ComponentsJson = '' then
+    begin
+        if ExportWarnings.Count > WarningsBefore then
+            AddWarning(CurrentFileName + ': no components exported - every component on this sheet was skipped, see the entries above')
+        else
+            AddWarning(CurrentFileName + ': no components exported (expected for title/hierarchy-only sheets)');
+    end;
+
+    // "components" is the last property, so no trailing comma after its ']'
+    JsonData := JsonData + '        "components": [' + #13#10 + ComponentsJson + #13#10 + '        ]';
+
+    // Nets are not exported. To re-enable, uncomment both lines;
+    // the nets line supplies its own leading comma.
+    //NetsJson := ProcessNets(SchDoc);
+    //JsonData := JsonData + ',' + #13#10 + '        "nets": [' + #13#10 + NetsJson + #13#10 + '        ]';
+
+    JsonData := JsonData + #13#10 + '      }';
+
+    Result := JsonData;
+end;
+
+{------------------------------------------------------------------------------}
+{ ProcessComponents: Processes components with part number references         }
+{------------------------------------------------------------------------------}
+function ProcessComponents(PhysDoc : IDocument; SchDoc : ISch_Document; PartNumberDict : TStringList; ProjectNetData : TStringList) : String;
+var
+    Iterator : ISch_Iterator;
+    PinIterator : ISch_Iterator;
+    AComponent : ISch_Component;
+    APin : ISch_Pin;
+    CompNetData : TStringList;
+    PinsData : TStringList;
+    CompMap : TStringList;
+    PartMap : TStringList;
+    EmittedPins : TStringList;
+    JsonData : String;
+    CompData : String;
+    PartData : String;
+    PinData : String;
+    PinsJson : String;
+    PartsJson : String;
+    IsFirstComp : Boolean;
+    IsFirstPart : Boolean;
+    IsFirstPin : Boolean;
+    BaseDesig : String;
+    FullDesig : String;
+    PinDesig : String;
+    NetName : String;
+    CommentText : String;
+    LibRefText : String;
+    PartNumber : String;
+    FootprintJson : String;
+    SheetName : String;
+    Parameters : TStringList;
+    Instances : TStringList;
+    InstIdx : Integer;
+    LogicalBase : String;
+    LogicalFull : String;
+    CurrentPartId : Integer;
+    CurrentDisplayMode : Integer;
+    i : Integer;
+    j : Integer;
+    PartIdx : Integer;
+    Idx : Integer;
+    PartCount : Integer;
+    CompIndex : Integer;
+    PinFullString : String;
+begin
+    JsonData := '';
+    SheetName := ExtractFileName(PhysDoc.DM_FullPath);
+
+    // Shared, project-wide dictionary. Not owned by this function and must
+    // NOT be freed here.
+    CompNetData := ProjectNetData;
+
+    CompMap := TStringList.Create;
+    CompMap.Sorted := True;
+    CompMap.Duplicates := dupIgnore;
+
+    try
+        Iterator := SchDoc.SchIterator_Create;
+        try
+            Iterator.AddFilter_ObjectSet(MkSet(eSchComponent));
+
+            AComponent := Iterator.FirstSchObject;
+            while AComponent <> nil do
+            begin
+                FullDesig := '?';
+                try
+                    BaseDesig := AComponent.Designator.Text;
+                    FullDesig := BaseDesig;
+                    CurrentPartId := AComponent.GetState_CurrentPartID;
+                    CurrentDisplayMode := AComponent.DisplayMode;
+
+                    if AComponent.IsMultiPartComponent then
+                        FullDesig := AComponent.FullPartDesignator(CurrentPartId);
+
+                    // One instance for a sheet placed once; one per channel for a
+                    // multi-channel sheet, under the channel's physical designators.
+                    LogicalBase := BaseDesig;
+                    LogicalFull := FullDesig;
+                    Instances := ChannelInstances(PhysDoc.DM_FullPath, LogicalFull, LogicalBase);
+                    try
+                    for InstIdx := 0 to Instances.Count - 1 do
+                    begin
+                    Idx := Pos(#2, Instances[InstIdx]);
+                    BaseDesig := Copy(Instances[InstIdx], 1, Idx - 1);
+                    FullDesig := Copy(Instances[InstIdx], Idx + 1, Length(Instances[InstIdx]));
+
+                    // Compiled net data is keyed by the part designator (U1A) only when
+                    // two or more parts of the component are on this sheet. A lone part
+                    // (e.g. U1X by itself on a sheet) is keyed by the base designator (U1).
+                    CompIndex := CompNetData.IndexOf(FullDesig);
+                    if (CompIndex < 0) and (FullDesig <> BaseDesig) then
+                        CompIndex := CompNetData.IndexOf(BaseDesig);
+
+                    if CompIndex < 0 then
+                    begin
+                        AddWarning(SheetName + ': ' + FullDesig + ' skipped - no compiled net data for this designator');
+                    end
+                    else
+                    begin
+                        PinsData := TStringList(CompNetData.Objects[CompIndex]);
+
+                        try
+                            CommentText := AComponent.Comment.Text;
+                        except
+                            CommentText := '';
+                        end;
+
+                        try
+                            LibRefText := AComponent.LibReference;
+                        except
+                            LibRefText := '';
+                        end;
+
+                        // Same models on every part of a multi-part component; the
+                        // component record takes them from its first part.
+                        FootprintJson := GetFootprintJson(AComponent, SheetName + ': ' + FullDesig);
+
+                        PartNumber := '';
+                        Parameters := GetComponentParameters(AComponent);
+                        try
+                            for j := 0 to Parameters.Count - 1 do
+                            begin
+                                if Pos('Part Number=', Parameters[j]) = 1 then
+                                begin
+                                    PartNumber := Copy(Parameters[j], Length('Part Number=') + 1, Length(Parameters[j]));
+                                    Break;
+                                end;
+                            end;
+                        finally
+                            Parameters.Free;
+                        end;
+
+                        PinsJson := '';
+                        IsFirstPin := True;
+
+                        // Pin designators already written for this part
+                        EmittedPins := TStringList.Create;
+                        EmittedPins.Sorted := True;
+                        EmittedPins.CaseSensitive := True;
+                        EmittedPins.Duplicates := dupIgnore;
+
+                        PinIterator := AComponent.SchIterator_Create;
+                        try
+                            PinIterator.AddFilter_ObjectSet(MkSet(ePin));
+
+                            APin := PinIterator.FirstSchObject;
+                            while APin <> nil do
+                            begin
+                                try
+                                    PinDesig := APin.Designator;
+
+                                    // The component iterator returns pins from every part and every
+                                    // display mode (e.g. alternate resistor graphics), which produced
+                                    // repeated pins. Keep only pins of the placed part and mode, and
+                                    // write each pin designator once.
+                                    if (APin.OwnerPartId = CurrentPartId) and
+                                       (APin.OwnerPartDisplayMode = CurrentDisplayMode) and
+                                       (EmittedPins.IndexOf(PinDesig) < 0) then
+                                    begin
+                                        j := 0;
+                                        while j < PinsData.Count do
+                                        begin
+                                            PinFullString := PinsData.Strings[j];
+                                            Idx := Pos(':', PinFullString);
+                                            if Idx > 0 then
+                                            begin
+                                                if Copy(PinFullString, 1, Idx - 1) = PinDesig then
+                                                begin
+                                                    NetName := Copy(PinFullString, Idx + 1, Length(PinFullString));
+
+                                                    if not IsFirstPin then
+                                                        PinsJson := PinsJson + ',' + #13#10;
+
+                                                    PinData := '                {' + #13#10;
+                                                    PinData := PinData + '                  "designator": "' + EscapeJsonString(PinDesig) + '",' + #13#10;
+                                                    PinData := PinData + '                  "name": "' + EscapeJsonString(APin.Name) + '",' + #13#10;
+                                                    PinData := PinData + '                  "electricalType": "' + PinElectricalToString(APin) + '",' + #13#10;
+                                                    if (NetName = '') or (NetName = '?') then
+                                                        PinData := PinData + '                  "netName": null' + #13#10
+                                                    else
+                                                        PinData := PinData + '                  "netName": "' + EscapeJsonString(NetName) + '"' + #13#10;
+                                                    PinData := PinData + '                }';
+
+                                                    PinsJson := PinsJson + PinData;
+                                                    EmittedPins.Add(PinDesig);
+                                                    IsFirstPin := False;
+                                                    Break;
+                                                end;
+                                            end;
+                                            j := j + 1;
+                                        end;
+                                    end;
+                                except
+                                    AddWarning(SheetName + ': ' + FullDesig + ' - error reading a pin');
+                                end;
+
+                                APin := PinIterator.NextSchObject;
+                            end;
+                        finally
+                            AComponent.SchIterator_Destroy(PinIterator);
+                            EmittedPins.Free;
+                        end;
+
+                        if (PinsJson = '') and (PinsData.Count > 0) then
+                            AddWarning(SheetName + ': ' + FullDesig + ' - no schematic pins matched the compiled pin data');
+
+                        if CompMap.IndexOf(BaseDesig) < 0 then
+                        begin
+                            PartMap := TStringList.Create;
+                            PartMap.Sorted := False;
+                            CompMap.AddObject(BaseDesig, PartMap);
+                        end;
+
+                        PartMap := TStringList(CompMap.Objects[CompMap.IndexOf(BaseDesig)]);
+
+                        // Fields are separated by #1 rather than '|', which can legitimately
+                        // appear in comments, pin names, or net names
+                        PartData := FullDesig + #1 + PinsJson + #1 + CommentText + #1 + LibRefText + #1 + PartNumber + #1 + FootprintJson;
+                        PartMap.Add(PartData);
+                    end;
+                    end;
+                    finally
+                        Instances.Free;
+                    end;
+                except
+                    AddWarning(SheetName + ': ' + FullDesig + ' - error reading component; skipped');
+                end;
+
+                AComponent := Iterator.NextSchObject;
+            end;
+        finally
+            SchDoc.SchIterator_Destroy(Iterator);
+        end;
+
+        IsFirstComp := True;
+
+        for i := 0 to CompMap.Count - 1 do
+        begin
+            BaseDesig := CompMap[i];
+            PartMap := TStringList(CompMap.Objects[i]);
+            PartCount := PartMap.Count;
+
+            if PartCount > 0 then
+            begin
+                if not IsFirstComp then
+                    JsonData := JsonData + ',' + #13#10;
+
+                // Component-level fields come from the first part: skip designator and pins
+                PartData := PartMap[0];
+                Idx := Pos(#1, PartData);
+                PartData := Copy(PartData, Idx + 1, Length(PartData));
+                Idx := Pos(#1, PartData);
+                PartData := Copy(PartData, Idx + 1, Length(PartData));
+                Idx := Pos(#1, PartData);
+                CommentText := Copy(PartData, 1, Idx - 1);
+                PartData := Copy(PartData, Idx + 1, Length(PartData));
+                Idx := Pos(#1, PartData);
+                LibRefText := Copy(PartData, 1, Idx - 1);
+                PartData := Copy(PartData, Idx + 1, Length(PartData));
+                Idx := Pos(#1, PartData);
+                PartNumber := Copy(PartData, 1, Idx - 1);
+                FootprintJson := Copy(PartData, Idx + 1, Length(PartData));
+
+                PartsJson := '';
+                IsFirstPart := True;
+
+                for PartIdx := 0 to PartMap.Count - 1 do
+                begin
+                    PartData := PartMap[PartIdx];
+
+                    Idx := Pos(#1, PartData);
+                    FullDesig := Copy(PartData, 1, Idx - 1);
+                    PartData := Copy(PartData, Idx + 1, Length(PartData));
+                    Idx := Pos(#1, PartData);
+                    PinsJson := Copy(PartData, 1, Idx - 1);
+
+                    if not IsFirstPart then
+                        PartsJson := PartsJson + ',' + #13#10;
+
+                    PartData := '              {' + #13#10;
+                    PartData := PartData + '                "designator": "' + EscapeJsonString(FullDesig) + '",' + #13#10;
+                    PartData := PartData + '                "pins": [' + #13#10 + PinsJson + #13#10 + '                ]' + #13#10;
+                    PartData := PartData + '              }';
+
+                    PartsJson := PartsJson + PartData;
+                    IsFirstPart := False;
+                end;
+
+                CompData := '          {' + #13#10;
+                CompData := CompData + '            "designator": "' + EscapeJsonString(BaseDesig) + '",' + #13#10;
+                CompData := CompData + '            "comment": "' + EscapeJsonString(CommentText) + '",' + #13#10;
+                CompData := CompData + '            "libraryReference": "' + EscapeJsonString(LibRefText) + '",' + #13#10;
+
+                if PartNumber <> '' then
+                    CompData := CompData + '            "partNumber": "' + EscapeJsonString(PartNumber) + '",' + #13#10
+                else
+                    CompData := CompData + '            "partNumber": null,' + #13#10;
+
+                CompData := CompData + FootprintJson;
+
+                CompData := CompData + '            "partCount": ' + IntToStr(PartCount) + ',' + #13#10;
+                CompData := CompData + '            "parts": [' + #13#10 + PartsJson + #13#10 + '            ]' + #13#10;
+                CompData := CompData + '          }';
+
+                JsonData := JsonData + CompData;
+                IsFirstComp := False;
+            end;
+        end;
+
+    finally
+        // CompNetData is the shared project dictionary and is freed once by
+        // ExportAllSchematicsToJSON, not here.
+
+        for i := 0 to CompMap.Count - 1 do
+            TStringList(CompMap.Objects[i]).Free;
+        CompMap.Free;
+    end;
+
+    Result := JsonData;
+end;
+
+{------------------------------------------------------------------------------}
+{ ProcessNets: Processes nets                                                 }
+{------------------------------------------------------------------------------}
+function ProcessNets(SchDoc : ISch_Document) : String;
+var
+    Iterator : ISch_Iterator;
+    SchObject : Variant;
+    NetCount : Integer;
+    JsonData : String;
+    IsFirst : Boolean;
+    NetData : String;
+    NetText : String;
+    NetType : String;
+begin
+    NetCount := 0;
+    JsonData := '';
+    IsFirst := True;
+
+    try
+        Iterator := SchDoc.SchIterator_Create;
+        if Iterator <> nil then
+        begin
+            Iterator.AddFilter_ObjectSet(MkSet(eWire, eNetLabel, ePort));
+
+            SchObject := Iterator.FirstSchObject;
+            while SchObject <> nil do
+            begin
+                NetCount := NetCount + 1;
+
+                try
+                    if SchObject.ObjectId = eWire then
+                    begin
+                        NetType := 'wire';
+                        NetText := 'Wire_' + IntToStr(NetCount);
+                    end
+                    else if SchObject.ObjectId = eNetLabel then
+                    begin
+                        NetType := 'netlabel';
+                        try
+                            NetText := VarToStr(SchObject.Text);
+                        except
+                            NetText := 'NetLabel_' + IntToStr(NetCount);
+                        end;
+                    end
+                    else if SchObject.ObjectId = ePort then
+                    begin
+                        NetType := 'port';
+                        try
+                            NetText := VarToStr(SchObject.Name);
+                        except
+                            NetText := 'Port_' + IntToStr(NetCount);
+                        end;
+                    end
+                    else
+                    begin
+                        NetType := 'unknown';
+                        NetText := 'Net_' + IntToStr(NetCount);
+                    end;
+                except
+                    NetType := 'error';
+                    NetText := 'NetError_' + IntToStr(NetCount);
+                end;
+
+                if not IsFirst then
+                    JsonData := JsonData + ',' + #13#10;
+
+                NetData := '          {' + #13#10;
+                NetData := NetData + '            "type": "' + EscapeJsonString(NetType) + '",' + #13#10;
+                NetData := NetData + '            "name": "' + EscapeJsonString(NetText) + '"' + #13#10;
+                NetData := NetData + '          }';
+
+                JsonData := JsonData + NetData;
+                IsFirst := False;
+                SchObject := Iterator.NextSchObject;
+            end;
+
+            SchDoc.SchIterator_Destroy(Iterator);
+        end;
+    except
+        JsonData := '          {' + #13#10;
+        JsonData := JsonData + '            "type": "error",' + #13#10;
+        JsonData := JsonData + '            "name": "NET_ACCESS_ERROR"' + #13#10;
+        JsonData := JsonData + '          }';
+    end;
+
+    Result := JsonData;
+end;

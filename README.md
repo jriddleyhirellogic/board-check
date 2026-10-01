@@ -1,10 +1,12 @@
 # board-check
 
 Automated checks on the Farsight avionics board schematic, run against the
-JSON netlist that `altium/ExportAllSchematicsToJSON_v2.4.pas` writes from
-Altium. Version 2.4 adds each component's footprint; it has not yet been run
-in Altium, so keep `_v2.3.pas` (the last verified version) until a 2.4 export
-of CM-03545 has come back with no "footprint" lines in its warnings file.
+JSON netlist that `altium/ExportAllSchematicsToJSON_v2.5.pas` writes from
+Altium. Version 2.5 exports every channel of a multi-channel sheet (2.4 and
+earlier kept only the first: CM-03986 RS422.SchDoc lost 8 of its 9 RS-422
+channels); it has not yet been run in Altium, so keep `_v2.4.pas` (verified on
+CM-03545, CM-03986 and CM-02441) until a 2.5 export of CM-03986 comes back
+with its RS-422 channels as U8A, U8B, ...
 
 The Altium export is a manual step (DelphiScript inside Altium). Commit the
 JSON it produces under `designs/<assembly>/`; everything after that runs on
@@ -77,9 +79,20 @@ resistors as the level checks do.
 | SYS005 | error | A driver on one board against receivers on the other: VOH below VIH, VOL above VIL, supply above the input's absolute maximum |
 | SYS006 | info | Each link's pairing, wired pins left unpaired, and parts whose missing pin data keeps a signal from being judged |
 
-Farsight: CM-03545 J7 mates CM-02441 (sensor) J1 directly; CM-03545 J3
-reaches CM-03986 (backplane) J2 through the Ethernet harness, MDI pair n to
-backplane ETH5 TX pair n.
+A name map may also be a stem table (`map: {by: name, suffix: '_([PN])$',
+names: {GPOUT: GPO_FARSIGHT_TO_BP, ...}}`): the suffix is carried across
+and the stems translated. When every paired pin follows one numbering rule
+(pin n to pin n, or odd and even swapped as on a flipped ribbon), SYS006
+names it, and SYS007 reports a wired signal left without a partner together
+with the pin that rule would put it on. `unpaired_ok` lists net patterns
+expected to have no partner.
+
+| SYS007 | warning | A wired signal the link's name pairing leaves without a partner, with what it would meet under the link's pin-numbering rule |
+
+Farsight: CM-03545 J7 mates CM-02441 (sensor) J1 directly; to CM-03986
+(backplane), J3 reaches J2 through the Ethernet harness (MDI pair n to ETH5
+TX pair n), J1 reaches J3 through the control harness, and J2 reaches J4
+through the ARF6 PCIe cable, all wired by name.
 
 ## Checks
 

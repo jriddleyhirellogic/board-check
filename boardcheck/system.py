@@ -44,12 +44,14 @@ class Board:
 
 
 class Link:
-    def __init__(self, name, a, b, pairs, unmatched):
+    def __init__(self, name, a, b, pairs, unmatched, unpaired_ok=()):
         self.name = name
         self.a = a                  # (board, connector component)
         self.b = b
         self.pairs = pairs          # [(pin a, pin b)]
         self.unmatched = unmatched  # [(board name, pin)]
+        self.unpaired_ok = [re.compile(x) for x in unpaired_ok]
+        self.pattern = _pin_pattern(pairs)
 
 
 class System:
@@ -83,7 +85,7 @@ class System:
             if any(c is None for _, c in ends):
                 continue
             pairs, unmatched = _pair(ends[0], ends[1], ls.get("map", "pins"))
-            links.append(Link(name, ends[0], ends[1], pairs, unmatched))
+            links.append(Link(name, ends[0], ends[1], pairs, unmatched, ls.get("unpaired_ok") or ()))
         return cls(boards, links, problems)
 
 
@@ -92,6 +94,25 @@ def _pair(a, b, mapping):
     if mapping == "pins":
         pb = {str(p.designator): p for p in cb.pins}
         pairs = [(p, pb[str(p.designator)]) for p in ca.pins if str(p.designator) in pb]
+        paired_a = {id(x) for x, _ in pairs}
+        paired_b = {id(y) for _, y in pairs}
+    elif "names" in mapping:
+        # a stem table, the polarity (or other) suffix carried across as is
+        suffix = re.compile(mapping.get("suffix", r"_([PN])$"))
+        names = {str(k): str(v) for k, v in (mapping.get("names") or {}).items()}
+
+        def key(net, table=None):
+            m = suffix.search(net)
+            stem, tail = (net[:m.start()], m.groups()) if m else (net, ())
+            return ((table or {}).get(stem, stem if table is None else None), tail)
+        keys_b = {}
+        for p in cb.pins:
+            keys_b.setdefault(key(p.net), p)
+        pairs = []
+        for p in ca.pins:
+            k = key(p.net, names)
+            if k[0] is not None and k in keys_b:
+                pairs.append((p, keys_b[k]))
         paired_a = {id(x) for x, _ in pairs}
         paired_b = {id(y) for _, y in pairs}
     else:
@@ -112,6 +133,25 @@ def _pair(a, b, mapping):
                 [(bb.name, p) for p in cb.pins if id(p) not in paired_b]
     pairs.sort(key=lambda x: natural_key(x[0].designator))
     return pairs, unmatched
+
+
+_PATTERNS = {
+    "pin n to pin n": lambda n: n,
+    "odd and even pins swapped (n to n+1, n+1 to n)": lambda n: n + 1 if n % 2 else n - 1,
+}
+
+
+def _pin_pattern(pairs):
+    """The one numbering rule every numbered pair follows, as (description,
+    function), or None (mixed, or too few pairs to tell)."""
+    nums = [(int(a.designator), int(b.designator)) for a, b in pairs
+            if str(a.designator).isdigit() and str(b.designator).isdigit()]
+    if len(nums) < 4:
+        return None
+    for text, f in _PATTERNS.items():
+        if all(f(x) == y for x, y in nums):
+            return text, f
+    return None
 
 
 # -- checks ----------------------------------------------------------------------
@@ -236,6 +276,12 @@ def _unknown(board, sig):
     return [p for p in sig.pins if pt.base(p)[0] in (None, "passive") and pt.base(p)[1] != PART]
 
 
+def _leaves(side, connector):
+    """The signal also reaches another connector on its board: whatever is
+    plugged in there (a module, another harness) may drive it."""
+    return any(p.component is not connector for g in side[5] for p in g.external)
+
+
 def check_drivers(system):
     """SYS004: push-pull outputs on both boards (contention), or receivers
     with nothing driving them on either board."""
@@ -255,6 +301,7 @@ def check_drivers(system):
                               severity=ERROR, refs=refs, nets=[pa.net, pb.net])
             elif not (sa[1] or sa[3] or sb[1] or sb[3]) and (sa[2] or sa[4] or sb[2] or sb[4]) \
                     and not (sa[0].ties or sb[0].ties) \
+                    and not _leaves(sa, pa.component) and not _leaves(sb, pb.component) \
                     and not any(_unknown(ba, g) for g in sa[5]) and not any(_unknown(bb, g) for g in sb[5]):
                 rx = [f"{ba.name} {r[0].ref}" for r in sa[2] + sa[4]] + [f"{bb.name} {r[0].ref}" for r in sb[2] + sb[4]]
                 yield Finding("SYS004", f"{link.name}: {_where(ba, pa)} <-> {_where(bb, pb)}: nothing drives "
@@ -315,7 +362,8 @@ def check_map(system):
         loose = [f"{bname} {p.ref} '{p.net}'" for bname, p in link.unmatched
                  if not system.boards[bname].config.is_ground(p.net)
                  and len(system.boards[bname].design.nets[p.net].pins) > 1]
-        text = (f"{link.name}: {ba.name} {ca.designator} <-> {bb.name} {cb.designator}, {len(link.pairs)} pins paired")
+        text = (f"{link.name}: {ba.name} {ca.designator} <-> {bb.name} {cb.designator}, {len(link.pairs)} pins paired"
+                + (f" ({link.pattern[0]})" if link.pattern else ""))
         if loose:
             text += f"; wired but unpaired: {', '.join(loose)}"
         unknown = sorted({f"{b.name} {p.component.designator} ({p.component.part_number})"
@@ -327,12 +375,39 @@ def check_map(system):
                       refs=[f"{ba.name}:{ca.designator}", f"{bb.name}:{cb.designator}"])
 
 
+def check_unpaired(system):
+    """SYS007: a pin wired to a signal on one board that the link's name
+    pairing leaves without a partner (not a ground, not in the link's
+    `unpaired_ok`). When every pair follows one pin-numbering rule, the pin
+    the rule would put it on is named: on a harness built that way, that is
+    what the signal meets."""
+    for link in system.links:
+        (ba, ca), (bb, cb) = link.a, link.b
+        others = {ba.name: (bb, {str(p.designator): p for p in cb.pins}),
+                  bb.name: (ba, {str(p.designator): p for p in ca.pins})}
+        for bname, pin in link.unmatched:
+            board = system.boards[bname]
+            if board.config.is_ground(pin.net) or len(board.design.nets[pin.net].pins) <= 1 \
+                    or any(r.search(pin.net) for r in link.unpaired_ok):
+                continue
+            text = f"{link.name}: {_where(board, pin)} has no partner on the other board"
+            if link.pattern and str(pin.designator).isdigit():
+                ob, opins = others[bname]
+                # the rules above are their own inverse
+                q = opins.get(str(link.pattern[1](int(pin.designator))))
+                if q is not None:
+                    text += f"; wired {link.pattern[0]} like the paired signals, it would meet {_where(ob, q)}"
+            yield Finding("SYS007", text, severity=WARNING, refs=[f"{bname}:{pin.component.designator}"],
+                          nets=[pin.net])
+
+
 CHECKS = [("SYS001", "Pin connected on one board only", check_open),
           ("SYS002", "Ground or rail mismatch across a connector", check_supplies),
           ("SYS003", "Differential polarity swapped across boards", check_polarity),
           ("SYS004", "Signal driven from both boards, or from neither", check_drivers),
           ("SYS005", "Logic levels incompatible across boards", check_levels),
-          ("SYS006", "Interconnect map", check_map)]
+          ("SYS006", "Interconnect map", check_map),
+          ("SYS007", "Wired signal without a partner across a link", check_unpaired)]
 
 
 def run_system(system):
