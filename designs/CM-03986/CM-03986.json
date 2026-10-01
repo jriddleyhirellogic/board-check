@@ -1,8 +1,8 @@
 {
   "project": {
     "name": "CM-03986_ASSY, PCB, BACKPLANE, Q8J, SV1, FLIGHT MODEL.PrjPcb",
-    "created": "10\/1\/2026 9:54:52 AM",
-    "exportScriptVersion": "2.4.0",
+    "created": "10\/1\/2026 3:10:01 PM",
+    "exportScriptVersion": "2.5.0",
     "partNumbers": [
       {
         "partNumber": "12101C335K4Z2A",
@@ -24508,7 +24508,7 @@
         "sheetTotal": "34",
         "components": [
           {
-            "designator": "C153",
+            "designator": "C153A",
             "comment": "CL05B104KA5NNNC",
             "libraryReference": "GCJ188R71H104KA12D",
             "partNumber": "CL05B104KA5NNNC",
@@ -24518,7 +24518,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "C153",
+                "designator": "C153A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24537,17 +24537,17 @@
             ]
           },
           {
-            "designator": "C154",
-            "comment": "GCM155R71H103KA55D",
+            "designator": "C153B",
+            "comment": "CL05B104KA5NNNC",
             "libraryReference": "GCJ188R71H104KA12D",
-            "partNumber": "GCM155R71H103KA55D",
+            "partNumber": "CL05B104KA5NNNC",
             "footprint": "C0402",
             "footprintLibrary": null,
             "footprintAlternates": [],
             "partCount": 1,
             "parts": [
               {
-                "designator": "C154",
+                "designator": "C153B",
                 "pins": [
                 {
                   "designator": "1",
@@ -24566,7 +24566,7 @@
             ]
           },
           {
-            "designator": "C39",
+            "designator": "C153C",
             "comment": "CL05B104KA5NNNC",
             "libraryReference": "GCJ188R71H104KA12D",
             "partNumber": "CL05B104KA5NNNC",
@@ -24576,7 +24576,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "C39",
+                "designator": "C153C",
                 "pins": [
                 {
                   "designator": "1",
@@ -24588,14 +24588,275 @@
                   "designator": "2",
                   "name": "2",
                   "electricalType": "passive",
-                  "netName": "1V8_REG"
+                  "netName": "3V3_REG"
                 }
                 ]
               }
             ]
           },
           {
-            "designator": "C40",
+            "designator": "C153D",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153E",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153F",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153G",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153H",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153I",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153J",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153K",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C153L",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C153L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154A",
             "comment": "GCM155R71H103KA55D",
             "libraryReference": "GCJ188R71H104KA12D",
             "partNumber": "GCM155R71H103KA55D",
@@ -24605,7 +24866,355 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "C40",
+                "designator": "C154A",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154B",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154C",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154D",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154E",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154F",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154G",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154H",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154I",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154J",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154K",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C154L",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C154L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39A",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24624,7 +25233,674 @@
             ]
           },
           {
-            "designator": "R46",
+            "designator": "C39B",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39C",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39D",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39E",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39F",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39G",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39H",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39I",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39J",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39K",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C39L",
+            "comment": "CL05B104KA5NNNC",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "CL05B104KA5NNNC",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C39L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40A",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40A",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40B",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40C",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40D",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40E",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40F",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40G",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40H",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40I",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40J",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40K",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "C40L",
+            "comment": "GCM155R71H103KA55D",
+            "libraryReference": "GCJ188R71H104KA12D",
+            "partNumber": "GCM155R71H103KA55D",
+            "footprint": "C0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "C40L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46A",
             "comment": "ERJ-2RKF4701X",
             "libraryReference": "RC0805FR-07909KL",
             "partNumber": "ERJ-2RKF4701X",
@@ -24634,7 +25910,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "R46",
+                "designator": "R46A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24653,7 +25929,326 @@
             ]
           },
           {
-            "designator": "R47",
+            "designator": "R46B",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46B_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46C",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46C_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46D",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46D_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46E",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46E_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46F",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46F_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46G",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46G_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46H",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46H_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46I",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46I_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46J",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46J_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46K",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46K_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R46L",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R46L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "NetR46L_1"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47A",
             "comment": "ERJ-P06F1000V",
             "libraryReference": "RC0805FR-07909KL",
             "partNumber": "ERJ-P06F1000V",
@@ -24663,7 +26258,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "R47",
+                "designator": "R47A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24682,7 +26277,326 @@
             ]
           },
           {
-            "designator": "R48",
+            "designator": "R47B",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_APTOS2_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_APTOS2_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47C",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_RX_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_RX_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47D",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_RX_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_RX_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47E",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_RX_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_RX_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47F",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_FARSIGHT_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_FARSIGHT_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47G",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47H",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_PROP_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_PROP_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47I",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_MPS_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_MPS_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47J",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_PROP_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_PROP_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47K",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_TOA_SRS4_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_TOA_SRS4_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R47L",
+            "comment": "ERJ-P06F1000V",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-P06F1000V",
+            "footprint": "R0805",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R47L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_VULCAN_TO_BP_P"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "RS422_VULCAN_TO_BP_N"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48A",
             "comment": "AC0402FR-0733RL",
             "libraryReference": "RC0805FR-07909KL",
             "partNumber": "AC0402FR-0733RL",
@@ -24692,7 +26606,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "R48",
+                "designator": "R48A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24711,7 +26625,326 @@
             ]
           },
           {
-            "designator": "R49",
+            "designator": "R48B",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_APTOS2_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48B_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48C",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_RMT_TTYPS1_RX"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48C_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48D",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_COMMS_RX"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48D_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48E",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_LCL_TTYPS1_RX"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48E_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48F",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_FARSIGHT_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48F_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48G",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_FLEXCORE_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48G_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48H",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_FLEXCORE_PROP_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48H_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48I",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_MPS_TO BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48I_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48J",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_PROP_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48J_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48K",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_TOA_SATLAB_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48K_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R48L",
+            "comment": "AC0402FR-0733RL",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "AC0402FR-0733RL",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R48L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_VULCAN_TO_BP"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR48L_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49A",
             "comment": "ERJ-2RKF4701X",
             "libraryReference": "RC0805FR-07909KL",
             "partNumber": "ERJ-2RKF4701X",
@@ -24721,7 +26954,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "R49",
+                "designator": "R49A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24740,7 +26973,326 @@
             ]
           },
           {
-            "designator": "U8",
+            "designator": "R49B",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49B_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49C",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49C_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49D",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49D_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49E",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49E_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49F",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49F_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49G",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49G_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49H",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49H_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49I",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49I_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49J",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49J_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49K",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49K_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "R49L",
+            "comment": "ERJ-2RKF4701X",
+            "libraryReference": "RC0805FR-07909KL",
+            "partNumber": "ERJ-2RKF4701X",
+            "footprint": "R0402",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "R49L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "1",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "2",
+                  "name": "2",
+                  "electricalType": "passive",
+                  "netName": "NetR49L_2"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8A",
             "comment": "THVD9491DTSEP",
             "libraryReference": "THVD9491DTSEP",
             "partNumber": "THVD9491DTSEP",
@@ -24750,7 +27302,7 @@
             "partCount": 1,
             "parts": [
               {
-                "designator": "U8",
+                "designator": "U8A",
                 "pins": [
                 {
                   "designator": "1",
@@ -24823,6 +27375,1117 @@
                   "name": "A",
                   "electricalType": "passive",
                   "netName": "RS422_APTOS1_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8B",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8B",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48B_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49B_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46B_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_APTOS2"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_APTOS2_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_APTOS2_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_APTOS2_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_APTOS2_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8C",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8C",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48C_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49C_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46C_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_RMT_TTYPS1_TX"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_TX_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_TX_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_RX_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_RMT_TTYPS1_RX_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8D",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8D",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48D_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49D_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46D_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_COMMS_TX"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_TX_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_TX_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_RX_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_COMMS_RX_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8E",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8E",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48E_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49E_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46E_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_B2B_LCL_TTYPS1_TX"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_TX_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_TX_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_RX_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_B2B_LCL_TTYPS1_RX_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8F",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8F",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48F_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49F_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46F_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_FARSIGHT"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FARSIGHT_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FARSIGHT_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_FARSIGHT_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_FARSIGHT_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8G",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8G",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48G_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49G_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46G_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_FLEXCORE"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FLEXCORE_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FLEXCORE_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8H",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8H",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48H_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49H_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46H_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_FLEXCORE_PROP"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FLEXCORE_PROP_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_FLEXCORE_PROP_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_PROP_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_FLEXCORE_PROP_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8I",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8I",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48I_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49I_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46I_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_MPS"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_MPS_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_MPS_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_MPS_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_MPS_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8J",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8J",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48J_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49J_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46J_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_PROP"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_PROP_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_PROP_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_PROP_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_PROP_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8K",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8K",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48K_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49K_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46K_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_TOA_SATLAB"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_TOA_SRS4_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_TOA_SRS4_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_TOA_SRS4_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_TOA_SRS4_TO_BP_P"
+                },
+                {
+                  "designator": "13",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "14",
+                  "name": "VCC",
+                  "electricalType": "passive",
+                  "netName": "3V3_REG"
+                }
+                ]
+              }
+            ]
+          },
+          {
+            "designator": "U8L",
+            "comment": "THVD9491DTSEP",
+            "libraryReference": "THVD9491DTSEP",
+            "partNumber": "THVD9491DTSEP",
+            "footprint": "TI_SOIC-14_D0014A",
+            "footprintLibrary": null,
+            "footprintAlternates": [],
+            "partCount": 1,
+            "parts": [
+              {
+                "designator": "U8L",
+                "pins": [
+                {
+                  "designator": "1",
+                  "name": "VIO",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "2",
+                  "name": "R",
+                  "electricalType": "passive",
+                  "netName": "NetR48L_2"
+                },
+                {
+                  "designator": "3",
+                  "name": "R\\E\\",
+                  "electricalType": "passive",
+                  "netName": "NetR49L_2"
+                },
+                {
+                  "designator": "4",
+                  "name": "DE",
+                  "electricalType": "passive",
+                  "netName": "NetR46L_1"
+                },
+                {
+                  "designator": "5",
+                  "name": "D",
+                  "electricalType": "passive",
+                  "netName": "RS422_UART_BP_TO_VULCAN"
+                },
+                {
+                  "designator": "6",
+                  "name": "GND",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "7",
+                  "name": "NC",
+                  "electricalType": "passive",
+                  "netName": "GND"
+                },
+                {
+                  "designator": "8",
+                  "name": "SLR",
+                  "electricalType": "passive",
+                  "netName": "1V8_REG"
+                },
+                {
+                  "designator": "9",
+                  "name": "Y",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_VULCAN_P"
+                },
+                {
+                  "designator": "10",
+                  "name": "Z",
+                  "electricalType": "passive",
+                  "netName": "RS422_BP_TO_VULCAN_N"
+                },
+                {
+                  "designator": "11",
+                  "name": "B",
+                  "electricalType": "passive",
+                  "netName": "RS422_VULCAN_TO_BP_N"
+                },
+                {
+                  "designator": "12",
+                  "name": "A",
+                  "electricalType": "passive",
+                  "netName": "RS422_VULCAN_TO_BP_P"
                 },
                 {
                   "designator": "13",
