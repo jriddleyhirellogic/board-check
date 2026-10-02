@@ -265,6 +265,7 @@ def test_divider_level_is_not_a_pull_up_to_the_rail(tmp_path):
     # 3.6 V through the same pull-up: above VIH max 3.45 V, below the 3.8 V absolute maximum
     levels_ctx.design.components["R1"].pins[0].net = "3V6"
     del levels_ctx._signals
+    levels_ctx.__dict__.pop("_undriven", None)
     f = findings(levels.input_overvoltage, levels_ctx)
     assert len(f) == 1 and "recommended maximum input of U1.B1 GPIO1PB2 LVCMOS33 3.45 V (vih)" in f[0].message
 

@@ -197,11 +197,19 @@ class Config:
         self._rail_signal_re = re.compile(n["rail_signal_pattern"], re.I)
         self._rail_sense_re = re.compile(n["rail_sense_pattern"], re.I)
         self._voltages = {k.upper(): float(v) for k, v in n["voltages"].items()}
+        self.derived = {}           # net -> volts from part data (derive_voltage)
         kinds = self.data["designator_kinds"]
         self._prefixes = sorted(kinds, key=len, reverse=True)
         self.power_pin_re = re.compile(self.data["pins"]["power_names"], re.I)
         self.ground_pin_re = re.compile(self.data["pins"]["ground_names"], re.I)
         self.i2c_re = re.compile(n["i2c_pattern"], re.I)
+
+    def derive_voltage(self, net_name, volts):
+        """Give a net a voltage the part data implies (an IC's internal
+        regulator output, e.g. the ADM1270's VCAP), unless one is set."""
+        if self.net_voltage(net_name) is None and not self.is_ground(net_name):
+            self._voltages[net_name.upper()] = float(volts)
+            self.derived[net_name] = float(volts)
 
     @classmethod
     def load(cls, path=None):

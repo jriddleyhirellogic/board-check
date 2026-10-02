@@ -293,6 +293,41 @@ class Signal:
         return volts, f"resistor network {names} ({volts:.3g} V)"
 
 
+def undriven_level(ctx, sig):
+    """(volts, label) the board's resistors hold the signal at when nothing
+    drives it. When a resistor leads on from the signal to a net that is
+    neither part of it nor a supply (a three-resistor chain, a divider
+    feeding a second pin), the whole resistor network is solved with rails
+    at their nominal voltages (analog.py); otherwise, or when that network
+    is also driven by something else, the signal's own ties give it
+    (Signal.resistive_level)."""
+    cache = ctx.__dict__.setdefault("_undriven", {})
+    if sig.nets[0] in cache:
+        return cache[sig.nets[0]]
+    level = sig.resistive_level()
+    members = set(sig.nets)
+    cfg = ctx.config
+    beyond = False
+    for n in sig.nets:
+        for q in ctx.design.nets[n].pins:
+            comp = q.component
+            if ctx.kind(comp) == "resistor" and len(comp.pins) == 2:
+                other = next(p.net for p in comp.pins if p is not q)
+                if other not in members and not cfg.is_ground(other) and cfg.net_voltage(other) is None:
+                    beyond = True
+    if beyond:
+        from ..analog import Network, operating_point
+        nw = Network(ctx, sig.nets[0])
+        sol = operating_point(nw) if nw.ok and not nw.unknown else None
+        rails = [n for n, v in nw.fixed.items() if v]
+        if sol is not None and sig.nets[0] in sol and rails:
+            v = sol[sig.nets[0]]
+            names = ", ".join(sorted({e[3].designator for e in nw.edges}, key=natural_key))
+            level = (v, f"resistor network {names} ({v:.3g} V)")
+    cache[sig.nets[0]] = level
+    return level
+
+
 def _ohms(ctx, comp):
     ohms = parse_value(ctx.design.param(comp, "R_Value"), "Ω")
     if ohms is None:
@@ -411,7 +446,7 @@ def _high_sources(ctx, sig, lv, drivers):
         v = lv.own_supply(pl) if pl else None
         if v is not None:
             out.append((v, f"{_who(pl, d)} (supply {v:g} V)", d.component, d))
-    level = sig.resistive_level()
+    level = undriven_level(ctx, sig)
     if level is not None:
         out.append((*level, None, None))
     return out
@@ -520,7 +555,7 @@ def high_level(ctx):
         for d, dt, ds in drivers:
             dl = lv.for_pin(d)
             if dt == "open_collector":
-                high = sig.resistive_level()
+                high = undriven_level(ctx, sig)
             else:
                 voh, _ = lv.value(dl, "voh", "min", "low") if dl else (None, None)
                 high = (voh, f"{_who(dl, d)} VOH min {voh:.3g} V") if voh is not None else None

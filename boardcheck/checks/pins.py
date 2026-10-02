@@ -396,8 +396,34 @@ def floating_inputs(ctx):
                           refs=sorted({p.component.designator for p in pins}), nets=[net.name])
 
 
+def _pulled_up(ctx, net, hops=2):
+    """True when resistors lead from the net to a supply rail: directly, or
+    through up to `hops` resistors in series (a pull-up shared with an
+    indicator LED's node)."""
+    cfg = ctx.config
+    frontier, seen = {net}, {net}
+    for _ in range(hops):
+        nxt = set()
+        for n in frontier:
+            for q in ctx.design.nets[n].pins:
+                c = q.component
+                if ctx.kind(c) != "resistor" or len(c.pins) != 2:
+                    continue
+                other = next(p.net for p in c.pins if p is not q)
+                if other is None or other in seen or cfg.is_ground(other):
+                    continue
+                if cfg.is_rail(other):
+                    return True
+                seen.add(other)
+                nxt.add(other)
+        frontier = nxt
+    return False
+
+
 @check("PIN006", "Open-drain net without pull-up", WARNING)
 def open_drain_pullups(ctx):
+    """An open-drain output with no resistor to a supply rail (directly or
+    through two in series) never goes high."""
     pt = _pin_types(ctx)
     cfg = ctx.config
     for net, pins in _nets(ctx):
@@ -406,11 +432,7 @@ def open_drain_pullups(ctx):
         od = [(p, t, s) for p, t, s in ((p, *pt.effective(p)) for p in pins) if t == "open_collector"]
         if not od:
             continue
-        pulled = any(
-            ctx.kind(c) == "resistor" and len(c.pins) == 2
-            and any(cfg.is_rail(p.net) for p in c.pins if p.net != net.name)
-            for c in net.components())
-        if not pulled:
+        if not _pulled_up(ctx, net.name):
             yield Finding("PIN006", f"'{net.name}' has open-drain pin(s) {', '.join(_label(*o) for o in od)} "
                                     "and no resistor to a supply rail",
                           refs=sorted({p.component.designator for p, _, _ in od}), nets=[net.name])

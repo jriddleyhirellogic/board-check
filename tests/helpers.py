@@ -102,6 +102,14 @@ class FakePartsDB:
         part = self.parts.get(pn)
         return (part.get("clock_inputs") or []) if isinstance(part, dict) else []
 
+    def monitors(self, pn):
+        part = self.parts.get(pn)
+        return (part.get("monitors") or []) if isinstance(part, dict) else []
+
+    def current_sense(self, pn):
+        part = self.parts.get(pn)
+        return part.get("current_sense") if isinstance(part, dict) else None
+
     def io_standards(self, pn):
         part = self.parts.get(pn)
         block = part.get("io_standards") if isinstance(part, dict) else None

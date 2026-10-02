@@ -61,6 +61,10 @@ class Context:
         self.design = design
         self.config = config
         self.partsdb = partsdb
+        if partsdb is not None:
+            from .power import regulator_outputs
+            for net, volts in regulator_outputs(self).items():
+                config.derive_voltage(net, volts)
 
     def kind(self, component):
         return self.config.kind(component)

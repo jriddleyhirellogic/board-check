@@ -119,20 +119,22 @@ through the ARF6 PCIe cable, all wired by name.
 | PWR001 | warning | Capacitor over its derating limit; **error** over its rating |
 | PWR002 | warning | Resistor between two rails over power derating; **error** over rating, over working voltage, or 0 Ω between different rails |
 | PWR003 | warning | Supply rail with no capacitor to ground |
-| PWR004 | info | Supply rail with no test point |
+| PWR004 | info | Supply rail with no test point (not asked of an IC's internal regulator net, such as an ADM1270's VCAP) |
 | PWR005 | warning | Ground-named pin off ground, or power-named pin on ground |
 | PWR006 | warning | I2C SCL/SDA without a pull-up to a rail |
 | PWR007 | warning | IC supply pin on a local (non-rail) net with no capacitor to ground |
-| PWR009 | error | A regulator's feedback network sets a different voltage than its rail's name (part data `regulator` and `v_feedback`; the resistor network around the feedback pin is solved, so sense resistors, chains and remote sense count) |
+| PWR009 | error | A regulator's feedback network sets a different voltage than its rail's name (part data `regulator` and `v_feedback`; the resistor network around the feedback pin is solved, so sense resistors, chains and remote sense count). A tracking regulator (`regulator.tracking`, e.g. DDR VTT = VDDQSNS / 2) is held to the ratio times its reference pin's rail |
 | PWR010 | warning | Linear regulator (part data `topology: linear`) whose input rail, less the output it sets, is below the data sheet's maximum dropout at its programmed current limit (error: below the light-load dropout); rails set by other regulators taken at their worst case |
 | PWR011 | error | Regulator enable or UVLO pin (part data `enable_pin`, `uvlo_pin`) held by a divider from its own input: turn-on input voltage (rising threshold at its maximum, plus the pin's pull-up current) above the rail (error), turn-off below the regulator's minimum input (warning), otherwise listed (info) |
+| PWR012 | error | Supervisor input (part data `monitors`: undervoltage, overvoltage, power good) held by a divider from one rail: the rail voltage at which it trips, from the threshold's worst-case limit; an UV or power-good trip at or above the rail's nominal voltage, or an OV trip at or below it, is an error, otherwise listed (info); a monitor pin tied to a rail or ground is listed as disabled |
+| PWR013 | warning | Current limit set by the sense resistor between a part's `current_sense` pins (two-terminal or Kelvin): the maximum sense voltage over the resistance, and the resistor's dissipation at that current against its power rating (error over the rating, warning over `derating.resistor_power`); otherwise listed (info) |
 | PWR008 | error | IC supply pin's rail outside the part data's recommended `supply_<pin>` range (limits relative to another supply, like VD <= VA, are evaluated) |
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |
 | PIN003 | warning | Part pin data names a pin the symbol does not have, or uses an unknown direction word |
 | PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net; warning when two parts' outputs meet through small series resistors (a part's output split over several pins counts once, and so do alternate parts: see CLK001) |
 | PIN005 | warning | Net with only inputs on it (nothing drives it) |
-| PIN006 | warning | Open-drain net without a pull-up to a rail |
+| PIN006 | warning | Open-drain net without a pull-up to a rail (directly, or through two resistors in series such as an indicator LED's node) |
 | PIN007 | error | Differential receiver input pair (part data `*_P` input with `diff_pair`) with no resistor across it in `pins.diff_termination_ohms` (direct or split through a centre tap) and no internal `termination_ohms`; terminated twice is a warning |
 | PIN008 | error | Differential receiver input or driver output (part data `*_P` with `diff_pair`) whose + pin is on the pair's negative net and - pin on the positive one |
 | FIO001 | warning | FPGA constraint or top-level file missing, or a command in it not understood |
@@ -286,7 +288,9 @@ series resistors up to `levels.series_max_ohms`; resistors from it to rails
 and ground give its undriven level (pull-up rail or divider output). A
 driver's level is taken at each receiver's own net: series resistors and
 resistors to rails divide it (a 3.3 V clock through 270 / 820 ohm reaches a
-2.5 V input at 2.48 V). Where
+2.5 V input at 2.48 V). An undriven signal whose resistors lead on to
+further nets (a three-resistor chain, a divider shared by two pins) has its
+level from the whole resistor network, solved as in Analog operating points. Where
 several rows apply the least favourable limit is used, and outputs are
 taken at the smallest listed load current (logic inputs draw microamps).
 
@@ -323,7 +327,10 @@ convention: `3V3_MISC` is 3.3 V, `0V6_VTT_16GB` is 0.6 V, `1V0A_FPGA` is
 1.0 V, `GND`/`CHAS` are 0 V. Control and telemetry nets derived from a rail
 (`*_EN`, `*_PGOOD`, `*_nFAULT`, `*_TLM_ADC`, ...) have no known voltage;
 sense nodes (`*_RSENSE_P`, `*_SNS`) count for derating but not as rails.
-Rails the convention cannot name go in `nets.voltages` in the config. A part
+Rails the convention cannot name go in `nets.voltages` in the config. A net
+on an IC's internal regulator output (a power pin with function
+REGULATOR_CAP or LDO_OUT) takes the voltage its part data gives as
+`v_<pin>` (an ADM1270's VCAP is 3.6 V), so pull-ups to it count. A part
 is only checked when the voltage on both of its terminals is known; the
 Markdown report's Coverage section says how many that was.
 

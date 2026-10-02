@@ -83,10 +83,11 @@ class PartsDB:
 
     def regulator(self, part_number):
         """The part's `regulator` block (enable, input/output/feedback pins,
-        divider, output equation), or None."""
+        divider, output equation, or `tracking` for an output that follows
+        a reference pin), or None."""
         data = self._part_file(part_number)
         block = data.get("regulator") if data else None
-        return block if isinstance(block, dict) and block.get("feedback_pin") else None
+        return block if isinstance(block, dict) and (block.get("feedback_pin") or block.get("tracking")) else None
 
     def unused_pins(self, part_number):
         """The part's `unused_pins` rules ([{pattern, connect, ohms, ...}]), or []."""
@@ -123,6 +124,19 @@ class PartsDB:
         data = self._part_file(part_number)
         block = data.get("clock_inputs") if data else None
         return [c for c in block if isinstance(c, dict) and c.get("pin")] if isinstance(block, list) else []
+
+    def monitors(self, part_number):
+        """The part's `monitors` ([{pin, kind, rising, falling}]): comparator
+        inputs that watch a voltage through a divider (UV, OV, power good)."""
+        data = self._part_file(part_number)
+        block = data.get("monitors") if data else None
+        return [m for m in block if isinstance(m, dict) and m.get("pin")] if isinstance(block, list) else []
+
+    def current_sense(self, part_number):
+        """The part's `current_sense` block ({pins, v_limit, ...}), or None."""
+        data = self._part_file(part_number)
+        block = data.get("current_sense") if data else None
+        return block if isinstance(block, dict) and block.get("pins") else None
 
     def characteristics(self, part_number):
         """The part's `electrical_characteristics` block from its JSON file,

@@ -72,6 +72,43 @@ def cap_voltage_coverage(ctx):
     return checked, total, worst
 
 
+def regulator_outputs(ctx):
+    """{net: volts} for nets on an IC's internal regulator output (power pin
+    with function REGULATOR_CAP or LDO_OUT) whose part data gives its
+    voltage as `v_<pin>` (typical, else the middle of its range). Nets two
+    parts disagree on are left out."""
+    found = {}
+    pdb = ctx.partsdb
+    for comp in ctx.design.components.values():
+        pf = pdb.pin_functions(comp.part_number) if hasattr(pdb, "pin_functions") else None
+        chars = pdb.characteristics(comp.part_number) if hasattr(pdb, "characteristics") else None
+        if not pf or not chars:
+            continue
+        for key, entry in pf.items():
+            if not isinstance(entry, dict) or entry.get("direction") != "power" \
+                    or entry.get("function") not in ("REGULATOR_CAP", "LDO_OUT"):
+                continue
+            char = chars.get("v_" + re.sub(r"\W", "", key).lower())
+            rows = (char or {}).get("rows") or []
+            if not rows:
+                continue
+            row = rows[0]
+            if isinstance(row.get("typ"), (int, float)):
+                volts = float(row["typ"])
+            elif isinstance(row.get("min"), (int, float)) and isinstance(row.get("max"), (int, float)):
+                volts = (row["min"] + row["max"]) / 2
+            else:
+                continue
+            numbers = {str(n) for n in entry.get("pins") or []}
+            for p in comp.pins:
+                if p.net and str(p.designator) in numbers:
+                    if found.get(p.net, volts) != volts:
+                        found[p.net] = None
+                    else:
+                        found[p.net] = volts
+    return {n: v for n, v in found.items() if v is not None}
+
+
 @check("PWR001", "Capacitor voltage over rating or derating limit", WARNING)
 def cap_voltage(ctx):
     limits = ctx.config["derating"]["capacitor_voltage"]
@@ -159,7 +196,7 @@ def rail_decoupling(ctx):
 @check("PWR004", "Supply rail with no test point", INFO)
 def rail_testpoints(ctx):
     for name, volts, pins, _, tps in rail_summary(ctx):
-        if tps == 0:
+        if tps == 0 and name not in ctx.config.derived:     # an IC's internal regulator (VCAP) needs none
             yield Finding("PWR004", f"rail '{name}' ({volts:g} V) has no test point", nets=[name])
 
 
@@ -369,6 +406,26 @@ def feedback_network(ctx, fb_net, max_nodes=30):
     return k, rth, out, [e[3] for e in edges]
 
 
+def _tracking_setpoint(ctx, comp, block, table):
+    """Setpoint of a regulator whose output tracks a reference pin (a DDR
+    VTT regulator: VTT = VDDQSNS / 2): the ratio times the reference's
+    rail, with an empty resistor list and the reference net last."""
+    from .pins import _norm
+    tr = block["tracking"]
+    def net_of(key):
+        entry = table["by_name"].get(_norm(key)) if table else None
+        pins = [p for p in comp.pins if entry and str(p.designator) in entry.numbers]
+        return pins[0].net if pins and pins[0].net else None
+    ref = net_of(tr["reference_pin"])
+    outs = [net_of(k) for k in block.get("output_pins") or []]
+    out = next((n for n in outs if n), None)
+    vref = ctx.config.net_voltage(ref) if ref else None
+    if out is None or vref is None:
+        return None
+    v = vref * float(tr["ratio"])
+    return (v, None, None, out, [], [ref])
+
+
 def regulator_setpoint(ctx, comp, block):
     """(vout typ, vout min, vout max, output net, network resistors, [])
     for a regulator whose feedback pin sits in a resistor network between
@@ -380,6 +437,8 @@ def regulator_setpoint(ctx, comp, block):
     cfg = ctx.config
     pt = _pin_types(ctx)
     table = pt.table(comp.part_number)
+    if block.get("tracking"):
+        return _tracking_setpoint(ctx, comp, block, table)
     fb_entry = table["by_name"].get(_norm(block["feedback_pin"])) if table else None
     if fb_entry is None:
         return None
@@ -421,6 +480,8 @@ def regulator_output(ctx):
             continue
         sp = regulator_setpoint(ctx, comp, block)
         if sp is None:
+            if block.get("tracking"):
+                continue
             yield Finding("PWR009", f"{comp.designator} ({comp.part_number}): feedback network at "
                                     f"{block['feedback_pin']} not recognised (it must reach one rail voltage and "
                                     "ground through resistors of known value)", severity=INFO, refs=[comp.designator])
@@ -429,6 +490,8 @@ def regulator_output(ctx):
         nominal = cfg.net_voltage(out)
         span = f" ({lo:.3f}-{hi:.3f} V over the reference tolerance)" if lo is not None and hi is not None else ""
         divider = ", ".join(c.designator for c in sorted(top, key=lambda c: natural_key(c.designator)))
+        if block.get("tracking"):
+            divider = f"{block['tracking']['ratio']:g} x '{bottom[0]}' ({block['tracking']['reference_pin']})"
         if nominal is None:
             yield Finding("PWR009", f"{comp.designator} ({comp.part_number}) sets {typ:.3f} V{span} through "
                                     f"{divider} on '{out}', whose voltage the net name does not give",
@@ -665,3 +728,169 @@ def turn_on_voltage(ctx):
             else:
                 yield Finding("PWR011", where, severity=INFO, refs=refs, nets=[vin_net, pin.net],
                               part_number=comp.part_number)
+
+
+def _rail_gains(ctx, net):
+    """(Network, {source net: volts at `net` per volt on it}) for the
+    resistor network around `net`: sources are rails and other fixed nets
+    (a shunt's terminal, whose voltage may be unknown). None when it cannot
+    be solved or a node is also driven by something other than resistors."""
+    from ..analog import Network
+    nw = Network(ctx, net)
+    # other parts on a source node (a FET on a shunt's terminal) do not
+    # change the divider; elsewhere they would
+    if not nw.ok or any(q.net not in nw.fixed for q in nw.unknown):
+        return None
+    gains = {}
+    for rail, volts in nw.fixed.items():
+        if volts == 0.0 or ctx.config.is_ground(rail):
+            continue
+        sol = nw.solve({rail: 1.0})
+        if sol is None:
+            return None
+        if abs(sol.get(net, 0.0)) > 1e-9:
+            gains[rail] = sol[net]
+    return nw, gains
+
+
+_MONITOR_WORDS = {"undervoltage": ("turns on above", "off below"),
+                  "overvoltage": ("trips above", "releases below"),
+                  "power_good": ("reports good above", "not good below")}
+
+
+def monitor_points(ctx):
+    """[(component, monitor entry, pin, rail net, rail volts, V rising
+    (worst: highest for UV/PG, lowest for OV), V falling, divider text)]
+    for monitor pins (part data `monitors`) held by a divider from one rail."""
+    from .levels import _levels
+    from .pins import _pin_types
+    lv = _levels(ctx)
+    pt = _pin_types(ctx)
+    out = []
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        mons = ctx.partsdb.monitors(comp.part_number)
+        if not mons:
+            continue
+        by_key = {}
+        for p in comp.pins:
+            pp = pt.part_entry(p)
+            if pp is not None:
+                by_key.setdefault(pp.key, p)
+        for m in mons:
+            pin = by_key.get(m["pin"])
+            if pin is None or not pin.net:
+                continue
+            pl = lv.for_pin(pin)
+            if pl is None:
+                continue
+            if ctx.config.net_voltage(pin.net) is not None or ctx.config.is_ground(pin.net):
+                out.append((comp, m, pin, pin.net, ctx.config.net_voltage(pin.net) or 0.0, None, None, "tied"))
+                continue
+            res = _rail_gains(ctx, pin.net)
+            if res is None or len(res[1]) != 1:
+                continue
+            nw, gains = res
+            rail, gain = next(iter(gains.items()))
+            worst_hi = m["kind"] != "overvoltage"
+            rise = _threshold(lv, pl, m["rising"], "max" if worst_hi else "min", max if worst_hi else min)
+            fall = _threshold(lv, pl, m["falling"], "min", min)
+            if rise is None:
+                continue
+            names = ", ".join(sorted({e[3].designator for e in nw.edges}, key=natural_key))
+            out.append((comp, m, pin, rail, ctx.config.net_voltage(rail), rise / gain,
+                        fall / gain if fall is not None else None, names))
+    return out
+
+
+@check("PWR012", "Supervisor trip point on the wrong side of its rail", ERROR, needs_partsdb=True)
+def monitor_trips(ctx):
+    """For each monitor pin (part data `monitors`: undervoltage, overvoltage,
+    power good) held by a resistor divider from one rail, the rail voltage
+    at which it trips, from the threshold's worst-case limit. An
+    undervoltage or power-good trip at or above the rail's nominal voltage
+    never lets the part turn on or report good; an overvoltage trip at or
+    below it shuts the part off in normal operation. Each trip point is
+    also listed (info)."""
+    for comp, m, pin, rail, volts, rise, fall, how in monitor_points(ctx):
+        head = f"{comp.designator} ({comp.part_number}) {m['kind'].replace('_', ' ')} pin {pin.name} on '{pin.net}'"
+        if how == "tied":
+            what = {"undervoltage": "never trips", "overvoltage": "is disabled", "power_good": "never changes"}
+            yield Finding("PWR012", f"{head} is tied to '{rail}': the {m['kind'].replace('_', ' ')} monitor "
+                                    + ("is disabled" if (volts == 0) == (m["kind"] == "overvoltage") else what[m["kind"]]),
+                          severity=INFO, refs=[comp.designator], nets=[pin.net], part_number=comp.part_number)
+            continue
+        up, down = _MONITOR_WORDS.get(m["kind"], ("trips above", "releases below"))
+        text = (f"{head} ({how}) {up} {rise:.3g} V on '{rail}'"
+                + (f", {down} {fall:.3g} V" if fall is not None else ""))
+        bad = volts is not None and ((m["kind"] in ("undervoltage", "power_good") and rise >= volts)
+                                     or (m["kind"] == "overvoltage" and rise <= volts))
+        if bad:
+            yield Finding("PWR012", f"{text}: the rail's nominal {volts:g} V is on the wrong side",
+                          refs=[comp.designator], nets=[pin.net, rail], part_number=comp.part_number)
+        else:
+            yield Finding("PWR012", text + (f" (nominal {volts:g} V)" if volts is not None else ""), severity=INFO,
+                          refs=[comp.designator], nets=[pin.net, rail], part_number=comp.part_number)
+
+
+@check("PWR013", "Current-limit sense resistor over its power rating", WARNING, needs_partsdb=True)
+def current_limits(ctx):
+    """For a part with a `current_sense` block, the resistor between its two
+    sense pins (two-terminal, or Kelvin sense pins) sets the current
+    limit: the sense voltage at its maximum over the resistance. The
+    resistor's dissipation at that current against its power rating,
+    derated by `derating.resistor_power`: over the rating is an error, over
+    the derated limit a warning; otherwise the limit is listed (info)."""
+    from ..analog import shunt_terminals
+    from .levels import _levels
+    from .pins import _pin_types
+    lv = _levels(ctx)
+    pt = _pin_types(ctx)
+    factor = ctx.config["derating"]["resistor_power"]
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.current_sense(comp.part_number)
+        if not block:
+            continue
+        by_key = {}
+        for p in comp.pins:
+            pp = pt.part_entry(p)
+            if pp is not None:
+                by_key.setdefault(pp.key, p)
+        pins = [by_key.get(k) for k in block["pins"]]
+        if None in pins or len(pins) != 2:
+            continue
+        a, b = pins[0].net, pins[1].net
+        shunt = None
+        for q in ctx.design.nets[a].pins:
+            st = shunt_terminals(ctx, q.component, 100.0)
+            if st and {st[0], st[1]} == {a, b}:
+                shunt = (q.component, st[2])
+                break
+        pl = lv.for_pin(pins[0])
+        vmax = _threshold(lv, pl, block["v_limit"], "max", max) if pl else None
+        vtyp = _threshold(lv, pl, block["v_limit"], "typ", max) if pl else None
+        if shunt is None or vmax is None:
+            continue
+        res, ohms = shunt
+        cond = block.get("default_when") or {}
+        note = ""
+        if cond.get("pin") in by_key and cond.get("tied_to") in by_key \
+                and by_key[cond["pin"]].net != by_key[cond["tied_to"]].net:
+            note = f" (with {cond['pin']} tied to {cond['tied_to']}; here it is not, so the limit is scaled)"
+        imax = vmax / ohms
+        watts = imax * imax * ohms
+        decoded = ctx.decoded(res)
+        rated, source = _rated(ctx, res, "Power_Rating", "W", decoded.power_max if decoded else None)
+        where = (f"{comp.designator} ({comp.part_number}) current limit through {res.designator} "
+                 f"({ohms:g} ohm): {(vtyp or vmax) / ohms:.3g} A typical, {imax:.3g} A maximum{note}")
+        if rated is not None and watts > rated:
+            yield Finding("PWR013", f"{where}; {res.designator} dissipates {watts:.3g} W at that current, above its "
+                                    f"{rated:g} W rating ({source})", severity=ERROR,
+                          refs=[comp.designator, res.designator], nets=[a, b], part_number=comp.part_number)
+        elif rated is not None and watts > factor * rated:
+            yield Finding("PWR013", f"{where}; {res.designator} dissipates {watts:.3g} W at that current, "
+                                    f"{watts / rated:.0%} of its {rated:g} W rating (limit {factor:.0%})",
+                          refs=[comp.designator, res.designator], nets=[a, b], part_number=comp.part_number)
+        else:
+            yield Finding("PWR013", where + (f"; {res.designator} {watts:.3g} W of {rated:g} W" if rated else ""),
+                          severity=INFO, refs=[comp.designator, res.designator], nets=[a, b],
+                          part_number=comp.part_number)
