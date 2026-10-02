@@ -130,11 +130,11 @@ through the ARF6 PCIe cable, all wired by name.
 | PIN001 | warning | Symbol pin type differs from the part data |
 | PIN002 | info | IC with no pin data in the parts repository: its symbol pin types are unverified |
 | PIN003 | warning | Part pin data names a pin the symbol does not have, or uses an unknown direction word |
-| PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net; warning when two parts' outputs meet through small series resistors (a part's output split over several pins counts once) |
+| PIN004 | error | Two push-pull outputs on one net, or an output on a supply/ground net; warning when two parts' outputs meet through small series resistors (a part's output split over several pins counts once, and so do alternate parts: see CLK001) |
 | PIN005 | warning | Net with only inputs on it (nothing drives it) |
 | PIN006 | warning | Open-drain net without a pull-up to a rail |
 | PIN007 | error | Differential receiver input pair (part data `*_P` input with `diff_pair`) with no resistor across it in `pins.diff_termination_ohms` (direct or split through a centre tap) and no internal `termination_ohms`; terminated twice is a warning |
-| PIN008 | error | Differential receiver whose + input is on the pair's negative net and - input on the positive one |
+| PIN008 | error | Differential receiver input or driver output (part data `*_P` with `diff_pair`) whose + pin is on the pair's negative net and - pin on the positive one |
 | FIO001 | warning | FPGA constraint or top-level file missing, or a command in it not understood |
 | FIO002 | error | Constrained FPGA port on a ball the symbol lacks, or on a supply/ground net (or a soft-ground standard such as SHIELD12 *not* on ground) |
 | FIO003 | warning | Constrained FPGA port on a pin that connects to nothing |
@@ -180,8 +180,12 @@ through the ARF6 PCIe cable, all wired by name.
 | ANA001 | error | Op-amp or comparator input outside its common-mode range (`vi_op`) or absolute maximum at the circuit's nominal operating point; for comparators whose part data marks `either_input`, only when both inputs of a channel are out of range (warning when the other's level is unknown) |
 | ANA002 | warning | Op-amp output beyond its guaranteed swing (`voh`/`vol`, row chosen by the DC load) at the nominal operating point |
 | ANA003 | info | Op-amp or comparator inputs whose operating point could not be worked out (the network is also driven by another part, a connector or a diode) |
+| CLK001 | info | Oscillators (part data `part_info.type: oscillator`) whose outputs reach one signal, directly or through selection resistors: taken as alternate footprints with one fitted (`parts.alternates` declares other groups) |
+| CLK002 | error | Alternate oscillators that differ in frequency, single-ended vs differential output, or which net carries the true output |
+| CLK003 | error | Oscillator frequency (`part_info.frequency_hz`) differs from a frequency in the name of a net it drives (`ETH1_50MHZ_OSC_OUT`, `148.5MHZ_P`) |
+| CLK004 | error | Clock input (part data `clock_inputs`) whose select pins, read like straps, expect another frequency than its oscillator (or net name) gives; warning when the select levels cannot be read |
 
-PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-007, PWU001-004, STP001-004 and ANA001-003 need
+PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-007, PWU001-004, STP001-004, ANA001-003 and CLK001-004 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
 without it they are reported as skipped.
 
@@ -279,7 +283,10 @@ evaluated at the rail on that supply pin; an FPGA's rows are selected by
 the pin's constrained I/O standard, drive strength and bank type, with the
 bank's rail as the supply. A signal is a net plus the nets joined to it by
 series resistors up to `levels.series_max_ohms`; resistors from it to rails
-and ground give its undriven level (pull-up rail or divider output). Where
+and ground give its undriven level (pull-up rail or divider output). A
+driver's level is taken at each receiver's own net: series resistors and
+resistors to rails divide it (a 3.3 V clock through 270 / 820 ohm reaches a
+2.5 V input at 2.48 V). Where
 several rows apply the least favourable limit is used, and outputs are
 taken at the smallest listed load current (logic inputs draw microamps).
 

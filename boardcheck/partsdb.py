@@ -112,6 +112,18 @@ class PartsDB:
         block = data.get("power_up_io") if data else None
         return [s for s in (block or {}).get("states", []) if isinstance(s, dict)] if isinstance(block, dict) else []
 
+    def part_info(self, part_number):
+        """The part's `part_info` block (type, frequency_hz, ...), or {}."""
+        data = self._part_file(part_number)
+        block = data.get("part_info") if data else None
+        return block if isinstance(block, dict) else {}
+
+    def clock_inputs(self, part_number):
+        """The part's `clock_inputs` ([{pin, select, frequency_hz}]), or []."""
+        data = self._part_file(part_number)
+        block = data.get("clock_inputs") if data else None
+        return [c for c in block if isinstance(c, dict) and c.get("pin")] if isinstance(block, list) else []
+
     def characteristics(self, part_number):
         """The part's `electrical_characteristics` block from its JSON file,
         or None."""

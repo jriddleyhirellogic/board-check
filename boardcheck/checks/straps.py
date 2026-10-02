@@ -31,6 +31,67 @@ class StrapPin:
         self.volts_range = None
 
 
+def static_level(ctx, pin, pp):
+    """StrapPin for an input held only by resistors (and the part's own
+    internal pull): its Thevenin level and the logic value it reads as.
+    `pp` is the pin's part data entry."""
+    comp = pin.component
+    lv = _levels(ctx)
+    pt = _pin_types(ctx)
+    if not hasattr(ctx, "_signal_by_net"):
+        ctx._signal_by_net = {n: s for s in signals(ctx) for n in s.nets}
+    sig = ctx._signal_by_net.get(pin.net)
+    lo_frac, hi_frac = ctx.config["power_up"]["assumed_thresholds"]
+    pl = lv.for_pin(pin)
+    if sig is None:         # tied straight to a rail or ground
+        v = ctx.config.net_voltage(pin.net)
+        sp = StrapPin(pin, pp.key, v, "unknown" if v is None else None, None, [])
+        volts = [v] if v is not None else []
+    else:
+        unknown = [t for t in sig.ties if t[3] is None]
+        ties = [(t[2], t[3]) for t in sig.ties if t[3] is not None]
+        drivers = [p for p in sig.pins if p.component is not comp
+                   and pt.base(p)[0] in ("output", "io")]
+        sp = StrapPin(pin, pp.key, None, "unknown" if unknown else None, None, drivers)
+        # The part's own internal pull (pin_functions internal_bias,
+        # resistance r_weak_pull_up/_down) holds the pin too.
+        bias = pp.internal_bias
+        internal = []
+        if bias in ("pull_up", "pull_down"):
+            rail = lv.own_supply(pl) if (pl and bias == "pull_up") else 0.0
+            name = "r_weak_" + bias
+            r_lo = lv.value(pl, name, "min", "low")[0] if pl else None
+            r_hi = lv.value(pl, name, "max", "high")[0] if pl else None
+            if rail is not None and r_lo and r_hi:
+                internal = [(rail, r_lo), (rail, r_hi)]
+            elif rail is not None and not ties:
+                internal = [(rail, 1.0)]        # only the internal pull: its rail, value unknown
+        if internal:
+            volts = [_thevenin(ties + [t]) for t in internal]
+        else:
+            volts = [_thevenin(ties)] if ties else []
+        sp.bias = bias
+    sp.volts = min(volts) if volts else None
+    sp.volts_range = (min(volts), max(volts)) if volts else None
+    vil, vih = input_thresholds(lv, pl)
+    if vil is not None and vih is not None:
+        sp.thresholds = (vil, vih, False)
+    else:
+        supply = lv.own_supply(pl) if pl else None
+        if supply:
+            sp.thresholds = (lo_frac * supply, hi_frac * supply, True)
+    if sp.word is None:
+        if not volts:
+            sp.word = "floating"
+        elif sp.thresholds is None:
+            sp.word = "unknown"
+        else:
+            vil, vih, _ = sp.thresholds
+            words = {"low" if v <= vil else "high" if v >= vih else "undefined" for v in volts}
+            sp.word = words.pop() if len(words) == 1 else "undefined"
+    return sp
+
+
 def _component_straps(ctx):
     """[(component, straps block, {key: StrapPin})] for parts with strap data."""
     if hasattr(ctx, "_straps"):
@@ -39,10 +100,7 @@ def _component_straps(ctx):
     if ctx.partsdb is None:
         ctx._straps = out
         return out
-    lv = _levels(ctx)
     pt = _pin_types(ctx)
-    by_net = {n: s for s in signals(ctx) for n in s.nets}
-    lo_frac, hi_frac = ctx.config["power_up"]["assumed_thresholds"]
     for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
         block = ctx.partsdb.straps(comp.part_number)
         if not block:
@@ -53,55 +111,7 @@ def _component_straps(ctx):
             pp = pt.part_entry(pin)
             if pp is None or pp.key not in keys:
                 continue
-            sig = by_net.get(pin.net)
-            pl = lv.for_pin(pin)
-            if sig is None:         # tied straight to a rail or ground
-                v = ctx.config.net_voltage(pin.net)
-                sp = StrapPin(pin, pp.key, v, "unknown" if v is None else None, None, [])
-                volts = [v] if v is not None else []
-            else:
-                unknown = [t for t in sig.ties if t[3] is None]
-                ties = [(t[2], t[3]) for t in sig.ties if t[3] is not None]
-                drivers = [p for p in sig.pins if p.component is not comp
-                           and pt.base(p)[0] in ("output", "io")]
-                sp = StrapPin(pin, pp.key, None, "unknown" if unknown else None, None, drivers)
-                # The part's own internal pull (pin_functions internal_bias,
-                # resistance r_weak_pull_up/_down) holds the pin too.
-                bias = pp.internal_bias
-                internal = []
-                if bias in ("pull_up", "pull_down"):
-                    rail = lv.own_supply(pl) if (pl and bias == "pull_up") else 0.0
-                    name = "r_weak_" + bias
-                    r_lo = lv.value(pl, name, "min", "low")[0] if pl else None
-                    r_hi = lv.value(pl, name, "max", "high")[0] if pl else None
-                    if rail is not None and r_lo and r_hi:
-                        internal = [(rail, r_lo), (rail, r_hi)]
-                    elif rail is not None and not ties:
-                        internal = [(rail, 1.0)]        # only the internal pull: its rail, value unknown
-                if internal:
-                    volts = [_thevenin(ties + [t]) for t in internal]
-                else:
-                    volts = [_thevenin(ties)] if ties else []
-                sp.bias = bias
-            pins[pp.key] = sp
-            sp.volts = min(volts) if volts else None
-            sp.volts_range = (min(volts), max(volts)) if volts else None
-            vil, vih = input_thresholds(lv, pl)
-            if vil is not None and vih is not None:
-                sp.thresholds = (vil, vih, False)
-            else:
-                supply = lv.own_supply(pl) if pl else None
-                if supply:
-                    sp.thresholds = (lo_frac * supply, hi_frac * supply, True)
-            if sp.word is None:
-                if not volts:
-                    sp.word = "floating"
-                elif sp.thresholds is None:
-                    sp.word = "unknown"
-                else:
-                    vil, vih, _ = sp.thresholds
-                    words = {"low" if v <= vil else "high" if v >= vih else "undefined" for v in volts}
-                    sp.word = words.pop() if len(words) == 1 else "undefined"
+            pins[pp.key] = static_level(ctx, pin, pp)
         out.append((comp, block, pins))
     ctx._straps = out
     return out

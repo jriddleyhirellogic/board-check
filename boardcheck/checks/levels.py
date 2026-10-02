@@ -443,6 +443,75 @@ def series_ohms(ctx, sig, a, b):
     return None
 
 
+def driven_level(ctx, sig, src_net, volts, dst_net):
+    """Volts at dst_net while src_net is driven to `volts`: the series
+    resistors between the signal's nets and its resistors to supplies form
+    a divider (a 3.3 V clock scaled down for a 2.5 V input). `volts` when
+    dst_net is src_net; None when a resistor value on the way is unknown,
+    or dst_net is not reached through resistors."""
+    if src_net == dst_net:
+        return volts
+    from .power import _solve
+    members = set(sig.nets)
+    edges, seen = [], set()
+    for n in sig.nets:
+        for q in ctx.design.nets[n].pins:
+            comp = q.component
+            if comp.designator in seen or ctx.kind(comp) != "resistor" or len(comp.pins) != 2:
+                continue
+            a, b = comp.pins[0].net, comp.pins[1].net
+            if a in members and b in members and a != b:
+                seen.add(comp.designator)
+                edges.append((a, b, _ohms(ctx, comp)))
+    fixed = {src_net: volts}
+    for comp, rail, v, ohms in sig.ties:
+        fixed.setdefault(rail, v if v is not None else 0.0)
+        net = next((p.net for p in comp.pins if p.net in members), None)
+        edges.append((net, rail, ohms))
+    # nodes reached from the driven net through resistors
+    reach, todo = {src_net}, [src_net]
+    while todo:
+        n = todo.pop()
+        for a, b, _ in edges:
+            if n in (a, b):
+                o = b if a == n else a
+                if o not in reach and o in members:
+                    reach.add(o)
+                    todo.append(o)
+    if dst_net not in reach:
+        return None
+    used = [(a, b, r) for a, b, r in edges if a in reach or b in reach]
+    if any(r is None for _, _, r in used):
+        return None
+    if any(r == 0 for a, b, r in used if a in fixed and b in fixed):
+        return None
+    unknown = sorted(n for n in reach if n not in fixed)
+    idx = {n: j for j, n in enumerate(unknown)}
+    m = [[0.0] * len(unknown) for _ in unknown]
+    rhs = [0.0] * len(unknown)
+    for a, b, r in used:
+        g = 1.0 / max(r, 1e-3)
+        for x, y in ((a, b), (b, a)):
+            if x in idx:
+                m[idx[x]][idx[x]] += g
+                if y in idx:
+                    m[idx[x]][idx[y]] -= g
+                else:
+                    rhs[idx[x]] += g * fixed.get(y, 0.0)
+    sol = _solve(m, rhs) if unknown else []
+    if sol is None:
+        return None
+    return sol[idx[dst_net]] if dst_net in idx else fixed.get(dst_net)
+
+
+def _at(ctx, sig, dpin, volts, rpin):
+    """(volts at the receiver, " divided to x V" or "") for a driver level."""
+    v = driven_level(ctx, sig, dpin.net, volts, rpin.net) if dpin is not None else None
+    if v is None or abs(v - volts) < 1e-3:
+        return volts, ""
+    return v, f", {v:.3g} V at {rpin.net} after the divider"
+
+
 @check("LVL001", "Driver high level below receiver threshold", ERROR, needs_partsdb=True)
 def high_level(ctx):
     lv = _levels(ctx)
@@ -466,8 +535,9 @@ def high_level(ctx):
                 vih, key = lv.value(rl, "vih", "min", "high")
                 if vih is None:
                     vih, key = lv.value(rl, "vt_pos", "max", "high")
-                if vih is not None and high[0] < vih - _EPS:
-                    yield Finding("LVL001", f"'{sig.name}': {high[1]} is below {_who(rl, r)} "
+                v, via = _at(ctx, sig, d, high[0], r) if dt != "open_collector" else (high[0], "")
+                if vih is not None and v < vih - _EPS:
+                    yield Finding("LVL001", f"'{sig.name}': {high[1]}{via} is below {_who(rl, r)} "
                                             f"{'VIH min' if key.startswith('vih') else 'VT+ max'} {vih:.3g} V",
                                   severity=_sev(ds, rs), refs=sorted({d.component.designator, r.component.designator},
                                                                      key=natural_key), nets=list(sig.nets))
@@ -494,8 +564,9 @@ def low_level(ctx):
                 vil, key = lv.value(rl, "vil", "max", "low")
                 if vil is None:
                     vil, key = lv.value(rl, "vt_neg", "min", "low")
-                if vil is not None and vol > vil + _EPS:
-                    yield Finding("LVL002", f"'{sig.name}': {_who(dl, d)} VOL max {vol:.3g} V is above "
+                v, via = _at(ctx, sig, d, vol, r)
+                if vil is not None and v > vil + _EPS:
+                    yield Finding("LVL002", f"'{sig.name}': {_who(dl, d)} VOL max {vol:.3g} V{via} is above "
                                             f"{_who(rl, r)} {'VIL max' if key.startswith('vil') else 'VT- min'} {vil:.3g} V",
                                   severity=_sev(ds, rs), refs=sorted({d.component.designator, r.component.designator},
                                                                      key=natural_key), nets=list(sig.nets))
@@ -535,11 +606,12 @@ def input_overvoltage(ctx):
                 if op_max is None:
                     op_max, key = lv.value(rl, "vih", "max", "low")
             limits.append((r, rs, rl, abs_max, op_max, key))
-        for v, label, source, dpin in highs:
+        for v0, label, source, dpin in highs:
             over = {"absolute": [], "clamped": [], "recommended": []}
             for r, rs, rl, abs_max, op_max, key in limits:
                 if r.component is source:
                     continue
+                v, via = _at(ctx, sig, dpin, v0, r)
                 if abs_max is not None and v > abs_max + _EPS:
                     # Driven beyond the rating, but a series resistor may hold
                     # the clamp current within what the data sheet allows.
@@ -557,9 +629,9 @@ def input_overvoltage(ctx):
                             extra = f" ({amps * 1000:.2g} mA through {ohms:g} ohm" + (
                                 f", above its {i_max * 1000:g} mA clamp rating)" if i_max is not None
                                 else "; the data sheet gives no clamp current)")
-                        over["absolute"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V{extra}"))
+                        over["absolute"].append((r, rs, f"{_who(rl, r)} {abs_max:.3g} V{extra}{via}"))
                 elif op_max is not None and v > op_max + _EPS:
-                    over["recommended"].append((r, rs, f"{_who(rl, r)} {op_max:.3g} V ({key})"))
+                    over["recommended"].append((r, rs, f"{_who(rl, r)} {op_max:.3g} V ({key}){via}"))
             for kind, hits in over.items():
                 if hits:
                     word = "absolute" if kind == "clamped" else kind

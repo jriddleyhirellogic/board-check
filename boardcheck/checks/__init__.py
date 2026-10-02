@@ -93,5 +93,5 @@ class Context:
 
 def load_all():
     # Importing the modules registers their checks.
-    from . import export, firmware, fpga, levels, nets, opamps, parts, pins, power, powerup, straps  # noqa: F401
+    from . import clocks, export, firmware, fpga, levels, nets, opamps, parts, pins, power, powerup, straps  # noqa: F401
     return REGISTRY

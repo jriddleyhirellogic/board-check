@@ -324,17 +324,25 @@ def contention(ctx):
     """Two push-pull outputs on one net, or a push-pull output on a supply
     rail or ground net. Tri-state and bidirectional pins are not counted:
     whether they fight depends on firmware and FPGA configuration. Outputs
-    on different nets joined by small series resistors are a warning."""
+    on different nets joined by small series resistors are a warning.
+    Alternate parts (one fitted: oscillators driving one clock, or
+    `parts.alternates`) count as one driver."""
+    from .clocks import alternate_of
     pt = _pin_types(ctx)
     cfg = ctx.config
+    alt = alternate_of(ctx)
 
     def one_per_function(outs):
         """A part's output split over several pins (one pin_functions entry,
-        or one pin name) is one driver."""
+        or one pin name) is one driver; so are alternate parts, of which
+        only one is fitted (clocks.alternates)."""
         seen, kept = set(), []
         for o in outs:
             pp = pt.part_entry(o[0])
-            key = (o[0].component.designator, pp.key if pp else o[0].name)
+            desig = o[0].component.designator
+            key = (desig, pp.key if pp else o[0].name)
+            if desig in alt:
+                key = (alt[desig], "alternate")
             if key not in seen:
                 seen.add(key)
                 kept.append(o)
@@ -408,10 +416,10 @@ def open_drain_pullups(ctx):
                           refs=sorted({p.component.designator for p, _, _ in od}), nets=[net.name])
 
 
-def _diff_receivers(ctx):
+def _diff_receivers(ctx, directions=("input",)):
     """[(component, positive pin, negative pin, part entry)] for differential
-    receiver inputs in the part data: input pins whose function ends in _P
-    and whose `diff_pair` names the negative half."""
+    pins in the part data: pins of the given directions whose function ends
+    in _P and whose `diff_pair` names the negative half."""
     pt = _pin_types(ctx)
     out = []
     for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
@@ -422,7 +430,7 @@ def _diff_receivers(ctx):
                 by_key.setdefault(pp.key, (p, pp))
         for key, (p, pp) in sorted(by_key.items()):
             func = str(pp.entry.get("function") or "")
-            if pp.entry.get("direction") != "input" or not func.endswith("_P") or not pp.entry.get("diff_pair"):
+            if pp.entry.get("direction") not in directions or not func.endswith("_P") or not pp.entry.get("diff_pair"):
                 continue
             neg = by_key.get(pp.entry["diff_pair"])
             if neg is not None:
@@ -485,13 +493,13 @@ def diff_termination(ctx):
                           nets=[p.net, n.net], part_number=comp.part_number)
 
 
-@check("PIN008", "Differential receiver polarity differs from the net names", ERROR, needs_partsdb=True)
+@check("PIN008", "Differential pin polarity differs from the net names", ERROR, needs_partsdb=True)
 def diff_polarity(ctx):
-    """A receiver's positive input on a net named as a pair's negative half
-    (by `nets.diff_pair_suffixes`) and the negative input on the positive
-    half: the pair is swapped."""
+    """A receiver's positive input, or a driver's positive (true) output, on
+    a net named as a pair's negative half (by `nets.diff_pair_suffixes`) and
+    the negative pin on the positive half: the pair is swapped."""
     suffixes = ctx.config["nets"]["diff_pair_suffixes"]
-    for comp, p, n, pp in _diff_receivers(ctx):
+    for comp, p, n, pp in _diff_receivers(ctx, ("input", "output")):
         for pos, neg in suffixes:
             if p.net.endswith(neg) and n.net.endswith(pos) and p.net[:-len(neg)] == n.net[:-len(pos)]:
                 yield Finding("PIN008", f"{comp.designator} {p.name} (+) is on '{p.net}' and {n.name} (-) on "

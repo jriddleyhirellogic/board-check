@@ -87,6 +87,10 @@ DEFAULTS = {
             "resistor": ["R_Value", "Power_Rating", "Tolerance", "Size|Case/Package"],
             "inductor": ["L_Value"],
         },
+        # Groups of designators of which only one is fitted (alternate
+        # footprints, e.g. [[Y1, Y4]]): output contention is not reported
+        # between members. Oscillators driving one clock are found without it.
+        "alternates": [],
         "qualification": {
             "param": "Qualification",
             "kinds": ["capacitor", "resistor", "inductor", "diode", "transistor"],
