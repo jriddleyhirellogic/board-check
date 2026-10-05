@@ -72,12 +72,60 @@ def system_main(argv):
     return 1 if any(SEVERITY_ORDER[f.severity] <= SEVERITY_ORDER[args.fail_on] for f in found) else 0
 
 
+def access_main(argv):
+    from . import access
+    ap = argparse.ArgumentParser(prog="boardcheck access",
+                                 description="What each connector pin reaches on the board, traced through series "
+                                             "passives and buffers to the FPGA port (a report, no findings).")
+    ap.add_argument("export", nargs="?", help="JSON file written by ExportAllSchematicsToJSON")
+    ap.add_argument("-c", "--config", help="YAML config")
+    ap.add_argument("--system", help="system YAML; with --board, report that board and what each pin mates with")
+    ap.add_argument("--board", help="board name in the system YAML")
+    ap.add_argument("--connector", help="comma-separated connector designators (default: all)")
+    ap.add_argument("-f", "--format", choices=["markdown", "csv", "json"], default="markdown")
+    ap.add_argument("-o", "--output", help="write the report here instead of stdout")
+    ap.add_argument("--no-partsdb", action="store_true", help="do not use electronic-parts-repository")
+    args = ap.parse_args(argv)
+    partsdb = None if args.no_partsdb else PartsDB.open()
+    system = None
+    if args.system:
+        from . import system as sysmod
+        if not args.board:
+            ap.error("--system needs --board")
+        system = sysmod.System.load(args.system, partsdb)
+        if args.board not in system.boards:
+            ap.error(f"board '{args.board}' is not in {args.system}")
+        ctx = system.boards[args.board].ctx
+        title = f"{args.board} connector access"
+    elif args.export:
+        from .checks import Context
+        load_all()
+        ctx = Context(Design.load(args.export), Config.load(args.config), partsdb)
+        title = None
+    else:
+        ap.error("the export JSON path (or --system and --board) is required")
+    only = set(args.connector.split(",")) if args.connector else None
+    found = access.connectors(ctx, only)
+    if system is not None:
+        access.add_mates(found, system, args.board)
+    rendered = {"markdown": lambda f: access.markdown(f, title), "csv": access.as_csv,
+                "json": access.as_json}[args.format](found)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(rendered)
+    else:
+        sys.stdout.write(rendered + "\n")
+    return 0
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv[:1] == ["diff"]:
         return diff_main(argv[1:])
     if argv[:1] == ["system"]:
         return system_main(argv[1:])
+    if argv[:1] == ["access"]:
+        return access_main(argv[1:])
     ap = argparse.ArgumentParser(prog="boardcheck", description="Automated checks on an Altium schematic JSON export. "
                                                                 "Use 'boardcheck diff OLD NEW' to compare two exports.")
     ap.add_argument("export", nargs="?", help="JSON file written by ExportAllSchematicsToJSON")

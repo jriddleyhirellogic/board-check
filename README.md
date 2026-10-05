@@ -93,6 +93,37 @@ Farsight: CM-03545 J7 mates CM-02441 (sensor) J1 directly; to CM-03986
 TX pair n), J1 reaches J3 through the control harness, and J2 reaches J4
 through the ARF6 PCIe cable, all wired by name.
 
+## Connector access
+
+```
+python -m boardcheck access EXPORT.json -c boardcheck.yaml [--connector J1,J6] [-f markdown|csv|json] [-o FILE]
+python -m boardcheck access --system designs/farsight_system.yaml --board CM-03545
+```
+
+is a report, not a check: for every connector pin (designator kind
+`connector`; test points and mechanical parts are left out) it lists the
+net; whether the pin is ground, a supply (with the regulator that feeds it)
+or a signal; for a signal, its differential partner and the resistor across
+the pair, protection on the net (part data ESD_IO / FLOW_THROUGH, diodes),
+passives from the net to ground or a rail, and what the pin reaches.
+
+The trace walks through series resistors, capacitors, inductors, ferrites
+and fuses (up to 4 in a row) and crosses buffers, line drivers, line
+receivers and level shifters (up to 3) to the matching channel's other side,
+so a pin reaches the FPGA port behind them: the FPGA's constraints give the
+port, I/O standard, direction, bank and bank voltage, or say that the pin
+has no port assigned. A channel is matched from part data only: the pin's
+function on one side (LVDS_IN_P/N, BUS_IN_P/N, DRIVER_IN, TX_IN, BUFFER_IN)
+and the other side's function (RECEIVER_OUT, RX_OUT, LVDS_OUT_P/N,
+BUS_OUT_P/N, BUFFER_OUT) with the same digits in the pin key (1A to 1Y, 1A1
+to 1Y1, A to R). When a buffer's channels cannot be matched the trace stops
+there and says so; it does not guess. Transformers, transistors, relays and
+switches stop it the same way. A branch ends at the first active part it
+reaches, so an analog input stops at its amplifier.
+
+With `--system` and `--board`, each pin also shows what it mates with on
+the other board, from the system YAML's links.
+
 ## Checks
 
 | Id | Default | What it catches |
@@ -361,6 +392,7 @@ boardcheck/
   partsdb.py      optional electronic-parts-repository adapter
   fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
   diff.py         net-level comparison of two exports
+  access.py       connector access report (what each connector pin reaches)
   checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py,
                   straps.py (one function per check)
   runner.py       runs checks, applies severity overrides and waivers
