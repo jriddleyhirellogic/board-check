@@ -61,6 +61,9 @@ class FpgaIO:
     port_bases: dict = field(default_factory=dict)
     # SmartDesign connections of each top-level port: {port: {"inst:PIN", ...}}
     port_links: dict = field(default_factory=dict)
+    # Pin-map entries (`dict set pins`) that apply_pin_constraints was handed
+    # but no port list applied: {ball: (map key, "file:line")}.
+    unapplied: dict = field(default_factory=dict)
 
     def port_direction(self, port):
         """Direction the FPGA design gives a port ("input", "output",
@@ -263,6 +266,12 @@ class _Reader:
             if len(entry) > 2:
                 props.update(_pairs(_words(entry[2])))
             self.add(fw_port, props, f"{at} via {map_at}")
+        used = {e[1] for e, _ in ports if isinstance(e, list) and len(e) >= 2}
+        for key, (props, map_at) in pin_map.items():
+            norm = {_KEYS.get(k.lower(), k.lower()): v for k, v in dict(props).items()}
+            ball = str(norm.get("ball") or "").strip()
+            if key not in used and ball:
+                self.fpga.unapplied.setdefault(ball, (key, map_at))
 
     def cmd_set_io(self, args, where):
         port = self.value(args[0])

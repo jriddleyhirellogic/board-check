@@ -122,9 +122,12 @@ def unconstrained_io(ctx):
             if others:
                 loose.append((pin, net))
         for pin, net in loose:
+            mapped = f.io.unapplied.get(str(pin.designator))
+            why = (f"; the pin map names '{mapped[0]}' for it ({mapped[1]}) but the constraints do not apply it"
+                   if mapped and not any(c.ball == str(pin.designator) for c in f.io.pins.values()) else "")
             yield Finding("FIO005", f"{desig}.{pin.designator} ({pin.name}) is on '{net.name}' with "
                                     f"{', '.join(sorted({p.component.designator for p in net.pins if p.component is not f.component}, key=natural_key)[:6])} "
-                                    "but no constraint assigns it a port", refs=[desig], nets=[net.name])
+                                    f"but no constraint assigns it a port{why}", refs=[desig], nets=[net.name])
 
 
 @check("FIO006", "FPGA constraint direction disagrees with the design", ERROR)

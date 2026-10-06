@@ -46,6 +46,7 @@ def test_libero_pin_map_is_applied_as_libero_would(tmp_path):
     assert io.pins["A2"].port == "btn", "the firmware port name, mapped to the PCB port's pin"
     assert io.pins["B1"].io_std == "LVCMOS18", "a third list element overrides the pin map"
     assert io.pins["A1"].where.startswith("io.pdc:") and "pins.tcl:1" in io.pins["A1"].where
+    assert io.unapplied == {"B2": ("spare", "pins.tcl:4")}, "a pin-map entry no port list applies"
 
 
 def test_set_io_form_problems_and_missing_files(tmp_path):

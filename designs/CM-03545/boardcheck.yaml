@@ -44,7 +44,8 @@ waivers: []
 #    reason: unused ProASIC3 PLL supplies VCCPLx tied to GND per datasheet
 
 # FPGA I/O configuration, read from the FPGA projects' own files where they
-# live: the farsight_claude repository checked out next to board-check.
+# live: designs/farsight-fpga and designs/farsight-fpga-house-keeper (the
+# housekeeper uses the io/fm pinout: CM-03545 is the flight model).
 # constraints give pin assignment, I/O standard, pull, drive and bank
 # voltages; top_level gives each port's direction as the design declares it.
 # These are the files the bitstreams are built from, so the checks always
@@ -52,9 +53,9 @@ waivers: []
 fpga:
   U1:   # PolarFire MPF500TS-FC1152M
     constraints:
-      - ../../../farsight_claude/farsight-fpga-main/constr/mpf500ts-fc1152m/io/io_constraints.pdc
+      - ../farsight-fpga/constr/mpf500ts-fc1152m/io/io_constraints.pdc
     top_level:
-      - ../../../farsight_claude/farsight-fpga-main/bd/mpf500ts-fc1152m/top/components/top.tcl
+      - ../farsight-fpga/bd/mpf500ts-fc1152m/top/components/top.tcl
     bank_pattern: '(?:GPIO|HSIO)\d+[PN]B(\d+)'   # HSIO162PB0 -> bank 0, GPIO261PB4 -> bank 4
     bank_supply: 'VDDI{bank}'
     bank_name: 'Bank{bank}'
@@ -65,21 +66,21 @@ fpga:
     transceiver_pattern: '^XCVR_(?P<quad>\d+)[A-Z]?_(?P<role>RX|TX|REFCLK)'
   U2:   # ProASIC3L A3PE3000L-FG484M (housekeeper)
     constraints:
-      - ../../../farsight_claude/farsight-fpga-house-keeper-main/constr/a3pe3000l-fg484m/io/io_constraints.pdc
+      - ../farsight-fpga-house-keeper/constr/a3pe3000l-fg484m/io/fm/io_constraints.pdc
     top_level:
-      - ../../../farsight_claude/farsight-fpga-house-keeper-main/src/top.sv
+      - ../farsight-fpga-house-keeper/src/top.sv
     top_module: top
     bank_pattern: 'IO\d+[PN][A-Z]B(\d+)V\d'   # IO40PDB0V4 -> bank 0
     bank_supply: 'VCCIB{bank}'
     pair_patterns:                            # IO40PDB0V4 / IO40NDB0V4
       - 'IO(?P<pair>\d+)(?P<pol>[PN])[A-Z]B\d+V\d'
 
-# Firmware read in place from farsight_claude, like the FPGA files.
+# Firmware read in place from designs/farsight-avionics-sw, like the FPGA files.
 firmware:
   adc_channel_maps:
     - name: power telemetry
       # Camera/src/tlm_adc.c: input = index & 7, chip select = index >> 3
-      enum_file: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/tlm_adc.h
+      enum_file: ../farsight-avionics-sw/Camera/include/tlm_adc.h
       enum: TLM_Signal_t
       skip: [NUMBER_TLM_SENSORS]
       strip_prefix: TLM_
@@ -92,13 +93,13 @@ firmware:
       adc_reference_pin: VA
       adc_bits: 12
       calibration:
-        file: ../../../farsight_claude/farsight-avionics-sw-main/Cal_spreadsheets/default_cals.xlsx
+        file: ../farsight-avionics-sw/Cal_spreadsheets/default_cals.xlsx
         sheet: TLM
         columns: [Signal, Gain, Offset]
   pwm_outputs:
     - name: stepper VREF
       # Camera/src/hal/hal_pwm.c: VREF = PWM_VREF_mV * duty, I_FS = VREF / K_V
-      constant_file: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/pwm.h
+      constant_file: ../farsight-avionics-sw/Camera/include/pwm.h
       constant: PWM_VREF_mV
       constant_unit: mV
       fpga: U1
@@ -110,8 +111,8 @@ firmware:
       # Camera/include/gpio_pin_def.h: each comment starts a group of bits of
       # one CoreGPIO (GPIO_init base address in camera.c / hw_init.c, whose
       # instance fpga_design_config.h names)
-      header: ../../../farsight_claude/farsight-avionics-sw-main/Camera/include/gpio_pin_def.h
-      source_dir: ../../../farsight_claude/farsight-avionics-sw-main/Camera/src
+      header: ../farsight-avionics-sw/Camera/include/gpio_pin_def.h
+      source_dir: ../farsight-avionics-sw/Camera/src
       fpga: U1
       blocks:
         - {groups: [Cam ctrl], instance: cam_rx_inst/gpo_cam_ctrl_inst, pin: GPIO_OUT}                 # GPO_CAM
