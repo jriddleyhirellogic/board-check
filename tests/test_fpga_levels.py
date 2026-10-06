@@ -175,6 +175,9 @@ dict set pins {ghost}   {pin_name "Z9" io_std "LVCMOS18" DIRECTION "OUTPUT"}
     assert any("'nc_out'" in m for m in unconnected) and not any("'out18'" in m for m in unconnected)
     assert ["U1.B2" in f.message for f in findings(fio.unconstrained_io, ctx)] == [True]
     assert findings(fio.bank_voltage, ctx) == [], "Bank1 1.8 V on 1V8, Bank2 3.3 V on 3V3"
+    ctx = _board(tmp_path, pins_tcl, fpga_cfg={"unused_io": "it has a weak pull-up"})
+    (f,) = findings(fio.unconstrained_io, ctx)
+    assert f.message.endswith("but no constraint assigns it a port; unused, so it has a weak pull-up")
 
 
 def test_bank_voltage_mismatch_and_missing_constraints(tmp_path):

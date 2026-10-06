@@ -64,6 +64,9 @@ fpga:
       - '^(?:GPIO|HSIO)(?P<pair>\d+)(?P<pol>[PN])B\d+'
       - '^(?P<pair>XCVR_\w+?)_(?P<pol>[PN])$'
     transceiver_pattern: '^XCVR_(?P<quad>\d+)[A-Z]?_(?P<role>RX|TX|REFCLK)'
+    # Unconstrained user I/O, from the retained build's pin report as quoted in
+    # farsight-fpga docs/requirements/pf-fpga-findings.md PF-F-50 (:521).
+    unused_io: 'the build leaves it tristated with a weak pull-up (input buffer disabled)'
   U2:   # ProASIC3L A3PE3000L-FG484M (housekeeper)
     constraints:
       - ../farsight-fpga-house-keeper/constr/a3pe3000l-fg484m/io/fm/io_constraints.pdc
@@ -109,8 +112,10 @@ firmware:
   gpio_maps:
     - name: camera GPIO
       # Camera/include/gpio_pin_def.h: each comment starts a group of bits of
-      # one CoreGPIO (GPIO_init base address in camera.c / hw_init.c, whose
-      # instance fpga_design_config.h names)
+      # one CoreGPIO (GPIO_init base address in camera.c / hw_init.c, defined
+      # in Camera/include/mem_map.h, not fpga_design_config.h's Mi-V template
+      # addresses). Instance names: the APB slave at that address in the
+      # FPGA's SmartDesign.
       header: ../farsight-avionics-sw/Camera/include/gpio_pin_def.h
       source_dir: ../farsight-avionics-sw/Camera/src
       fpga: U1

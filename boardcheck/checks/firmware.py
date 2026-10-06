@@ -262,6 +262,14 @@ def _cal_rows(ctx, m):
         return None, f"calibration file {os.path.basename(path)}: {e}"
 
 
+def _placeholders(rows):
+    """True when every row is gain 1, offset 0: a table never filled in."""
+    try:
+        return bool(rows) and all(float(r[1]) == 1.0 and float(r[2] or 0) == 0.0 for r in rows)
+    except (TypeError, ValueError):
+        return False
+
+
 @check("FW005", "Calibration gain differs from the board's scaling", WARNING)
 def calibration_gains(ctx):
     """For each voltage channel, the gain the board implies (reference / 2^bits
@@ -273,6 +281,10 @@ def calibration_gains(ctx):
         if problem:
             yield Finding("FW005", f"{m.name}: {problem}", severity=INFO)
         if not rows:
+            continue
+        if _placeholders(rows):
+            yield Finding("FW005", f"{m.name}: every row of {os.path.basename(m.spec['calibration']['file'])} is "
+                                   f"gain 1, offset 0: no channel is calibrated, so telemetry reads raw counts")
             continue
         bits = int(m.spec.get("adc_bits", 12))
         tol = float(m.spec.get("calibration", {}).get("tolerance", 0.05))
@@ -301,13 +313,14 @@ def calibration_gains(ctx):
 def calibration_names(ctx):
     """The calibration table is loaded by position (cal.c copies it into
     TLM_Cal_t[] indexed by the enum), so its rows must list the enum's
-    signals in the same order."""
+    signals in the same order. Names are not used, so stray trailing
+    punctuation ('TLM_1V2_8GB,') is ignored."""
     for m in _maps(ctx):
         rows, _ = _cal_rows(ctx, m)
         if not rows:
             continue
         names = [e[0] for e in m.entries]
-        cal = [str(r[0]).strip() for r in rows]
+        cal = [str(r[0]).strip().rstrip(",;").strip() for r in rows]
         if len(cal) != len(names):
             yield Finding("FW006", f"{m.name}: calibration file has {len(cal)} rows, the enum {len(names)} signals")
         bad = [(i, c, n) for i, (c, n) in enumerate(zip(cal, names)) if c != n]
@@ -552,10 +565,11 @@ def current_offsets(ctx):
     amplifier's output sits at a reference voltage with no current flowing,
     that reads as zero_counts counts, so the offset must be -gain *
     zero_counts whatever unit the gain is in. Compared by position in the
-    firmware enum, as the calibration table is loaded."""
+    firmware enum, as the calibration table is loaded. A table of
+    placeholders is reported once, by FW005."""
     for m in _maps(ctx):
         rows, _ = _cal_rows(ctx, m)
-        if not rows:
+        if not rows or _placeholders(rows):
             continue
         tol = float(m.spec.get("calibration", {}).get("tolerance", 0.05))
         index = {e[0]: i for i, e in enumerate(m.entries)}

@@ -97,12 +97,21 @@ def test_full_scale_and_calibration_gain(tmp_path):
     assert "TLM_5V0 1 (board: 0.8057 mV/count, ratio 1)" in gains[0].message, "3V3_MISC is within 5%"
 
 
+def test_placeholder_calibration_is_reported_once(tmp_path):
+    ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", "TLM_1V8_FPGA,1,0", "TLM_5V0,1,0"])
+    (f,) = findings(fw.calibration_gains, ctx)
+    assert "every row of cal.csv is gain 1, offset 0" in f.message
+    assert findings(fw.current_offsets, ctx) == [], "FW010 leaves a placeholder table to FW005"
+
+
 def test_calibration_rows_must_follow_the_enum(tmp_path):
     ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", "TLM_1V8_FPGA,1,0", "TLM_5V0,1,0"])
     assert findings(fw.calibration_names, ctx) == []
     ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", "TLM_1V8_FPGA_,1,0", "TLM_5V0,1,0"])
     f = findings(fw.calibration_names, ctx)
     assert len(f) == 1 and "row 2 'TLM_1V8_FPGA_' (enum: TLM_1V8_FPGA)" in f[0].message
+    ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", '"TLM_1V8_FPGA, ",1,0', "TLM_5V0,1,0"])
+    assert findings(fw.calibration_names, ctx) == [], "a stray trailing comma is not a different signal"
 
 
 def _pwm_ctx(tmp_path, bottom="3k65", constant="3200"):
@@ -181,7 +190,7 @@ def test_current_channel_scaling_through_difference_amplifier(tmp_path):
 
 
 def test_current_calibration_offset_must_remove_zero_output(tmp_path):
-    ctx = _current(tmp_path, ["TLM_3V3_MISC_ISENSE,1,0", "TLM_1V8_FPGA,1,0"])
+    ctx = _current(tmp_path, ["TLM_3V3_MISC_ISENSE,1,0", "TLM_1V8_FPGA,0.8057,0"])
     (f,) = findings(fw.current_offsets, ctx)
     assert "TLM_3V3_MISC_ISENSE gain 1 offset 0 (zero current at 0 counts; board: 372 counts, 0.3 V)" in f.message
     # mA units: gain 0.8057, offset -0.8057 * 372.4 = -300; A units give the same ratio
