@@ -1,0 +1,27 @@
+var serial__comm_8c =
+[
+    [ "__attribute__", "serial__comm_8c.html#ad2a1d14b2e042518e96758b6de2390d5", null ],
+    [ "Reload_Comm_Timer", "serial__comm_8c.html#a0f49441193afd7eda30acfe83460ce47", null ],
+    [ "Reset_Serial_SM", "serial__comm_8c.html#add62247398443f8539532c99b386c595", null ],
+    [ "v_Comm_Timer_Handler", "serial__comm_8c.html#ab09266bc04a0b955b8dbaad0e2e6af5c", null ],
+    [ "v_Disable_Serial_Comm", "serial__comm_8c.html#a73ddd8742cc8e76ca0dfd802693e68dd", null ],
+    [ "v_Enable_Serial_Comm", "serial__comm_8c.html#adfd6cea0252971a1ea504856c28db6ac", null ],
+    [ "v_Framing_Timeout", "serial__comm_8c.html#a0e2ace05906b4e931dc3f92238f4d5b9", null ],
+    [ "v_Post_Serial_Event", "serial__comm_8c.html#a106faa126ae68b80d3dfd70b92893704", null ],
+    [ "v_Post_Serial_Event_ISR", "serial__comm_8c.html#a57e9130a700d7c3ad9ff0a6609d01b13", null ],
+    [ "v_Send_Serial_Comm", "serial__comm_8c.html#a5bba251b9d7e2836fffae5aa927d92b2", null ],
+    [ "v_Serial_Comm_Task", "serial__comm_8c.html#ad274afb53f96e3260f8c463d70d16a25", null ],
+    [ "v_Set_Serial_Comm_Instance", "serial__comm_8c.html#ac184fd9d173aaa189206d71f20df8206", null ],
+    [ "v_Set_Serial_Timer_Instance", "serial__comm_8c.html#a8f25298ce8f87ad4b70f7bf37ddc588c", null ],
+    [ "v_UART16550_Handler", "serial__comm_8c.html#a3aca99352017ec5c655855d2102648d5", null ],
+    [ "initialized", "serial__comm_8c.html#a41bd82d597649cdf060877fea69b23a2", null ],
+    [ "p_serial_comm_instance", "serial__comm_8c.html#aac1c1055c4231ff80a1e4da7aac90406", null ],
+    [ "p_Timer_Instance", "serial__comm_8c.html#ae97f86753de2f3484f46c6e55bafad74", null ],
+    [ "p_Tx_Ptr", "serial__comm_8c.html#a1f9a7786fcbc75d2689b8bdee4c6b7a9", null ],
+    [ "Serial_Comm_Queue", "serial__comm_8c.html#a7598e7612b6cba608f362dee22869d92", null ],
+    [ "u32_Comm_IRQ_Counter", "serial__comm_8c.html#a8748232d976b36af574876a4b47026f0", null ],
+    [ "u8_Msgs_Received", "serial__comm_8c.html#affc6ee7f288ffe74ab7f53995c74c837", null ],
+    [ "u8_Rx_Count", "serial__comm_8c.html#a16f6b153ae467954376c23866665d95d", null ],
+    [ "u8_Tx_Buffer", "serial__comm_8c.html#a31c7f1c8c04a12d89bf8e286b5fc64d8", null ],
+    [ "u8_Tx_Count_Remaining", "serial__comm_8c.html#a1d3f88653122ad224d638f264b570aef", null ]
+];

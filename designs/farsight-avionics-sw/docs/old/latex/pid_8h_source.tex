@@ -1,0 +1,56 @@
+\doxysection{pid.\+h}
+\hypertarget{pid_8h_source}{}\label{pid_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/pid.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/pid.h}}
+\doxymbox{\hyperlink{pid_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00002}00002\ \textcolor{comment}{\ *\ pid.h}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 29,\ 2025}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ PID\_H\_}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ PID\_H\_}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00011}\doxymbox{\hyperlink{structPID__Instance__t}{00011}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00012}00012\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00013}\doxymbox{\hyperlink{structPID__Instance__t_a91729034eb76b81af8effb06803a8b94}{00013}}\ \ \ \textcolor{keywordtype}{float}\ \ \ \doxymbox{\hyperlink{structPID__Instance__t_a91729034eb76b81af8effb06803a8b94}{k\_p}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00014}\doxymbox{\hyperlink{structPID__Instance__t_add2e55125fb5c43e2bc76af4d0730418}{00014}}\ \ \ \textcolor{keywordtype}{float}\ \ \ \doxymbox{\hyperlink{structPID__Instance__t_add2e55125fb5c43e2bc76af4d0730418}{k\_i}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00015}\doxymbox{\hyperlink{structPID__Instance__t_a150432a4015e38c264be4652b9a46d92}{00015}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_a150432a4015e38c264be4652b9a46d92}{deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00016}\doxymbox{\hyperlink{structPID__Instance__t_a7240db484ff671a092846796b87b5d85}{00016}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_a7240db484ff671a092846796b87b5d85}{integral\_deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00017}\doxymbox{\hyperlink{structPID__Instance__t_aaf129c94fc37dab3b1491cdd03ecf290}{00017}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_aaf129c94fc37dab3b1491cdd03ecf290}{max\_out}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00018}\doxymbox{\hyperlink{structPID__Instance__t_a18453fdaff69c3709d1d12ac77555026}{00018}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_a18453fdaff69c3709d1d12ac77555026}{min\_out}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00020}\doxymbox{\hyperlink{structPID__Instance__t_a0b5e52b1403c54ca42168b21ec366526}{00020}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_a0b5e52b1403c54ca42168b21ec366526}{i32\_E\_m\_1}};\ \ \textcolor{comment}{//\ previous\ value\ of\ error}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00021}\doxymbox{\hyperlink{structPID__Instance__t_ae24338261f4221816167cd1497b02828}{00021}}\ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Instance__t_ae24338261f4221816167cd1497b02828}{i32\_Integral\_Sum}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00022}00022\ \}\doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00024}\doxymbox{\hyperlink{structPID__Init__t}{00024}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00026}\doxymbox{\hyperlink{structPID__Init__t_a91729034eb76b81af8effb06803a8b94}{00026}}\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \doxymbox{\hyperlink{structPID__Init__t_a91729034eb76b81af8effb06803a8b94}{k\_p}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00027}\doxymbox{\hyperlink{structPID__Init__t_add2e55125fb5c43e2bc76af4d0730418}{00027}}\ \ \ \ \ \textcolor{keywordtype}{float}\ \ \ \doxymbox{\hyperlink{structPID__Init__t_add2e55125fb5c43e2bc76af4d0730418}{k\_i}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00028}\doxymbox{\hyperlink{structPID__Init__t_a150432a4015e38c264be4652b9a46d92}{00028}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Init__t_a150432a4015e38c264be4652b9a46d92}{deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00029}\doxymbox{\hyperlink{structPID__Init__t_a7240db484ff671a092846796b87b5d85}{00029}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Init__t_a7240db484ff671a092846796b87b5d85}{integral\_deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00030}\doxymbox{\hyperlink{structPID__Init__t_aaf129c94fc37dab3b1491cdd03ecf290}{00030}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Init__t_aaf129c94fc37dab3b1491cdd03ecf290}{max\_out}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00031}\doxymbox{\hyperlink{structPID__Init__t_a18453fdaff69c3709d1d12ac77555026}{00031}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Init__t_a18453fdaff69c3709d1d12ac77555026}{min\_out}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00032}00032\ \}\doxymbox{\hyperlink{structPID__Init__t}{PID\_Init\_t}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00034}\doxymbox{\hyperlink{structPID__Log__Info__t}{00034}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00035}00035\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00036}\doxymbox{\hyperlink{structPID__Log__Info__t_a709cfa04a0cc164d52bb9544cdfbf23a}{00036}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Log__Info__t_a709cfa04a0cc164d52bb9544cdfbf23a}{i32\_Position}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00037}\doxymbox{\hyperlink{structPID__Log__Info__t_a07775d861e75cb69342112be9d374819}{00037}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Log__Info__t_a07775d861e75cb69342112be9d374819}{i32\_Setpoint}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00038}\doxymbox{\hyperlink{structPID__Log__Info__t_a3823aff4e1bfc79521a08dd2f2a3975f}{00038}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Log__Info__t_a3823aff4e1bfc79521a08dd2f2a3975f}{i32\_Error}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00039}\doxymbox{\hyperlink{structPID__Log__Info__t_ae24338261f4221816167cd1497b02828}{00039}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Log__Info__t_ae24338261f4221816167cd1497b02828}{i32\_Integral\_Sum}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00040}\doxymbox{\hyperlink{structPID__Log__Info__t_a5ea1e38a77161bd42bbf4ff79653f92e}{00040}}\ \ \ \ \ int32\_t\ \doxymbox{\hyperlink{structPID__Log__Info__t_a5ea1e38a77161bd42bbf4ff79653f92e}{i32\_Output}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00041}\doxymbox{\hyperlink{structPID__Log__Info__t_a89f234133d3efe315836311cbf21c64b}{00041}}\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{structPID__Log__Info__t_a89f234133d3efe315836311cbf21c64b}{state}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00042}00042\ \}\doxymbox{\hyperlink{structPID__Log__Info__t}{PID\_Log\_Info\_t}};}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00045}00045\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8h_a760893cd1a049654eed8fd3e9c4e6804}{v\_Init\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ \doxymbox{\hyperlink{structPID__Init__t}{PID\_Init\_t}}\ *init\ );}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00046}00046\ int32\_t\ \doxymbox{\hyperlink{pid_8h_af15244d72fe8ce39d8bbf552fb38ccd3}{i32\_Update\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ int32\_t\ i32\_Input,\ int32\_t\ i32\_Setpoint,\ int32\_t\ i32\_Feedforward\ );}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00047}00047\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8h_a83c89cdaeaa69f4e1e33c098d144e8d8}{v\_Reset\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}\ );}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00048}00048\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8h_a65f01ae1b5f3c272732fe45a46ba2f35}{v\_Get\_PID\_Log\_Info}}(\ \doxymbox{\hyperlink{structPID__Log__Info__t}{PID\_Log\_Info\_t}}\ *p\_Info\ );}
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{pid_8h_source_l00050}00050\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ PID\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

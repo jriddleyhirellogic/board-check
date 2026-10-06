@@ -1,0 +1,2497 @@
+   1              		.file	"serial_sm.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Update_Serial_SM,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Update_Serial_SM
+  13              	v_Update_Serial_SM:
+  14              	.LFB1:
+  15              		.file 1 "../src/serial_sm.c"
+   1:../src/serial_sm.c **** /*
+   2:../src/serial_sm.c ****  * serial_sm.c
+   3:../src/serial_sm.c ****  *
+   4:../src/serial_sm.c ****  *  Created on: Oct 6, 2025
+   5:../src/serial_sm.c ****  *      Author: iboard
+   6:../src/serial_sm.c ****  */
+   7:../src/serial_sm.c **** 
+   8:../src/serial_sm.c **** 
+   9:../src/serial_sm.c **** 
+  10:../src/serial_sm.c **** 
+  11:../src/serial_sm.c **** #include <stdint.h>
+  12:../src/serial_sm.c **** #include <string.h>
+  13:../src/serial_sm.c **** 
+  14:../src/serial_sm.c **** #include "FreeRTOSConfig.h"
+  15:../src/serial_sm.c **** #include "FreeRTOS.h"
+  16:../src/serial_sm.c **** #include "task.h"
+  17:../src/serial_sm.c **** #include "event_groups.h"
+  18:../src/serial_sm.c **** #include "hal_uart16550.h"
+  19:../src/serial_sm.c **** #include "serial_comm.h"
+  20:../src/serial_sm.c **** #include "mem_map.h"
+  21:../src/serial_sm.c **** #include "config.h"
+  22:../src/serial_sm.c **** #include "serial_sm.h"
+  23:../src/serial_sm.c **** #include "command.h"
+  24:../src/serial_sm.c **** #include "crc.h"
+  25:../src/serial_sm.c **** 
+  26:../src/serial_sm.c **** /* Serial Message States
+  27:../src/serial_sm.c **** typedef enum
+  28:../src/serial_sm.c **** {
+  29:../src/serial_sm.c ****     SYNC_WAIT,
+  30:../src/serial_sm.c ****     SYNC,
+  31:../src/serial_sm.c ****     FUNCTION,
+  32:../src/serial_sm.c ****     DATA_COUNT,
+  33:../src/serial_sm.c ****     DATA
+  34:../src/serial_sm.c **** }Serial_Msg_State_t;
+  35:../src/serial_sm.c **** */
+  36:../src/serial_sm.c **** 
+  37:../src/serial_sm.c **** 
+  38:../src/serial_sm.c **** #define RX_BUFSIZE 160
+  39:../src/serial_sm.c **** 
+  40:../src/serial_sm.c **** static Serial_Msg_State_t Current_State, Next_State;
+  41:../src/serial_sm.c **** static uint8_t u8_Bytes_Received;
+  42:../src/serial_sm.c **** static uint8_t u8_Rx_Buf[RX_BUFSIZE];
+  43:../src/serial_sm.c **** 
+  44:../src/serial_sm.c **** static void Received_Message_Notification(void);
+  45:../src/serial_sm.c **** static uint32_t u32_Calculated_CRC, u32_Received_CRC;
+  46:../src/serial_sm.c **** /*
+  47:../src/serial_sm.c ****  * | Packet Structure (latest) from ICD |
+  48:../src/serial_sm.c ****  * | SYNC FRAME (0x1ACFFC1D) - 4 bytes  |
+  49:../src/serial_sm.c ****  * | OPCODE  (Function)      - 1 byte   |
+  50:../src/serial_sm.c ****  * | Error (in reply)        - 1 byte   |
+  51:../src/serial_sm.c ****  * | Seq Number              - 1 byte   |
+  52:../src/serial_sm.c ****  * | Data Length (bytes)       1 byte   |
+  53:../src/serial_sm.c ****  * | Reserved                - 8 bytes  |
+  54:../src/serial_sm.c ****  * | Data Payload            - variable |
+  55:../src/serial_sm.c ****  * | CRC                     - 4 bytes  |
+  56:../src/serial_sm.c ****  *
+  57:../src/serial_sm.c ****  * Notes: CRC is calculated over all bytes except sync frame
+  58:../src/serial_sm.c ****  *        Transmission order eg, header: 0x1A, 0xCF, 0xFC, 0x1D
+  59:../src/serial_sm.c ****  *
+  60:../src/serial_sm.c ****  */
+  61:../src/serial_sm.c **** 
+  62:../src/serial_sm.c **** 
+  63:../src/serial_sm.c **** 
+  64:../src/serial_sm.c **** static Serial_Msg_Header_t Header;
+  65:../src/serial_sm.c **** static uint8_t u8_Cnt;
+  66:../src/serial_sm.c **** 
+  67:../src/serial_sm.c **** 
+  68:../src/serial_sm.c **** void v_Update_Serial_SM(uint8_t u8_Received_Char)
+  69:../src/serial_sm.c **** {
+  16              		.loc 1 69 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  70:../src/serial_sm.c ****     Event_t event;
+  19              		.loc 1 70 5
+  71:../src/serial_sm.c ****     //u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+  72:../src/serial_sm.c **** 
+  73:../src/serial_sm.c ****     if( u8_Bytes_Received >= SERIAL_BUF_SIZE )  // @todo to prevent possible buffer overruns
+  20              		.loc 1 73 5
+  69:../src/serial_sm.c ****     Event_t event;
+  21              		.loc 1 69 1 is_stmt 0
+  22 0000 130101FE 		addi	sp,sp,-32
+  23              		.cfi_def_cfa_offset 32
+  24 0004 232E1100 		sw	ra,28(sp)
+  25              		.cfi_offset 1, -4
+  69:../src/serial_sm.c ****     Event_t event;
+  26              		.loc 1 69 1
+  27 0008 A307A100 		sb	a0,15(sp)
+  28              		.loc 1 73 27
+  29 000c 97070000 		lbu	a5,.LANCHOR0
+  29      83C70700 
+  30              		.loc 1 73 7
+  31 0014 1307F009 		li	a4,159
+  32 0018 6362F706 		bgtu	a5,a4,.L2
+  74:../src/serial_sm.c ****         Current_State = SM_ERROR;
+  75:../src/serial_sm.c **** 
+  76:../src/serial_sm.c ****     switch( Current_State )
+  33              		.loc 1 76 5 is_stmt 1
+  34 001c 17070000 		lla	a4,.LANCHOR1
+  34      13070700 
+  35 0024 03270700 		lw	a4,0(a4)
+  36 0028 9306E000 		li	a3,14
+  37 002c 63E8E604 		bgtu	a4,a3,.L2
+  38 0030 97060000 		lla	a3,.L4
+  38      93860600 
+  39 0038 13172700 		slli	a4,a4,2
+  40 003c 3307D700 		add	a4,a4,a3
+  41 0040 03270700 		lw	a4,0(a4)
+  42 0044 3307D700 		add	a4,a4,a3
+  43 0048 67000700 		jr	a4
+  44              		.section	.rodata.v_Update_Serial_SM,"a",@progbits
+  45              		.align	2
+  46              		.align	2
+  47              	.L4:
+  48 0000 00000000 		.word	.L17-.L4
+  49 0004 00000000 		.word	.L16-.L4
+  50 0008 00000000 		.word	.L15-.L4
+  51 000c 00000000 		.word	.L14-.L4
+  52 0010 00000000 		.word	.L13-.L4
+  53 0014 00000000 		.word	.L12-.L4
+  54 0018 00000000 		.word	.L11-.L4
+  55 001c 00000000 		.word	.L10-.L4
+  56 0020 00000000 		.word	.L2-.L4
+  57 0024 00000000 		.word	.L9-.L4
+  58 0028 00000000 		.word	.L8-.L4
+  59 002c 00000000 		.word	.L7-.L4
+  60 0030 00000000 		.word	.L6-.L4
+  61 0034 00000000 		.word	.L5-.L4
+  62 0038 00000000 		.word	.L3-.L4
+  63              		.section	.text.v_Update_Serial_SM
+  64              	.L17:
+  77:../src/serial_sm.c ****     {
+  78:../src/serial_sm.c ****     case SYNC_WAIT:                                 // Idle state waiting for msg start
+  79:../src/serial_sm.c ****         u8_Bytes_Received = 0;
+  65              		.loc 1 79 9
+  66              		.loc 1 79 27 is_stmt 0
+  67 004c 97070000 		sb	zero,.LANCHOR0,a5
+  67      23800700 
+  80:../src/serial_sm.c ****         if (u8_Received_Char == SYNC1_CODE )
+  68              		.loc 1 80 9 is_stmt 1
+  69              		.loc 1 80 12 is_stmt 0
+  70 0054 8347F100 		lbu	a5,15(sp)
+  71 0058 1307A001 		li	a4,26
+  72 005c 6390E704 		bne	a5,a4,.L18
+  81:../src/serial_sm.c ****         {
+  82:../src/serial_sm.c ****             Next_State = SYNC1;
+  73              		.loc 1 82 13 is_stmt 1
+  74              		.loc 1 82 24 is_stmt 0
+  75 0060 13071000 		li	a4,1
+  76 0064 97060000 		sw	a4,.LANCHOR2,a3
+  76      23A0E600 
+  83:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = SYNC1_CODE;
+  77              		.loc 1 83 13 is_stmt 1
+  78              		.loc 1 83 40 is_stmt 0
+  79 006c 97060000 		sb	a4,.LANCHOR0,a3
+  79      2380E600 
+  80              		.loc 1 83 44
+  81 0074 17070000 		sb	a5,.LANCHOR3,a4
+  81      2300F700 
+  82              	.LVL1:
+  83              	.L2:
+  84:../src/serial_sm.c ****         }
+  85:../src/serial_sm.c ****         else
+  86:../src/serial_sm.c ****             Next_State = SM_ERROR;
+  87:../src/serial_sm.c ****         break;
+  88:../src/serial_sm.c **** 
+  89:../src/serial_sm.c ****     case SYNC1:                                     // Received SYNC1
+  90:../src/serial_sm.c ****         if (u8_Received_Char == SYNC2_CODE )
+  91:../src/serial_sm.c ****         {
+  92:../src/serial_sm.c ****             Next_State = SYNC2;
+  93:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = SYNC2_CODE;
+  94:../src/serial_sm.c ****         }
+  95:../src/serial_sm.c ****         else
+  96:../src/serial_sm.c ****             Next_State = SM_ERROR;
+  97:../src/serial_sm.c ****         break;
+  98:../src/serial_sm.c **** 
+  99:../src/serial_sm.c ****     case SYNC2:                                     // Received SYNC2
+ 100:../src/serial_sm.c ****         if (u8_Received_Char == SYNC3_CODE )
+ 101:../src/serial_sm.c ****         {
+ 102:../src/serial_sm.c ****             Next_State = SYNC3;
+ 103:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 104:../src/serial_sm.c ****         }
+ 105:../src/serial_sm.c ****         else
+ 106:../src/serial_sm.c ****             Next_State = SM_ERROR;
+ 107:../src/serial_sm.c ****         break;
+ 108:../src/serial_sm.c **** 
+ 109:../src/serial_sm.c ****     case SYNC3:                                     // Received SYNC3
+ 110:../src/serial_sm.c ****         if (u8_Received_Char == SYNC4_CODE )
+ 111:../src/serial_sm.c ****         {
+ 112:../src/serial_sm.c ****             Next_State = SYNC4;
+ 113:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 114:../src/serial_sm.c ****             memset(&Header, 0, sizeof(Serial_Msg_Header_t));
+ 115:../src/serial_sm.c ****         }
+ 116:../src/serial_sm.c ****         else
+ 117:../src/serial_sm.c ****             Next_State = SM_ERROR;
+ 118:../src/serial_sm.c ****         break;
+ 119:../src/serial_sm.c **** 
+ 120:../src/serial_sm.c ****     case SYNC4:                                      // Received last SYNC_CHAR
+ 121:../src/serial_sm.c ****         Header.u8_Opcode = u8_Received_Char;
+ 122:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = Header.u8_Opcode;
+ 123:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, 0 );
+ 124:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 125:../src/serial_sm.c ****         break;
+ 126:../src/serial_sm.c **** 
+ 127:../src/serial_sm.c ****     case FUNCTION:                                   // Received function code
+ 128:../src/serial_sm.c ****         Header.u8_Error_Code = u8_Received_Char;
+ 129:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 130:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 131:../src/serial_sm.c ****         Next_State = ERROR_CODE;
+ 132:../src/serial_sm.c ****         break;
+ 133:../src/serial_sm.c **** 
+ 134:../src/serial_sm.c ****     case ERROR_CODE:
+ 135:../src/serial_sm.c ****         Header.u8_Sequence = u8_Received_Char;
+ 136:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 137:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 138:../src/serial_sm.c ****         Next_State = SEQUENCE;
+ 139:../src/serial_sm.c ****         break;
+ 140:../src/serial_sm.c **** 
+ 141:../src/serial_sm.c ****     case SEQUENCE:
+ 142:../src/serial_sm.c ****         Header.u8_Data_Length = u8_Received_Char;            // Size of data payload
+ 143:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 144:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 145:../src/serial_sm.c ****         u8_Cnt = 0;
+ 146:../src/serial_sm.c ****         Next_State = RESERVED;
+ 147:../src/serial_sm.c ****         break;
+ 148:../src/serial_sm.c **** 
+ 149:../src/serial_sm.c ****     case RESERVED:
+ 150:../src/serial_sm.c ****         Header.u8_Reserved[u8_Cnt++] = u8_Received_Char;
+ 151:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 152:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 153:../src/serial_sm.c ****         if( u8_Cnt == 8 )
+ 154:../src/serial_sm.c ****         {
+ 155:../src/serial_sm.c ****             if( Header.u8_Data_Length == 0 ) // Command with no data payload
+ 156:../src/serial_sm.c ****             {
+ 157:../src/serial_sm.c ****                Next_State =  CRC1;
+ 158:../src/serial_sm.c ****             }
+ 159:../src/serial_sm.c ****             else
+ 160:../src/serial_sm.c ****             {
+ 161:../src/serial_sm.c ****                 Next_State = DATA;
+ 162:../src/serial_sm.c ****             }
+ 163:../src/serial_sm.c ****         }
+ 164:../src/serial_sm.c ****         break;
+ 165:../src/serial_sm.c **** 
+ 166:../src/serial_sm.c ****     case DATA:
+ 167:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 168:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 169:../src/serial_sm.c ****         if( u8_Bytes_Received == ( SYNC_LENGTH + HEADER_SIZE + Header.u8_Data_Length))
+ 170:../src/serial_sm.c ****         {
+ 171:../src/serial_sm.c ****             Next_State = CRC1;
+ 172:../src/serial_sm.c ****         }
+ 173:../src/serial_sm.c ****         break;
+ 174:../src/serial_sm.c **** 
+ 175:../src/serial_sm.c ****     case CRC1:
+ 176:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 177:../src/serial_sm.c ****         u32_Received_CRC = u8_Received_Char;
+ 178:../src/serial_sm.c ****         Next_State = CRC2;
+ 179:../src/serial_sm.c ****         break;
+ 180:../src/serial_sm.c **** 
+ 181:../src/serial_sm.c ****     case CRC2:
+ 182:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 183:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 184:../src/serial_sm.c ****         Next_State = CRC3;
+ 185:../src/serial_sm.c ****         break;
+ 186:../src/serial_sm.c **** 
+ 187:../src/serial_sm.c ****     case CRC3:
+ 188:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 189:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 190:../src/serial_sm.c ****         Next_State = CRC4;
+ 191:../src/serial_sm.c ****         break;
+ 192:../src/serial_sm.c **** 
+ 193:../src/serial_sm.c ****     case CRC4:
+ 194:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 195:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 196:../src/serial_sm.c ****         break;
+ 197:../src/serial_sm.c **** 
+ 198:../src/serial_sm.c ****     case SM_ERROR:   // absorbing state until reset by timeout
+ 199:../src/serial_sm.c ****         break;
+ 200:../src/serial_sm.c ****     default:
+ 201:../src/serial_sm.c ****         break;
+ 202:../src/serial_sm.c ****     }
+ 203:../src/serial_sm.c **** 
+ 204:../src/serial_sm.c ****     Current_State = Next_State;
+  84              		.loc 1 204 5 is_stmt 1
+  85              		.loc 1 204 19 is_stmt 0
+  86 007c 97070000 		lla	a5,.LANCHOR2
+  86      93870700 
+  87 0084 83A70700 		lw	a5,0(a5)
+ 205:../src/serial_sm.c **** }
+  88              		.loc 1 205 1
+  89 0088 8320C101 		lw	ra,28(sp)
+  90              		.cfi_remember_state
+  91              		.cfi_restore 1
+ 204:../src/serial_sm.c **** }
+  92              		.loc 1 204 19
+  93 008c 17070000 		sw	a5,.LANCHOR1,a4
+  93      2320F700 
+  94              		.loc 1 205 1
+  95 0094 13010102 		addi	sp,sp,32
+  96              		.cfi_def_cfa_offset 0
+  97 0098 67800000 		jr	ra
+  98              	.LVL2:
+  99              	.L18:
+ 100              		.cfi_restore_state
+  86:../src/serial_sm.c ****         break;
+ 101              		.loc 1 86 13 is_stmt 1
+  86:../src/serial_sm.c ****         break;
+ 102              		.loc 1 86 24 is_stmt 0
+ 103 009c 9307F000 		li	a5,15
+ 104              	.LVL3:
+ 105              	.L25:
+ 124:../src/serial_sm.c ****         break;
+ 106              		.loc 1 124 20
+ 107 00a0 17070000 		sw	a5,.LANCHOR2,a4
+ 107      2320F700 
+ 125:../src/serial_sm.c **** 
+ 108              		.loc 1 125 9 is_stmt 1
+ 109 00a8 6FF05FFD 		j	.L2
+ 110              	.LVL4:
+ 111              	.L16:
+  90:../src/serial_sm.c ****         {
+ 112              		.loc 1 90 9
+  90:../src/serial_sm.c ****         {
+ 113              		.loc 1 90 12 is_stmt 0
+ 114 00ac 8346F100 		lbu	a3,15(sp)
+ 115 00b0 1307F00C 		li	a4,207
+ 116 00b4 E394E6FE 		bne	a3,a4,.L18
+  92:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = SYNC2_CODE;
+ 117              		.loc 1 92 13 is_stmt 1
+  92:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = SYNC2_CODE;
+ 118              		.loc 1 92 24 is_stmt 0
+ 119 00b8 13072000 		li	a4,2
+ 120 00bc 97060000 		sw	a4,.LANCHOR2,a3
+ 120      23A0E600 
+  93:../src/serial_sm.c ****         }
+ 121              		.loc 1 93 13 is_stmt 1
+  93:../src/serial_sm.c ****         }
+ 122              		.loc 1 93 40 is_stmt 0
+ 123 00c4 13871700 		addi	a4,a5,1
+ 124 00c8 97060000 		sb	a4,.LANCHOR0,a3
+ 124      2380E600 
+  93:../src/serial_sm.c ****         }
+ 125              		.loc 1 93 44
+ 126 00d0 17070000 		lla	a4,.LANCHOR3
+ 126      13070700 
+ 127 00d8 B307F700 		add	a5,a4,a5
+ 128 00dc 1307F0FC 		li	a4,-49
+ 129              	.L26:
+ 103:../src/serial_sm.c ****         }
+ 130              		.loc 1 103 44
+ 131 00e0 2380E700 		sb	a4,0(a5)
+ 132 00e4 6FF09FF9 		j	.L2
+ 133              	.L15:
+ 100:../src/serial_sm.c ****         {
+ 134              		.loc 1 100 9 is_stmt 1
+ 100:../src/serial_sm.c ****         {
+ 135              		.loc 1 100 12 is_stmt 0
+ 136 00e8 8346F100 		lbu	a3,15(sp)
+ 137 00ec 1307C00F 		li	a4,252
+ 138 00f0 E396E6FA 		bne	a3,a4,.L18
+ 102:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 139              		.loc 1 102 13 is_stmt 1
+ 102:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 140              		.loc 1 102 24 is_stmt 0
+ 141 00f4 13073000 		li	a4,3
+ 142 00f8 97060000 		sw	a4,.LANCHOR2,a3
+ 142      23A0E600 
+ 103:../src/serial_sm.c ****         }
+ 143              		.loc 1 103 13 is_stmt 1
+ 103:../src/serial_sm.c ****         }
+ 144              		.loc 1 103 40 is_stmt 0
+ 145 0100 13871700 		addi	a4,a5,1
+ 146 0104 97060000 		sb	a4,.LANCHOR0,a3
+ 146      2380E600 
+ 103:../src/serial_sm.c ****         }
+ 147              		.loc 1 103 44
+ 148 010c 17070000 		lla	a4,.LANCHOR3
+ 148      13070700 
+ 149 0114 B307F700 		add	a5,a4,a5
+ 150 0118 1307C0FF 		li	a4,-4
+ 151 011c 6FF05FFC 		j	.L26
+ 152              	.L14:
+ 110:../src/serial_sm.c ****         {
+ 153              		.loc 1 110 9 is_stmt 1
+ 110:../src/serial_sm.c ****         {
+ 154              		.loc 1 110 12 is_stmt 0
+ 155 0120 8346F100 		lbu	a3,15(sp)
+ 156 0124 1307D001 		li	a4,29
+ 157 0128 E39AE6F6 		bne	a3,a4,.L18
+ 112:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 158              		.loc 1 112 13 is_stmt 1
+ 112:../src/serial_sm.c ****             u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 159              		.loc 1 112 24 is_stmt 0
+ 160 012c 13074000 		li	a4,4
+ 161 0130 17060000 		sw	a4,.LANCHOR2,a2
+ 161      2320E600 
+ 113:../src/serial_sm.c ****             memset(&Header, 0, sizeof(Serial_Msg_Header_t));
+ 162              		.loc 1 113 13 is_stmt 1
+ 113:../src/serial_sm.c ****             memset(&Header, 0, sizeof(Serial_Msg_Header_t));
+ 163              		.loc 1 113 40 is_stmt 0
+ 164 0138 13871700 		addi	a4,a5,1
+ 165 013c 17060000 		sb	a4,.LANCHOR0,a2
+ 165      2300E600 
+ 113:../src/serial_sm.c ****             memset(&Header, 0, sizeof(Serial_Msg_Header_t));
+ 166              		.loc 1 113 44
+ 167 0144 17070000 		lla	a4,.LANCHOR3
+ 167      13070700 
+ 168 014c B307F700 		add	a5,a4,a5
+ 169 0150 2380D700 		sb	a3,0(a5)
+ 114:../src/serial_sm.c ****         }
+ 170              		.loc 1 114 13 is_stmt 1
+ 171 0154 97070000 		sw	zero,.LANCHOR4,a5
+ 171      23A00700 
+ 172 015c 97070000 		sw	zero,.LANCHOR4+4,a5
+ 172      23A00700 
+ 173 0164 97070000 		sw	zero,.LANCHOR4+8,a5
+ 173      23A00700 
+ 174 016c 6FF01FF1 		j	.L2
+ 175              	.L13:
+ 121:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = Header.u8_Opcode;
+ 176              		.loc 1 121 9
+ 121:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = Header.u8_Opcode;
+ 177              		.loc 1 121 26 is_stmt 0
+ 178 0170 8346F100 		lbu	a3,15(sp)
+ 123:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 179              		.loc 1 123 30
+ 180 0174 93051000 		li	a1,1
+ 181 0178 1305F100 		addi	a0,sp,15
+ 182              	.LVL5:
+ 121:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = Header.u8_Opcode;
+ 183              		.loc 1 121 26
+ 184 017c 17070000 		sb	a3,.LANCHOR4,a4
+ 184      2300D700 
+ 122:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, 0 );
+ 185              		.loc 1 122 9 is_stmt 1
+ 122:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, 0 );
+ 186              		.loc 1 122 36 is_stmt 0
+ 187 0184 13871700 		addi	a4,a5,1
+ 188 0188 17060000 		sb	a4,.LANCHOR0,a2
+ 188      2300E600 
+ 122:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, 0 );
+ 189              		.loc 1 122 40
+ 190 0190 17070000 		lla	a4,.LANCHOR3
+ 190      13070700 
+ 191 0198 B307F700 		add	a5,a4,a5
+ 123:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 192              		.loc 1 123 30
+ 193 019c 13060000 		li	a2,0
+ 122:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, 0 );
+ 194              		.loc 1 122 40
+ 195 01a0 2380D700 		sb	a3,0(a5)
+ 123:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 196              		.loc 1 123 9 is_stmt 1
+ 123:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 197              		.loc 1 123 30 is_stmt 0
+ 198 01a4 97000000 		call	crc
+ 198      E7800000 
+ 199              	.LVL6:
+ 123:../src/serial_sm.c ****         Next_State = FUNCTION;
+ 200              		.loc 1 123 28
+ 201 01ac 97070000 		sw	a0,.LANCHOR5,a5
+ 201      23A0A700 
+ 124:../src/serial_sm.c ****         break;
+ 202              		.loc 1 124 9 is_stmt 1
+ 124:../src/serial_sm.c ****         break;
+ 203              		.loc 1 124 20 is_stmt 0
+ 204 01b4 93075000 		li	a5,5
+ 205 01b8 6FF09FEE 		j	.L25
+ 206              	.LVL7:
+ 207              	.L12:
+ 128:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 208              		.loc 1 128 9 is_stmt 1
+ 128:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 209              		.loc 1 128 30 is_stmt 0
+ 210 01bc 8347F100 		lbu	a5,15(sp)
+ 129:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 211              		.loc 1 129 30
+ 212 01c0 93051000 		li	a1,1
+ 213 01c4 1305F100 		addi	a0,sp,15
+ 214              	.LVL8:
+ 128:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 215              		.loc 1 128 30
+ 216 01c8 17070000 		sb	a5,.LANCHOR4+1,a4
+ 216      2300F700 
+ 129:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 217              		.loc 1 129 9 is_stmt 1
+ 129:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 218              		.loc 1 129 30 is_stmt 0
+ 219 01d0 97070000 		lla	a5,.LANCHOR5
+ 219      93870700 
+ 220 01d8 03A60700 		lw	a2,0(a5)
+ 221 01dc 97000000 		call	crc
+ 221      E7800000 
+ 222              	.LVL9:
+ 130:../src/serial_sm.c ****         Next_State = ERROR_CODE;
+ 223              		.loc 1 130 36
+ 224 01e4 17070000 		lbu	a4,.LANCHOR0
+ 224      03470700 
+ 129:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 225              		.loc 1 129 28
+ 226 01ec 97070000 		sw	a0,.LANCHOR5,a5
+ 226      23A0A700 
+ 130:../src/serial_sm.c ****         Next_State = ERROR_CODE;
+ 227              		.loc 1 130 9 is_stmt 1
+ 130:../src/serial_sm.c ****         Next_State = ERROR_CODE;
+ 228              		.loc 1 130 36 is_stmt 0
+ 229 01f4 93071700 		addi	a5,a4,1
+ 230 01f8 97060000 		sb	a5,.LANCHOR0,a3
+ 230      2380F600 
+ 130:../src/serial_sm.c ****         Next_State = ERROR_CODE;
+ 231              		.loc 1 130 40
+ 232 0200 97070000 		lla	a5,.LANCHOR3
+ 232      93870700 
+ 233 0208 B387E700 		add	a5,a5,a4
+ 234 020c 0347F100 		lbu	a4,15(sp)
+ 235 0210 2380E700 		sb	a4,0(a5)
+ 131:../src/serial_sm.c ****         break;
+ 236              		.loc 1 131 9 is_stmt 1
+ 131:../src/serial_sm.c ****         break;
+ 237              		.loc 1 131 20 is_stmt 0
+ 238 0214 93076000 		li	a5,6
+ 239 0218 6FF09FE8 		j	.L25
+ 240              	.LVL10:
+ 241              	.L11:
+ 135:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 242              		.loc 1 135 9 is_stmt 1
+ 135:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 243              		.loc 1 135 28 is_stmt 0
+ 244 021c 8347F100 		lbu	a5,15(sp)
+ 136:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 245              		.loc 1 136 30
+ 246 0220 93051000 		li	a1,1
+ 247 0224 1305F100 		addi	a0,sp,15
+ 248              	.LVL11:
+ 135:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 249              		.loc 1 135 28
+ 250 0228 17070000 		sb	a5,.LANCHOR4+2,a4
+ 250      2300F700 
+ 136:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 251              		.loc 1 136 9 is_stmt 1
+ 136:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 252              		.loc 1 136 30 is_stmt 0
+ 253 0230 97070000 		lla	a5,.LANCHOR5
+ 253      93870700 
+ 254 0238 03A60700 		lw	a2,0(a5)
+ 255 023c 97000000 		call	crc
+ 255      E7800000 
+ 256              	.LVL12:
+ 137:../src/serial_sm.c ****         Next_State = SEQUENCE;
+ 257              		.loc 1 137 36
+ 258 0244 17070000 		lbu	a4,.LANCHOR0
+ 258      03470700 
+ 136:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 259              		.loc 1 136 28
+ 260 024c 97070000 		sw	a0,.LANCHOR5,a5
+ 260      23A0A700 
+ 137:../src/serial_sm.c ****         Next_State = SEQUENCE;
+ 261              		.loc 1 137 9 is_stmt 1
+ 137:../src/serial_sm.c ****         Next_State = SEQUENCE;
+ 262              		.loc 1 137 36 is_stmt 0
+ 263 0254 93071700 		addi	a5,a4,1
+ 264 0258 97060000 		sb	a5,.LANCHOR0,a3
+ 264      2380F600 
+ 137:../src/serial_sm.c ****         Next_State = SEQUENCE;
+ 265              		.loc 1 137 40
+ 266 0260 97070000 		lla	a5,.LANCHOR3
+ 266      93870700 
+ 267 0268 B387E700 		add	a5,a5,a4
+ 268 026c 0347F100 		lbu	a4,15(sp)
+ 269 0270 2380E700 		sb	a4,0(a5)
+ 138:../src/serial_sm.c ****         break;
+ 270              		.loc 1 138 9 is_stmt 1
+ 138:../src/serial_sm.c ****         break;
+ 271              		.loc 1 138 20 is_stmt 0
+ 272 0274 93077000 		li	a5,7
+ 273 0278 6FF09FE2 		j	.L25
+ 274              	.LVL13:
+ 275              	.L10:
+ 142:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 276              		.loc 1 142 9 is_stmt 1
+ 142:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 277              		.loc 1 142 31 is_stmt 0
+ 278 027c 8347F100 		lbu	a5,15(sp)
+ 143:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 279              		.loc 1 143 30
+ 280 0280 93051000 		li	a1,1
+ 281 0284 1305F100 		addi	a0,sp,15
+ 282              	.LVL14:
+ 142:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 283              		.loc 1 142 31
+ 284 0288 17070000 		sb	a5,.LANCHOR4+3,a4
+ 284      2300F700 
+ 143:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 285              		.loc 1 143 9 is_stmt 1
+ 143:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 286              		.loc 1 143 30 is_stmt 0
+ 287 0290 97070000 		lla	a5,.LANCHOR5
+ 287      93870700 
+ 288 0298 03A60700 		lw	a2,0(a5)
+ 289 029c 97000000 		call	crc
+ 289      E7800000 
+ 290              	.LVL15:
+ 144:../src/serial_sm.c ****         u8_Cnt = 0;
+ 291              		.loc 1 144 36
+ 292 02a4 17070000 		lbu	a4,.LANCHOR0
+ 292      03470700 
+ 143:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 293              		.loc 1 143 28
+ 294 02ac 97070000 		sw	a0,.LANCHOR5,a5
+ 294      23A0A700 
+ 144:../src/serial_sm.c ****         u8_Cnt = 0;
+ 295              		.loc 1 144 9 is_stmt 1
+ 144:../src/serial_sm.c ****         u8_Cnt = 0;
+ 296              		.loc 1 144 36 is_stmt 0
+ 297 02b4 93071700 		addi	a5,a4,1
+ 298 02b8 97060000 		sb	a5,.LANCHOR0,a3
+ 298      2380F600 
+ 144:../src/serial_sm.c ****         u8_Cnt = 0;
+ 299              		.loc 1 144 40
+ 300 02c0 97070000 		lla	a5,.LANCHOR3
+ 300      93870700 
+ 301 02c8 B387E700 		add	a5,a5,a4
+ 302 02cc 0347F100 		lbu	a4,15(sp)
+ 303 02d0 2380E700 		sb	a4,0(a5)
+ 145:../src/serial_sm.c ****         Next_State = RESERVED;
+ 304              		.loc 1 145 9 is_stmt 1
+ 145:../src/serial_sm.c ****         Next_State = RESERVED;
+ 305              		.loc 1 145 16 is_stmt 0
+ 306 02d4 97070000 		sb	zero,.LANCHOR6,a5
+ 306      23800700 
+ 146:../src/serial_sm.c ****         break;
+ 307              		.loc 1 146 9 is_stmt 1
+ 146:../src/serial_sm.c ****         break;
+ 308              		.loc 1 146 20 is_stmt 0
+ 309 02dc 93079000 		li	a5,9
+ 310 02e0 6FF01FDC 		j	.L25
+ 311              	.LVL16:
+ 312              	.L9:
+ 150:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 313              		.loc 1 150 9 is_stmt 1
+ 150:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 314              		.loc 1 150 34 is_stmt 0
+ 315 02e4 17070000 		lbu	a4,.LANCHOR6
+ 315      03470700 
+ 316 02ec 93071700 		addi	a5,a4,1
+ 317 02f0 97060000 		sb	a5,.LANCHOR6,a3
+ 317      2380F600 
+ 150:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 318              		.loc 1 150 38
+ 319 02f8 97070000 		lla	a5,.LANCHOR4
+ 319      93870700 
+ 320 0300 B387E700 		add	a5,a5,a4
+ 321 0304 0347F100 		lbu	a4,15(sp)
+ 151:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 322              		.loc 1 151 30
+ 323 0308 93051000 		li	a1,1
+ 324 030c 1305F100 		addi	a0,sp,15
+ 325              	.LVL17:
+ 150:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 326              		.loc 1 150 38
+ 327 0310 2382E700 		sb	a4,4(a5)
+ 151:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 328              		.loc 1 151 9 is_stmt 1
+ 151:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 329              		.loc 1 151 30 is_stmt 0
+ 330 0314 97070000 		lla	a5,.LANCHOR5
+ 330      93870700 
+ 331 031c 03A60700 		lw	a2,0(a5)
+ 332 0320 97000000 		call	crc
+ 332      E7800000 
+ 333              	.LVL18:
+ 152:../src/serial_sm.c ****         if( u8_Cnt == 8 )
+ 334              		.loc 1 152 36
+ 335 0328 17070000 		lbu	a4,.LANCHOR0
+ 335      03470700 
+ 151:../src/serial_sm.c ****         u8_Rx_Buf[u8_Bytes_Received++] = u8_Received_Char;
+ 336              		.loc 1 151 28
+ 337 0330 97070000 		sw	a0,.LANCHOR5,a5
+ 337      23A0A700 
+ 152:../src/serial_sm.c ****         if( u8_Cnt == 8 )
+ 338              		.loc 1 152 9 is_stmt 1
+ 152:../src/serial_sm.c ****         if( u8_Cnt == 8 )
+ 339              		.loc 1 152 36 is_stmt 0
+ 340 0338 93071700 		addi	a5,a4,1
+ 341 033c 97060000 		sb	a5,.LANCHOR0,a3
+ 341      2380F600 
+ 152:../src/serial_sm.c ****         if( u8_Cnt == 8 )
+ 342              		.loc 1 152 40
+ 343 0344 97070000 		lla	a5,.LANCHOR3
+ 343      93870700 
+ 344 034c B387E700 		add	a5,a5,a4
+ 345 0350 0347F100 		lbu	a4,15(sp)
+ 346 0354 2380E700 		sb	a4,0(a5)
+ 153:../src/serial_sm.c ****         {
+ 347              		.loc 1 153 9 is_stmt 1
+ 153:../src/serial_sm.c ****         {
+ 348              		.loc 1 153 11 is_stmt 0
+ 349 0358 17070000 		lbu	a4,.LANCHOR6
+ 349      03470700 
+ 350 0360 93078000 		li	a5,8
+ 351 0364 E31CF7D0 		bne	a4,a5,.L2
+ 155:../src/serial_sm.c ****             {
+ 352              		.loc 1 155 13 is_stmt 1
+ 155:../src/serial_sm.c ****             {
+ 353              		.loc 1 155 15 is_stmt 0
+ 354 0368 97070000 		lbu	a5,.LANCHOR4+3
+ 354      83C70700 
+ 355 0370 63960700 		bne	a5,zero,.L20
+ 356              	.L21:
+ 157:../src/serial_sm.c ****             }
+ 357              		.loc 1 157 16 is_stmt 1
+ 157:../src/serial_sm.c ****             }
+ 358              		.loc 1 157 27 is_stmt 0
+ 359 0374 9307B000 		li	a5,11
+ 360 0378 6FF09FD2 		j	.L25
+ 361              	.L20:
+ 161:../src/serial_sm.c ****             }
+ 362              		.loc 1 161 17 is_stmt 1
+ 161:../src/serial_sm.c ****             }
+ 363              		.loc 1 161 28 is_stmt 0
+ 364 037c 9307A000 		li	a5,10
+ 365 0380 6FF01FD2 		j	.L25
+ 366              	.LVL19:
+ 367              	.L8:
+ 167:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 368              		.loc 1 167 9 is_stmt 1
+ 167:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 369              		.loc 1 167 36 is_stmt 0
+ 370 0384 13871700 		addi	a4,a5,1
+ 371 0388 97060000 		sb	a4,.LANCHOR0,a3
+ 371      2380E600 
+ 167:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 372              		.loc 1 167 40
+ 373 0390 17070000 		lla	a4,.LANCHOR3
+ 373      13070700 
+ 374 0398 B307F700 		add	a5,a4,a5
+ 375 039c 0347F100 		lbu	a4,15(sp)
+ 168:../src/serial_sm.c ****         if( u8_Bytes_Received == ( SYNC_LENGTH + HEADER_SIZE + Header.u8_Data_Length))
+ 376              		.loc 1 168 30
+ 377 03a0 93051000 		li	a1,1
+ 378 03a4 1305F100 		addi	a0,sp,15
+ 379              	.LVL20:
+ 167:../src/serial_sm.c ****         u32_Calculated_CRC = crc( &u8_Received_Char, 1, u32_Calculated_CRC );
+ 380              		.loc 1 167 40
+ 381 03a8 2380E700 		sb	a4,0(a5)
+ 168:../src/serial_sm.c ****         if( u8_Bytes_Received == ( SYNC_LENGTH + HEADER_SIZE + Header.u8_Data_Length))
+ 382              		.loc 1 168 9 is_stmt 1
+ 168:../src/serial_sm.c ****         if( u8_Bytes_Received == ( SYNC_LENGTH + HEADER_SIZE + Header.u8_Data_Length))
+ 383              		.loc 1 168 30 is_stmt 0
+ 384 03ac 97070000 		lla	a5,.LANCHOR5
+ 384      93870700 
+ 385 03b4 03A60700 		lw	a2,0(a5)
+ 386 03b8 97000000 		call	crc
+ 386      E7800000 
+ 387              	.LVL21:
+ 168:../src/serial_sm.c ****         if( u8_Bytes_Received == ( SYNC_LENGTH + HEADER_SIZE + Header.u8_Data_Length))
+ 388              		.loc 1 168 28
+ 389 03c0 97070000 		sw	a0,.LANCHOR5,a5
+ 389      23A0A700 
+ 169:../src/serial_sm.c ****         {
+ 390              		.loc 1 169 9 is_stmt 1
+ 169:../src/serial_sm.c ****         {
+ 391              		.loc 1 169 70 is_stmt 0
+ 392 03c8 97070000 		lbu	a5,.LANCHOR4+3
+ 392      83C70700 
+ 169:../src/serial_sm.c ****         {
+ 393              		.loc 1 169 31
+ 394 03d0 17070000 		lbu	a4,.LANCHOR0
+ 394      03470700 
+ 169:../src/serial_sm.c ****         {
+ 395              		.loc 1 169 62
+ 396 03d8 93870701 		addi	a5,a5,16
+ 169:../src/serial_sm.c ****         {
+ 397              		.loc 1 169 11
+ 398 03dc E310F7CA 		bne	a4,a5,.L2
+ 399 03e0 6FF05FF9 		j	.L21
+ 400              	.LVL22:
+ 401              	.L7:
+ 176:../src/serial_sm.c ****         u32_Received_CRC = u8_Received_Char;
+ 402              		.loc 1 176 9 is_stmt 1
+ 176:../src/serial_sm.c ****         u32_Received_CRC = u8_Received_Char;
+ 403              		.loc 1 176 36 is_stmt 0
+ 404 03e4 13871700 		addi	a4,a5,1
+ 405 03e8 97060000 		sb	a4,.LANCHOR0,a3
+ 405      2380E600 
+ 176:../src/serial_sm.c ****         u32_Received_CRC = u8_Received_Char;
+ 406              		.loc 1 176 40
+ 407 03f0 8346F100 		lbu	a3,15(sp)
+ 408 03f4 17070000 		lla	a4,.LANCHOR3
+ 408      13070700 
+ 409 03fc B307F700 		add	a5,a4,a5
+ 410 0400 2380D700 		sb	a3,0(a5)
+ 177:../src/serial_sm.c ****         Next_State = CRC2;
+ 411              		.loc 1 177 9 is_stmt 1
+ 177:../src/serial_sm.c ****         Next_State = CRC2;
+ 412              		.loc 1 177 26 is_stmt 0
+ 413 0404 97070000 		sw	a3,.LANCHOR7,a5
+ 413      23A0D700 
+ 178:../src/serial_sm.c ****         break;
+ 414              		.loc 1 178 9 is_stmt 1
+ 178:../src/serial_sm.c ****         break;
+ 415              		.loc 1 178 20 is_stmt 0
+ 416 040c 9307C000 		li	a5,12
+ 417 0410 6FF01FC9 		j	.L25
+ 418              	.L6:
+ 182:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 419              		.loc 1 182 9 is_stmt 1
+ 182:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 420              		.loc 1 182 36 is_stmt 0
+ 421 0414 13871700 		addi	a4,a5,1
+ 422 0418 97060000 		sb	a4,.LANCHOR0,a3
+ 422      2380E600 
+ 182:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 423              		.loc 1 182 40
+ 424 0420 8346F100 		lbu	a3,15(sp)
+ 425 0424 17070000 		lla	a4,.LANCHOR3
+ 425      13070700 
+ 426 042c B307F700 		add	a5,a4,a5
+ 427 0430 2380D700 		sb	a3,0(a5)
+ 183:../src/serial_sm.c ****         Next_State = CRC3;
+ 428              		.loc 1 183 9 is_stmt 1
+ 183:../src/serial_sm.c ****         Next_State = CRC3;
+ 429              		.loc 1 183 26 is_stmt 0
+ 430 0434 97070000 		lla	a5,.LANCHOR7
+ 430      93870700 
+ 183:../src/serial_sm.c ****         Next_State = CRC3;
+ 431              		.loc 1 183 46
+ 432 043c 83A70700 		lw	a5,0(a5)
+ 433 0440 93978700 		slli	a5,a5,8
+ 183:../src/serial_sm.c ****         Next_State = CRC3;
+ 434              		.loc 1 183 52
+ 435 0444 B3E7D700 		or	a5,a5,a3
+ 183:../src/serial_sm.c ****         Next_State = CRC3;
+ 436              		.loc 1 183 26
+ 437 0448 17070000 		sw	a5,.LANCHOR7,a4
+ 437      2320F700 
+ 184:../src/serial_sm.c ****         break;
+ 438              		.loc 1 184 9 is_stmt 1
+ 184:../src/serial_sm.c ****         break;
+ 439              		.loc 1 184 20 is_stmt 0
+ 440 0450 9307D000 		li	a5,13
+ 441 0454 6FF0DFC4 		j	.L25
+ 442              	.L5:
+ 188:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 443              		.loc 1 188 9 is_stmt 1
+ 188:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 444              		.loc 1 188 36 is_stmt 0
+ 445 0458 13871700 		addi	a4,a5,1
+ 446 045c 97060000 		sb	a4,.LANCHOR0,a3
+ 446      2380E600 
+ 188:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 447              		.loc 1 188 40
+ 448 0464 8346F100 		lbu	a3,15(sp)
+ 449 0468 17070000 		lla	a4,.LANCHOR3
+ 449      13070700 
+ 450 0470 B307F700 		add	a5,a4,a5
+ 451 0474 2380D700 		sb	a3,0(a5)
+ 189:../src/serial_sm.c ****         Next_State = CRC4;
+ 452              		.loc 1 189 9 is_stmt 1
+ 189:../src/serial_sm.c ****         Next_State = CRC4;
+ 453              		.loc 1 189 26 is_stmt 0
+ 454 0478 97070000 		lla	a5,.LANCHOR7
+ 454      93870700 
+ 189:../src/serial_sm.c ****         Next_State = CRC4;
+ 455              		.loc 1 189 46
+ 456 0480 83A70700 		lw	a5,0(a5)
+ 457 0484 93978700 		slli	a5,a5,8
+ 189:../src/serial_sm.c ****         Next_State = CRC4;
+ 458              		.loc 1 189 52
+ 459 0488 B3E7D700 		or	a5,a5,a3
+ 189:../src/serial_sm.c ****         Next_State = CRC4;
+ 460              		.loc 1 189 26
+ 461 048c 17070000 		sw	a5,.LANCHOR7,a4
+ 461      2320F700 
+ 190:../src/serial_sm.c ****         break;
+ 462              		.loc 1 190 9 is_stmt 1
+ 190:../src/serial_sm.c ****         break;
+ 463              		.loc 1 190 20 is_stmt 0
+ 464 0494 9307E000 		li	a5,14
+ 465 0498 6FF09FC0 		j	.L25
+ 466              	.L3:
+ 194:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 467              		.loc 1 194 9 is_stmt 1
+ 194:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 468              		.loc 1 194 36 is_stmt 0
+ 469 049c 13871700 		addi	a4,a5,1
+ 470 04a0 97060000 		sb	a4,.LANCHOR0,a3
+ 470      2380E600 
+ 194:../src/serial_sm.c ****         u32_Received_CRC = (u32_Received_CRC << 8) | u8_Received_Char;
+ 471              		.loc 1 194 40
+ 472 04a8 8346F100 		lbu	a3,15(sp)
+ 473 04ac 17070000 		lla	a4,.LANCHOR3
+ 473      13070700 
+ 474 04b4 B307F700 		add	a5,a4,a5
+ 475 04b8 2380D700 		sb	a3,0(a5)
+ 195:../src/serial_sm.c ****         break;
+ 476              		.loc 1 195 9 is_stmt 1
+ 195:../src/serial_sm.c ****         break;
+ 477              		.loc 1 195 26 is_stmt 0
+ 478 04bc 97070000 		lla	a5,.LANCHOR7
+ 478      93870700 
+ 195:../src/serial_sm.c ****         break;
+ 479              		.loc 1 195 46
+ 480 04c4 83A70700 		lw	a5,0(a5)
+ 481 04c8 93978700 		slli	a5,a5,8
+ 195:../src/serial_sm.c ****         break;
+ 482              		.loc 1 195 52
+ 483 04cc B3E7D700 		or	a5,a5,a3
+ 195:../src/serial_sm.c ****         break;
+ 484              		.loc 1 195 26
+ 485 04d0 17070000 		sw	a5,.LANCHOR7,a4
+ 485      2320F700 
+ 196:../src/serial_sm.c **** 
+ 486              		.loc 1 196 9 is_stmt 1
+ 487 04d8 6FF05FBA 		j	.L2
+ 488              		.cfi_endproc
+ 489              	.LFE1:
+ 491              		.section	.text.Reset_Serial_SM,"ax",@progbits
+ 492              		.align	2
+ 493              		.globl	Reset_Serial_SM
+ 495              	Reset_Serial_SM:
+ 496              	.LFB4:
+ 206:../src/serial_sm.c **** 
+ 207:../src/serial_sm.c **** // The timer is reloaded with every received character. The expiration is set to 3 character times.
+ 208:../src/serial_sm.c **** // is checked and if good, the serial comm task is notified. The state machines and crcs are reset 
+ 209:../src/serial_sm.c **** void v_Framing_Timeout(void)
+ 210:../src/serial_sm.c **** {
+ 211:../src/serial_sm.c ****     if( u32_Received_CRC == u32_Calculated_CRC &&
+ 212:../src/serial_sm.c ****         Current_State == CRC4  )
+ 213:../src/serial_sm.c ****     {
+ 214:../src/serial_sm.c ****         Received_Message_Notification();
+ 215:../src/serial_sm.c ****     }
+ 216:../src/serial_sm.c **** 
+ 217:../src/serial_sm.c ****     Reset_Serial_SM();
+ 218:../src/serial_sm.c ****     Current_State = Next_State = SYNC_WAIT;
+ 219:../src/serial_sm.c **** }
+ 220:../src/serial_sm.c **** 
+ 221:../src/serial_sm.c **** static void Received_Message_Notification(void)
+ 222:../src/serial_sm.c **** {
+ 223:../src/serial_sm.c **** Event_t event;
+ 224:../src/serial_sm.c **** 
+ 225:../src/serial_sm.c ****     event.serial_msg.sig = RECEIVED_SERIAL_MESSAGE;
+ 226:../src/serial_sm.c ****     memcpy( &event.serial_msg.header, &Header, sizeof(Serial_Msg_Header_t));
+ 227:../src/serial_sm.c ****     event.serial_msg.Data = &u8_Rx_Buf[SYNC_LENGTH + HEADER_SIZE];
+ 228:../src/serial_sm.c ****     v_Post_Serial_Event_ISR( &event );
+ 229:../src/serial_sm.c **** }
+ 230:../src/serial_sm.c **** 
+ 231:../src/serial_sm.c **** void Reset_Serial_SM(void)
+ 232:../src/serial_sm.c **** {
+ 497              		.loc 1 232 1
+ 498              		.cfi_startproc
+ 233:../src/serial_sm.c ****     Current_State = Next_State = SYNC_WAIT;
+ 499              		.loc 1 233 5
+ 500              		.loc 1 233 32 is_stmt 0
+ 501 0000 97070000 		sw	zero,.LANCHOR2,a5
+ 501      23A00700 
+ 502              		.loc 1 233 19
+ 503 0008 97070000 		sw	zero,.LANCHOR1,a5
+ 503      23A00700 
+ 234:../src/serial_sm.c ****     u32_Calculated_CRC = u32_Received_CRC = 0;
+ 504              		.loc 1 234 5 is_stmt 1
+ 505              		.loc 1 234 43 is_stmt 0
+ 506 0010 97070000 		sw	zero,.LANCHOR7,a5
+ 506      23A00700 
+ 507              		.loc 1 234 24
+ 508 0018 97070000 		sw	zero,.LANCHOR5,a5
+ 508      23A00700 
+ 235:../src/serial_sm.c ****     u8_Bytes_Received = 0;
+ 509              		.loc 1 235 5 is_stmt 1
+ 510              		.loc 1 235 23 is_stmt 0
+ 511 0020 97070000 		sb	zero,.LANCHOR0,a5
+ 511      23800700 
+ 236:../src/serial_sm.c ****     memset(&Header, 0, sizeof(Serial_Msg_Header_t));
+ 512              		.loc 1 236 5 is_stmt 1
+ 513 0028 97070000 		lla	a5,.LANCHOR4
+ 513      93870700 
+ 514 0030 23A00700 		sw	zero,0(a5)
+ 515 0034 23A20700 		sw	zero,4(a5)
+ 516 0038 23A40700 		sw	zero,8(a5)
+ 237:../src/serial_sm.c **** }
+ 517              		.loc 1 237 1 is_stmt 0
+ 518 003c 67800000 		ret
+ 519              		.cfi_endproc
+ 520              	.LFE4:
+ 522              		.section	.text.v_Framing_Timeout,"ax",@progbits
+ 523              		.align	2
+ 524              		.globl	v_Framing_Timeout
+ 526              	v_Framing_Timeout:
+ 527              	.LFB2:
+ 210:../src/serial_sm.c ****     if( u32_Received_CRC == u32_Calculated_CRC &&
+ 528              		.loc 1 210 1 is_stmt 1
+ 529              		.cfi_startproc
+ 211:../src/serial_sm.c ****         Current_State == CRC4  )
+ 530              		.loc 1 211 5
+ 211:../src/serial_sm.c ****         Current_State == CRC4  )
+ 531              		.loc 1 211 7 is_stmt 0
+ 532 0000 97070000 		lla	a5,.LANCHOR7
+ 532      93870700 
+ 533 0008 03A70700 		lw	a4,0(a5)
+ 534 000c 97070000 		lla	a5,.LANCHOR5
+ 534      93870700 
+ 535 0014 83A70700 		lw	a5,0(a5)
+ 210:../src/serial_sm.c ****     if( u32_Received_CRC == u32_Calculated_CRC &&
+ 536              		.loc 1 210 1
+ 537 0018 130101FD 		addi	sp,sp,-48
+ 538              		.cfi_def_cfa_offset 48
+ 539 001c 23261102 		sw	ra,44(sp)
+ 540              		.cfi_offset 1, -4
+ 211:../src/serial_sm.c ****         Current_State == CRC4  )
+ 541              		.loc 1 211 7
+ 542 0020 6318F704 		bne	a4,a5,.L29
+ 212:../src/serial_sm.c ****     {
+ 543              		.loc 1 212 23 discriminator 1
+ 544 0024 97070000 		lla	a5,.LANCHOR1
+ 544      93870700 
+ 211:../src/serial_sm.c ****         Current_State == CRC4  )
+ 545              		.loc 1 211 48 discriminator 1
+ 546 002c 03A70700 		lw	a4,0(a5)
+ 547 0030 9307E000 		li	a5,14
+ 548 0034 631EF702 		bne	a4,a5,.L29
+ 214:../src/serial_sm.c ****     }
+ 549              		.loc 1 214 9 is_stmt 1
+ 550              	.LBB4:
+ 551              	.LBB5:
+ 223:../src/serial_sm.c **** 
+ 552              		.loc 1 223 1
+ 225:../src/serial_sm.c ****     memcpy( &event.serial_msg.header, &Header, sizeof(Serial_Msg_Header_t));
+ 553              		.loc 1 225 5
+ 225:../src/serial_sm.c ****     memcpy( &event.serial_msg.header, &Header, sizeof(Serial_Msg_Header_t));
+ 554              		.loc 1 225 26 is_stmt 0
+ 555 0038 93072000 		li	a5,2
+ 226:../src/serial_sm.c ****     event.serial_msg.Data = &u8_Rx_Buf[SYNC_LENGTH + HEADER_SIZE];
+ 556              		.loc 1 226 5
+ 557 003c 1306C000 		li	a2,12
+ 558 0040 97050000 		lla	a1,.LANCHOR4
+ 558      93850500 
+ 559 0048 13050101 		addi	a0,sp,16
+ 225:../src/serial_sm.c ****     memcpy( &event.serial_msg.header, &Header, sizeof(Serial_Msg_Header_t));
+ 560              		.loc 1 225 26
+ 561 004c 2326F100 		sw	a5,12(sp)
+ 226:../src/serial_sm.c ****     event.serial_msg.Data = &u8_Rx_Buf[SYNC_LENGTH + HEADER_SIZE];
+ 562              		.loc 1 226 5 is_stmt 1
+ 563 0050 97000000 		call	memcpy
+ 563      E7800000 
+ 564              	.LVL23:
+ 227:../src/serial_sm.c ****     v_Post_Serial_Event_ISR( &event );
+ 565              		.loc 1 227 5
+ 227:../src/serial_sm.c ****     v_Post_Serial_Event_ISR( &event );
+ 566              		.loc 1 227 27 is_stmt 0
+ 567 0058 97070000 		lla	a5,.LANCHOR3+16
+ 567      93870700 
+ 228:../src/serial_sm.c **** }
+ 568              		.loc 1 228 5
+ 569 0060 1305C100 		addi	a0,sp,12
+ 227:../src/serial_sm.c ****     v_Post_Serial_Event_ISR( &event );
+ 570              		.loc 1 227 27
+ 571 0064 232EF100 		sw	a5,28(sp)
+ 228:../src/serial_sm.c **** }
+ 572              		.loc 1 228 5 is_stmt 1
+ 573 0068 97000000 		call	v_Post_Serial_Event_ISR
+ 573      E7800000 
+ 574              	.LVL24:
+ 575              	.L29:
+ 576              	.LBE5:
+ 577              	.LBE4:
+ 217:../src/serial_sm.c ****     Current_State = Next_State = SYNC_WAIT;
+ 578              		.loc 1 217 5
+ 579 0070 97000000 		call	Reset_Serial_SM
+ 579      E7800000 
+ 580              	.LVL25:
+ 218:../src/serial_sm.c **** }
+ 581              		.loc 1 218 5
+ 219:../src/serial_sm.c **** 
+ 582              		.loc 1 219 1 is_stmt 0
+ 583 0078 8320C102 		lw	ra,44(sp)
+ 584              		.cfi_restore 1
+ 218:../src/serial_sm.c **** }
+ 585              		.loc 1 218 32
+ 586 007c 97070000 		sw	zero,.LANCHOR2,a5
+ 586      23A00700 
+ 218:../src/serial_sm.c **** }
+ 587              		.loc 1 218 19
+ 588 0084 97070000 		sw	zero,.LANCHOR1,a5
+ 588      23A00700 
+ 219:../src/serial_sm.c **** 
+ 589              		.loc 1 219 1
+ 590 008c 13010103 		addi	sp,sp,48
+ 591              		.cfi_def_cfa_offset 0
+ 592 0090 67800000 		jr	ra
+ 593              		.cfi_endproc
+ 594              	.LFE2:
+ 596              		.section	.text.b_In_Error_State,"ax",@progbits
+ 597              		.align	2
+ 598              		.globl	b_In_Error_State
+ 600              	b_In_Error_State:
+ 601              	.LFB5:
+ 238:../src/serial_sm.c **** 
+ 239:../src/serial_sm.c **** uint8_t b_In_Error_State(void)
+ 240:../src/serial_sm.c **** {
+ 602              		.loc 1 240 1 is_stmt 1
+ 603              		.cfi_startproc
+ 241:../src/serial_sm.c ****     return Current_State == SM_ERROR;
+ 604              		.loc 1 241 5
+ 605              		.loc 1 241 26 is_stmt 0
+ 606 0000 97070000 		lla	a5,.LANCHOR1
+ 606      93870700 
+ 607 0008 03A50700 		lw	a0,0(a5)
+ 608 000c 130515FF 		addi	a0,a0,-15
+ 242:../src/serial_sm.c **** }
+ 609              		.loc 1 242 1
+ 610 0010 13351500 		seqz	a0,a0
+ 611 0014 67800000 		ret
+ 612              		.cfi_endproc
+ 613              	.LFE5:
+ 615              		.section	.bss.Header,"aw",@nobits
+ 616              		.align	2
+ 617              		.set	.LANCHOR4,. + 0
+ 620              	Header:
+ 621 0000 00000000 		.zero	12
+ 621      00000000 
+ 621      00000000 
+ 622              		.section	.bss.u8_Rx_Buf,"aw",@nobits
+ 623              		.align	2
+ 624              		.set	.LANCHOR3,. + 0
+ 627              	u8_Rx_Buf:
+ 628 0000 00000000 		.zero	160
+ 628      00000000 
+ 628      00000000 
+ 628      00000000 
+ 628      00000000 
+ 629              		.section	.sbss.Current_State,"aw",@nobits
+ 630              		.align	2
+ 631              		.set	.LANCHOR1,. + 0
+ 634              	Current_State:
+ 635 0000 00000000 		.zero	4
+ 636              		.section	.sbss.Next_State,"aw",@nobits
+ 637              		.align	2
+ 638              		.set	.LANCHOR2,. + 0
+ 641              	Next_State:
+ 642 0000 00000000 		.zero	4
+ 643              		.section	.sbss.u32_Calculated_CRC,"aw",@nobits
+ 644              		.align	2
+ 645              		.set	.LANCHOR5,. + 0
+ 648              	u32_Calculated_CRC:
+ 649 0000 00000000 		.zero	4
+ 650              		.section	.sbss.u32_Received_CRC,"aw",@nobits
+ 651              		.align	2
+ 652              		.set	.LANCHOR7,. + 0
+ 655              	u32_Received_CRC:
+ 656 0000 00000000 		.zero	4
+ 657              		.section	.sbss.u8_Bytes_Received,"aw",@nobits
+ 658              		.set	.LANCHOR0,. + 0
+ 661              	u8_Bytes_Received:
+ 662 0000 00       		.zero	1
+ 663              		.section	.sbss.u8_Cnt,"aw",@nobits
+ 664              		.set	.LANCHOR6,. + 0
+ 667              	u8_Cnt:
+ 668 0000 00       		.zero	1
+ 669              		.text
+ 670              	.Letext0:
+ 671              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 672              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 673              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 674              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 675              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 676              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 677              		.file 8 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 678              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 679              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 680              		.file 11 "<built-in>"
+ 681              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/serial_comm.h"
+ 682              		.file 13 "/home/iboard/farsight/avtemp/Camera/include/crc.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 serial_sm.c
+<<<<<<< HEAD
+     /tmp/cciGNmbs.s:13     .text.v_Update_Serial_SM:0000000000000000 v_Update_Serial_SM
+     /tmp/cciGNmbs.s:17     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:19     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:20     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:21     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:22     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:23     .text.v_Update_Serial_SM:0000000000000004 .L0 
+     /tmp/cciGNmbs.s:25     .text.v_Update_Serial_SM:0000000000000008 .L0 
+     /tmp/cciGNmbs.s:27     .text.v_Update_Serial_SM:0000000000000008 .L0 
+     /tmp/cciGNmbs.s:29     .text.v_Update_Serial_SM:000000000000000c .L0 
+     /tmp/cciGNmbs.s:31     .text.v_Update_Serial_SM:0000000000000014 .L0 
+     /tmp/cciGNmbs.s:34     .text.v_Update_Serial_SM:000000000000001c .L0 
+     /tmp/cciGNmbs.s:66     .text.v_Update_Serial_SM:000000000000004c .L0 
+     /tmp/cciGNmbs.s:67     .text.v_Update_Serial_SM:000000000000004c .L0 
+     /tmp/cciGNmbs.s:69     .text.v_Update_Serial_SM:0000000000000054 .L0 
+     /tmp/cciGNmbs.s:70     .text.v_Update_Serial_SM:0000000000000054 .L0 
+     /tmp/cciGNmbs.s:74     .text.v_Update_Serial_SM:0000000000000060 .L0 
+     /tmp/cciGNmbs.s:75     .text.v_Update_Serial_SM:0000000000000060 .L0 
+     /tmp/cciGNmbs.s:78     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cciGNmbs.s:79     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cciGNmbs.s:81     .text.v_Update_Serial_SM:0000000000000074 .L0 
+     /tmp/cciGNmbs.s:85     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cciGNmbs.s:86     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cciGNmbs.s:89     .text.v_Update_Serial_SM:0000000000000088 .L0 
+     /tmp/cciGNmbs.s:90     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cciGNmbs.s:91     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cciGNmbs.s:93     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cciGNmbs.s:95     .text.v_Update_Serial_SM:0000000000000094 .L0 
+     /tmp/cciGNmbs.s:96     .text.v_Update_Serial_SM:0000000000000098 .L0 
+     /tmp/cciGNmbs.s:100    .text.v_Update_Serial_SM:000000000000009c .L0 
+     /tmp/cciGNmbs.s:102    .text.v_Update_Serial_SM:000000000000009c .L0 
+     /tmp/cciGNmbs.s:103    .text.v_Update_Serial_SM:000000000000009c .L0 
+     /tmp/cciGNmbs.s:107    .text.v_Update_Serial_SM:00000000000000a0 .L0 
+     /tmp/cciGNmbs.s:109    .text.v_Update_Serial_SM:00000000000000a8 .L0 
+     /tmp/cciGNmbs.s:113    .text.v_Update_Serial_SM:00000000000000ac .L0 
+     /tmp/cciGNmbs.s:114    .text.v_Update_Serial_SM:00000000000000ac .L0 
+     /tmp/cciGNmbs.s:118    .text.v_Update_Serial_SM:00000000000000b8 .L0 
+     /tmp/cciGNmbs.s:119    .text.v_Update_Serial_SM:00000000000000b8 .L0 
+     /tmp/cciGNmbs.s:122    .text.v_Update_Serial_SM:00000000000000c4 .L0 
+     /tmp/cciGNmbs.s:123    .text.v_Update_Serial_SM:00000000000000c4 .L0 
+     /tmp/cciGNmbs.s:126    .text.v_Update_Serial_SM:00000000000000d0 .L0 
+     /tmp/cciGNmbs.s:131    .text.v_Update_Serial_SM:00000000000000e0 .L0 
+     /tmp/cciGNmbs.s:135    .text.v_Update_Serial_SM:00000000000000e8 .L0 
+     /tmp/cciGNmbs.s:136    .text.v_Update_Serial_SM:00000000000000e8 .L0 
+     /tmp/cciGNmbs.s:140    .text.v_Update_Serial_SM:00000000000000f4 .L0 
+     /tmp/cciGNmbs.s:141    .text.v_Update_Serial_SM:00000000000000f4 .L0 
+     /tmp/cciGNmbs.s:144    .text.v_Update_Serial_SM:0000000000000100 .L0 
+     /tmp/cciGNmbs.s:145    .text.v_Update_Serial_SM:0000000000000100 .L0 
+     /tmp/cciGNmbs.s:148    .text.v_Update_Serial_SM:000000000000010c .L0 
+     /tmp/cciGNmbs.s:154    .text.v_Update_Serial_SM:0000000000000120 .L0 
+     /tmp/cciGNmbs.s:155    .text.v_Update_Serial_SM:0000000000000120 .L0 
+     /tmp/cciGNmbs.s:159    .text.v_Update_Serial_SM:000000000000012c .L0 
+     /tmp/cciGNmbs.s:160    .text.v_Update_Serial_SM:000000000000012c .L0 
+     /tmp/cciGNmbs.s:163    .text.v_Update_Serial_SM:0000000000000138 .L0 
+     /tmp/cciGNmbs.s:164    .text.v_Update_Serial_SM:0000000000000138 .L0 
+     /tmp/cciGNmbs.s:167    .text.v_Update_Serial_SM:0000000000000144 .L0 
+     /tmp/cciGNmbs.s:171    .text.v_Update_Serial_SM:0000000000000154 .L0 
+     /tmp/cciGNmbs.s:177    .text.v_Update_Serial_SM:0000000000000170 .L0 
+     /tmp/cciGNmbs.s:178    .text.v_Update_Serial_SM:0000000000000170 .L0 
+     /tmp/cciGNmbs.s:180    .text.v_Update_Serial_SM:0000000000000174 .L0 
+     /tmp/cciGNmbs.s:184    .text.v_Update_Serial_SM:000000000000017c .L0 
+     /tmp/cciGNmbs.s:186    .text.v_Update_Serial_SM:0000000000000184 .L0 
+     /tmp/cciGNmbs.s:187    .text.v_Update_Serial_SM:0000000000000184 .L0 
+     /tmp/cciGNmbs.s:190    .text.v_Update_Serial_SM:0000000000000190 .L0 
+     /tmp/cciGNmbs.s:193    .text.v_Update_Serial_SM:000000000000019c .L0 
+     /tmp/cciGNmbs.s:195    .text.v_Update_Serial_SM:00000000000001a0 .L0 
+     /tmp/cciGNmbs.s:197    .text.v_Update_Serial_SM:00000000000001a4 .L0 
+     /tmp/cciGNmbs.s:198    .text.v_Update_Serial_SM:00000000000001a4 .L0 
+     /tmp/cciGNmbs.s:201    .text.v_Update_Serial_SM:00000000000001ac .L0 
+     /tmp/cciGNmbs.s:203    .text.v_Update_Serial_SM:00000000000001b4 .L0 
+     /tmp/cciGNmbs.s:204    .text.v_Update_Serial_SM:00000000000001b4 .L0 
+     /tmp/cciGNmbs.s:209    .text.v_Update_Serial_SM:00000000000001bc .L0 
+     /tmp/cciGNmbs.s:210    .text.v_Update_Serial_SM:00000000000001bc .L0 
+     /tmp/cciGNmbs.s:212    .text.v_Update_Serial_SM:00000000000001c0 .L0 
+     /tmp/cciGNmbs.s:216    .text.v_Update_Serial_SM:00000000000001c8 .L0 
+     /tmp/cciGNmbs.s:218    .text.v_Update_Serial_SM:00000000000001d0 .L0 
+     /tmp/cciGNmbs.s:219    .text.v_Update_Serial_SM:00000000000001d0 .L0 
+     /tmp/cciGNmbs.s:224    .text.v_Update_Serial_SM:00000000000001e4 .L0 
+     /tmp/cciGNmbs.s:226    .text.v_Update_Serial_SM:00000000000001ec .L0 
+     /tmp/cciGNmbs.s:228    .text.v_Update_Serial_SM:00000000000001f4 .L0 
+     /tmp/cciGNmbs.s:229    .text.v_Update_Serial_SM:00000000000001f4 .L0 
+     /tmp/cciGNmbs.s:232    .text.v_Update_Serial_SM:0000000000000200 .L0 
+     /tmp/cciGNmbs.s:237    .text.v_Update_Serial_SM:0000000000000214 .L0 
+     /tmp/cciGNmbs.s:238    .text.v_Update_Serial_SM:0000000000000214 .L0 
+     /tmp/cciGNmbs.s:243    .text.v_Update_Serial_SM:000000000000021c .L0 
+     /tmp/cciGNmbs.s:244    .text.v_Update_Serial_SM:000000000000021c .L0 
+     /tmp/cciGNmbs.s:246    .text.v_Update_Serial_SM:0000000000000220 .L0 
+     /tmp/cciGNmbs.s:250    .text.v_Update_Serial_SM:0000000000000228 .L0 
+     /tmp/cciGNmbs.s:252    .text.v_Update_Serial_SM:0000000000000230 .L0 
+     /tmp/cciGNmbs.s:253    .text.v_Update_Serial_SM:0000000000000230 .L0 
+     /tmp/cciGNmbs.s:258    .text.v_Update_Serial_SM:0000000000000244 .L0 
+     /tmp/cciGNmbs.s:260    .text.v_Update_Serial_SM:000000000000024c .L0 
+     /tmp/cciGNmbs.s:262    .text.v_Update_Serial_SM:0000000000000254 .L0 
+     /tmp/cciGNmbs.s:263    .text.v_Update_Serial_SM:0000000000000254 .L0 
+     /tmp/cciGNmbs.s:266    .text.v_Update_Serial_SM:0000000000000260 .L0 
+     /tmp/cciGNmbs.s:271    .text.v_Update_Serial_SM:0000000000000274 .L0 
+     /tmp/cciGNmbs.s:272    .text.v_Update_Serial_SM:0000000000000274 .L0 
+     /tmp/cciGNmbs.s:277    .text.v_Update_Serial_SM:000000000000027c .L0 
+     /tmp/cciGNmbs.s:278    .text.v_Update_Serial_SM:000000000000027c .L0 
+     /tmp/cciGNmbs.s:280    .text.v_Update_Serial_SM:0000000000000280 .L0 
+     /tmp/cciGNmbs.s:284    .text.v_Update_Serial_SM:0000000000000288 .L0 
+     /tmp/cciGNmbs.s:286    .text.v_Update_Serial_SM:0000000000000290 .L0 
+     /tmp/cciGNmbs.s:287    .text.v_Update_Serial_SM:0000000000000290 .L0 
+     /tmp/cciGNmbs.s:292    .text.v_Update_Serial_SM:00000000000002a4 .L0 
+     /tmp/cciGNmbs.s:294    .text.v_Update_Serial_SM:00000000000002ac .L0 
+     /tmp/cciGNmbs.s:296    .text.v_Update_Serial_SM:00000000000002b4 .L0 
+     /tmp/cciGNmbs.s:297    .text.v_Update_Serial_SM:00000000000002b4 .L0 
+     /tmp/cciGNmbs.s:300    .text.v_Update_Serial_SM:00000000000002c0 .L0 
+     /tmp/cciGNmbs.s:305    .text.v_Update_Serial_SM:00000000000002d4 .L0 
+     /tmp/cciGNmbs.s:306    .text.v_Update_Serial_SM:00000000000002d4 .L0 
+     /tmp/cciGNmbs.s:308    .text.v_Update_Serial_SM:00000000000002dc .L0 
+     /tmp/cciGNmbs.s:309    .text.v_Update_Serial_SM:00000000000002dc .L0 
+     /tmp/cciGNmbs.s:314    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cciGNmbs.s:315    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cciGNmbs.s:319    .text.v_Update_Serial_SM:00000000000002f8 .L0 
+     /tmp/cciGNmbs.s:323    .text.v_Update_Serial_SM:0000000000000308 .L0 
+     /tmp/cciGNmbs.s:327    .text.v_Update_Serial_SM:0000000000000310 .L0 
+     /tmp/cciGNmbs.s:329    .text.v_Update_Serial_SM:0000000000000314 .L0 
+     /tmp/cciGNmbs.s:330    .text.v_Update_Serial_SM:0000000000000314 .L0 
+     /tmp/cciGNmbs.s:335    .text.v_Update_Serial_SM:0000000000000328 .L0 
+     /tmp/cciGNmbs.s:337    .text.v_Update_Serial_SM:0000000000000330 .L0 
+     /tmp/cciGNmbs.s:339    .text.v_Update_Serial_SM:0000000000000338 .L0 
+     /tmp/cciGNmbs.s:340    .text.v_Update_Serial_SM:0000000000000338 .L0 
+     /tmp/cciGNmbs.s:343    .text.v_Update_Serial_SM:0000000000000344 .L0 
+     /tmp/cciGNmbs.s:348    .text.v_Update_Serial_SM:0000000000000358 .L0 
+     /tmp/cciGNmbs.s:349    .text.v_Update_Serial_SM:0000000000000358 .L0 
+     /tmp/cciGNmbs.s:353    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cciGNmbs.s:354    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cciGNmbs.s:358    .text.v_Update_Serial_SM:0000000000000374 .L0 
+     /tmp/cciGNmbs.s:359    .text.v_Update_Serial_SM:0000000000000374 .L0 
+     /tmp/cciGNmbs.s:363    .text.v_Update_Serial_SM:000000000000037c .L0 
+     /tmp/cciGNmbs.s:364    .text.v_Update_Serial_SM:000000000000037c .L0 
+     /tmp/cciGNmbs.s:369    .text.v_Update_Serial_SM:0000000000000384 .L0 
+     /tmp/cciGNmbs.s:370    .text.v_Update_Serial_SM:0000000000000384 .L0 
+     /tmp/cciGNmbs.s:373    .text.v_Update_Serial_SM:0000000000000390 .L0 
+     /tmp/cciGNmbs.s:377    .text.v_Update_Serial_SM:00000000000003a0 .L0 
+     /tmp/cciGNmbs.s:381    .text.v_Update_Serial_SM:00000000000003a8 .L0 
+     /tmp/cciGNmbs.s:383    .text.v_Update_Serial_SM:00000000000003ac .L0 
+     /tmp/cciGNmbs.s:384    .text.v_Update_Serial_SM:00000000000003ac .L0 
+     /tmp/cciGNmbs.s:389    .text.v_Update_Serial_SM:00000000000003c0 .L0 
+     /tmp/cciGNmbs.s:391    .text.v_Update_Serial_SM:00000000000003c8 .L0 
+     /tmp/cciGNmbs.s:392    .text.v_Update_Serial_SM:00000000000003c8 .L0 
+     /tmp/cciGNmbs.s:394    .text.v_Update_Serial_SM:00000000000003d0 .L0 
+     /tmp/cciGNmbs.s:396    .text.v_Update_Serial_SM:00000000000003d8 .L0 
+     /tmp/cciGNmbs.s:398    .text.v_Update_Serial_SM:00000000000003dc .L0 
+     /tmp/cciGNmbs.s:403    .text.v_Update_Serial_SM:00000000000003e4 .L0 
+     /tmp/cciGNmbs.s:404    .text.v_Update_Serial_SM:00000000000003e4 .L0 
+     /tmp/cciGNmbs.s:407    .text.v_Update_Serial_SM:00000000000003f0 .L0 
+     /tmp/cciGNmbs.s:412    .text.v_Update_Serial_SM:0000000000000404 .L0 
+     /tmp/cciGNmbs.s:413    .text.v_Update_Serial_SM:0000000000000404 .L0 
+     /tmp/cciGNmbs.s:415    .text.v_Update_Serial_SM:000000000000040c .L0 
+     /tmp/cciGNmbs.s:416    .text.v_Update_Serial_SM:000000000000040c .L0 
+     /tmp/cciGNmbs.s:420    .text.v_Update_Serial_SM:0000000000000414 .L0 
+     /tmp/cciGNmbs.s:421    .text.v_Update_Serial_SM:0000000000000414 .L0 
+     /tmp/cciGNmbs.s:424    .text.v_Update_Serial_SM:0000000000000420 .L0 
+     /tmp/cciGNmbs.s:429    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cciGNmbs.s:430    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cciGNmbs.s:432    .text.v_Update_Serial_SM:000000000000043c .L0 
+     /tmp/cciGNmbs.s:435    .text.v_Update_Serial_SM:0000000000000444 .L0 
+     /tmp/cciGNmbs.s:437    .text.v_Update_Serial_SM:0000000000000448 .L0 
+     /tmp/cciGNmbs.s:439    .text.v_Update_Serial_SM:0000000000000450 .L0 
+     /tmp/cciGNmbs.s:440    .text.v_Update_Serial_SM:0000000000000450 .L0 
+     /tmp/cciGNmbs.s:444    .text.v_Update_Serial_SM:0000000000000458 .L0 
+     /tmp/cciGNmbs.s:445    .text.v_Update_Serial_SM:0000000000000458 .L0 
+     /tmp/cciGNmbs.s:448    .text.v_Update_Serial_SM:0000000000000464 .L0 
+     /tmp/cciGNmbs.s:453    .text.v_Update_Serial_SM:0000000000000478 .L0 
+     /tmp/cciGNmbs.s:454    .text.v_Update_Serial_SM:0000000000000478 .L0 
+     /tmp/cciGNmbs.s:456    .text.v_Update_Serial_SM:0000000000000480 .L0 
+     /tmp/cciGNmbs.s:459    .text.v_Update_Serial_SM:0000000000000488 .L0 
+     /tmp/cciGNmbs.s:461    .text.v_Update_Serial_SM:000000000000048c .L0 
+     /tmp/cciGNmbs.s:463    .text.v_Update_Serial_SM:0000000000000494 .L0 
+     /tmp/cciGNmbs.s:464    .text.v_Update_Serial_SM:0000000000000494 .L0 
+     /tmp/cciGNmbs.s:468    .text.v_Update_Serial_SM:000000000000049c .L0 
+     /tmp/cciGNmbs.s:469    .text.v_Update_Serial_SM:000000000000049c .L0 
+     /tmp/cciGNmbs.s:472    .text.v_Update_Serial_SM:00000000000004a8 .L0 
+     /tmp/cciGNmbs.s:477    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cciGNmbs.s:478    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cciGNmbs.s:480    .text.v_Update_Serial_SM:00000000000004c4 .L0 
+     /tmp/cciGNmbs.s:483    .text.v_Update_Serial_SM:00000000000004cc .L0 
+     /tmp/cciGNmbs.s:485    .text.v_Update_Serial_SM:00000000000004d0 .L0 
+     /tmp/cciGNmbs.s:487    .text.v_Update_Serial_SM:00000000000004d8 .L0 
+     /tmp/cciGNmbs.s:488    .text.v_Update_Serial_SM:00000000000004dc .L0 
+     /tmp/cciGNmbs.s:495    .text.Reset_Serial_SM:0000000000000000 Reset_Serial_SM
+     /tmp/cciGNmbs.s:498    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:499    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:500    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:501    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:503    .text.Reset_Serial_SM:0000000000000008 .L0 
+     /tmp/cciGNmbs.s:505    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cciGNmbs.s:506    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cciGNmbs.s:508    .text.Reset_Serial_SM:0000000000000018 .L0 
+     /tmp/cciGNmbs.s:510    .text.Reset_Serial_SM:0000000000000020 .L0 
+     /tmp/cciGNmbs.s:511    .text.Reset_Serial_SM:0000000000000020 .L0 
+     /tmp/cciGNmbs.s:513    .text.Reset_Serial_SM:0000000000000028 .L0 
+     /tmp/cciGNmbs.s:518    .text.Reset_Serial_SM:000000000000003c .L0 
+     /tmp/cciGNmbs.s:519    .text.Reset_Serial_SM:0000000000000040 .L0 
+     /tmp/cciGNmbs.s:526    .text.v_Framing_Timeout:0000000000000000 v_Framing_Timeout
+     /tmp/cciGNmbs.s:529    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:530    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:531    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:532    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:537    .text.v_Framing_Timeout:0000000000000018 .L0 
+     /tmp/cciGNmbs.s:538    .text.v_Framing_Timeout:000000000000001c .L0 
+     /tmp/cciGNmbs.s:540    .text.v_Framing_Timeout:0000000000000020 .L0 
+     /tmp/cciGNmbs.s:542    .text.v_Framing_Timeout:0000000000000020 .L0 
+     /tmp/cciGNmbs.s:544    .text.v_Framing_Timeout:0000000000000024 .L0 
+     /tmp/cciGNmbs.s:546    .text.v_Framing_Timeout:000000000000002c .L0 
+     /tmp/cciGNmbs.s:552    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cciGNmbs.s:553    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cciGNmbs.s:554    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cciGNmbs.s:555    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cciGNmbs.s:557    .text.v_Framing_Timeout:000000000000003c .L0 
+     /tmp/cciGNmbs.s:561    .text.v_Framing_Timeout:000000000000004c .L0 
+     /tmp/cciGNmbs.s:563    .text.v_Framing_Timeout:0000000000000050 .L0 
+     /tmp/cciGNmbs.s:566    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cciGNmbs.s:567    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cciGNmbs.s:569    .text.v_Framing_Timeout:0000000000000060 .L0 
+     /tmp/cciGNmbs.s:571    .text.v_Framing_Timeout:0000000000000064 .L0 
+     /tmp/cciGNmbs.s:573    .text.v_Framing_Timeout:0000000000000068 .L0 
+     /tmp/cciGNmbs.s:579    .text.v_Framing_Timeout:0000000000000070 .L0 
+     /tmp/cciGNmbs.s:582    .text.v_Framing_Timeout:0000000000000078 .L0 
+     /tmp/cciGNmbs.s:583    .text.v_Framing_Timeout:0000000000000078 .L0 
+     /tmp/cciGNmbs.s:584    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cciGNmbs.s:586    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cciGNmbs.s:588    .text.v_Framing_Timeout:0000000000000084 .L0 
+     /tmp/cciGNmbs.s:590    .text.v_Framing_Timeout:000000000000008c .L0 
+     /tmp/cciGNmbs.s:591    .text.v_Framing_Timeout:0000000000000090 .L0 
+     /tmp/cciGNmbs.s:593    .text.v_Framing_Timeout:0000000000000094 .L0 
+     /tmp/cciGNmbs.s:600    .text.b_In_Error_State:0000000000000000 b_In_Error_State
+     /tmp/cciGNmbs.s:603    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:604    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:605    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:606    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:610    .text.b_In_Error_State:0000000000000010 .L0 
+     /tmp/cciGNmbs.s:612    .text.b_In_Error_State:0000000000000018 .L0 
+     /tmp/cciGNmbs.s:617    .bss.Header:0000000000000000 .LANCHOR4
+     /tmp/cciGNmbs.s:620    .bss.Header:0000000000000000 Header
+     /tmp/cciGNmbs.s:624    .bss.u8_Rx_Buf:0000000000000000 .LANCHOR3
+     /tmp/cciGNmbs.s:627    .bss.u8_Rx_Buf:0000000000000000 u8_Rx_Buf
+     /tmp/cciGNmbs.s:631    .sbss.Current_State:0000000000000000 .LANCHOR1
+     /tmp/cciGNmbs.s:634    .sbss.Current_State:0000000000000000 Current_State
+     /tmp/cciGNmbs.s:638    .sbss.Next_State:0000000000000000 .LANCHOR2
+     /tmp/cciGNmbs.s:641    .sbss.Next_State:0000000000000000 Next_State
+     /tmp/cciGNmbs.s:645    .sbss.u32_Calculated_CRC:0000000000000000 .LANCHOR5
+     /tmp/cciGNmbs.s:648    .sbss.u32_Calculated_CRC:0000000000000000 u32_Calculated_CRC
+     /tmp/cciGNmbs.s:652    .sbss.u32_Received_CRC:0000000000000000 .LANCHOR7
+     /tmp/cciGNmbs.s:655    .sbss.u32_Received_CRC:0000000000000000 u32_Received_CRC
+     /tmp/cciGNmbs.s:658    .sbss.u8_Bytes_Received:0000000000000000 .LANCHOR0
+     /tmp/cciGNmbs.s:661    .sbss.u8_Bytes_Received:0000000000000000 u8_Bytes_Received
+     /tmp/cciGNmbs.s:664    .sbss.u8_Cnt:0000000000000000 .LANCHOR6
+     /tmp/cciGNmbs.s:667    .sbss.u8_Cnt:0000000000000000 u8_Cnt
+     /tmp/cciGNmbs.s:491    .text.v_Update_Serial_SM:00000000000004dc .L0 
+     /tmp/cciGNmbs.s:522    .text.Reset_Serial_SM:0000000000000040 .L0 
+     /tmp/cciGNmbs.s:596    .text.v_Framing_Timeout:0000000000000094 .L0 
+     /tmp/cciGNmbs.s:615    .text.b_In_Error_State:0000000000000018 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:29     .text.v_Update_Serial_SM:000000000000000c .L0 
+     /tmp/cciGNmbs.s:34     .text.v_Update_Serial_SM:000000000000001c .L0 
+     /tmp/cciGNmbs.s:47     .rodata.v_Update_Serial_SM:0000000000000000 .L4
+     /tmp/cciGNmbs.s:38     .text.v_Update_Serial_SM:0000000000000030 .L0 
+     /tmp/cciGNmbs.s:67     .text.v_Update_Serial_SM:000000000000004c .L0 
+     /tmp/cciGNmbs.s:76     .text.v_Update_Serial_SM:0000000000000064 .L0 
+     /tmp/cciGNmbs.s:79     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cciGNmbs.s:81     .text.v_Update_Serial_SM:0000000000000074 .L0 
+     /tmp/cciGNmbs.s:86     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cciGNmbs.s:93     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cciGNmbs.s:107    .text.v_Update_Serial_SM:00000000000000a0 .L0 
+     /tmp/cciGNmbs.s:120    .text.v_Update_Serial_SM:00000000000000bc .L0 
+     /tmp/cciGNmbs.s:124    .text.v_Update_Serial_SM:00000000000000c8 .L0 
+     /tmp/cciGNmbs.s:126    .text.v_Update_Serial_SM:00000000000000d0 .L0 
+     /tmp/cciGNmbs.s:142    .text.v_Update_Serial_SM:00000000000000f8 .L0 
+     /tmp/cciGNmbs.s:146    .text.v_Update_Serial_SM:0000000000000104 .L0 
+     /tmp/cciGNmbs.s:148    .text.v_Update_Serial_SM:000000000000010c .L0 
+     /tmp/cciGNmbs.s:161    .text.v_Update_Serial_SM:0000000000000130 .L0 
+     /tmp/cciGNmbs.s:165    .text.v_Update_Serial_SM:000000000000013c .L0 
+     /tmp/cciGNmbs.s:167    .text.v_Update_Serial_SM:0000000000000144 .L0 
+     /tmp/cciGNmbs.s:171    .text.v_Update_Serial_SM:0000000000000154 .L0 
+     /tmp/cciGNmbs.s:172    .text.v_Update_Serial_SM:000000000000015c .L0 
+     /tmp/cciGNmbs.s:173    .text.v_Update_Serial_SM:0000000000000164 .L0 
+     /tmp/cciGNmbs.s:184    .text.v_Update_Serial_SM:000000000000017c .L0 
+     /tmp/cciGNmbs.s:188    .text.v_Update_Serial_SM:0000000000000188 .L0 
+     /tmp/cciGNmbs.s:190    .text.v_Update_Serial_SM:0000000000000190 .L0 
+     /tmp/cciGNmbs.s:201    .text.v_Update_Serial_SM:00000000000001ac .L0 
+     /tmp/cciGNmbs.s:216    .text.v_Update_Serial_SM:00000000000001c8 .L0 
+     /tmp/cciGNmbs.s:219    .text.v_Update_Serial_SM:00000000000001d0 .L0 
+     /tmp/cciGNmbs.s:224    .text.v_Update_Serial_SM:00000000000001e4 .L0 
+     /tmp/cciGNmbs.s:226    .text.v_Update_Serial_SM:00000000000001ec .L0 
+     /tmp/cciGNmbs.s:230    .text.v_Update_Serial_SM:00000000000001f8 .L0 
+     /tmp/cciGNmbs.s:232    .text.v_Update_Serial_SM:0000000000000200 .L0 
+     /tmp/cciGNmbs.s:250    .text.v_Update_Serial_SM:0000000000000228 .L0 
+     /tmp/cciGNmbs.s:253    .text.v_Update_Serial_SM:0000000000000230 .L0 
+     /tmp/cciGNmbs.s:258    .text.v_Update_Serial_SM:0000000000000244 .L0 
+     /tmp/cciGNmbs.s:260    .text.v_Update_Serial_SM:000000000000024c .L0 
+     /tmp/cciGNmbs.s:264    .text.v_Update_Serial_SM:0000000000000258 .L0 
+     /tmp/cciGNmbs.s:266    .text.v_Update_Serial_SM:0000000000000260 .L0 
+     /tmp/cciGNmbs.s:284    .text.v_Update_Serial_SM:0000000000000288 .L0 
+     /tmp/cciGNmbs.s:287    .text.v_Update_Serial_SM:0000000000000290 .L0 
+     /tmp/cciGNmbs.s:292    .text.v_Update_Serial_SM:00000000000002a4 .L0 
+     /tmp/cciGNmbs.s:294    .text.v_Update_Serial_SM:00000000000002ac .L0 
+     /tmp/cciGNmbs.s:298    .text.v_Update_Serial_SM:00000000000002b8 .L0 
+     /tmp/cciGNmbs.s:300    .text.v_Update_Serial_SM:00000000000002c0 .L0 
+     /tmp/cciGNmbs.s:306    .text.v_Update_Serial_SM:00000000000002d4 .L0 
+     /tmp/cciGNmbs.s:315    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cciGNmbs.s:317    .text.v_Update_Serial_SM:00000000000002f0 .L0 
+     /tmp/cciGNmbs.s:319    .text.v_Update_Serial_SM:00000000000002f8 .L0 
+     /tmp/cciGNmbs.s:330    .text.v_Update_Serial_SM:0000000000000314 .L0 
+     /tmp/cciGNmbs.s:335    .text.v_Update_Serial_SM:0000000000000328 .L0 
+     /tmp/cciGNmbs.s:337    .text.v_Update_Serial_SM:0000000000000330 .L0 
+     /tmp/cciGNmbs.s:341    .text.v_Update_Serial_SM:000000000000033c .L0 
+     /tmp/cciGNmbs.s:343    .text.v_Update_Serial_SM:0000000000000344 .L0 
+     /tmp/cciGNmbs.s:349    .text.v_Update_Serial_SM:0000000000000358 .L0 
+     /tmp/cciGNmbs.s:354    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cciGNmbs.s:371    .text.v_Update_Serial_SM:0000000000000388 .L0 
+     /tmp/cciGNmbs.s:373    .text.v_Update_Serial_SM:0000000000000390 .L0 
+     /tmp/cciGNmbs.s:384    .text.v_Update_Serial_SM:00000000000003ac .L0 
+     /tmp/cciGNmbs.s:389    .text.v_Update_Serial_SM:00000000000003c0 .L0 
+     /tmp/cciGNmbs.s:392    .text.v_Update_Serial_SM:00000000000003c8 .L0 
+     /tmp/cciGNmbs.s:394    .text.v_Update_Serial_SM:00000000000003d0 .L0 
+     /tmp/cciGNmbs.s:405    .text.v_Update_Serial_SM:00000000000003e8 .L0 
+     /tmp/cciGNmbs.s:408    .text.v_Update_Serial_SM:00000000000003f4 .L0 
+     /tmp/cciGNmbs.s:413    .text.v_Update_Serial_SM:0000000000000404 .L0 
+     /tmp/cciGNmbs.s:422    .text.v_Update_Serial_SM:0000000000000418 .L0 
+     /tmp/cciGNmbs.s:425    .text.v_Update_Serial_SM:0000000000000424 .L0 
+     /tmp/cciGNmbs.s:430    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cciGNmbs.s:437    .text.v_Update_Serial_SM:0000000000000448 .L0 
+     /tmp/cciGNmbs.s:446    .text.v_Update_Serial_SM:000000000000045c .L0 
+     /tmp/cciGNmbs.s:449    .text.v_Update_Serial_SM:0000000000000468 .L0 
+     /tmp/cciGNmbs.s:454    .text.v_Update_Serial_SM:0000000000000478 .L0 
+     /tmp/cciGNmbs.s:461    .text.v_Update_Serial_SM:000000000000048c .L0 
+     /tmp/cciGNmbs.s:470    .text.v_Update_Serial_SM:00000000000004a0 .L0 
+     /tmp/cciGNmbs.s:473    .text.v_Update_Serial_SM:00000000000004ac .L0 
+     /tmp/cciGNmbs.s:478    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cciGNmbs.s:485    .text.v_Update_Serial_SM:00000000000004d0 .L0 
+     /tmp/cciGNmbs.s:83     .text.v_Update_Serial_SM:000000000000007c .L2
+     /tmp/cciGNmbs.s:99     .text.v_Update_Serial_SM:000000000000009c .L18
+     /tmp/cciGNmbs.s:129    .text.v_Update_Serial_SM:00000000000000e0 .L26
+     /tmp/cciGNmbs.s:105    .text.v_Update_Serial_SM:00000000000000a0 .L25
+     /tmp/cciGNmbs.s:361    .text.v_Update_Serial_SM:000000000000037c .L20
+     /tmp/cciGNmbs.s:356    .text.v_Update_Serial_SM:0000000000000374 .L21
+     /tmp/cciGNmbs.s:64     .text.v_Update_Serial_SM:000000000000004c .L17
+     /tmp/cciGNmbs.s:111    .text.v_Update_Serial_SM:00000000000000ac .L16
+     /tmp/cciGNmbs.s:133    .text.v_Update_Serial_SM:00000000000000e8 .L15
+     /tmp/cciGNmbs.s:152    .text.v_Update_Serial_SM:0000000000000120 .L14
+     /tmp/cciGNmbs.s:175    .text.v_Update_Serial_SM:0000000000000170 .L13
+     /tmp/cciGNmbs.s:207    .text.v_Update_Serial_SM:00000000000001bc .L12
+     /tmp/cciGNmbs.s:241    .text.v_Update_Serial_SM:000000000000021c .L11
+     /tmp/cciGNmbs.s:275    .text.v_Update_Serial_SM:000000000000027c .L10
+     /tmp/cciGNmbs.s:312    .text.v_Update_Serial_SM:00000000000002e4 .L9
+     /tmp/cciGNmbs.s:367    .text.v_Update_Serial_SM:0000000000000384 .L8
+     /tmp/cciGNmbs.s:401    .text.v_Update_Serial_SM:00000000000003e4 .L7
+     /tmp/cciGNmbs.s:418    .text.v_Update_Serial_SM:0000000000000414 .L6
+     /tmp/cciGNmbs.s:442    .text.v_Update_Serial_SM:0000000000000458 .L5
+     /tmp/cciGNmbs.s:466    .text.v_Update_Serial_SM:000000000000049c .L3
+     /tmp/cciGNmbs.s:501    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:503    .text.Reset_Serial_SM:0000000000000008 .L0 
+     /tmp/cciGNmbs.s:506    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cciGNmbs.s:508    .text.Reset_Serial_SM:0000000000000018 .L0 
+     /tmp/cciGNmbs.s:511    .text.Reset_Serial_SM:0000000000000020 .L0 
+     /tmp/cciGNmbs.s:513    .text.Reset_Serial_SM:0000000000000028 .L0 
+     /tmp/cciGNmbs.s:532    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:534    .text.v_Framing_Timeout:000000000000000c .L0 
+     /tmp/cciGNmbs.s:544    .text.v_Framing_Timeout:0000000000000024 .L0 
+     /tmp/cciGNmbs.s:558    .text.v_Framing_Timeout:0000000000000040 .L0 
+     /tmp/cciGNmbs.s:567    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cciGNmbs.s:586    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cciGNmbs.s:588    .text.v_Framing_Timeout:0000000000000084 .L0 
+     /tmp/cciGNmbs.s:575    .text.v_Framing_Timeout:0000000000000070 .L29
+     /tmp/cciGNmbs.s:606    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cciGNmbs.s:2746   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cciGNmbs.s:3983   .debug_str:00000000000008bf .LASF225
+     /tmp/cciGNmbs.s:4009   .debug_str:0000000000000a0d .LASF226
+     /tmp/cciGNmbs.s:3913   .debug_str:000000000000071f .LASF227
+     /tmp/cciGNmbs.s:3579   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cciGNmbs.s:3591   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cciGNmbs.s:4003   .debug_str:00000000000009e7 .LASF0
+     /tmp/cciGNmbs.s:3917   .debug_str:000000000000075e .LASF3
+     /tmp/cciGNmbs.s:3967   .debug_str:000000000000086c .LASF1
+     /tmp/cciGNmbs.s:3889   .debug_str:00000000000006ac .LASF2
+     /tmp/cciGNmbs.s:3715   .debug_str:00000000000002be .LASF4
+     /tmp/cciGNmbs.s:4007   .debug_str:00000000000009fa .LASF5
+     /tmp/cciGNmbs.s:3625   .debug_str:00000000000000d1 .LASF6
+     /tmp/cciGNmbs.s:3893   .debug_str:00000000000006bd .LASF7
+     /tmp/cciGNmbs.s:3971   .debug_str:0000000000000886 .LASF8
+     /tmp/cciGNmbs.s:3949   .debug_str:00000000000007fe .LASF9
+     /tmp/cciGNmbs.s:3817   .debug_str:000000000000051b .LASF10
+     /tmp/cciGNmbs.s:3705   .debug_str:0000000000000285 .LASF11
+     /tmp/cciGNmbs.s:3619   .debug_str:00000000000000b4 .LASF12
+     /tmp/cciGNmbs.s:3803   .debug_str:00000000000004d5 .LASF13
+     /tmp/cciGNmbs.s:3873   .debug_str:0000000000000641 .LASF14
+     /tmp/cciGNmbs.s:3957   .debug_str:0000000000000833 .LASF15
+     /tmp/cciGNmbs.s:3681   .debug_str:0000000000000205 .LASF16
+     /tmp/cciGNmbs.s:3741   .debug_str:000000000000035f .LASF17
+     /tmp/cciGNmbs.s:3869   .debug_str:000000000000062d .LASF18
+     /tmp/cciGNmbs.s:3953   .debug_str:0000000000000817 .LASF19
+     /tmp/cciGNmbs.s:4025   .debug_str:0000000000000a75 .LASF20
+     /tmp/cciGNmbs.s:3657   .debug_str:000000000000019f .LASF21
+     /tmp/cciGNmbs.s:4001   .debug_str:00000000000009de .LASF22
+     /tmp/cciGNmbs.s:3799   .debug_str:00000000000004c9 .LASF23
+     /tmp/cciGNmbs.s:3903   .debug_str:00000000000006e3 .LASF24
+     /tmp/cciGNmbs.s:3691   .debug_str:0000000000000249 .LASF25
+     /tmp/cciGNmbs.s:3765   .debug_str:00000000000003f4 .LASF26
+     /tmp/cciGNmbs.s:3843   .debug_str:00000000000005aa .LASF27
+     /tmp/cciGNmbs.s:3827   .debug_str:0000000000000549 .LASF28
+     /tmp/cciGNmbs.s:3871   .debug_str:0000000000000639 .LASF29
+     /tmp/cciGNmbs.s:3961   .debug_str:0000000000000847 .LASF127
+     /tmp/cciGNmbs.s:3795   .debug_str:00000000000004af .LASF30
+     /tmp/cciGNmbs.s:3663   .debug_str:00000000000001b4 .LASF35
+     /tmp/cciGNmbs.s:3755   .debug_str:00000000000003a9 .LASF31
+     /tmp/cciGNmbs.s:3925   .debug_str:0000000000000781 .LASF32
+     /tmp/cciGNmbs.s:3899   .debug_str:00000000000006d7 .LASF33
+     /tmp/cciGNmbs.s:3711   .debug_str:00000000000002b1 .LASF34
+     /tmp/cciGNmbs.s:3945   .debug_str:00000000000007f3 .LASF36
+     /tmp/cciGNmbs.s:3743   .debug_str:0000000000000366 .LASF37
+     /tmp/cciGNmbs.s:3695   .debug_str:0000000000000257 .LASF38
+     /tmp/cciGNmbs.s:3685   .debug_str:0000000000000222 .LASF39
+     /tmp/cciGNmbs.s:3779   .debug_str:0000000000000436 .LASF40
+     /tmp/cciGNmbs.s:3865   .debug_str:000000000000061d .LASF41
+     /tmp/cciGNmbs.s:3909   .debug_str:0000000000000706 .LASF42
+     /tmp/cciGNmbs.s:3667   .debug_str:00000000000001d4 .LASF43
+     /tmp/cciGNmbs.s:3745   .debug_str:000000000000036f .LASF44
+     /tmp/cciGNmbs.s:3851   .debug_str:00000000000005cc .LASF45
+     /tmp/cciGNmbs.s:3605   .debug_str:0000000000000062 .LASF46
+     /tmp/cciGNmbs.s:3847   .debug_str:00000000000005bc .LASF47
+     /tmp/cciGNmbs.s:3959   .debug_str:000000000000083b .LASF48
+     /tmp/cciGNmbs.s:4015   .debug_str:0000000000000a38 .LASF49
+     /tmp/cciGNmbs.s:4037   .debug_str:0000000000000aba .LASF50
+     /tmp/cciGNmbs.s:3881   .debug_str:0000000000000676 .LASF51
+     /tmp/cciGNmbs.s:3749   .debug_str:000000000000037e .LASF52
+     /tmp/cciGNmbs.s:3659   .debug_str:00000000000001a7 .LASF53
+     /tmp/cciGNmbs.s:3985   .debug_str:0000000000000985 .LASF54
+     /tmp/cciGNmbs.s:3819   .debug_str:0000000000000529 .LASF55
+     /tmp/cciGNmbs.s:4017   .debug_str:0000000000000a41 .LASF56
+     /tmp/cciGNmbs.s:3709   .debug_str:00000000000002a9 .LASF57
+     /tmp/cciGNmbs.s:3623   .debug_str:00000000000000ca .LASF58
+     /tmp/cciGNmbs.s:3831   .debug_str:0000000000000560 .LASF59
+     /tmp/cciGNmbs.s:3621   .debug_str:00000000000000c1 .LASF60
+     /tmp/cciGNmbs.s:3661   .debug_str:00000000000001ac .LASF61
+     /tmp/cciGNmbs.s:3641   .debug_str:0000000000000136 .LASF62
+     /tmp/cciGNmbs.s:3875   .debug_str:000000000000064a .LASF63
+     /tmp/cciGNmbs.s:4047   .debug_str:0000000000000ae3 .LASF64
+     /tmp/cciGNmbs.s:3805   .debug_str:00000000000004dd .LASF65
+     /tmp/cciGNmbs.s:4055   .debug_str:0000000000000b03 .LASF66
+     /tmp/cciGNmbs.s:4027   .debug_str:0000000000000a7c .LASF67
+     /tmp/cciGNmbs.s:3943   .debug_str:00000000000007ea .LASF68
+     /tmp/cciGNmbs.s:3723   .debug_str:00000000000002eb .LASF69
+     /tmp/cciGNmbs.s:3901   .debug_str:00000000000006dd .LASF70
+     /tmp/cciGNmbs.s:3947   .debug_str:00000000000007f8 .LASF71
+     /tmp/cciGNmbs.s:3637   .debug_str:000000000000011f .LASF72
+     /tmp/cciGNmbs.s:4033   .debug_str:0000000000000aa8 .LASF73
+     /tmp/cciGNmbs.s:4005   .debug_str:00000000000009f3 .LASF74
+     /tmp/cciGNmbs.s:3629   .debug_str:00000000000000f4 .LASF75
+     /tmp/cciGNmbs.s:3811   .debug_str:00000000000004fa .LASF76
+     /tmp/cciGNmbs.s:3653   .debug_str:0000000000000192 .LASF77
+     /tmp/cciGNmbs.s:4051   .debug_str:0000000000000af2 .LASF78
+     /tmp/cciGNmbs.s:3747   .debug_str:0000000000000379 .LASF79
+     /tmp/cciGNmbs.s:3735   .debug_str:0000000000000332 .LASF80
+     /tmp/cciGNmbs.s:4031   .debug_str:0000000000000a8f .LASF81
+     /tmp/cciGNmbs.s:3999   .debug_str:00000000000009d6 .LASF82
+     /tmp/cciGNmbs.s:3807   .debug_str:00000000000004e4 .LASF83
+     /tmp/cciGNmbs.s:3839   .debug_str:0000000000000589 .LASF84
+     /tmp/cciGNmbs.s:3671   .debug_str:00000000000001e9 .LASF85
+     /tmp/cciGNmbs.s:3703   .debug_str:000000000000027b .LASF86
+     /tmp/cciGNmbs.s:3767   .debug_str:00000000000003fc .LASF87
+     /tmp/cciGNmbs.s:3823   .debug_str:0000000000000539 .LASF88
+     /tmp/cciGNmbs.s:3923   .debug_str:0000000000000779 .LASF89
+     /tmp/cciGNmbs.s:3963   .debug_str:000000000000084e .LASF90
+     /tmp/cciGNmbs.s:3919   .debug_str:0000000000000768 .LASF91
+     /tmp/cciGNmbs.s:3785   .debug_str:0000000000000459 .LASF92
+     /tmp/cciGNmbs.s:3781   .debug_str:0000000000000440 .LASF93
+     /tmp/cciGNmbs.s:3991   .debug_str:00000000000009a3 .LASF94
+     /tmp/cciGNmbs.s:3897   .debug_str:00000000000006d2 .LASF95
+     /tmp/cciGNmbs.s:3777   .debug_str:0000000000000431 .LASF96
+     /tmp/cciGNmbs.s:3719   .debug_str:00000000000002d2 .LASF97
+     /tmp/cciGNmbs.s:3987   .debug_str:000000000000098c .LASF98
+     /tmp/cciGNmbs.s:3951   .debug_str:0000000000000810 .LASF99
+     /tmp/cciGNmbs.s:3801   .debug_str:00000000000004cf .LASF100
+     /tmp/cciGNmbs.s:3701   .debug_str:0000000000000273 .LASF101
+     /tmp/cciGNmbs.s:4039   .debug_str:0000000000000ac2 .LASF102
+     /tmp/cciGNmbs.s:3825   .debug_str:0000000000000543 .LASF103
+     /tmp/cciGNmbs.s:3979   .debug_str:00000000000008b2 .LASF104
+     /tmp/cciGNmbs.s:4029   .debug_str:0000000000000a82 .LASF105
+     /tmp/cciGNmbs.s:3993   .debug_str:00000000000009ab .LASF106
+     /tmp/cciGNmbs.s:3707   .debug_str:000000000000029c .LASF107
+     /tmp/cciGNmbs.s:3911   .debug_str:0000000000000710 .LASF108
+     /tmp/cciGNmbs.s:3813   .debug_str:0000000000000501 .LASF109
+     /tmp/cciGNmbs.s:4041   .debug_str:0000000000000ac8 .LASF110
+     /tmp/cciGNmbs.s:3613   .debug_str:0000000000000093 .LASF111
+     /tmp/cciGNmbs.s:3771   .debug_str:0000000000000412 .LASF112
+     /tmp/cciGNmbs.s:3995   .debug_str:00000000000009b8 .LASF113
+     /tmp/cciGNmbs.s:3609   .debug_str:0000000000000078 .LASF114
+     /tmp/cciGNmbs.s:3927   .debug_str:0000000000000789 .LASF115
+     /tmp/cciGNmbs.s:3617   .debug_str:00000000000000a8 .LASF116
+     /tmp/cciGNmbs.s:3973   .debug_str:0000000000000891 .LASF117
+     /tmp/cciGNmbs.s:3645   .debug_str:0000000000000150 .LASF118
+     /tmp/cciGNmbs.s:3783   .debug_str:000000000000044a .LASF119
+     /tmp/cciGNmbs.s:3757   .debug_str:00000000000003af .LASF120
+     /tmp/cciGNmbs.s:3829   .debug_str:0000000000000551 .LASF121
+     /tmp/cciGNmbs.s:3769   .debug_str:0000000000000401 .LASF122
+     /tmp/cciGNmbs.s:3855   .debug_str:00000000000005de .LASF123
+     /tmp/cciGNmbs.s:3699   .debug_str:000000000000026c .LASF124
+     /tmp/cciGNmbs.s:4053   .debug_str:0000000000000afa .LASF125
+     /tmp/cciGNmbs.s:3915   .debug_str:0000000000000756 .LASF126
+     /tmp/cciGNmbs.s:4043   .debug_str:0000000000000ad3 .LASF128
+     /tmp/cciGNmbs.s:3697   .debug_str:0000000000000260 .LASF129
+     /tmp/cciGNmbs.s:3905   .debug_str:00000000000006ea .LASF130
+     /tmp/cciGNmbs.s:3599   .debug_str:0000000000000037 .LASF131
+     /tmp/cciGNmbs.s:4019   .debug_str:0000000000000a47 .LASF132
+     /tmp/cciGNmbs.s:4057   .debug_str:0000000000000b09 .LASF133
+     /tmp/cciGNmbs.s:3921   .debug_str:000000000000076d .LASF134
+     /tmp/cciGNmbs.s:4023   .debug_str:0000000000000a66 .LASF135
+     /tmp/cciGNmbs.s:4011   .debug_str:0000000000000a20 .LASF136
+     /tmp/cciGNmbs.s:3689   .debug_str:0000000000000235 .LASF137
+     /tmp/cciGNmbs.s:4035   .debug_str:0000000000000ab0 .LASF138
+     /tmp/cciGNmbs.s:3929   .debug_str:0000000000000793 .LASF139
+     /tmp/cciGNmbs.s:3931   .debug_str:0000000000000799 .LASF140
+     /tmp/cciGNmbs.s:3933   .debug_str:000000000000079f .LASF141
+     /tmp/cciGNmbs.s:3935   .debug_str:00000000000007a5 .LASF142
+     /tmp/cciGNmbs.s:3837   .debug_str:0000000000000580 .LASF143
+     /tmp/cciGNmbs.s:3603   .debug_str:0000000000000057 .LASF144
+     /tmp/cciGNmbs.s:3907   .debug_str:00000000000006fd .LASF145
+     /tmp/cciGNmbs.s:3815   .debug_str:0000000000000510 .LASF146
+     /tmp/cciGNmbs.s:3593   .debug_str:0000000000000000 .LASF147
+     /tmp/cciGNmbs.s:3655   .debug_str:000000000000019a .LASF148
+     /tmp/cciGNmbs.s:3673   .debug_str:00000000000001f1 .LASF149
+     /tmp/cciGNmbs.s:3675   .debug_str:00000000000001f6 .LASF150
+     /tmp/cciGNmbs.s:3677   .debug_str:00000000000001fb .LASF151
+     /tmp/cciGNmbs.s:3679   .debug_str:0000000000000200 .LASF152
+     /tmp/cciGNmbs.s:3631   .debug_str:00000000000000fb .LASF153
+     /tmp/cciGNmbs.s:3793   .debug_str:000000000000049c .LASF154
+     /tmp/cciGNmbs.s:3687   .debug_str:000000000000022c .LASF155
+     /tmp/cciGNmbs.s:3651   .debug_str:000000000000018d .LASF156
+     /tmp/cciGNmbs.s:3937   .debug_str:00000000000007ab .LASF157
+     /tmp/cciGNmbs.s:3683   .debug_str:000000000000020e .LASF158
+     /tmp/cciGNmbs.s:3597   .debug_str:000000000000001d .LASF159
+     /tmp/cciGNmbs.s:4021   .debug_str:0000000000000a51 .LASF160
+     /tmp/cciGNmbs.s:3601   .debug_str:0000000000000048 .LASF161
+     /tmp/cciGNmbs.s:3611   .debug_str:0000000000000086 .LASF162
+     /tmp/cciGNmbs.s:3733   .debug_str:0000000000000324 .LASF163
+     /tmp/cciGNmbs.s:3997   .debug_str:00000000000009c6 .LASF164
+     /tmp/cciGNmbs.s:3759   .debug_str:00000000000003c0 .LASF165
+     /tmp/cciGNmbs.s:3729   .debug_str:000000000000030d .LASF166
+     /tmp/cciGNmbs.s:3761   .debug_str:00000000000003d2 .LASF167
+     /tmp/cciGNmbs.s:3879   .debug_str:0000000000000662 .LASF168
+     /tmp/cciGNmbs.s:3615   .debug_str:0000000000000098 .LASF169
+     /tmp/cciGNmbs.s:3857   .debug_str:00000000000005e7 .LASF170
+     /tmp/cciGNmbs.s:3863   .debug_str:0000000000000609 .LASF171
+     /tmp/cciGNmbs.s:3773   .debug_str:000000000000041f .LASF172
+     /tmp/cciGNmbs.s:3627   .debug_str:00000000000000db .LASF173
+     /tmp/cciGNmbs.s:3841   .debug_str:0000000000000593 .LASF174
+     /tmp/cciGNmbs.s:3965   .debug_str:0000000000000856 .LASF175
+     /tmp/cciGNmbs.s:3763   .debug_str:00000000000003de .LASF176
+     /tmp/cciGNmbs.s:4059   .debug_str:0000000000000b17 .LASF177
+     /tmp/cciGNmbs.s:3939   .debug_str:00000000000007c3 .LASF178
+     /tmp/cciGNmbs.s:3955   .debug_str:000000000000081e .LASF179
+     /tmp/cciGNmbs.s:3639   .debug_str:0000000000000128 .LASF180
+     /tmp/cciGNmbs.s:3791   .debug_str:000000000000048d .LASF181
+     /tmp/cciGNmbs.s:3833   .debug_str:0000000000000566 .LASF182
+     /tmp/cciGNmbs.s:3835   .debug_str:0000000000000573 .LASF183
+     /tmp/cciGNmbs.s:3717   .debug_str:00000000000002c9 .LASF184
+     /tmp/cciGNmbs.s:3895   .debug_str:00000000000006c6 .LASF185
+     /tmp/cciGNmbs.s:3853   .debug_str:00000000000005d7 .LASF186
+     /tmp/cciGNmbs.s:4045   .debug_str:0000000000000ade .LASF187
+     /tmp/cciGNmbs.s:3665   .debug_str:00000000000001bc .LASF188
+     /tmp/cciGNmbs.s:3891   .debug_str:00000000000006b6 .LASF189
+     /tmp/cciGNmbs.s:3969   .debug_str:000000000000087a .LASF190
+     /tmp/cciGNmbs.s:3877   .debug_str:0000000000000651 .LASF191
+     /tmp/cciGNmbs.s:3753   .debug_str:0000000000000396 .LASF192
+     /tmp/cciGNmbs.s:3595   .debug_str:0000000000000009 .LASF193
+     /tmp/cciGNmbs.s:3861   .debug_str:0000000000000601 .LASF194
+     /tmp/cciGNmbs.s:3989   .debug_str:0000000000000992 .LASF195
+     /tmp/cciGNmbs.s:4013   .debug_str:0000000000000a2c .LASF196
+     /tmp/cciGNmbs.s:3867   .debug_str:0000000000000626 .LASF197
+     /tmp/cciGNmbs.s:3977   .debug_str:00000000000008a5 .LASF198
+     /tmp/cciGNmbs.s:3739   .debug_str:0000000000000352 .LASF199
+     /tmp/cciGNmbs.s:3737   .debug_str:000000000000033d .LASF200
+     /tmp/cciGNmbs.s:3725   .debug_str:00000000000002f3 .LASF201
+     /tmp/cciGNmbs.s:3981   .debug_str:00000000000008b7 .LASF202
+     /tmp/cciGNmbs.s:3635   .debug_str:0000000000000112 .LASF203
+     /tmp/cciGNmbs.s:3643   .debug_str:000000000000013c .LASF204
+     /tmp/cciGNmbs.s:3713   .debug_str:00000000000002b6 .LASF205
+     /tmp/cciGNmbs.s:3775   .debug_str:0000000000000428 .LASF206
+     /tmp/cciGNmbs.s:3849   .debug_str:00000000000005c4 .LASF207
+     /tmp/cciGNmbs.s:4049   .debug_str:0000000000000ae9 .LASF208
+     /tmp/cciGNmbs.s:3669   .debug_str:00000000000001de .LASF209
+     /tmp/cciGNmbs.s:3809   .debug_str:00000000000004ef .LASF210
+     /tmp/cciGNmbs.s:3731   .debug_str:0000000000000318 .LASF211
+     /tmp/cciGNmbs.s:3607   .debug_str:0000000000000070 .LASF212
+     /tmp/cciGNmbs.s:3633   .debug_str:0000000000000104 .LASF213
+     /tmp/cciGNmbs.s:3885   .debug_str:000000000000068f .LASF214
+     /tmp/cciGNmbs.s:3887   .debug_str:000000000000069a .LASF215
+     /tmp/cciGNmbs.s:3821   .debug_str:000000000000052f .LASF216
+     /tmp/cciGNmbs.s:3787   .debug_str:0000000000000462 .LASF217
+     /tmp/cciGNmbs.s:3883   .debug_str:000000000000067e .LASF218
+     /tmp/cciGNmbs.s:3975   .debug_str:000000000000089e .LASF219
+     /tmp/cciGNmbs.s:3859   .debug_str:00000000000005fa .LASF220
+     /tmp/cciGNmbs.s:3797   .debug_str:00000000000004b8 .LASF228
+     /tmp/cciGNmbs.s:601    .text.b_In_Error_State:0000000000000000 .LFB5
+     /tmp/cciGNmbs.s:613    .text.b_In_Error_State:0000000000000018 .LFE5
+     /tmp/cciGNmbs.s:3727   .debug_str:00000000000002fd .LASF229
+     /tmp/cciGNmbs.s:496    .text.Reset_Serial_SM:0000000000000000 .LFB4
+     /tmp/cciGNmbs.s:520    .text.Reset_Serial_SM:0000000000000040 .LFE4
+     /tmp/cciGNmbs.s:3649   .debug_str:000000000000016f .LASF230
+     /tmp/cciGNmbs.s:3693   .debug_str:0000000000000251 .LASF223
+     /tmp/cciGNmbs.s:3721   .debug_str:00000000000002d9 .LASF221
+     /tmp/cciGNmbs.s:527    .text.v_Framing_Timeout:0000000000000000 .LFB2
+     /tmp/cciGNmbs.s:594    .text.v_Framing_Timeout:0000000000000094 .LFE2
+     /tmp/cciGNmbs.s:550    .text.v_Framing_Timeout:0000000000000038 .LBB4
+     /tmp/cciGNmbs.s:577    .text.v_Framing_Timeout:0000000000000070 .LBE4
+     /tmp/cciGNmbs.s:551    .text.v_Framing_Timeout:0000000000000038 .LBB5
+     /tmp/cciGNmbs.s:576    .text.v_Framing_Timeout:0000000000000070 .LBE5
+     /tmp/cciGNmbs.s:564    .text.v_Framing_Timeout:0000000000000058 .LVL23
+     /tmp/cciGNmbs.s:574    .text.v_Framing_Timeout:0000000000000070 .LVL24
+     /tmp/cciGNmbs.s:580    .text.v_Framing_Timeout:0000000000000078 .LVL25
+     /tmp/cciGNmbs.s:3751   .debug_str:0000000000000383 .LASF222
+     /tmp/cciGNmbs.s:14     .text.v_Update_Serial_SM:0000000000000000 .LFB1
+     /tmp/cciGNmbs.s:489    .text.v_Update_Serial_SM:00000000000004dc .LFE1
+     /tmp/cciGNmbs.s:3941   .debug_str:00000000000007d9 .LASF231
+     /tmp/cciGNmbs.s:3491   .debug_loc:0000000000000000 .LLST0
+     /tmp/cciGNmbs.s:199    .text.v_Update_Serial_SM:00000000000001ac .LVL6
+     /tmp/cciGNmbs.s:222    .text.v_Update_Serial_SM:00000000000001e4 .LVL9
+     /tmp/cciGNmbs.s:256    .text.v_Update_Serial_SM:0000000000000244 .LVL12
+     /tmp/cciGNmbs.s:290    .text.v_Update_Serial_SM:00000000000002a4 .LVL15
+     /tmp/cciGNmbs.s:333    .text.v_Update_Serial_SM:0000000000000328 .LVL18
+     /tmp/cciGNmbs.s:387    .text.v_Update_Serial_SM:00000000000003c0 .LVL21
+     /tmp/cciGNmbs.s:3845   .debug_str:00000000000005b5 .LASF232
+     /tmp/cciGNmbs.s:3647   .debug_str:000000000000015e .LASF233
+     /tmp/cciGNmbs.s:3789   .debug_str:0000000000000475 .LASF224
+     /tmp/cciGNmbs.s:18     .text.v_Update_Serial_SM:0000000000000000 .LVL0
+     /tmp/cciGNmbs.s:82     .text.v_Update_Serial_SM:000000000000007c .LVL1
+     /tmp/cciGNmbs.s:98     .text.v_Update_Serial_SM:000000000000009c .LVL2
+     /tmp/cciGNmbs.s:104    .text.v_Update_Serial_SM:00000000000000a0 .LVL3
+     /tmp/cciGNmbs.s:110    .text.v_Update_Serial_SM:00000000000000ac .LVL4
+     /tmp/cciGNmbs.s:182    .text.v_Update_Serial_SM:000000000000017c .LVL5
+     /tmp/cciGNmbs.s:206    .text.v_Update_Serial_SM:00000000000001bc .LVL7
+     /tmp/cciGNmbs.s:214    .text.v_Update_Serial_SM:00000000000001c8 .LVL8
+     /tmp/cciGNmbs.s:240    .text.v_Update_Serial_SM:000000000000021c .LVL10
+     /tmp/cciGNmbs.s:248    .text.v_Update_Serial_SM:0000000000000228 .LVL11
+     /tmp/cciGNmbs.s:274    .text.v_Update_Serial_SM:000000000000027c .LVL13
+     /tmp/cciGNmbs.s:282    .text.v_Update_Serial_SM:0000000000000288 .LVL14
+     /tmp/cciGNmbs.s:311    .text.v_Update_Serial_SM:00000000000002e4 .LVL16
+     /tmp/cciGNmbs.s:325    .text.v_Update_Serial_SM:0000000000000310 .LVL17
+     /tmp/cciGNmbs.s:366    .text.v_Update_Serial_SM:0000000000000384 .LVL19
+     /tmp/cciGNmbs.s:379    .text.v_Update_Serial_SM:00000000000003a8 .LVL20
+     /tmp/cciGNmbs.s:400    .text.v_Update_Serial_SM:00000000000003e4 .LVL22
+     /tmp/cciGNmbs.s:684    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cc9Uxcut.s:13     .text.v_Update_Serial_SM:0000000000000000 v_Update_Serial_SM
+     /tmp/cc9Uxcut.s:17     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:19     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:20     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:21     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:24     .text.v_Update_Serial_SM:000000000000000c .L0 
+     /tmp/cc9Uxcut.s:25     .text.v_Update_Serial_SM:0000000000000010 .L0 
+     /tmp/cc9Uxcut.s:27     .text.v_Update_Serial_SM:0000000000000014 .L0 
+     /tmp/cc9Uxcut.s:29     .text.v_Update_Serial_SM:0000000000000014 .L0 
+     /tmp/cc9Uxcut.s:31     .text.v_Update_Serial_SM:0000000000000018 .L0 
+     /tmp/cc9Uxcut.s:61     .text.v_Update_Serial_SM:000000000000003c .L0 
+     /tmp/cc9Uxcut.s:62     .text.v_Update_Serial_SM:000000000000003c .L0 
+     /tmp/cc9Uxcut.s:64     .text.v_Update_Serial_SM:0000000000000044 .L0 
+     /tmp/cc9Uxcut.s:65     .text.v_Update_Serial_SM:0000000000000044 .L0 
+     /tmp/cc9Uxcut.s:69     .text.v_Update_Serial_SM:0000000000000050 .L0 
+     /tmp/cc9Uxcut.s:70     .text.v_Update_Serial_SM:0000000000000050 .L0 
+     /tmp/cc9Uxcut.s:73     .text.v_Update_Serial_SM:000000000000005c .L0 
+     /tmp/cc9Uxcut.s:74     .text.v_Update_Serial_SM:000000000000005c .L0 
+     /tmp/cc9Uxcut.s:76     .text.v_Update_Serial_SM:0000000000000064 .L0 
+     /tmp/cc9Uxcut.s:80     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cc9Uxcut.s:81     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cc9Uxcut.s:84     .text.v_Update_Serial_SM:0000000000000078 .L0 
+     /tmp/cc9Uxcut.s:85     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:86     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:88     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:90     .text.v_Update_Serial_SM:0000000000000084 .L0 
+     /tmp/cc9Uxcut.s:91     .text.v_Update_Serial_SM:0000000000000088 .L0 
+     /tmp/cc9Uxcut.s:95     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cc9Uxcut.s:97     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cc9Uxcut.s:98     .text.v_Update_Serial_SM:000000000000008c .L0 
+     /tmp/cc9Uxcut.s:102    .text.v_Update_Serial_SM:0000000000000090 .L0 
+     /tmp/cc9Uxcut.s:104    .text.v_Update_Serial_SM:0000000000000098 .L0 
+     /tmp/cc9Uxcut.s:108    .text.v_Update_Serial_SM:000000000000009c .L0 
+     /tmp/cc9Uxcut.s:109    .text.v_Update_Serial_SM:000000000000009c .L0 
+     /tmp/cc9Uxcut.s:113    .text.v_Update_Serial_SM:00000000000000a8 .L0 
+     /tmp/cc9Uxcut.s:114    .text.v_Update_Serial_SM:00000000000000a8 .L0 
+     /tmp/cc9Uxcut.s:117    .text.v_Update_Serial_SM:00000000000000b4 .L0 
+     /tmp/cc9Uxcut.s:118    .text.v_Update_Serial_SM:00000000000000b4 .L0 
+     /tmp/cc9Uxcut.s:122    .text.v_Update_Serial_SM:00000000000000c8 .L0 
+     /tmp/cc9Uxcut.s:127    .text.v_Update_Serial_SM:00000000000000d8 .L0 
+     /tmp/cc9Uxcut.s:131    .text.v_Update_Serial_SM:00000000000000e0 .L0 
+     /tmp/cc9Uxcut.s:132    .text.v_Update_Serial_SM:00000000000000e0 .L0 
+     /tmp/cc9Uxcut.s:136    .text.v_Update_Serial_SM:00000000000000ec .L0 
+     /tmp/cc9Uxcut.s:137    .text.v_Update_Serial_SM:00000000000000ec .L0 
+     /tmp/cc9Uxcut.s:140    .text.v_Update_Serial_SM:00000000000000f8 .L0 
+     /tmp/cc9Uxcut.s:141    .text.v_Update_Serial_SM:00000000000000f8 .L0 
+     /tmp/cc9Uxcut.s:145    .text.v_Update_Serial_SM:000000000000010c .L0 
+     /tmp/cc9Uxcut.s:151    .text.v_Update_Serial_SM:0000000000000120 .L0 
+     /tmp/cc9Uxcut.s:152    .text.v_Update_Serial_SM:0000000000000120 .L0 
+     /tmp/cc9Uxcut.s:156    .text.v_Update_Serial_SM:000000000000012c .L0 
+     /tmp/cc9Uxcut.s:157    .text.v_Update_Serial_SM:000000000000012c .L0 
+     /tmp/cc9Uxcut.s:160    .text.v_Update_Serial_SM:0000000000000138 .L0 
+     /tmp/cc9Uxcut.s:161    .text.v_Update_Serial_SM:0000000000000138 .L0 
+     /tmp/cc9Uxcut.s:165    .text.v_Update_Serial_SM:000000000000014c .L0 
+     /tmp/cc9Uxcut.s:169    .text.v_Update_Serial_SM:000000000000015c .L0 
+     /tmp/cc9Uxcut.s:175    .text.v_Update_Serial_SM:0000000000000178 .L0 
+     /tmp/cc9Uxcut.s:176    .text.v_Update_Serial_SM:0000000000000178 .L0 
+     /tmp/cc9Uxcut.s:178    .text.v_Update_Serial_SM:000000000000017c .L0 
+     /tmp/cc9Uxcut.s:180    .text.v_Update_Serial_SM:0000000000000184 .L0 
+     /tmp/cc9Uxcut.s:182    .text.v_Update_Serial_SM:0000000000000188 .L0 
+     /tmp/cc9Uxcut.s:184    .text.v_Update_Serial_SM:0000000000000190 .L0 
+     /tmp/cc9Uxcut.s:185    .text.v_Update_Serial_SM:0000000000000190 .L0 
+     /tmp/cc9Uxcut.s:188    .text.v_Update_Serial_SM:000000000000019c .L0 
+     /tmp/cc9Uxcut.s:191    .text.v_Update_Serial_SM:00000000000001a8 .L0 
+     /tmp/cc9Uxcut.s:195    .text.v_Update_Serial_SM:00000000000001b0 .L0 
+     /tmp/cc9Uxcut.s:197    .text.v_Update_Serial_SM:00000000000001b4 .L0 
+     /tmp/cc9Uxcut.s:198    .text.v_Update_Serial_SM:00000000000001b4 .L0 
+     /tmp/cc9Uxcut.s:201    .text.v_Update_Serial_SM:00000000000001bc .L0 
+     /tmp/cc9Uxcut.s:203    .text.v_Update_Serial_SM:00000000000001c4 .L0 
+     /tmp/cc9Uxcut.s:204    .text.v_Update_Serial_SM:00000000000001c4 .L0 
+     /tmp/cc9Uxcut.s:209    .text.v_Update_Serial_SM:00000000000001cc .L0 
+     /tmp/cc9Uxcut.s:210    .text.v_Update_Serial_SM:00000000000001cc .L0 
+     /tmp/cc9Uxcut.s:212    .text.v_Update_Serial_SM:00000000000001d0 .L0 
+     /tmp/cc9Uxcut.s:216    .text.v_Update_Serial_SM:00000000000001d8 .L0 
+     /tmp/cc9Uxcut.s:218    .text.v_Update_Serial_SM:00000000000001e0 .L0 
+     /tmp/cc9Uxcut.s:219    .text.v_Update_Serial_SM:00000000000001e0 .L0 
+     /tmp/cc9Uxcut.s:224    .text.v_Update_Serial_SM:00000000000001f4 .L0 
+     /tmp/cc9Uxcut.s:226    .text.v_Update_Serial_SM:00000000000001fc .L0 
+     /tmp/cc9Uxcut.s:228    .text.v_Update_Serial_SM:0000000000000204 .L0 
+     /tmp/cc9Uxcut.s:229    .text.v_Update_Serial_SM:0000000000000204 .L0 
+     /tmp/cc9Uxcut.s:232    .text.v_Update_Serial_SM:0000000000000210 .L0 
+     /tmp/cc9Uxcut.s:237    .text.v_Update_Serial_SM:0000000000000224 .L0 
+     /tmp/cc9Uxcut.s:238    .text.v_Update_Serial_SM:0000000000000224 .L0 
+     /tmp/cc9Uxcut.s:243    .text.v_Update_Serial_SM:000000000000022c .L0 
+     /tmp/cc9Uxcut.s:244    .text.v_Update_Serial_SM:000000000000022c .L0 
+     /tmp/cc9Uxcut.s:246    .text.v_Update_Serial_SM:0000000000000230 .L0 
+     /tmp/cc9Uxcut.s:250    .text.v_Update_Serial_SM:0000000000000238 .L0 
+     /tmp/cc9Uxcut.s:252    .text.v_Update_Serial_SM:0000000000000240 .L0 
+     /tmp/cc9Uxcut.s:253    .text.v_Update_Serial_SM:0000000000000240 .L0 
+     /tmp/cc9Uxcut.s:258    .text.v_Update_Serial_SM:0000000000000254 .L0 
+     /tmp/cc9Uxcut.s:260    .text.v_Update_Serial_SM:000000000000025c .L0 
+     /tmp/cc9Uxcut.s:262    .text.v_Update_Serial_SM:0000000000000264 .L0 
+     /tmp/cc9Uxcut.s:263    .text.v_Update_Serial_SM:0000000000000264 .L0 
+     /tmp/cc9Uxcut.s:266    .text.v_Update_Serial_SM:0000000000000270 .L0 
+     /tmp/cc9Uxcut.s:271    .text.v_Update_Serial_SM:0000000000000284 .L0 
+     /tmp/cc9Uxcut.s:272    .text.v_Update_Serial_SM:0000000000000284 .L0 
+     /tmp/cc9Uxcut.s:277    .text.v_Update_Serial_SM:000000000000028c .L0 
+     /tmp/cc9Uxcut.s:278    .text.v_Update_Serial_SM:000000000000028c .L0 
+     /tmp/cc9Uxcut.s:280    .text.v_Update_Serial_SM:0000000000000290 .L0 
+     /tmp/cc9Uxcut.s:284    .text.v_Update_Serial_SM:0000000000000298 .L0 
+     /tmp/cc9Uxcut.s:286    .text.v_Update_Serial_SM:00000000000002a0 .L0 
+     /tmp/cc9Uxcut.s:287    .text.v_Update_Serial_SM:00000000000002a0 .L0 
+     /tmp/cc9Uxcut.s:292    .text.v_Update_Serial_SM:00000000000002b4 .L0 
+     /tmp/cc9Uxcut.s:294    .text.v_Update_Serial_SM:00000000000002bc .L0 
+     /tmp/cc9Uxcut.s:296    .text.v_Update_Serial_SM:00000000000002c4 .L0 
+     /tmp/cc9Uxcut.s:297    .text.v_Update_Serial_SM:00000000000002c4 .L0 
+     /tmp/cc9Uxcut.s:300    .text.v_Update_Serial_SM:00000000000002d0 .L0 
+     /tmp/cc9Uxcut.s:305    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cc9Uxcut.s:306    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cc9Uxcut.s:308    .text.v_Update_Serial_SM:00000000000002ec .L0 
+     /tmp/cc9Uxcut.s:309    .text.v_Update_Serial_SM:00000000000002ec .L0 
+     /tmp/cc9Uxcut.s:314    .text.v_Update_Serial_SM:00000000000002f4 .L0 
+     /tmp/cc9Uxcut.s:315    .text.v_Update_Serial_SM:00000000000002f4 .L0 
+     /tmp/cc9Uxcut.s:319    .text.v_Update_Serial_SM:0000000000000308 .L0 
+     /tmp/cc9Uxcut.s:323    .text.v_Update_Serial_SM:0000000000000318 .L0 
+     /tmp/cc9Uxcut.s:327    .text.v_Update_Serial_SM:0000000000000320 .L0 
+     /tmp/cc9Uxcut.s:329    .text.v_Update_Serial_SM:0000000000000324 .L0 
+     /tmp/cc9Uxcut.s:330    .text.v_Update_Serial_SM:0000000000000324 .L0 
+     /tmp/cc9Uxcut.s:335    .text.v_Update_Serial_SM:0000000000000338 .L0 
+     /tmp/cc9Uxcut.s:337    .text.v_Update_Serial_SM:0000000000000340 .L0 
+     /tmp/cc9Uxcut.s:339    .text.v_Update_Serial_SM:0000000000000348 .L0 
+     /tmp/cc9Uxcut.s:340    .text.v_Update_Serial_SM:0000000000000348 .L0 
+     /tmp/cc9Uxcut.s:343    .text.v_Update_Serial_SM:0000000000000354 .L0 
+     /tmp/cc9Uxcut.s:348    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cc9Uxcut.s:349    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cc9Uxcut.s:353    .text.v_Update_Serial_SM:0000000000000378 .L0 
+     /tmp/cc9Uxcut.s:354    .text.v_Update_Serial_SM:0000000000000378 .L0 
+     /tmp/cc9Uxcut.s:358    .text.v_Update_Serial_SM:0000000000000384 .L0 
+     /tmp/cc9Uxcut.s:359    .text.v_Update_Serial_SM:0000000000000384 .L0 
+     /tmp/cc9Uxcut.s:363    .text.v_Update_Serial_SM:000000000000038c .L0 
+     /tmp/cc9Uxcut.s:364    .text.v_Update_Serial_SM:000000000000038c .L0 
+     /tmp/cc9Uxcut.s:369    .text.v_Update_Serial_SM:0000000000000394 .L0 
+     /tmp/cc9Uxcut.s:370    .text.v_Update_Serial_SM:0000000000000394 .L0 
+     /tmp/cc9Uxcut.s:374    .text.v_Update_Serial_SM:00000000000003a8 .L0 
+     /tmp/cc9Uxcut.s:378    .text.v_Update_Serial_SM:00000000000003b8 .L0 
+     /tmp/cc9Uxcut.s:382    .text.v_Update_Serial_SM:00000000000003c0 .L0 
+     /tmp/cc9Uxcut.s:384    .text.v_Update_Serial_SM:00000000000003c4 .L0 
+     /tmp/cc9Uxcut.s:385    .text.v_Update_Serial_SM:00000000000003c4 .L0 
+     /tmp/cc9Uxcut.s:390    .text.v_Update_Serial_SM:00000000000003d8 .L0 
+     /tmp/cc9Uxcut.s:392    .text.v_Update_Serial_SM:00000000000003e0 .L0 
+     /tmp/cc9Uxcut.s:393    .text.v_Update_Serial_SM:00000000000003e0 .L0 
+     /tmp/cc9Uxcut.s:395    .text.v_Update_Serial_SM:00000000000003e8 .L0 
+     /tmp/cc9Uxcut.s:397    .text.v_Update_Serial_SM:00000000000003f0 .L0 
+     /tmp/cc9Uxcut.s:399    .text.v_Update_Serial_SM:00000000000003f4 .L0 
+     /tmp/cc9Uxcut.s:404    .text.v_Update_Serial_SM:00000000000003fc .L0 
+     /tmp/cc9Uxcut.s:405    .text.v_Update_Serial_SM:00000000000003fc .L0 
+     /tmp/cc9Uxcut.s:409    .text.v_Update_Serial_SM:0000000000000410 .L0 
+     /tmp/cc9Uxcut.s:414    .text.v_Update_Serial_SM:0000000000000424 .L0 
+     /tmp/cc9Uxcut.s:415    .text.v_Update_Serial_SM:0000000000000424 .L0 
+     /tmp/cc9Uxcut.s:417    .text.v_Update_Serial_SM:000000000000042c .L0 
+     /tmp/cc9Uxcut.s:418    .text.v_Update_Serial_SM:000000000000042c .L0 
+     /tmp/cc9Uxcut.s:422    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cc9Uxcut.s:423    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cc9Uxcut.s:427    .text.v_Update_Serial_SM:0000000000000448 .L0 
+     /tmp/cc9Uxcut.s:430    .text.v_Update_Serial_SM:0000000000000454 .L0 
+     /tmp/cc9Uxcut.s:432    .text.v_Update_Serial_SM:000000000000045c .L0 
+     /tmp/cc9Uxcut.s:434    .text.v_Update_Serial_SM:0000000000000460 .L0 
+     /tmp/cc9Uxcut.s:436    .text.v_Update_Serial_SM:0000000000000464 .L0 
+     /tmp/cc9Uxcut.s:438    .text.v_Update_Serial_SM:0000000000000468 .L0 
+     /tmp/cc9Uxcut.s:440    .text.v_Update_Serial_SM:000000000000046c .L0 
+     /tmp/cc9Uxcut.s:442    .text.v_Update_Serial_SM:0000000000000470 .L0 
+     /tmp/cc9Uxcut.s:443    .text.v_Update_Serial_SM:0000000000000470 .L0 
+     /tmp/cc9Uxcut.s:445    .text.v_Update_Serial_SM:0000000000000478 .L0 
+     /tmp/cc9Uxcut.s:446    .text.v_Update_Serial_SM:0000000000000478 .L0 
+     /tmp/cc9Uxcut.s:450    .text.v_Update_Serial_SM:0000000000000480 .L0 
+     /tmp/cc9Uxcut.s:451    .text.v_Update_Serial_SM:0000000000000480 .L0 
+     /tmp/cc9Uxcut.s:455    .text.v_Update_Serial_SM:0000000000000494 .L0 
+     /tmp/cc9Uxcut.s:458    .text.v_Update_Serial_SM:00000000000004a0 .L0 
+     /tmp/cc9Uxcut.s:460    .text.v_Update_Serial_SM:00000000000004a8 .L0 
+     /tmp/cc9Uxcut.s:462    .text.v_Update_Serial_SM:00000000000004ac .L0 
+     /tmp/cc9Uxcut.s:464    .text.v_Update_Serial_SM:00000000000004b0 .L0 
+     /tmp/cc9Uxcut.s:466    .text.v_Update_Serial_SM:00000000000004b4 .L0 
+     /tmp/cc9Uxcut.s:468    .text.v_Update_Serial_SM:00000000000004b8 .L0 
+     /tmp/cc9Uxcut.s:470    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cc9Uxcut.s:471    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cc9Uxcut.s:473    .text.v_Update_Serial_SM:00000000000004c4 .L0 
+     /tmp/cc9Uxcut.s:474    .text.v_Update_Serial_SM:00000000000004c4 .L0 
+     /tmp/cc9Uxcut.s:478    .text.v_Update_Serial_SM:00000000000004cc .L0 
+     /tmp/cc9Uxcut.s:479    .text.v_Update_Serial_SM:00000000000004cc .L0 
+     /tmp/cc9Uxcut.s:483    .text.v_Update_Serial_SM:00000000000004e0 .L0 
+     /tmp/cc9Uxcut.s:486    .text.v_Update_Serial_SM:00000000000004ec .L0 
+     /tmp/cc9Uxcut.s:488    .text.v_Update_Serial_SM:00000000000004f4 .L0 
+     /tmp/cc9Uxcut.s:490    .text.v_Update_Serial_SM:00000000000004f8 .L0 
+     /tmp/cc9Uxcut.s:492    .text.v_Update_Serial_SM:00000000000004fc .L0 
+     /tmp/cc9Uxcut.s:494    .text.v_Update_Serial_SM:0000000000000500 .L0 
+     /tmp/cc9Uxcut.s:496    .text.v_Update_Serial_SM:0000000000000504 .L0 
+     /tmp/cc9Uxcut.s:498    .text.v_Update_Serial_SM:0000000000000508 .L0 
+     /tmp/cc9Uxcut.s:499    .text.v_Update_Serial_SM:0000000000000508 .L0 
+     /tmp/cc9Uxcut.s:501    .text.v_Update_Serial_SM:0000000000000510 .L0 
+     /tmp/cc9Uxcut.s:502    .text.v_Update_Serial_SM:0000000000000514 .L0 
+     /tmp/cc9Uxcut.s:509    .text.Reset_Serial_SM:0000000000000000 Reset_Serial_SM
+     /tmp/cc9Uxcut.s:512    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:513    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:514    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:515    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:517    .text.Reset_Serial_SM:0000000000000008 .L0 
+     /tmp/cc9Uxcut.s:519    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cc9Uxcut.s:520    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cc9Uxcut.s:522    .text.Reset_Serial_SM:0000000000000018 .L0 
+     /tmp/cc9Uxcut.s:524    .text.Reset_Serial_SM:0000000000000020 .L0 
+     /tmp/cc9Uxcut.s:529    .text.Reset_Serial_SM:0000000000000034 .L0 
+     /tmp/cc9Uxcut.s:530    .text.Reset_Serial_SM:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:537    .text.v_Framing_Timeout:0000000000000000 v_Framing_Timeout
+     /tmp/cc9Uxcut.s:540    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:541    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:542    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:543    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:548    .text.v_Framing_Timeout:0000000000000018 .L0 
+     /tmp/cc9Uxcut.s:549    .text.v_Framing_Timeout:000000000000001c .L0 
+     /tmp/cc9Uxcut.s:551    .text.v_Framing_Timeout:0000000000000020 .L0 
+     /tmp/cc9Uxcut.s:553    .text.v_Framing_Timeout:0000000000000020 .L0 
+     /tmp/cc9Uxcut.s:555    .text.v_Framing_Timeout:0000000000000024 .L0 
+     /tmp/cc9Uxcut.s:557    .text.v_Framing_Timeout:000000000000002c .L0 
+     /tmp/cc9Uxcut.s:563    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:564    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:565    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:566    .text.v_Framing_Timeout:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:568    .text.v_Framing_Timeout:000000000000003c .L0 
+     /tmp/cc9Uxcut.s:572    .text.v_Framing_Timeout:000000000000004c .L0 
+     /tmp/cc9Uxcut.s:574    .text.v_Framing_Timeout:0000000000000050 .L0 
+     /tmp/cc9Uxcut.s:577    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cc9Uxcut.s:578    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cc9Uxcut.s:580    .text.v_Framing_Timeout:0000000000000060 .L0 
+     /tmp/cc9Uxcut.s:582    .text.v_Framing_Timeout:0000000000000064 .L0 
+     /tmp/cc9Uxcut.s:584    .text.v_Framing_Timeout:0000000000000068 .L0 
+     /tmp/cc9Uxcut.s:590    .text.v_Framing_Timeout:0000000000000070 .L0 
+     /tmp/cc9Uxcut.s:593    .text.v_Framing_Timeout:0000000000000078 .L0 
+     /tmp/cc9Uxcut.s:594    .text.v_Framing_Timeout:0000000000000078 .L0 
+     /tmp/cc9Uxcut.s:595    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:597    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:599    .text.v_Framing_Timeout:0000000000000084 .L0 
+     /tmp/cc9Uxcut.s:601    .text.v_Framing_Timeout:000000000000008c .L0 
+     /tmp/cc9Uxcut.s:602    .text.v_Framing_Timeout:0000000000000090 .L0 
+     /tmp/cc9Uxcut.s:604    .text.v_Framing_Timeout:0000000000000094 .L0 
+     /tmp/cc9Uxcut.s:611    .text.b_In_Error_State:0000000000000000 b_In_Error_State
+     /tmp/cc9Uxcut.s:614    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:615    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:616    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:617    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:621    .text.b_In_Error_State:0000000000000010 .L0 
+     /tmp/cc9Uxcut.s:623    .text.b_In_Error_State:0000000000000018 .L0 
+     /tmp/cc9Uxcut.s:628    .bss.Header:0000000000000000 .LANCHOR4
+     /tmp/cc9Uxcut.s:631    .bss.Header:0000000000000000 Header
+     /tmp/cc9Uxcut.s:635    .bss.u8_Rx_Buf:0000000000000000 .LANCHOR3
+     /tmp/cc9Uxcut.s:638    .bss.u8_Rx_Buf:0000000000000000 u8_Rx_Buf
+     /tmp/cc9Uxcut.s:642    .sbss.Current_State:0000000000000000 .LANCHOR0
+     /tmp/cc9Uxcut.s:645    .sbss.Current_State:0000000000000000 Current_State
+     /tmp/cc9Uxcut.s:649    .sbss.Next_State:0000000000000000 .LANCHOR2
+     /tmp/cc9Uxcut.s:652    .sbss.Next_State:0000000000000000 Next_State
+     /tmp/cc9Uxcut.s:656    .sbss.u32_Calculated_CRC:0000000000000000 .LANCHOR5
+     /tmp/cc9Uxcut.s:659    .sbss.u32_Calculated_CRC:0000000000000000 u32_Calculated_CRC
+     /tmp/cc9Uxcut.s:663    .sbss.u32_Received_CRC:0000000000000000 .LANCHOR7
+     /tmp/cc9Uxcut.s:666    .sbss.u32_Received_CRC:0000000000000000 u32_Received_CRC
+     /tmp/cc9Uxcut.s:669    .sbss.u8_Bytes_Received:0000000000000000 .LANCHOR1
+     /tmp/cc9Uxcut.s:672    .sbss.u8_Bytes_Received:0000000000000000 u8_Bytes_Received
+     /tmp/cc9Uxcut.s:675    .sbss.u8_Cnt:0000000000000000 .LANCHOR6
+     /tmp/cc9Uxcut.s:678    .sbss.u8_Cnt:0000000000000000 u8_Cnt
+     /tmp/cc9Uxcut.s:505    .text.v_Update_Serial_SM:0000000000000514 .L0 
+     /tmp/cc9Uxcut.s:533    .text.Reset_Serial_SM:0000000000000038 .L0 
+     /tmp/cc9Uxcut.s:607    .text.v_Framing_Timeout:0000000000000094 .L0 
+     /tmp/cc9Uxcut.s:626    .text.b_In_Error_State:0000000000000018 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:21     .text.v_Update_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:42     .rodata.v_Update_Serial_SM:0000000000000000 .L4
+     /tmp/cc9Uxcut.s:33     .text.v_Update_Serial_SM:0000000000000020 .L0 
+     /tmp/cc9Uxcut.s:62     .text.v_Update_Serial_SM:000000000000003c .L0 
+     /tmp/cc9Uxcut.s:71     .text.v_Update_Serial_SM:0000000000000054 .L0 
+     /tmp/cc9Uxcut.s:74     .text.v_Update_Serial_SM:000000000000005c .L0 
+     /tmp/cc9Uxcut.s:76     .text.v_Update_Serial_SM:0000000000000064 .L0 
+     /tmp/cc9Uxcut.s:81     .text.v_Update_Serial_SM:000000000000006c .L0 
+     /tmp/cc9Uxcut.s:88     .text.v_Update_Serial_SM:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:102    .text.v_Update_Serial_SM:0000000000000090 .L0 
+     /tmp/cc9Uxcut.s:115    .text.v_Update_Serial_SM:00000000000000ac .L0 
+     /tmp/cc9Uxcut.s:118    .text.v_Update_Serial_SM:00000000000000b4 .L0 
+     /tmp/cc9Uxcut.s:120    .text.v_Update_Serial_SM:00000000000000c0 .L0 
+     /tmp/cc9Uxcut.s:122    .text.v_Update_Serial_SM:00000000000000c8 .L0 
+     /tmp/cc9Uxcut.s:138    .text.v_Update_Serial_SM:00000000000000f0 .L0 
+     /tmp/cc9Uxcut.s:141    .text.v_Update_Serial_SM:00000000000000f8 .L0 
+     /tmp/cc9Uxcut.s:143    .text.v_Update_Serial_SM:0000000000000104 .L0 
+     /tmp/cc9Uxcut.s:145    .text.v_Update_Serial_SM:000000000000010c .L0 
+     /tmp/cc9Uxcut.s:158    .text.v_Update_Serial_SM:0000000000000130 .L0 
+     /tmp/cc9Uxcut.s:161    .text.v_Update_Serial_SM:0000000000000138 .L0 
+     /tmp/cc9Uxcut.s:163    .text.v_Update_Serial_SM:0000000000000144 .L0 
+     /tmp/cc9Uxcut.s:165    .text.v_Update_Serial_SM:000000000000014c .L0 
+     /tmp/cc9Uxcut.s:169    .text.v_Update_Serial_SM:000000000000015c .L0 
+     /tmp/cc9Uxcut.s:170    .text.v_Update_Serial_SM:0000000000000164 .L0 
+     /tmp/cc9Uxcut.s:171    .text.v_Update_Serial_SM:000000000000016c .L0 
+     /tmp/cc9Uxcut.s:178    .text.v_Update_Serial_SM:000000000000017c .L0 
+     /tmp/cc9Uxcut.s:182    .text.v_Update_Serial_SM:0000000000000188 .L0 
+     /tmp/cc9Uxcut.s:186    .text.v_Update_Serial_SM:0000000000000194 .L0 
+     /tmp/cc9Uxcut.s:188    .text.v_Update_Serial_SM:000000000000019c .L0 
+     /tmp/cc9Uxcut.s:201    .text.v_Update_Serial_SM:00000000000001bc .L0 
+     /tmp/cc9Uxcut.s:216    .text.v_Update_Serial_SM:00000000000001d8 .L0 
+     /tmp/cc9Uxcut.s:219    .text.v_Update_Serial_SM:00000000000001e0 .L0 
+     /tmp/cc9Uxcut.s:224    .text.v_Update_Serial_SM:00000000000001f4 .L0 
+     /tmp/cc9Uxcut.s:226    .text.v_Update_Serial_SM:00000000000001fc .L0 
+     /tmp/cc9Uxcut.s:230    .text.v_Update_Serial_SM:0000000000000208 .L0 
+     /tmp/cc9Uxcut.s:232    .text.v_Update_Serial_SM:0000000000000210 .L0 
+     /tmp/cc9Uxcut.s:250    .text.v_Update_Serial_SM:0000000000000238 .L0 
+     /tmp/cc9Uxcut.s:253    .text.v_Update_Serial_SM:0000000000000240 .L0 
+     /tmp/cc9Uxcut.s:258    .text.v_Update_Serial_SM:0000000000000254 .L0 
+     /tmp/cc9Uxcut.s:260    .text.v_Update_Serial_SM:000000000000025c .L0 
+     /tmp/cc9Uxcut.s:264    .text.v_Update_Serial_SM:0000000000000268 .L0 
+     /tmp/cc9Uxcut.s:266    .text.v_Update_Serial_SM:0000000000000270 .L0 
+     /tmp/cc9Uxcut.s:284    .text.v_Update_Serial_SM:0000000000000298 .L0 
+     /tmp/cc9Uxcut.s:287    .text.v_Update_Serial_SM:00000000000002a0 .L0 
+     /tmp/cc9Uxcut.s:292    .text.v_Update_Serial_SM:00000000000002b4 .L0 
+     /tmp/cc9Uxcut.s:294    .text.v_Update_Serial_SM:00000000000002bc .L0 
+     /tmp/cc9Uxcut.s:298    .text.v_Update_Serial_SM:00000000000002c8 .L0 
+     /tmp/cc9Uxcut.s:300    .text.v_Update_Serial_SM:00000000000002d0 .L0 
+     /tmp/cc9Uxcut.s:306    .text.v_Update_Serial_SM:00000000000002e4 .L0 
+     /tmp/cc9Uxcut.s:315    .text.v_Update_Serial_SM:00000000000002f4 .L0 
+     /tmp/cc9Uxcut.s:317    .text.v_Update_Serial_SM:0000000000000300 .L0 
+     /tmp/cc9Uxcut.s:319    .text.v_Update_Serial_SM:0000000000000308 .L0 
+     /tmp/cc9Uxcut.s:330    .text.v_Update_Serial_SM:0000000000000324 .L0 
+     /tmp/cc9Uxcut.s:335    .text.v_Update_Serial_SM:0000000000000338 .L0 
+     /tmp/cc9Uxcut.s:337    .text.v_Update_Serial_SM:0000000000000340 .L0 
+     /tmp/cc9Uxcut.s:341    .text.v_Update_Serial_SM:000000000000034c .L0 
+     /tmp/cc9Uxcut.s:343    .text.v_Update_Serial_SM:0000000000000354 .L0 
+     /tmp/cc9Uxcut.s:349    .text.v_Update_Serial_SM:0000000000000368 .L0 
+     /tmp/cc9Uxcut.s:354    .text.v_Update_Serial_SM:0000000000000378 .L0 
+     /tmp/cc9Uxcut.s:370    .text.v_Update_Serial_SM:0000000000000394 .L0 
+     /tmp/cc9Uxcut.s:372    .text.v_Update_Serial_SM:00000000000003a0 .L0 
+     /tmp/cc9Uxcut.s:374    .text.v_Update_Serial_SM:00000000000003a8 .L0 
+     /tmp/cc9Uxcut.s:385    .text.v_Update_Serial_SM:00000000000003c4 .L0 
+     /tmp/cc9Uxcut.s:390    .text.v_Update_Serial_SM:00000000000003d8 .L0 
+     /tmp/cc9Uxcut.s:393    .text.v_Update_Serial_SM:00000000000003e0 .L0 
+     /tmp/cc9Uxcut.s:395    .text.v_Update_Serial_SM:00000000000003e8 .L0 
+     /tmp/cc9Uxcut.s:405    .text.v_Update_Serial_SM:00000000000003fc .L0 
+     /tmp/cc9Uxcut.s:407    .text.v_Update_Serial_SM:0000000000000408 .L0 
+     /tmp/cc9Uxcut.s:410    .text.v_Update_Serial_SM:0000000000000414 .L0 
+     /tmp/cc9Uxcut.s:415    .text.v_Update_Serial_SM:0000000000000424 .L0 
+     /tmp/cc9Uxcut.s:423    .text.v_Update_Serial_SM:0000000000000434 .L0 
+     /tmp/cc9Uxcut.s:425    .text.v_Update_Serial_SM:0000000000000440 .L0 
+     /tmp/cc9Uxcut.s:427    .text.v_Update_Serial_SM:0000000000000448 .L0 
+     /tmp/cc9Uxcut.s:430    .text.v_Update_Serial_SM:0000000000000454 .L0 
+     /tmp/cc9Uxcut.s:443    .text.v_Update_Serial_SM:0000000000000470 .L0 
+     /tmp/cc9Uxcut.s:451    .text.v_Update_Serial_SM:0000000000000480 .L0 
+     /tmp/cc9Uxcut.s:453    .text.v_Update_Serial_SM:000000000000048c .L0 
+     /tmp/cc9Uxcut.s:455    .text.v_Update_Serial_SM:0000000000000494 .L0 
+     /tmp/cc9Uxcut.s:458    .text.v_Update_Serial_SM:00000000000004a0 .L0 
+     /tmp/cc9Uxcut.s:471    .text.v_Update_Serial_SM:00000000000004bc .L0 
+     /tmp/cc9Uxcut.s:479    .text.v_Update_Serial_SM:00000000000004cc .L0 
+     /tmp/cc9Uxcut.s:481    .text.v_Update_Serial_SM:00000000000004d8 .L0 
+     /tmp/cc9Uxcut.s:483    .text.v_Update_Serial_SM:00000000000004e0 .L0 
+     /tmp/cc9Uxcut.s:486    .text.v_Update_Serial_SM:00000000000004ec .L0 
+     /tmp/cc9Uxcut.s:499    .text.v_Update_Serial_SM:0000000000000508 .L0 
+     /tmp/cc9Uxcut.s:78     .text.v_Update_Serial_SM:000000000000006c .L2
+     /tmp/cc9Uxcut.s:94     .text.v_Update_Serial_SM:000000000000008c .L18
+     /tmp/cc9Uxcut.s:125    .text.v_Update_Serial_SM:00000000000000d8 .L24
+     /tmp/cc9Uxcut.s:100    .text.v_Update_Serial_SM:0000000000000090 .L25
+     /tmp/cc9Uxcut.s:361    .text.v_Update_Serial_SM:000000000000038c .L20
+     /tmp/cc9Uxcut.s:356    .text.v_Update_Serial_SM:0000000000000384 .L21
+     /tmp/cc9Uxcut.s:59     .text.v_Update_Serial_SM:000000000000003c .L17
+     /tmp/cc9Uxcut.s:106    .text.v_Update_Serial_SM:000000000000009c .L16
+     /tmp/cc9Uxcut.s:129    .text.v_Update_Serial_SM:00000000000000e0 .L15
+     /tmp/cc9Uxcut.s:149    .text.v_Update_Serial_SM:0000000000000120 .L14
+     /tmp/cc9Uxcut.s:173    .text.v_Update_Serial_SM:0000000000000178 .L13
+     /tmp/cc9Uxcut.s:207    .text.v_Update_Serial_SM:00000000000001cc .L12
+     /tmp/cc9Uxcut.s:241    .text.v_Update_Serial_SM:000000000000022c .L11
+     /tmp/cc9Uxcut.s:275    .text.v_Update_Serial_SM:000000000000028c .L10
+     /tmp/cc9Uxcut.s:312    .text.v_Update_Serial_SM:00000000000002f4 .L9
+     /tmp/cc9Uxcut.s:367    .text.v_Update_Serial_SM:0000000000000394 .L8
+     /tmp/cc9Uxcut.s:402    .text.v_Update_Serial_SM:00000000000003fc .L7
+     /tmp/cc9Uxcut.s:420    .text.v_Update_Serial_SM:0000000000000434 .L6
+     /tmp/cc9Uxcut.s:448    .text.v_Update_Serial_SM:0000000000000480 .L5
+     /tmp/cc9Uxcut.s:476    .text.v_Update_Serial_SM:00000000000004cc .L3
+     /tmp/cc9Uxcut.s:515    .text.Reset_Serial_SM:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:517    .text.Reset_Serial_SM:0000000000000008 .L0 
+     /tmp/cc9Uxcut.s:520    .text.Reset_Serial_SM:0000000000000010 .L0 
+     /tmp/cc9Uxcut.s:522    .text.Reset_Serial_SM:0000000000000018 .L0 
+     /tmp/cc9Uxcut.s:524    .text.Reset_Serial_SM:0000000000000020 .L0 
+     /tmp/cc9Uxcut.s:543    .text.v_Framing_Timeout:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:545    .text.v_Framing_Timeout:000000000000000c .L0 
+     /tmp/cc9Uxcut.s:555    .text.v_Framing_Timeout:0000000000000024 .L0 
+     /tmp/cc9Uxcut.s:569    .text.v_Framing_Timeout:0000000000000040 .L0 
+     /tmp/cc9Uxcut.s:578    .text.v_Framing_Timeout:0000000000000058 .L0 
+     /tmp/cc9Uxcut.s:597    .text.v_Framing_Timeout:000000000000007c .L0 
+     /tmp/cc9Uxcut.s:599    .text.v_Framing_Timeout:0000000000000084 .L0 
+     /tmp/cc9Uxcut.s:586    .text.v_Framing_Timeout:0000000000000070 .L28
+     /tmp/cc9Uxcut.s:617    .text.b_In_Error_State:0000000000000000 .L0 
+     /tmp/cc9Uxcut.s:2757   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc9Uxcut.s:3994   .debug_str:00000000000008bf .LASF225
+     /tmp/cc9Uxcut.s:4020   .debug_str:0000000000000a0d .LASF226
+     /tmp/cc9Uxcut.s:3924   .debug_str:000000000000071f .LASF227
+     /tmp/cc9Uxcut.s:3590   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc9Uxcut.s:3602   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc9Uxcut.s:4014   .debug_str:00000000000009e7 .LASF0
+     /tmp/cc9Uxcut.s:3928   .debug_str:000000000000075e .LASF3
+     /tmp/cc9Uxcut.s:3978   .debug_str:000000000000086c .LASF1
+     /tmp/cc9Uxcut.s:3900   .debug_str:00000000000006ac .LASF2
+     /tmp/cc9Uxcut.s:3726   .debug_str:00000000000002be .LASF4
+     /tmp/cc9Uxcut.s:4018   .debug_str:00000000000009fa .LASF5
+     /tmp/cc9Uxcut.s:3636   .debug_str:00000000000000d1 .LASF6
+     /tmp/cc9Uxcut.s:3904   .debug_str:00000000000006bd .LASF7
+     /tmp/cc9Uxcut.s:3982   .debug_str:0000000000000886 .LASF8
+     /tmp/cc9Uxcut.s:3960   .debug_str:00000000000007fe .LASF9
+     /tmp/cc9Uxcut.s:3828   .debug_str:000000000000051b .LASF10
+     /tmp/cc9Uxcut.s:3716   .debug_str:0000000000000285 .LASF11
+     /tmp/cc9Uxcut.s:3630   .debug_str:00000000000000b4 .LASF12
+     /tmp/cc9Uxcut.s:3814   .debug_str:00000000000004d5 .LASF13
+     /tmp/cc9Uxcut.s:3884   .debug_str:0000000000000641 .LASF14
+     /tmp/cc9Uxcut.s:3968   .debug_str:0000000000000833 .LASF15
+     /tmp/cc9Uxcut.s:3692   .debug_str:0000000000000205 .LASF16
+     /tmp/cc9Uxcut.s:3752   .debug_str:000000000000035f .LASF17
+     /tmp/cc9Uxcut.s:3880   .debug_str:000000000000062d .LASF18
+     /tmp/cc9Uxcut.s:3964   .debug_str:0000000000000817 .LASF19
+     /tmp/cc9Uxcut.s:4036   .debug_str:0000000000000a75 .LASF20
+     /tmp/cc9Uxcut.s:3668   .debug_str:000000000000019f .LASF21
+     /tmp/cc9Uxcut.s:4012   .debug_str:00000000000009de .LASF22
+     /tmp/cc9Uxcut.s:3810   .debug_str:00000000000004c9 .LASF23
+     /tmp/cc9Uxcut.s:3914   .debug_str:00000000000006e3 .LASF24
+     /tmp/cc9Uxcut.s:3702   .debug_str:0000000000000249 .LASF25
+     /tmp/cc9Uxcut.s:3776   .debug_str:00000000000003f4 .LASF26
+     /tmp/cc9Uxcut.s:3854   .debug_str:00000000000005aa .LASF27
+     /tmp/cc9Uxcut.s:3838   .debug_str:0000000000000549 .LASF28
+     /tmp/cc9Uxcut.s:3882   .debug_str:0000000000000639 .LASF29
+     /tmp/cc9Uxcut.s:3972   .debug_str:0000000000000847 .LASF127
+     /tmp/cc9Uxcut.s:3806   .debug_str:00000000000004af .LASF30
+     /tmp/cc9Uxcut.s:3674   .debug_str:00000000000001b4 .LASF35
+     /tmp/cc9Uxcut.s:3766   .debug_str:00000000000003a9 .LASF31
+     /tmp/cc9Uxcut.s:3936   .debug_str:0000000000000781 .LASF32
+     /tmp/cc9Uxcut.s:3910   .debug_str:00000000000006d7 .LASF33
+     /tmp/cc9Uxcut.s:3722   .debug_str:00000000000002b1 .LASF34
+     /tmp/cc9Uxcut.s:3956   .debug_str:00000000000007f3 .LASF36
+     /tmp/cc9Uxcut.s:3754   .debug_str:0000000000000366 .LASF37
+     /tmp/cc9Uxcut.s:3706   .debug_str:0000000000000257 .LASF38
+     /tmp/cc9Uxcut.s:3696   .debug_str:0000000000000222 .LASF39
+     /tmp/cc9Uxcut.s:3790   .debug_str:0000000000000436 .LASF40
+     /tmp/cc9Uxcut.s:3876   .debug_str:000000000000061d .LASF41
+     /tmp/cc9Uxcut.s:3920   .debug_str:0000000000000706 .LASF42
+     /tmp/cc9Uxcut.s:3678   .debug_str:00000000000001d4 .LASF43
+     /tmp/cc9Uxcut.s:3756   .debug_str:000000000000036f .LASF44
+     /tmp/cc9Uxcut.s:3862   .debug_str:00000000000005cc .LASF45
+     /tmp/cc9Uxcut.s:3616   .debug_str:0000000000000062 .LASF46
+     /tmp/cc9Uxcut.s:3858   .debug_str:00000000000005bc .LASF47
+     /tmp/cc9Uxcut.s:3970   .debug_str:000000000000083b .LASF48
+     /tmp/cc9Uxcut.s:4026   .debug_str:0000000000000a38 .LASF49
+     /tmp/cc9Uxcut.s:4048   .debug_str:0000000000000aba .LASF50
+     /tmp/cc9Uxcut.s:3892   .debug_str:0000000000000676 .LASF51
+     /tmp/cc9Uxcut.s:3760   .debug_str:000000000000037e .LASF52
+     /tmp/cc9Uxcut.s:3670   .debug_str:00000000000001a7 .LASF53
+     /tmp/cc9Uxcut.s:3996   .debug_str:0000000000000985 .LASF54
+     /tmp/cc9Uxcut.s:3830   .debug_str:0000000000000529 .LASF55
+     /tmp/cc9Uxcut.s:4028   .debug_str:0000000000000a41 .LASF56
+     /tmp/cc9Uxcut.s:3720   .debug_str:00000000000002a9 .LASF57
+     /tmp/cc9Uxcut.s:3634   .debug_str:00000000000000ca .LASF58
+     /tmp/cc9Uxcut.s:3842   .debug_str:0000000000000560 .LASF59
+     /tmp/cc9Uxcut.s:3632   .debug_str:00000000000000c1 .LASF60
+     /tmp/cc9Uxcut.s:3672   .debug_str:00000000000001ac .LASF61
+     /tmp/cc9Uxcut.s:3652   .debug_str:0000000000000136 .LASF62
+     /tmp/cc9Uxcut.s:3886   .debug_str:000000000000064a .LASF63
+     /tmp/cc9Uxcut.s:4058   .debug_str:0000000000000ae3 .LASF64
+     /tmp/cc9Uxcut.s:3816   .debug_str:00000000000004dd .LASF65
+     /tmp/cc9Uxcut.s:4066   .debug_str:0000000000000b03 .LASF66
+     /tmp/cc9Uxcut.s:4038   .debug_str:0000000000000a7c .LASF67
+     /tmp/cc9Uxcut.s:3954   .debug_str:00000000000007ea .LASF68
+     /tmp/cc9Uxcut.s:3734   .debug_str:00000000000002eb .LASF69
+     /tmp/cc9Uxcut.s:3912   .debug_str:00000000000006dd .LASF70
+     /tmp/cc9Uxcut.s:3958   .debug_str:00000000000007f8 .LASF71
+     /tmp/cc9Uxcut.s:3648   .debug_str:000000000000011f .LASF72
+     /tmp/cc9Uxcut.s:4044   .debug_str:0000000000000aa8 .LASF73
+     /tmp/cc9Uxcut.s:4016   .debug_str:00000000000009f3 .LASF74
+     /tmp/cc9Uxcut.s:3640   .debug_str:00000000000000f4 .LASF75
+     /tmp/cc9Uxcut.s:3822   .debug_str:00000000000004fa .LASF76
+     /tmp/cc9Uxcut.s:3664   .debug_str:0000000000000192 .LASF77
+     /tmp/cc9Uxcut.s:4062   .debug_str:0000000000000af2 .LASF78
+     /tmp/cc9Uxcut.s:3758   .debug_str:0000000000000379 .LASF79
+     /tmp/cc9Uxcut.s:3746   .debug_str:0000000000000332 .LASF80
+     /tmp/cc9Uxcut.s:4042   .debug_str:0000000000000a8f .LASF81
+     /tmp/cc9Uxcut.s:4010   .debug_str:00000000000009d6 .LASF82
+     /tmp/cc9Uxcut.s:3818   .debug_str:00000000000004e4 .LASF83
+     /tmp/cc9Uxcut.s:3850   .debug_str:0000000000000589 .LASF84
+     /tmp/cc9Uxcut.s:3682   .debug_str:00000000000001e9 .LASF85
+     /tmp/cc9Uxcut.s:3714   .debug_str:000000000000027b .LASF86
+     /tmp/cc9Uxcut.s:3778   .debug_str:00000000000003fc .LASF87
+     /tmp/cc9Uxcut.s:3834   .debug_str:0000000000000539 .LASF88
+     /tmp/cc9Uxcut.s:3934   .debug_str:0000000000000779 .LASF89
+     /tmp/cc9Uxcut.s:3974   .debug_str:000000000000084e .LASF90
+     /tmp/cc9Uxcut.s:3930   .debug_str:0000000000000768 .LASF91
+     /tmp/cc9Uxcut.s:3796   .debug_str:0000000000000459 .LASF92
+     /tmp/cc9Uxcut.s:3792   .debug_str:0000000000000440 .LASF93
+     /tmp/cc9Uxcut.s:4002   .debug_str:00000000000009a3 .LASF94
+     /tmp/cc9Uxcut.s:3908   .debug_str:00000000000006d2 .LASF95
+     /tmp/cc9Uxcut.s:3788   .debug_str:0000000000000431 .LASF96
+     /tmp/cc9Uxcut.s:3730   .debug_str:00000000000002d2 .LASF97
+     /tmp/cc9Uxcut.s:3998   .debug_str:000000000000098c .LASF98
+     /tmp/cc9Uxcut.s:3962   .debug_str:0000000000000810 .LASF99
+     /tmp/cc9Uxcut.s:3812   .debug_str:00000000000004cf .LASF100
+     /tmp/cc9Uxcut.s:3712   .debug_str:0000000000000273 .LASF101
+     /tmp/cc9Uxcut.s:4050   .debug_str:0000000000000ac2 .LASF102
+     /tmp/cc9Uxcut.s:3836   .debug_str:0000000000000543 .LASF103
+     /tmp/cc9Uxcut.s:3990   .debug_str:00000000000008b2 .LASF104
+     /tmp/cc9Uxcut.s:4040   .debug_str:0000000000000a82 .LASF105
+     /tmp/cc9Uxcut.s:4004   .debug_str:00000000000009ab .LASF106
+     /tmp/cc9Uxcut.s:3718   .debug_str:000000000000029c .LASF107
+     /tmp/cc9Uxcut.s:3922   .debug_str:0000000000000710 .LASF108
+     /tmp/cc9Uxcut.s:3824   .debug_str:0000000000000501 .LASF109
+     /tmp/cc9Uxcut.s:4052   .debug_str:0000000000000ac8 .LASF110
+     /tmp/cc9Uxcut.s:3624   .debug_str:0000000000000093 .LASF111
+     /tmp/cc9Uxcut.s:3782   .debug_str:0000000000000412 .LASF112
+     /tmp/cc9Uxcut.s:4006   .debug_str:00000000000009b8 .LASF113
+     /tmp/cc9Uxcut.s:3620   .debug_str:0000000000000078 .LASF114
+     /tmp/cc9Uxcut.s:3938   .debug_str:0000000000000789 .LASF115
+     /tmp/cc9Uxcut.s:3628   .debug_str:00000000000000a8 .LASF116
+     /tmp/cc9Uxcut.s:3984   .debug_str:0000000000000891 .LASF117
+     /tmp/cc9Uxcut.s:3656   .debug_str:0000000000000150 .LASF118
+     /tmp/cc9Uxcut.s:3794   .debug_str:000000000000044a .LASF119
+     /tmp/cc9Uxcut.s:3768   .debug_str:00000000000003af .LASF120
+     /tmp/cc9Uxcut.s:3840   .debug_str:0000000000000551 .LASF121
+     /tmp/cc9Uxcut.s:3780   .debug_str:0000000000000401 .LASF122
+     /tmp/cc9Uxcut.s:3866   .debug_str:00000000000005de .LASF123
+     /tmp/cc9Uxcut.s:3710   .debug_str:000000000000026c .LASF124
+     /tmp/cc9Uxcut.s:4064   .debug_str:0000000000000afa .LASF125
+     /tmp/cc9Uxcut.s:3926   .debug_str:0000000000000756 .LASF126
+     /tmp/cc9Uxcut.s:4054   .debug_str:0000000000000ad3 .LASF128
+     /tmp/cc9Uxcut.s:3708   .debug_str:0000000000000260 .LASF129
+     /tmp/cc9Uxcut.s:3916   .debug_str:00000000000006ea .LASF130
+     /tmp/cc9Uxcut.s:3610   .debug_str:0000000000000037 .LASF131
+     /tmp/cc9Uxcut.s:4030   .debug_str:0000000000000a47 .LASF132
+     /tmp/cc9Uxcut.s:4068   .debug_str:0000000000000b09 .LASF133
+     /tmp/cc9Uxcut.s:3932   .debug_str:000000000000076d .LASF134
+     /tmp/cc9Uxcut.s:4034   .debug_str:0000000000000a66 .LASF135
+     /tmp/cc9Uxcut.s:4022   .debug_str:0000000000000a20 .LASF136
+     /tmp/cc9Uxcut.s:3700   .debug_str:0000000000000235 .LASF137
+     /tmp/cc9Uxcut.s:4046   .debug_str:0000000000000ab0 .LASF138
+     /tmp/cc9Uxcut.s:3940   .debug_str:0000000000000793 .LASF139
+     /tmp/cc9Uxcut.s:3942   .debug_str:0000000000000799 .LASF140
+     /tmp/cc9Uxcut.s:3944   .debug_str:000000000000079f .LASF141
+     /tmp/cc9Uxcut.s:3946   .debug_str:00000000000007a5 .LASF142
+     /tmp/cc9Uxcut.s:3848   .debug_str:0000000000000580 .LASF143
+     /tmp/cc9Uxcut.s:3614   .debug_str:0000000000000057 .LASF144
+     /tmp/cc9Uxcut.s:3918   .debug_str:00000000000006fd .LASF145
+     /tmp/cc9Uxcut.s:3826   .debug_str:0000000000000510 .LASF146
+     /tmp/cc9Uxcut.s:3604   .debug_str:0000000000000000 .LASF147
+     /tmp/cc9Uxcut.s:3666   .debug_str:000000000000019a .LASF148
+     /tmp/cc9Uxcut.s:3684   .debug_str:00000000000001f1 .LASF149
+     /tmp/cc9Uxcut.s:3686   .debug_str:00000000000001f6 .LASF150
+     /tmp/cc9Uxcut.s:3688   .debug_str:00000000000001fb .LASF151
+     /tmp/cc9Uxcut.s:3690   .debug_str:0000000000000200 .LASF152
+     /tmp/cc9Uxcut.s:3642   .debug_str:00000000000000fb .LASF153
+     /tmp/cc9Uxcut.s:3804   .debug_str:000000000000049c .LASF154
+     /tmp/cc9Uxcut.s:3698   .debug_str:000000000000022c .LASF155
+     /tmp/cc9Uxcut.s:3662   .debug_str:000000000000018d .LASF156
+     /tmp/cc9Uxcut.s:3948   .debug_str:00000000000007ab .LASF157
+     /tmp/cc9Uxcut.s:3694   .debug_str:000000000000020e .LASF158
+     /tmp/cc9Uxcut.s:3608   .debug_str:000000000000001d .LASF159
+     /tmp/cc9Uxcut.s:4032   .debug_str:0000000000000a51 .LASF160
+     /tmp/cc9Uxcut.s:3612   .debug_str:0000000000000048 .LASF161
+     /tmp/cc9Uxcut.s:3622   .debug_str:0000000000000086 .LASF162
+     /tmp/cc9Uxcut.s:3744   .debug_str:0000000000000324 .LASF163
+     /tmp/cc9Uxcut.s:4008   .debug_str:00000000000009c6 .LASF164
+     /tmp/cc9Uxcut.s:3770   .debug_str:00000000000003c0 .LASF165
+     /tmp/cc9Uxcut.s:3740   .debug_str:000000000000030d .LASF166
+     /tmp/cc9Uxcut.s:3772   .debug_str:00000000000003d2 .LASF167
+     /tmp/cc9Uxcut.s:3890   .debug_str:0000000000000662 .LASF168
+     /tmp/cc9Uxcut.s:3626   .debug_str:0000000000000098 .LASF169
+     /tmp/cc9Uxcut.s:3868   .debug_str:00000000000005e7 .LASF170
+     /tmp/cc9Uxcut.s:3874   .debug_str:0000000000000609 .LASF171
+     /tmp/cc9Uxcut.s:3784   .debug_str:000000000000041f .LASF172
+     /tmp/cc9Uxcut.s:3638   .debug_str:00000000000000db .LASF173
+     /tmp/cc9Uxcut.s:3852   .debug_str:0000000000000593 .LASF174
+     /tmp/cc9Uxcut.s:3976   .debug_str:0000000000000856 .LASF175
+     /tmp/cc9Uxcut.s:3774   .debug_str:00000000000003de .LASF176
+     /tmp/cc9Uxcut.s:4070   .debug_str:0000000000000b17 .LASF177
+     /tmp/cc9Uxcut.s:3950   .debug_str:00000000000007c3 .LASF178
+     /tmp/cc9Uxcut.s:3966   .debug_str:000000000000081e .LASF179
+     /tmp/cc9Uxcut.s:3650   .debug_str:0000000000000128 .LASF180
+     /tmp/cc9Uxcut.s:3802   .debug_str:000000000000048d .LASF181
+     /tmp/cc9Uxcut.s:3844   .debug_str:0000000000000566 .LASF182
+     /tmp/cc9Uxcut.s:3846   .debug_str:0000000000000573 .LASF183
+     /tmp/cc9Uxcut.s:3728   .debug_str:00000000000002c9 .LASF184
+     /tmp/cc9Uxcut.s:3906   .debug_str:00000000000006c6 .LASF185
+     /tmp/cc9Uxcut.s:3864   .debug_str:00000000000005d7 .LASF186
+     /tmp/cc9Uxcut.s:4056   .debug_str:0000000000000ade .LASF187
+     /tmp/cc9Uxcut.s:3676   .debug_str:00000000000001bc .LASF188
+     /tmp/cc9Uxcut.s:3902   .debug_str:00000000000006b6 .LASF189
+     /tmp/cc9Uxcut.s:3980   .debug_str:000000000000087a .LASF190
+     /tmp/cc9Uxcut.s:3888   .debug_str:0000000000000651 .LASF191
+     /tmp/cc9Uxcut.s:3764   .debug_str:0000000000000396 .LASF192
+     /tmp/cc9Uxcut.s:3606   .debug_str:0000000000000009 .LASF193
+     /tmp/cc9Uxcut.s:3872   .debug_str:0000000000000601 .LASF194
+     /tmp/cc9Uxcut.s:4000   .debug_str:0000000000000992 .LASF195
+     /tmp/cc9Uxcut.s:4024   .debug_str:0000000000000a2c .LASF196
+     /tmp/cc9Uxcut.s:3878   .debug_str:0000000000000626 .LASF197
+     /tmp/cc9Uxcut.s:3988   .debug_str:00000000000008a5 .LASF198
+     /tmp/cc9Uxcut.s:3750   .debug_str:0000000000000352 .LASF199
+     /tmp/cc9Uxcut.s:3748   .debug_str:000000000000033d .LASF200
+     /tmp/cc9Uxcut.s:3736   .debug_str:00000000000002f3 .LASF201
+     /tmp/cc9Uxcut.s:3992   .debug_str:00000000000008b7 .LASF202
+     /tmp/cc9Uxcut.s:3646   .debug_str:0000000000000112 .LASF203
+     /tmp/cc9Uxcut.s:3654   .debug_str:000000000000013c .LASF204
+     /tmp/cc9Uxcut.s:3724   .debug_str:00000000000002b6 .LASF205
+     /tmp/cc9Uxcut.s:3786   .debug_str:0000000000000428 .LASF206
+     /tmp/cc9Uxcut.s:3860   .debug_str:00000000000005c4 .LASF207
+     /tmp/cc9Uxcut.s:4060   .debug_str:0000000000000ae9 .LASF208
+     /tmp/cc9Uxcut.s:3680   .debug_str:00000000000001de .LASF209
+     /tmp/cc9Uxcut.s:3820   .debug_str:00000000000004ef .LASF210
+     /tmp/cc9Uxcut.s:3742   .debug_str:0000000000000318 .LASF211
+     /tmp/cc9Uxcut.s:3618   .debug_str:0000000000000070 .LASF212
+     /tmp/cc9Uxcut.s:3644   .debug_str:0000000000000104 .LASF213
+     /tmp/cc9Uxcut.s:3896   .debug_str:000000000000068f .LASF214
+     /tmp/cc9Uxcut.s:3898   .debug_str:000000000000069a .LASF215
+     /tmp/cc9Uxcut.s:3832   .debug_str:000000000000052f .LASF216
+     /tmp/cc9Uxcut.s:3798   .debug_str:0000000000000462 .LASF217
+     /tmp/cc9Uxcut.s:3894   .debug_str:000000000000067e .LASF218
+     /tmp/cc9Uxcut.s:3986   .debug_str:000000000000089e .LASF219
+     /tmp/cc9Uxcut.s:3870   .debug_str:00000000000005fa .LASF220
+     /tmp/cc9Uxcut.s:3808   .debug_str:00000000000004b8 .LASF228
+     /tmp/cc9Uxcut.s:612    .text.b_In_Error_State:0000000000000000 .LFB5
+     /tmp/cc9Uxcut.s:624    .text.b_In_Error_State:0000000000000018 .LFE5
+     /tmp/cc9Uxcut.s:3738   .debug_str:00000000000002fd .LASF229
+     /tmp/cc9Uxcut.s:510    .text.Reset_Serial_SM:0000000000000000 .LFB4
+     /tmp/cc9Uxcut.s:531    .text.Reset_Serial_SM:0000000000000038 .LFE4
+     /tmp/cc9Uxcut.s:3660   .debug_str:000000000000016f .LASF230
+     /tmp/cc9Uxcut.s:3704   .debug_str:0000000000000251 .LASF223
+     /tmp/cc9Uxcut.s:3732   .debug_str:00000000000002d9 .LASF221
+     /tmp/cc9Uxcut.s:538    .text.v_Framing_Timeout:0000000000000000 .LFB2
+     /tmp/cc9Uxcut.s:605    .text.v_Framing_Timeout:0000000000000094 .LFE2
+     /tmp/cc9Uxcut.s:561    .text.v_Framing_Timeout:0000000000000038 .LBB4
+     /tmp/cc9Uxcut.s:588    .text.v_Framing_Timeout:0000000000000070 .LBE4
+     /tmp/cc9Uxcut.s:562    .text.v_Framing_Timeout:0000000000000038 .LBB5
+     /tmp/cc9Uxcut.s:587    .text.v_Framing_Timeout:0000000000000070 .LBE5
+     /tmp/cc9Uxcut.s:575    .text.v_Framing_Timeout:0000000000000058 .LVL23
+     /tmp/cc9Uxcut.s:585    .text.v_Framing_Timeout:0000000000000070 .LVL24
+     /tmp/cc9Uxcut.s:591    .text.v_Framing_Timeout:0000000000000078 .LVL25
+     /tmp/cc9Uxcut.s:3762   .debug_str:0000000000000383 .LASF222
+     /tmp/cc9Uxcut.s:14     .text.v_Update_Serial_SM:0000000000000000 .LFB1
+     /tmp/cc9Uxcut.s:503    .text.v_Update_Serial_SM:0000000000000514 .LFE1
+     /tmp/cc9Uxcut.s:3952   .debug_str:00000000000007d9 .LASF231
+     /tmp/cc9Uxcut.s:3502   .debug_loc:0000000000000000 .LLST0
+     /tmp/cc9Uxcut.s:199    .text.v_Update_Serial_SM:00000000000001bc .LVL6
+     /tmp/cc9Uxcut.s:222    .text.v_Update_Serial_SM:00000000000001f4 .LVL9
+     /tmp/cc9Uxcut.s:256    .text.v_Update_Serial_SM:0000000000000254 .LVL12
+     /tmp/cc9Uxcut.s:290    .text.v_Update_Serial_SM:00000000000002b4 .LVL15
+     /tmp/cc9Uxcut.s:333    .text.v_Update_Serial_SM:0000000000000338 .LVL18
+     /tmp/cc9Uxcut.s:388    .text.v_Update_Serial_SM:00000000000003d8 .LVL21
+     /tmp/cc9Uxcut.s:3856   .debug_str:00000000000005b5 .LASF232
+     /tmp/cc9Uxcut.s:3658   .debug_str:000000000000015e .LASF233
+     /tmp/cc9Uxcut.s:3800   .debug_str:0000000000000475 .LASF224
+     /tmp/cc9Uxcut.s:18     .text.v_Update_Serial_SM:0000000000000000 .LVL0
+     /tmp/cc9Uxcut.s:77     .text.v_Update_Serial_SM:000000000000006c .LVL1
+     /tmp/cc9Uxcut.s:93     .text.v_Update_Serial_SM:000000000000008c .LVL2
+     /tmp/cc9Uxcut.s:99     .text.v_Update_Serial_SM:0000000000000090 .LVL3
+     /tmp/cc9Uxcut.s:105    .text.v_Update_Serial_SM:000000000000009c .LVL4
+     /tmp/cc9Uxcut.s:193    .text.v_Update_Serial_SM:00000000000001b0 .LVL5
+     /tmp/cc9Uxcut.s:206    .text.v_Update_Serial_SM:00000000000001cc .LVL7
+     /tmp/cc9Uxcut.s:214    .text.v_Update_Serial_SM:00000000000001d8 .LVL8
+     /tmp/cc9Uxcut.s:240    .text.v_Update_Serial_SM:000000000000022c .LVL10
+     /tmp/cc9Uxcut.s:248    .text.v_Update_Serial_SM:0000000000000238 .LVL11
+     /tmp/cc9Uxcut.s:274    .text.v_Update_Serial_SM:000000000000028c .LVL13
+     /tmp/cc9Uxcut.s:282    .text.v_Update_Serial_SM:0000000000000298 .LVL14
+     /tmp/cc9Uxcut.s:311    .text.v_Update_Serial_SM:00000000000002f4 .LVL16
+     /tmp/cc9Uxcut.s:325    .text.v_Update_Serial_SM:0000000000000320 .LVL17
+     /tmp/cc9Uxcut.s:366    .text.v_Update_Serial_SM:0000000000000394 .LVL19
+     /tmp/cc9Uxcut.s:380    .text.v_Update_Serial_SM:00000000000003c0 .LVL20
+     /tmp/cc9Uxcut.s:401    .text.v_Update_Serial_SM:00000000000003fc .LVL22
+     /tmp/cc9Uxcut.s:695    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+crc
+memcpy
+v_Post_Serial_Event_ISR

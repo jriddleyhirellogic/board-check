@@ -1,0 +1,347 @@
+/*
+ * camera_armed_state.c
+ *
+ *  Created on: Dec 8, 2025
+ *      Author: iboard
+ */
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "camera.h"
+#include "cam_trig.h"
+#include "cam_mux.h"
+#include "dma_write_reg.h"
+#include "mem_map.h"
+#include "errors.h"
+#include "register.h"
+#include "states.h"
+#include "camera_states.h"
+#include "misc.h"
+#include "util.h"
+
+
+/**
+ * @fn State_t Camera_Armed_State(Camera_Context_t*, Event_t*)
+ * @brief Armed state
+ * The trigger is configured on entry and is ready to capture an image.
+ * @param context
+ * @param event
+ * @return
+ */
+
+/* Set when e_Configure_Trigger() has successfully programmed the trigger IP for the settings
+ * currently in the register file. It is cleared whenever configuration is rejected, since the
+ * trigger is then still holding whatever the previous burst was configured with and firing it
+ * would capture at the wrong settings.
+ */
+static uint8_t b_Trigger_Ready = 0;
+
+uint8_t b_Trigger_Is_Ready(void)
+{
+    return b_Trigger_Ready;
+}
+
+/* A burst that spills into the 8GB device runs at a slower line period, which can leave
+ * FRAME_CAPTURE_TIME_SYS_REG below the shortest frame period that buffer can sustain. The
+ * register is raised to that floor so it reports what the sensor is really doing, and the value
+ * the host asked for is kept here so it can be put back once the faster line period returns.
+ */
+static uint32_t u32_Requested_Frame_Time_usec = 0;
+static uint8_t  b_Frame_Time_Overridden = 0;
+static uint8_t  b_Internal_Frame_Time_Write = 0;
+
+/* Called by the FRAME_CAPTURE_TIME_SYS_REG write callback. A write from the host replaces the
+ * request being held, so the old one must not be restored later. Writes made while raising the
+ * register to the floor are not host requests and are ignored here.
+ */
+void v_Note_Frame_Time_Written( void )
+{
+    if( !b_Internal_Frame_Time_Write )
+    {
+        b_Frame_Time_Overridden = 0;
+    }
+}
+
+static void v_Set_Frame_Time_Register( uint32_t u32_Frame_Time_usec )
+{
+    b_Internal_Frame_Time_Write = 1u;
+    Write_Register( FRAME_CAPTURE_TIME_SYS_REG, u32_Frame_Time_usec );
+    b_Internal_Frame_Time_Write = 0u;
+}
+
+/* A rejected configuration puts the trigger source back to software, since PPS and external
+ * captures are started by the FPGA without the software being asked. TRIG_MODE_SYS_REG is moved
+ * with it so a read reports the source that is really armed, and the mode the host asked for is
+ * kept here so it can be put back once the configuration is good again.
+ */
+static uint32_t u32_Requested_Trig_Mode = (uint32_t)SW_TRIGGER;
+static uint8_t  b_Trig_Mode_Overridden = 0;
+static uint8_t  b_Internal_Trig_Mode_Write = 0;
+
+/* Called by the TRIG_MODE_SYS_REG write callback. A write from the host replaces the mode being
+ * held, so the old one must not be restored later. Writes made while forcing the register to the
+ * software trigger are not host requests and are ignored here.
+ */
+void v_Note_Trigger_Mode_Written( void )
+{
+    if( !b_Internal_Trig_Mode_Write )
+    {
+        b_Trig_Mode_Overridden = 0;
+    }
+}
+
+static void v_Set_Trigger_Mode_Register( uint32_t u32_Mode )
+{
+    b_Internal_Trig_Mode_Write = 1u;
+    Write_Register( TRIG_MODE_SYS_REG, u32_Mode );
+    b_Internal_Trig_Mode_Write = 0u;
+}
+
+/**
+ * @fn Error_Code_t e_Configure_Trigger(void)
+ * @brief Read the imaging registers and program the camera trigger.
+ * Called on entry to the armed state so the trigger is always configured and
+ * ready to capture. In PPS mode this also loads the scheduled capture time,
+ * so the FPGA fires the burst on its own and the software is notified through
+ * BURST_CAPTURE_STARTED.
+ * @return Error code
+ */
+static Error_Code_t e_Configure_Trigger( void )
+{
+    uint32_t u32_Exposure_Timer_usec;
+    uint32_t u32_XTRIG_Low_Time_cycles;
+    uint32_t u32_Pedestal_nsec;
+    uint32_t u32_N_Frames;
+    uint32_t u32_Frame_Capture_Time_usec;
+    uint32_t u32_Trigger_Select;
+    uint32_t u32_Stored_16GB, u32_Stored_8GB;
+    uint32_t u32_Frame_Time_Floor_usec;
+    uint32_t u32_HMAX;
+    uint8_t  b_Override_Needed = 0u;
+    Sys_Time_t Capture_Time, Current_Time;
+
+    Read_Register( SENSOR_EXPO_USEC_SYS_REG, &u32_Exposure_Timer_usec );
+    Read_Register( IMG_PER_TRIGGER_SYS_REG, &u32_N_Frames );
+    Read_Register( FRAME_CAPTURE_TIME_SYS_REG, &u32_Frame_Capture_Time_usec );
+    Read_Register( TRIG_MODE_SYS_REG, &u32_Trigger_Select );
+    Read_Register( CAPTURE_TIME_SEC_SYS_REG, &Capture_Time.u32_Time_Sec );
+    Read_Register( CAPTURE_TIME_MSEC_SYS_REG, &Capture_Time.u32_Time_msec );
+
+    // A mode held over from a rejected configuration is what the host actually asked for, so it
+    // is the one to configure against
+    if( b_Trig_Mode_Overridden )
+    {
+        u32_Trigger_Select = u32_Requested_Trig_Mode;
+    }
+
+    u32_Stored_16GB = u32_Frames_Stored( DMA_WRITE_DDR4_16GB_BASE_ADDR,
+                                         DDR4_16GB_FULL_REG_OFFSET,
+                                         DDR4_16GB_FRAME_CAPTURE_AMOUNT );
+    u32_Stored_8GB  = u32_Frames_Stored( DMA_WRITE_DDR4_8GB_BASE_ADDR,
+                                         DDR4_8GB_FULL_REG_OFFSET,
+                                         DDR4_8GB_FRAME_CAPTURE_AMOUNT );
+
+    // Work out which line period the burst will need, but do not program anything yet. Nothing
+    // may touch the sensor or the trigger until the whole configuration is known to be good,
+    // otherwise a rejected configuration leaves the hardware half applied.
+    if( u32_Stored_16GB + u32_N_Frames > DDR4_16GB_FRAME_CAPTURE_AMOUNT )
+    {
+        // The burst spills into the slower 8GB device, so the sensor has to be slowed to match
+        u32_HMAX = DDR4_8GB_HMAX;
+        u32_Frame_Time_Floor_usec = DDR4_8GB_FRAME_TIME;
+    }
+    else
+    {
+        u32_HMAX = DDR4_16GB_HMAX;
+        u32_Frame_Time_Floor_usec = DDR4_16GB_FRAME_TIME;
+    }
+
+    // The sensor keeps integrating after the trigger pulse ends, so the pulse has to be shortened
+    // by that pedestal for the exposure to come out as requested. An exposure shorter than the
+    // pedestal cannot be produced at all. This is kept in nanoseconds so the sub-microsecond part
+    // of the pedestal survives into the cycle count programmed below.
+    u32_Pedestal_nsec = EXPOSURE_PEDESTAL_NSEC( u32_HMAX );
+
+    // The requested burst has to fit in what is left of the frame buffer
+    if( u32_Stored_16GB + u32_Stored_8GB + u32_N_Frames > TOTAL_FRAME_CAPTURE_AMOUNT )
+    {
+        return ERR_REG_INVALID_LIMIT;
+    }
+
+    if( u32_Exposure_Timer_usec * 1000u <= u32_Pedestal_nsec )
+    {
+        return ERR_REG_INVALID_LIMIT;
+    }
+
+    // A frame period held over from an earlier burst is what the host actually asked for, so it
+    // is the value to try first
+    if( b_Frame_Time_Overridden )
+    {
+        u32_Frame_Capture_Time_usec = u32_Requested_Frame_Time_usec;
+    }
+
+    // The frame period has to cover the exposure plus the readout time of the buffer being used.
+    // Which buffer that is depends on how full the frame buffer is, so it can change from one
+    // burst to the next with nothing written in between. Rather than refuse to arm, the request
+    // is held and the register raised to the shortest period the buffer can sustain.
+    if( u32_Frame_Capture_Time_usec < u32_Exposure_Timer_usec + u32_Frame_Time_Floor_usec )
+    {
+        b_Override_Needed = 1u;
+    }
+
+    // The scheduled capture time is only meaningful to the trigger IP in PPS mode, and it has to
+    // be sane before the trigger is armed. The software and external triggers ignore it.
+    if( u32_Trigger_Select == PPS_TRIGGER )
+    {
+        v_Get_PPS_Time( &Current_Time );
+
+        if( !b_PPS_Is_Locked() )
+            return ERR_REG_INVALID_LIMIT;
+
+        // Capture time must be in the future
+        if( !b_Time_Diff_OK( &Current_Time, &Capture_Time ) )
+            return ERR_REG_INVALID_LIMIT;
+    }
+
+    // Everything checks out, so the hardware can be committed to
+    u32_XTRIG_Low_Time_cycles = NSEC_TO_TRIG_CYCLES( u32_Exposure_Timer_usec * 1000u
+                                                     - u32_Pedestal_nsec );
+
+    v_Apply_Gain();
+    v_Apply_Black_Level();
+    v_Apply_Pattern_Gen();
+
+    if( u32_HMAX != u32_Current_Line_Period() )
+    {
+        v_Set_Line_Period( (uint16_t)u32_HMAX );
+    }
+
+    // The register is updated only once the line period is in effect, so its write callback
+    // validates against the same buffer this burst will use
+    if( b_Override_Needed )
+    {
+        if( !b_Frame_Time_Overridden )
+        {
+            u32_Requested_Frame_Time_usec = u32_Frame_Capture_Time_usec;
+            b_Frame_Time_Overridden = 1u;
+        }
+
+        u32_Frame_Capture_Time_usec = u32_Exposure_Timer_usec + u32_Frame_Time_Floor_usec;
+        v_Set_Frame_Time_Register( u32_Frame_Capture_Time_usec );
+    }
+    else if( b_Frame_Time_Overridden )
+    {
+        // The buffer can sustain what the host originally asked for again
+        b_Frame_Time_Overridden = 0u;
+        v_Set_Frame_Time_Register( u32_Frame_Capture_Time_usec );
+    }
+
+    configure_trig(CAM_TRIG_BASE_ADDR,
+                   u32_XTRIG_Low_Time_cycles,
+                   u32_Frame_Capture_Time_usec,
+                   u32_N_Frames,
+                   u32_Trigger_Select,
+                   Capture_Time.u32_Time_Sec,
+                   Capture_Time.u32_Time_msec);
+
+    return NO_ERROR;
+}
+
+/**
+ * @fn void v_Reconfigure_Trigger(void)
+ * @brief Program the camera trigger and record whether it is safe to fire.
+ * A rejected configuration leaves the trigger holding the settings of an earlier burst, and PPS
+ * and external captures are started by the FPGA without the software being asked. The trigger
+ * source is put back to software in that case, where nothing can start a capture that
+ * b_Trigger_Ready has not allowed.
+ */
+static void v_Reconfigure_Trigger( void )
+{
+    b_Trigger_Ready = ( e_Configure_Trigger() == NO_ERROR );
+
+    if( !b_Trigger_Ready )
+    {
+        HAL_set_32bit_reg( CAM_TRIG_BASE_ADDR, XTRIG_SRC_SEL, (uint32_t)SW_TRIGGER );
+
+        if( !b_Trig_Mode_Overridden )
+        {
+            Read_Register( TRIG_MODE_SYS_REG, &u32_Requested_Trig_Mode );
+            b_Trig_Mode_Overridden = 1u;
+        }
+
+        v_Set_Trigger_Mode_Register( (uint32_t)SW_TRIGGER );
+    }
+    else if( b_Trig_Mode_Overridden )
+    {
+        // The requested source is armed again, so the register can report it
+        b_Trig_Mode_Overridden = 0u;
+        v_Set_Trigger_Mode_Register( u32_Requested_Trig_Mode );
+    }
+}
+
+State_t Camera_Armed_State( Camera_Context_t *context, Event_t *event )
+{
+    State_t next_state = (State_t)Camera_Armed_State;
+    uint32_t u32_Trigger_Select;
+
+    switch( event->no_data.sig )
+    {
+    case ENTRANCE:
+        if (context->eState == CAMERA_IDLE_STATE) {
+            set_standby_and_master_mode(0x00);
+        }
+
+        // Reset the frame counter of the buffer used for image capture
+        v_Enable_Camera_IRQ(1);
+//        v_Reset_Camera_Buffer();
+
+        // The trigger is configured on entry and is ready to capture
+        v_Reconfigure_Trigger();
+        context->eState = CAMERA_ARMED_STATE;
+        break;
+
+    case CAMERA_CONFIG_CHANGED:
+        // Reprogram the trigger so register changes made while armed take effect
+        v_Reconfigure_Trigger();
+        break;
+
+    case EXIT:
+        b_Trigger_Ready = 0;
+        break;
+
+    case POWER_DOWN_CAMERA:
+        next_state = (State_t)Camera_Low_Power_State;
+        break;
+
+    case CAMERA_TAKE_PICTURE:
+        // Only the software trigger needs to be pulsed. In PPS mode the FPGA
+        // fires the burst on its own at the scheduled time.
+        Read_Register( TRIG_MODE_SYS_REG, &u32_Trigger_Select );
+
+        if( b_Trigger_Ready && u32_Trigger_Select == SW_TRIGGER )
+            trig_capture();
+        break;
+
+    case CAMERA_RESET_FRAME_INDEX:
+        v_Reset_Camera_Buffer();
+        v_Reconfigure_Trigger();
+        break;
+
+    case BURST_CAPTURE_STARTED:
+        next_state = (State_t)Camera_Busy_State;
+        break;
+
+    case CAMERA_SEND_FRAMES:
+        next_state = (State_t)Camera_Transfer_State;
+        break;
+
+    default:
+        break;
+    }
+
+    return next_state;
+
+}
+
+

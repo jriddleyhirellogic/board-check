@@ -1,0 +1,25 @@
+\doxysection{x\+Queue\+Get\+Static\+Buffers }
+\hypertarget{group__xQueueGetStaticBuffers}{}\label{group__xQueueGetStaticBuffers}\index{xQueueGetStaticBuffers@{xQueueGetStaticBuffers}}
+queue. h 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ xQueueGetStaticBuffers(\ \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{QueueHandle\_t}}\ xQueue,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ **\ ppucQueueStorage,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{FreeRTOS_8h_a22e8979e2849d002747c0dd4c7c37908}{StaticQueue\_t}}\ **\ ppxStaticQueue\ );}
+
+\end{DoxyCode}
+
+
+Retrieve pointers to a statically created queue\textquotesingle{}s data structure buffer and storage area buffer. These are the same buffers that are supplied at the time of creation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Queue} & The queue for which to retrieve the buffers.\\
+\hline
+{\em ppuc\+Queue\+Storage} & Used to return a pointer to the queue\textquotesingle{}s storage area buffer.\\
+\hline
+{\em ppx\+Static\+Queue} & Used to return a pointer to the queue\textquotesingle{}s data structure buffer.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pd\+TRUE if buffers were retrieved, pd\+FALSE otherwise. 
+\end{DoxyReturn}

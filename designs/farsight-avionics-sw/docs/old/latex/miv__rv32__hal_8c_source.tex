@@ -1,0 +1,378 @@
+\doxysection{miv\+\_\+rv32\+\_\+hal.\+c}
+\hypertarget{miv__rv32__hal_8c_source}{}\label{miv__rv32__hal_8c_source}\index{src/miv\_rv32\_hal/miv\_rv32\_hal.c@{src/miv\_rv32\_hal/miv\_rv32\_hal.c}}
+\doxymbox{\hyperlink{miv__rv32__hal_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00002}00002\ \textcolor{comment}{\ *\ Copyright\ 2019-\/2022\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00006}00006\ \textcolor{comment}{\ *\ @file\ miv\_rv32\_hal.c}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00007}00007\ \textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ Implementation\ of\ Hardware\ Abstraction\ Layer\ for\ Mi-\/V\ soft\ processors}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00009}00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00010}00010\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <unistd.h>}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{miv__rv32__hal_8h}{miv\_rv32\_hal.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00014}00014\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00015}00015\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00016}00016\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00018}\doxymbox{\hyperlink{miv__rv32__hal_8c_aa90cac659d18e8ef6294c7ae337f6b58}{00018}}\ \textcolor{preprocessor}{\#define\ SUCCESS\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0U}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00019}\doxymbox{\hyperlink{miv__rv32__hal_8c_a8fe83ac76edc595f6b98cd4a4127aed5}{00019}}\ \textcolor{preprocessor}{\#define\ ERROR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1U}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00020}\doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{00020}}\ \textcolor{preprocessor}{\#define\ MASK\_32BIT\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0xFFFFFFFFu}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00022}00022\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00023}00023\ \textcolor{comment}{\ *\ \ Write\ in\ a\ sequence\ recommended\ by\ privileged\ spec\ to\ avoid\ spurious}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00024}00024\ \textcolor{comment}{\ *\ interrupts}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00025}00025\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00026}00026\ \textcolor{comment}{\ \ \ \#\ New\ comparand\ is\ in\ a1:a0.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00027}00027\ \textcolor{comment}{\ \ \ \ li\ t0,\ -\/1}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00028}00028\ \textcolor{comment}{\ \ \ \ sw\ t0,\ mtimecmp\ \#\ No\ smaller\ than\ old\ value.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00029}00029\ \textcolor{comment}{\ \ \ \ sw\ a1,\ mtimecmp+4\ \#\ No\ smaller\ than\ new\ value.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00030}00030\ \textcolor{comment}{\ \ \ \ sw\ a0,\ mtimecmp\ \#\ New\ value.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00031}00031\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00032}00032\ \textcolor{preprocessor}{\#ifndef\ MIV\_RV32\_EXT\_TIMECMP}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00033}\doxymbox{\hyperlink{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b}{00033}}\ \textcolor{preprocessor}{\#define\ WRITE\_MTIMECMP(value)\ \ \ \ \ \ \ \ \ MTIMECMPH\ =\ MASK\_32BIT;\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00034}00034\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MTIMECMP\ \ =\ value\ \&\ MASK\_32BIT;\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00035}00035\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MTIMECMPH\ =\ \ (value\ >>\ 32u)\ \&\ MASK\_32BIT;}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00036}00036\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00037}00037\ \textcolor{preprocessor}{\#define\ WRITE\_MTIMECMP(value)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00038}00038\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00040}00040\ \textcolor{preprocessor}{\#ifndef\ MIV\_RV32\_EXT\_TIMER}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00041}\doxymbox{\hyperlink{miv__rv32__hal_8c_a2772b4d86b782674867ffa80499c501d}{00041}}\ \textcolor{preprocessor}{\#define\ WRITE\_MTIME(value)\ \ \ \ \ \ \ \ \ \ \ \ MTIME\ \ =\ value\ \&\ MASK\_32BIT;\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00042}00042\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MTIMEH\ =\ (value\ >>\ 32u)\ \&\ MASK\_32BIT;}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00043}00043\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00044}00044\ \textcolor{preprocessor}{\#define\ WRITE\_MTIME(value)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00045}00045\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00047}\doxymbox{\hyperlink{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1}{00047}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1}{Software\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00049}00049\ \textcolor{preprocessor}{\#ifdef\ MIV\_LEGACY\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00050}00050\ \textcolor{preprocessor}{\#define\ MTIME\_PRESCALER\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 100UL}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00051}00051\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00052}00052\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00053}00053\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00054}00054\ uint8\_t\ Invalid\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00055}00055\ uint8\_t\ External\_1\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00056}00056\ uint8\_t\ External\_2\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00057}00057\ uint8\_t\ External\_3\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00058}00058\ uint8\_t\ External\_4\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00059}00059\ uint8\_t\ External\_5\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00060}00060\ uint8\_t\ External\_6\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00061}00061\ uint8\_t\ External\_7\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00062}00062\ uint8\_t\ External\_8\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00063}00063\ uint8\_t\ External\_9\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00064}00064\ uint8\_t\ External\_10\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00065}00065\ uint8\_t\ External\_11\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00066}00066\ uint8\_t\ External\_12\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00067}00067\ uint8\_t\ External\_13\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00068}00068\ uint8\_t\ External\_14\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00069}00069\ uint8\_t\ External\_15\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00070}00070\ uint8\_t\ External\_16\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00071}00071\ uint8\_t\ External\_17\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00072}00072\ uint8\_t\ External\_18\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00073}00073\ uint8\_t\ External\_19\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00074}00074\ uint8\_t\ External\_20\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00075}00075\ uint8\_t\ External\_21\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00076}00076\ uint8\_t\ External\_22\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00077}00077\ uint8\_t\ External\_23\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00078}00078\ uint8\_t\ External\_24\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00079}00079\ uint8\_t\ External\_25\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00080}00080\ uint8\_t\ External\_26\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00081}00081\ uint8\_t\ External\_27\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00082}00082\ uint8\_t\ External\_28\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00083}00083\ uint8\_t\ External\_29\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00084}00084\ uint8\_t\ External\_30\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00085}00085\ uint8\_t\ External\_31\_IRQHandler(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00088}00088\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00089}00089\ \textcolor{comment}{\ *\ RISC-\/V\ interrupt\ handler\ for\ external\ interrupts.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00090}00090\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00091}00091\ uint8\_t\ (*\ \textcolor{keyword}{const}\ ext\_irq\_handler\_table[32])(void)\ =}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00092}00092\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00094}00094\ \ \ \ \ Invalid\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00095}00095\ \ \ \ \ External\_1\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00096}00096\ \ \ \ \ External\_2\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00097}00097\ \ \ \ \ External\_3\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00098}00098\ \ \ \ \ External\_4\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00099}00099\ \ \ \ \ External\_5\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00100}00100\ \ \ \ \ External\_6\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00101}00101\ \ \ \ \ External\_7\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00102}00102\ \ \ \ \ External\_8\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00103}00103\ \ \ \ \ External\_9\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00104}00104\ \ \ \ \ External\_10\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00105}00105\ \ \ \ \ External\_11\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00106}00106\ \ \ \ \ External\_12\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00107}00107\ \ \ \ \ External\_13\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00108}00108\ \ \ \ \ External\_14\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00109}00109\ \ \ \ \ External\_15\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00110}00110\ \ \ \ \ External\_16\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00111}00111\ \ \ \ \ External\_17\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00112}00112\ \ \ \ \ External\_18\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00113}00113\ \ \ \ \ External\_19\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00114}00114\ \ \ \ \ External\_20\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00115}00115\ \ \ \ \ External\_21\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00116}00116\ \ \ \ \ External\_22\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00117}00117\ \ \ \ \ External\_23\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00118}00118\ \ \ \ \ External\_24\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00119}00119\ \ \ \ \ External\_25\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00120}00120\ \ \ \ \ External\_26\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00121}00121\ \ \ \ \ External\_27\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00122}00122\ \ \ \ \ External\_28\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00123}00123\ \ \ \ \ External\_29\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00124}00124\ \ \ \ \ External\_30\_IRQHandler,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00125}00125\ \ \ \ \ External\_31\_IRQHandler}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00126}00126\ \};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00128}00128\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00129}00129\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00130}00130\ \textcolor{comment}{\ *\ Interrupt\ handlers\ as\ mapped\ into\ the\ MIE\ register\ of\ the\ MIV\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00131}00131\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00132}\doxymbox{\hyperlink{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf}{00132}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf}{External\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00133}\doxymbox{\hyperlink{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c}{00133}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c}{MGEUI\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00134}\doxymbox{\hyperlink{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722}{00134}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722}{MGECI\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00135}\doxymbox{\hyperlink{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1}{00135}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1}{MSYS\_EI0\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00136}\doxymbox{\hyperlink{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437}{00136}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437}{MSYS\_EI1\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00137}\doxymbox{\hyperlink{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e}{00137}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e}{MSYS\_EI2\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00138}\doxymbox{\hyperlink{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5}{00138}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5}{MSYS\_EI3\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00139}\doxymbox{\hyperlink{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc}{00139}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc}{MSYS\_EI4\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00140}\doxymbox{\hyperlink{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0}{00140}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0}{MSYS\_EI5\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00141}\doxymbox{\hyperlink{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61}{00141}}\ \textcolor{keyword}{extern}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61}{OPSRV\_IRQHandler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00143}00143\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ MIV\_LEGACY\_RV32\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00145}00145\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00146}00146\ \textcolor{comment}{\ *\ Increment\ value\ for\ the\ mtimecmp\ register\ in\ order\ to\ achieve\ a\ system\ tick}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00147}00147\ \textcolor{comment}{\ *\ interrupt\ as\ specified\ through\ the\ MRV\_systick\_config()\ function.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00148}00148\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00149}\doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{00149}}\ \textcolor{keyword}{static}\ uint64\_t\ \doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\_systick\_increment}}\ =\ 0U;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00150}\doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{00150}}\ \textcolor{keyword}{static}\ uint64\_t\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}}\ =\ 0U;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00152}00152\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00153}00153\ \textcolor{comment}{\ *\ Configure\ the\ machine\ timer\ to\ generate\ an\ interrupt.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00154}00154\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00155}\doxymbox{\hyperlink{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c}{00155}}\ uint32\_t\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c}{MRV\_systick\_config}}(uint64\_t\ ticks)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00156}00156\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00157}00157\ \ \ \ \ uint32\_t\ ret\_val\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a8fe83ac76edc595f6b98cd4a4127aed5}{ERROR}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00158}00158\ \ \ \ \ uint64\_t\ remainder\ =\ ticks;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00160}00160\ \ \ \ \ \textcolor{keywordflow}{while}\ (remainder\ >=\ \doxymbox{\hyperlink{miv__rv32__hal_8h_a001d5897397dcc3ed068517bd47c6437}{MTIME\_PRESCALER}})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00161}00161\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00162}00162\ \ \ \ \ \ \ \ \ remainder\ -\/=\ \doxymbox{\hyperlink{miv__rv32__hal_8h_a001d5897397dcc3ed068517bd47c6437}{MTIME\_PRESCALER}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00163}00163\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\_systick\_increment}}++;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00164}00164\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00166}00166\ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}}\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\_systick\_increment}}\ +\ \doxymbox{\hyperlink{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299}{MTIME}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00168}00168\ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\_systick\_increment}}\ >\ 0U)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00169}00169\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00170}00170\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b}{WRITE\_MTIMECMP}}(\doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00171}00171\ \ \ \ \ \ \ \ \ set\_csr(mie,\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a51c044e20264a9e2a875b17482e8ff11}{MIP\_MTIP}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00172}00172\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25}{MRV\_enable\_interrupts}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00173}00173\ \ \ \ \ \ \ \ \ ret\_val\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8c_aa90cac659d18e8ef6294c7ae337f6b58}{SUCCESS}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00174}00174\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00175}00175\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00176}00176\ \ \ \ \ \textcolor{keywordflow}{return}\ ret\_val;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00177}00177\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00179}00179\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00180}00180\ \textcolor{comment}{\ *\ RISC-\/V\ interrupt\ handler\ for\ machine\ timer\ interrupts.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00181}00181\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00182}\doxymbox{\hyperlink{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7}{00182}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7}{handle\_m\_timer\_interrupt}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00183}00183\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00184}00184\ \ \ \ \ clear\_csr(mie,\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a51c044e20264a9e2a875b17482e8ff11}{MIP\_MTIP}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00186}00186\ \ \ \ \ uint64\_t\ mtime\_at\_irq\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299}{MTIME}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00188}00188\ \textcolor{preprocessor}{\#ifndef\ NDEBUG}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00189}00189\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{volatile}\ uint32\_t\ d\_tick\ =\ 0u;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00190}00190\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00192}00192\ \ \ \ \ \textcolor{keywordflow}{while}(\doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}}\ <\ (mtime\_at\_irq\ +\ \doxymbox{\hyperlink{miv__rv32__hal_8h_ab22f6207ae51de029d25f078740a6bca}{MTIME\_DELTA}}))\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00193}00193\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}}\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}}\ +\ \doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\_systick\_increment}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00195}00195\ \textcolor{preprocessor}{\#ifndef\ NDEBUG}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00196}00196\ \ \ \ \ \ \ \ \ d\_tick\ +=\ 1;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00197}00197\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00198}00198\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00200}00200\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00201}00201\ \textcolor{comment}{\ \ \ \ \ *\ Note:\ If\ d\_tick\ >\ 1\ it\ means,\ that\ a\ system\ timer\ interrupt\ has\ been\ missed.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00202}00202\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00203}00203\ \textcolor{comment}{\ \ \ \ \ *\ Please\ ensure\ that\ interrupt\ handlers\ are\ as\ short\ as\ possible\ to\ prevent}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00204}00204\ \textcolor{comment}{\ \ \ \ \ *\ them\ stopping\ other\ interrupts\ from\ being\ handled.\ For\ example,\ if\ a}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00205}00205\ \textcolor{comment}{\ \ \ \ \ *\ system\ timer\ interrupt\ occurs\ during\ a\ software\ interrupt,\ the\ system}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00206}00206\ \textcolor{comment}{\ \ \ \ \ *\ timer\ interrupt\ will\ not\ be\ handled\ until\ the\ software\ interrupt\ handling}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00207}00207\ \textcolor{comment}{\ \ \ \ \ *\ is\ complete.\ If\ the\ software\ interrupt\ handling\ time\ is\ more\ than\ one\ systick}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00208}00208\ \textcolor{comment}{\ \ \ \ \ *\ interval,\ it\ will\ result\ in\ d\_tick\ >\ 1.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00209}00209\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00210}00210\ \textcolor{comment}{\ \ \ \ \ *\ If\ you\ are\ running\ the\ program\ using\ the\ debugger\ and\ halt\ the\ CPU\ at\ a\ breakpoint,}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00211}00211\ \textcolor{comment}{\ \ \ \ \ *\ MTIME\ will\ continue\ to\ increment\ and\ interrupts\ will\ be\ missed;\ resulting}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00212}00212\ \textcolor{comment}{\ \ \ \ \ *\ in\ d\_tick\ >\ 1.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00213}00213\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00215}00215\ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b}{WRITE\_MTIMECMP}}(\doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\_systick\_cmp\_value}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00217}00217\ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e}{SysTick\_Handler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00218}00218\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00219}00219\ \ \ \ \ set\_csr(mie,\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a51c044e20264a9e2a875b17482e8ff11}{MIP\_MTIP}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00220}00220\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00221}00221\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00222}00222\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00223}00223\ \textcolor{comment}{\ *\ RISC-\/V\ interrupt\ handler\ for\ software\ interrupts.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00224}00224\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00225}00225\ \textcolor{preprocessor}{\#ifdef\ MIV\_LEGACY\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00226}00226\ \textcolor{keywordtype}{void}\ handle\_m\_ext\_interrupt(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00227}00227\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00228}00228\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ hart\_id\ =\ read\_csr(mhartid);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00229}00229\ \ \ \ \ uint32\_t\ int\_num\ \ =\ PLIC-\/>TARGET[hart\_id].CLAIM\_COMPLETE;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00230}00230\ \ \ \ \ uint8\_t\ disable\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8h_adf5c4a234e09fa4cbf520083a5c7ff28}{EXT\_IRQ\_KEEP\_ENABLED}};}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00231}00231\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00232}00232\ \ \ \ \ \textcolor{keywordflow}{if}\ (0u\ !=int\_num)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00233}00233\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00234}00234\ \ \ \ \ \ \ \ \ disable\ =\ ext\_irq\_handler\_table[int\_num]();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00235}00235\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00236}00236\ \ \ \ \ \ \ \ \ PLIC-\/>TARGET[hart\_id].CLAIM\_COMPLETE\ =\ int\_num;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\doxymbox{\hyperlink{miv__rv32__hal_8h_a49c689d61884b201c5390a22ccb26404}{EXT\_IRQ\_DISABLE}}\ ==\ disable)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00239}00239\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ MRV\_PLIC\_disable\_irq((IRQn\_Type)int\_num);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00241}00241\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00242}00242\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00243}00243\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00244}00244\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ MIV\_LEGACY\_RV32\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00245}00245\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00246}\doxymbox{\hyperlink{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f}{00246}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f}{handle\_m\_soft\_interrupt}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00247}00247\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00248}00248\ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1}{Software\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00249}00249\ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7}{MRV\_clear\_soft\_irq}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00250}00250\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00251}00251\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00252}00252\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00253}00253\ \textcolor{comment}{\ *\ Trap\ handler.\ This\ function\ is\ invoked\ in\ the\ non-\/vectored\ mode.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00254}00254\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00255}\doxymbox{\hyperlink{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a}{00255}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a}{handle\_trap}}(uintptr\_t\ mcause,\ uintptr\_t\ \doxymbox{\hyperlink{portContext_8h_a83d9b6c23f64904c746c45662c911420}{mepc}})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00256}00256\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00257}00257\ \ \ \ \ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a02e2db32b33eb8cf23622150ac372200}{IRQ\_M\_SOFT}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00258}00258\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00259}00259\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f}{handle\_m\_soft\_interrupt}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00260}00260\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00261}00261\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_aa5b87ef0a6024ad69009faff8fd6a9d5}{IRQ\_M\_TIMER}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00262}00262\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00263}00263\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7}{handle\_m\_timer\_interrupt}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00264}00264\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00265}00265\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a43fba639eb8d7ee37648cc0af12cf59b}{IRQ\_M\_EXT}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00266}00266\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00267}00267\ \textcolor{preprocessor}{\#ifdef\ MIV\_LEGACY\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00268}00268\ \ \ \ \ \ \ \ \ handle\_m\_ext\_interrupt();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00269}00269\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00270}00270\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf}{External\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00271}00271\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00272}00272\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00273}00273\ \textcolor{preprocessor}{\#ifndef\ MIV\_LEGACY\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00274}00274\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a2c9fa3b21c11b0426d7c416439bc6e49}{MSYS\_EI0}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00275}00275\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00276}00276\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1}{MSYS\_EI0\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00277}00277\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00278}00278\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a5ec7ba0cf14c8f8257b91275388d103a}{MSYS\_EI1}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00279}00279\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00280}00280\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437}{MSYS\_EI1\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00281}00281\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00282}00282\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a130b36c0521924f28acbabf85aacb7db}{MSYS\_EI2}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00283}00283\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00284}00284\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e}{MSYS\_EI2\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00285}00285\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00286}00286\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_ae50d62f1bbd12af8c6af29656f71f634}{MSYS\_EI3}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00287}00287\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00288}00288\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5}{MSYS\_EI3\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00289}00289\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00290}00290\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_ae83a8bfb644313ef65f3143c42766bdd}{MSYS\_EI4}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00291}00291\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00292}00292\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc}{MSYS\_EI4\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00293}00293\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00294}00294\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a0aec347d59cca824f2c91237a6c6b74d}{MSYS\_EI5}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00295}00295\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00296}00296\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0}{MSYS\_EI5\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00297}00297\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00298}00298\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_acce69d241781b490bd22bd92dae66a82}{OPSRV\_REG}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00299}00299\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00300}00300\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61}{OPSRV\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00301}00301\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00302}00302\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_a905d6faef1955f04244f84c3e1fa72ae}{MGEUI}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00303}00303\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00304}00304\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c}{MGEUI\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00305}00305\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00306}00306\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((mcause\ \&\ MCAUSE\_INT)\ \&\&\ ((mcause\ \&\ MCAUSE\_CAUSE)\ ==\ \doxymbox{\hyperlink{miv__rv32__regs_8h_adc230170e2eea884a72a5ddccd5e643c}{MGECI}}))}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00307}00307\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00308}00308\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722}{MGECI\_IRQHandler}}();}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00309}00309\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00310}00310\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ MIV\_LEGACY\_RV32\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00311}00311\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00312}00312\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00313}00313\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00314}00314\ \textcolor{preprocessor}{\#ifndef\ NDEBUG}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00315}00315\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00316}00316\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ Arguments\ supplied\ to\ this\ function\ are\ mcause,\ mepc\ (exception\ PC)\ and}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00317}00317\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ stack\ pointer.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00318}00318\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ Based\ on\ privileged-\/isa\ specification\ mcause\ values\ and\ meanings\ are:}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00319}00319\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00320}00320\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 0\ Instruction\ address\ misaligned\ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00321}00321\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 1\ Instruction\ access\ fault\ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00322}00322\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 2\ Illegal\ instruction\ \ \ \ \ \ \ \ \ \ \ \ (mtval/mtval\ contains\ the}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00323}00323\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offending\ instruction\ opcode)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00324}00324\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 3\ Breakpoint}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00325}00325\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 4\ Load\ address\ misaligned\ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00326}00326\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 5\ Load\ address\ fault\ \ \ \ \ \ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00327}00327\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 6\ Store/AMO\ address\ fault\ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00328}00328\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 7\ Store/AMO\ access\ fault\ \ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00329}00329\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 8\ Environment\ call\ from\ U-\/mode}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00330}00330\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ 9\ Environment\ call\ from\ S-\/mode}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00331}00331\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ A\ Environment\ call\ from\ M-\/mode}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00332}00332\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ B\ Instruction\ page\ fault}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00333}00333\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ C\ Load\ page\ fault\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00334}00334\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ E\ Store\ page\ fault\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (mtval/mtval\ is\ the\ address)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00335}00335\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00336}00336\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \#\ Please\ note:\ mtval\ is\ the\ newer\ name\ for\ register\ mbadaddr}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00337}00337\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \#\ If\ you\ get\ a\ compile\ failure\ here,\ use\ the\ older\ name.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00338}00338\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \#\ At\ this\ point,\ both\ are\ supported\ in\ latest\ compiler,\ older\ compiler}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00339}00339\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \#\ versions\ only\ support\ mbadaddr.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00340}00340\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \#\ See:\ https://github.com/riscv/riscv-\/gcc/issues/133}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00341}00341\ \textcolor{comment}{\ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00342}00342\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00343}00343\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ interrupt\ pending\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00344}00344\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mip\ \ \ \ \ \ =\ read\_csr(mip);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00345}00345\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00346}00346\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ additional\ info\ and\ meaning\ depends\ on\ mcause\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00347}00347\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mtval\ =\ read\_csr(mtval);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00348}00348\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00349}00349\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ trap\ vector\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00350}00350\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mtvec\ \ \ \ =\ read\_csr(mtvec);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00351}00351\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ temporary,\ sometimes\ might\ hold\ temporary\ value\ of\ a0\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00353}00353\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mscratch\ =\ read\_csr(mscratch);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00354}00354\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ status\ contains\ many\ smaller\ fields:\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00356}00356\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mstatus\ \ =\ read\_csr(mstatus);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00357}00357\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ PC\ value\ when\ the\ exception\ was\ taken*/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00359}00359\ \ \ \ \ \ \ \ \ \ uintptr\_t\ mmepc\ \ =\ read\_csr(\doxymbox{\hyperlink{portContext_8h_a83d9b6c23f64904c746c45662c911420}{mepc}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00360}00360\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00361}00361\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ breakpoint\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00362}00362\ \ \ \ \ \ \ \ \ \_\_asm\_\_(\textcolor{stringliteral}{"{}ebreak"{}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00363}00363\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00364}00364\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe}{\_exit}}(1\ +\ mcause);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00365}00365\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ NDEBUG\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00366}00366\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00367}00367\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00368}00368\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00369}00369\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00370}00370\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00371}00371\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__hal_8c_source_l00372}00372\ }
+
+\end{DoxyCode}

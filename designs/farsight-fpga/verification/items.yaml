@@ -1,0 +1,2040 @@
+# Verification items for the PolarFire FPGA.
+#
+# An item binds one requirement to a specific piece of evidence and cites the
+# plan clause that authorises the method. Schema: framework I.6.
+# Clauses: farsight-verification/docs/plans/pf-fpga-vv-plan.md.
+#
+# ---------------------------------------------------------------------------
+# NO POLARFIRE VERIFICATION TESTS EXIST YET.
+#
+# Every `artifact` below names a test, inspection, analysis or hardware record
+# that still has to be written. That is the intended order: the item states
+# what would constitute a pass, so the eventual test is written to this
+# criterion rather than the criterion being inferred from the test.
+#
+# A SIM item's provisional `test/sim/...` artifact moves to
+# `verification/tests/test_pf_<area>.py::<same test name>` when its test is
+# implemented. The test name is stable because it starts with the requirement
+# identifier in method clause VVP-PF-001 form.
+#
+# ---------------------------------------------------------------------------
+# Identifiers are flat and opaque, allocated in creation order, and never embed
+# a requirement identifier. They are evidence identifiers, not requirement
+# names, and are not renumbered when a requirement changes.
+
+items:
+
+  # -------------------------------------------------------------------------
+  # BUILD -- Device/platform constraints
+
+  - id:            VC-PF-0001
+    verifies:      [PF-BUILD-06]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_build.py::test_PF_BUILD_06_targets_mpf500t
+    criteria: >
+      The build configuration selects the MPF500TS-FC1152M PolarFire device and
+      package for the flight FPGA implementation. Any other target device or
+      package fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0002
+    verifies:      [DRV-PF-10]
+    authorised_by: VVP-PF-004
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_DRV_PF_10_margin_and_slack
+    criteria: >
+      The retained Libero utilisation and timing reports show at least 20%
+      unused fabric logic resources, at least 20% unused memory resources, and
+      non-negative worst-case slack on every clock domain.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+    # Passes on the retained build: 69.5% of 4LUTs free, 79.3% of LSRAM, and no
+    # negative slack at the part's three corners. Cross-domain paths are not
+    # timed (DRV-PF-03), and the range is DRV-PF-05's.
+    # Tool-computed utilisation and static timing make this VVP-PF-004 rather
+    # than a hand budget.
+
+  - id:            VC-PF-0126
+    verifies:      [PF-BUILD-23]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_build.py::test_PF_BUILD_23_system_controller_available
+    criteria: >
+      The project configuration and the retained build both leave the PolarFire
+      system controller unsuspended (SYSTEM_CONTROLLER_SUSPEND_MODE 0). A build
+      that suspends it, or that does not record the setting, fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  # -------------------------------------------------------------------------
+  # CLK -- External clocking and domain crossing
+
+  - id:            VC-PF-0003
+    verifies:      [PF-CLK-02]
+    authorised_by: VVP-PF-004
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_PF_CLK_02_50mhz_control_clock
+    criteria: >
+      The retained timing report declares the board 50 MHz input clock and
+      propagates it as the primary control-plane clock for APB, PPS and focus
+      timing domains.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+
+  - id:            VC-PF-0004
+    verifies:      [PF-CLK-02]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/clk_bench.md::HW-PF-CLK-02
+    criteria: >
+      On a powered board, the FPGA accepts the board 50 MHz reference and the
+      firmware-visible control plane operates from that clock without requiring
+      any alternate primary clock source.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0005
+    verifies:      [DRV-PF-02]
+    authorised_by: VVP-PF-007
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_DRV_PF_02_crossing_means_appropriate
+    criteria: >
+      Every crossing in the reviewed CDC list is classified by source and
+      destination domain, width and relationship, and its transfer means matches
+      the class: multi-stage synchroniser for single-bit asynchronous signals,
+      handshake, gray code or FIFO for multi-bit asynchronous transfers, and
+      timing closure rather than synchronisation for phase-related interfaces.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+    expect:        FAIL
+    # DRV-PF-02 is the singleton VVP-PF-007 item because appropriateness is a
+    # crossing-by-crossing review, not merely the absence of CDC tool findings.
+
+  - id:            VC-PF-0006
+    verifies:      [DRV-PF-02]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_build.py::test_DRV_PF_02_crossing_inventory_reviewed
+    criteria: >
+      The design evidence includes a reviewed inventory for every declared
+      clock-domain crossing, and the inventory records the selected transfer
+      means for each crossing. Missing crossings or unreviewed entries fail.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     witnessed
+    expect:        FAIL
+    # A script can enumerate candidates, but judging the transfer means against
+    # the relationship between domains is witnessed until that review is encoded.
+
+  - id:            VC-PF-0007
+    verifies:      [DRV-PF-03]
+    authorised_by: VVP-PF-004
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_DRV_PF_03_specific_crossing_constraints
+    criteria: >
+      The retained CDC and timing reports show each asynchronous crossing has a
+      crossing-specific constraint, and no crossing is discharged only by a
+      blanket asynchronous clock-group exemption.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-PF-0008
+    verifies:      [DRV-PF-04]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_DRV_PF_04_frequency_error_budget
+    criteria: >
+      The frequency-error budget names every FPGA clock source and sums initial
+      tolerance, temperature stability and aging over mission life, using the
+      worse oscillator part wherever alternate parts can populate one net.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # The on-board oscillators are budgeted from their datasheets. The camera
+    # lane clocks come from the sensor's oscillator, on the camera board, and
+    # the PolarFire's RC oscillator needs the PolarFire datasheet.
+
+  - id:            VC-PF-0009
+    verifies:      [DRV-PF-07]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_DRV_PF_07_clock_derived_requirements
+    criteria: >
+      Every timing requirement whose bound is derived from an FPGA clock source
+      cites that source's total frequency-error budget and records the remaining
+      margin after applying it. An omitted clock-derived timing requirement
+      fails.
+    evidence:      [the recorded calculation]
+
+  - id:            VC-PF-0010
+    verifies:      [DRV-PF-05]
+    authorised_by: VVP-PF-004
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_DRV_PF_05_worst_case_pvt_closed
+    criteria: >
+      The retained static timing report identifies the operational process,
+      voltage and temperature corners used for every clock domain and reports
+      non-negative slack at the worst-case corner for each domain. A report that
+      does not name the operational range fails.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-PF-0011
+    verifies:      [DRV-PF-06]
+    authorised_by: VVP-PF-004
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_build.py::test_DRV_PF_06_source_sync_sta_closed
+    criteria: >
+      The retained timing report shows every source-synchronous or otherwise
+      timing-constrained external interface has input or output delay constraints
+      and closed timing, and none is treated as an asynchronous crossing in
+      place of timing closure.
+    requires:      [BUILD-01]
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  # -------------------------------------------------------------------------
+  # CPU -- Soft processor
+
+  - id:            VC-PF-0123
+    verifies:      [PF-CPU-01]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_PF_CPU_01_processor_on_tmtc_link
+    criteria: >
+      The SmartDesign instantiates a soft processor whose bus reaches the TMTC
+      UART's registers, the UART's interrupt reaches the processor, and the
+      UART's receive and transmit lines are top-level ports that the board
+      connects onward. A missing processor, register path, interrupt or line
+      fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0124
+    verifies:      [PF-CPU-02]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_PF_CPU_02_processor_reaches_flash
+    criteria: >
+      An SPI master on the processor's APB has its clock, select and both data
+      lines on top-level ports that the board connects to a single SPI flash
+      device. A line that reaches no device, or a different one, fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  # -------------------------------------------------------------------------
+  # APB -- Firmware-visible APB ICD and error semantics
+
+  - id:            VC-PF-0012
+    verifies:      [DRV-PF-01]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_DRV_PF_01_apb_slots_match_icd
+    criteria: >
+      The APB interconnect exposes exactly the peripheral slots defined in
+      CM-01979 section 25.1. A missing slot, duplicate slot, or slot at a
+      different address fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0013
+    verifies:      [PF-APB-02]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_apb.py::test_PF_APB_02_invalid_access_signals_error
+    criteria: >
+      For each APB peripheral, an invalid read or write access asserts the bus
+      error indication to the master and does not return data that is
+      indistinguishable from a valid read. A dummy-data response with no error
+      fails.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Run on all twelve of the design's APB slaves and on CoreGPIO: none ever
+    # raises pslverr, and none of the twelve completes a misaligned access.
+    # PF-F-10, PF-F-42.
+
+  # -------------------------------------------------------------------------
+  # IO -- Top-level external I/O
+
+  - id:            VC-PF-0014
+    verifies:      [PF-IO-01]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/io_bench.md::HW-PF-IO-01
+    criteria: >
+      On a powered board, the single-ended board-supplied 50 MHz reference clock
+      is present at the FPGA clock input and the top-level design runs from it.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0015
+    verifies:      [PF-IO-02]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/io_bench.md::HW-PF-IO-02
+    criteria: >
+      On a powered board, the 148.5 MHz differential camera reference clock is
+      present at the FPGA camera-clock pins and is accepted by the receiver
+      reference input.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0016
+    verifies:      [PF-IO-03]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/io_bench.md::HW-PF-IO-03
+    criteria: >
+      On a powered board, all eight differential camera data lane pairs are
+      present at the FPGA boundary and can be observed or exercised as camera
+      receive inputs.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0133
+    verifies:      [PF-IO-01]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_IO_01_single_ended_50mhz_input
+    criteria: >
+      The 50 MHz reference port has a single-ended I/O standard, is built at
+      its constrained pin, that pin is a clock input, and every oscillator the
+      schematic places on its net is a single-output 50 MHz part. A
+      differential source, another frequency or a misplaced pin fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0134
+    verifies:      [PF-IO-02]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_IO_02_differential_148p5mhz_reference
+    criteria: >
+      The 148.5 MHz reference ports are built on the P and N of a transceiver
+      reference pin pair, every oscillator option on the board drives its true
+      output onto P and its complement onto N at 148.5 MHz, the reference buffer
+      is differential, and the receivers it feeds expect 148.5 MHz. A crossed
+      pair, a single-ended source or another frequency fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0135
+    verifies:      [PF-IO-03]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_IO_03_eight_differential_camera_lanes
+    criteria: >
+      Each of the eight camera lanes is a P/N port pair built on a transceiver
+      receive P/N pin pair, on the board net of the same lane and polarity,
+      reaching one camera connector, and connected into the camera receiver.
+      A swapped lane or polarity, a pair on any other pins, or a lane that
+      does not reach the connector fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0136
+    verifies:      [PF-IO-04]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_IO_04_ddr4_interfaces_at_their_pins
+    criteria: >
+      Every constrained signal of both DDR4 interfaces is a top-level port of
+      its interface's hierarchy, is built at its constrained pin, and reaches
+      on the board only DRAM devices of its own interface, every device
+      receiving the same number of signals; the shield pins are grounded. A
+      misplaced pin, a signal reaching anything else, or a device shared
+      between the interfaces fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0017
+    verifies:      [PF-IO-04]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/io_bench.md::HW-PF-IO-04
+    criteria: >
+      On a powered board, both DDR4 interfaces are present at their assigned
+      pin groups and each attached memory interface can be initialised by the
+      FPGA build under test.
+    evidence:      [a hardware test record]
+    # PF_DDR4 is encrypted, so the boundary confidence for this item is a board
+    # record rather than open simulation of the memory controller internals.
+
+  - id:            VC-PF-0018
+    verifies:      [PF-IO-05]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_IO_05_ports_match_avionics_pinout
+    criteria: >
+      Every top-level port in the PolarFire constraint file is assigned to the
+      package pin named for that signal in the avionics pinout definition. A
+      missing, extra or mismatched assignment fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+    # The PolarFire's lvds_pwr_en and the housekeeper's fw_version[1] drive the
+    # same line (PF-F-48), and pa3_fw_version[2:0] reads the housekeeper's DDR
+    # failure lines (PF-F-49).
+
+  # -------------------------------------------------------------------------
+  # FDIR -- Camera fault response
+
+  - id:            VC-PF-0019
+    verifies:      [PF-FDIR-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_fdir.py::test_PF_FDIR_04_timeout_fault_latches
+    criteria: >
+      With capture active and no frame-valid response before the configured
+      timeout expires, the camera fault detector latches the timeout fault and
+      keeps it visible at its status output.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0020
+    verifies:      [PF-FDIR-04]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/fdir_bench.md::HW-PF-FDIR-04
+    criteria: >
+      On a powered board, commanding capture while withholding frame-valid until
+      past the configured timeout produces a firmware-visible timeout fault.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0021
+    verifies:      [PF-FDIR-05]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_fdir.py::test_PF_FDIR_05_power_fault_latches
+    criteria: >
+      With capture active and camera power status low, the camera fault detector
+      latches the power-fault indication and keeps it visible at its status
+      output, and the firmware-visible registers after a power fault differ from
+      those after a timeout fault, so firmware can tell the two apart.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Tested to the rationale ("a distinct indication"): the power fault reaches
+    # firmware only through the FAULT bit it shares with the timeout. PF-F-24.
+
+  - id:            VC-PF-0022
+    verifies:      [PF-FDIR-05]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         integration
+    artifact:      test/hw/fdir_bench.md::HW-PF-FDIR-05
+    criteria: >
+      With the camera rail reported low while capture is active, the integrated
+      board records a firmware-visible camera-power fault rather than a timeout
+      or no fault.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+    # Camera power status crosses the housekeeper/PolarFire boundary, so the
+    # hardware item spans more than one design.
+
+  - id:            VC-PF-0023
+    verifies:      [PF-FDIR-06]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_fdir.py::test_PF_FDIR_06_any_latched_fault_reports
+    criteria: >
+      For each latched timeout fault and camera-power fault stimulus, the
+      detector asserts the common fault report output. A latched source fault
+      with no common report fails.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0024
+    verifies:      [PF-FDIR-06]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/fdir_bench.md::HW-PF-FDIR-06
+    criteria: >
+      On a powered board, each induced timeout or camera-power fault appears in
+      the common firmware-visible fault report.
+    evidence:      [a hardware test record]
+
+  # -------------------------------------------------------------------------
+  # CAM -- Camera receive boundary
+
+  - id:            VC-PF-0025
+    verifies:      [PF-CAM-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_cam.py::test_PF_CAM_04_frame_valid_guard_interval
+    criteria: >
+      When input frame-valid deasserts, the receive conditioning path holds its
+      conditioned frame-valid output asserted through the configured end-of-frame
+      guard interval and then deasserts it.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # SLVS_EC_RX is encrypted; this block-level simulation exercises the
+    # conditioning boundary with a lane-source model, not the vendor receiver.
+
+  - id:            VC-PF-0026
+    verifies:      [PF-CAM-04]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/cam_bench.md::HW-PF-CAM-04
+    criteria: >
+      On a powered board receiving a camera stream, the firmware-visible frame
+      boundary remains valid through the configured end-of-frame guard interval
+      after the sensor frame-valid edge.
+    evidence:      [a hardware test record]
+
+  # -------------------------------------------------------------------------
+  # MUX -- Frame-buffer routing
+
+  - id:            VC-PF-0027
+    verifies:      [PF-MUX-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_mux.py::test_PF_MUX_04_selected_ddr_path_only
+    criteria: >
+      For each legal buffer selection, an accepted frame is driven to exactly
+      one selected DDR4 write path and no unselected write path receives valid
+      frame data.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0028
+    verifies:      [PF-MUX-05]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_mux.py::test_PF_MUX_05_select_change_at_frame_boundary
+    criteria: >
+      If the select or disable control changes during a frame, routing for that
+      frame remains unchanged and the new control value takes effect only at the
+      next frame boundary.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0029
+    verifies:      [PF-MUX-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_mux.py::test_PF_MUX_08_switches_to_8gb_after_16gb_full
+    criteria: >
+      After the 16GB DDR4 buffer reports full, the next accepted frame is routed
+      to the 8GB DDR4 write path and no further accepted frame is routed to the
+      16GB path.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0030
+    verifies:      [PF-MUX-09]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_mux.py::test_PF_MUX_09_stops_after_8gb_full
+    criteria: >
+      After the 8GB DDR4 buffer reports full, the mux stops accepting further
+      frames and asserts no write-valid traffic to either DDR4 write path.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  # -------------------------------------------------------------------------
+  # TRIG -- Camera trigger interface
+
+  - id:            VC-PF-0031
+    verifies:      [PF-TRIG-05]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_trig.py::test_PF_TRIG_05_active_low_interval_only
+    criteria: >
+      Across the applied trigger commands, the camera trigger output is inactive
+      high before and after the commanded active-low interval and is low only
+      during that interval.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0032
+    verifies:      [PF-TRIG-05]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/trig_bench.md::HW-PF-TRIG-05
+    criteria: >
+      A scope capture at the FPGA trigger pin shows inactive-high level except
+      for the commanded active-low trigger interval.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0033
+    verifies:      [PF-TRIG-07]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_trig.py::test_PF_TRIG_07_zero_count_continuous
+    criteria: >
+      With the requested frame count set to zero, the trigger generator
+      continues issuing acquisition triggers until another control input stops
+      the sequence.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Continuous acquisition works; no control input stops it -- only the
+    # global system reset does. PF-F-27.
+
+  - id:            VC-PF-0034
+    verifies:      [PF-TRIG-11]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_trig.py::test_PF_TRIG_11_source_select_icd_values
+    criteria: >
+      The selector chooses manual, scheduled-PPS and synchronized-LVDS trigger
+      starts according to the ICD values, taken as CM-01979 section 5.5.21
+      TRIG_MODE_SYS_REG, which flight software writes verbatim into
+      XTRIG_SRC_SEL: for each ICD value, only the start that mode names
+      begins a capture.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The FPGA decodes 0 manual, 1 scheduler, 2 LVDS; the ICD numbers COMMAND 0,
+    # EXT_GPIO 1, PARAM_UPDATE 2, TIME 3. PF-F-26.
+
+  - id:            VC-PF-0035
+    verifies:      [PF-TRIG-11]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/trig_bench.md::HW-PF-TRIG-11
+    criteria: >
+      On a powered board, programming each ICD trigger-source value selects the
+      corresponding manual, scheduled-PPS or synchronized-LVDS start at the
+      trigger pin. The record fails if the ICD values are unavailable.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  - id:            VC-PF-0036
+    verifies:      [PF-TRIG-12]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_PF_TRIG_12_trigger_timing_budget
+    criteria: >
+      The trigger timing budget names every contributor for manual,
+      scheduled-PPS and synchronized-LVDS trigger sources over temperature and
+      mission life, and shows the output edge occurs within 100 ns of commanded
+      time at the FPGA trigger pin for every source.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # Manual and LVDS fit before their pin paths. The scheduled source drifts
+    # past 100 ns 0.27 ms after a time jam when free-running; with external
+    # PPS it is 149 ns settled, and up to 75 us for ~71 s after power-up
+    # (PF-F-54). Clock tolerance by worst-case analysis (VVP-PF-005).
+
+  - id:            VC-PF-0037
+    verifies:      [PF-TRIG-12]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/trig_bench.md::HW-PF-TRIG-12
+    criteria: >
+      Scope measurements at the FPGA trigger pin show the trigger edge within
+      100 ns of commanded time for manual, scheduled-PPS and synchronized-LVDS
+      starts over the tested operating conditions.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  - id:            VC-PF-0129
+    verifies:      [PF-TRIG-13]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_PF_TRIG_13_exposure_stop_budget
+    criteria: >
+      The recorded calculation bounds the error of the exposure pulse's end
+      against its commanded duration, with the trigger clock's total frequency
+      error (DRV-PF-04), over every duration the register can command, and
+      shows it within 100 ns.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # Exactly the commanded count, but +/-75 ppm of it: within 100 ns only up
+    # to 1.333 ms of exposure; +/-403 us at the 5.37 s the register allows.
+
+  - id:            VC-PF-0131
+    verifies:      [PF-TRIG-13]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/trig_bench.md::HW-PF-TRIG-13
+    criteria: >
+      Measured at the FPGA trigger pin against a reference timebase, the
+      exposure pulse's length differs from its commanded duration by no more
+      than 100 ns, at the shortest and longest durations used in flight and at
+      the temperature extremes.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0139
+    verifies:      [PF-TRIG-05]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_TRIG_05_trigger_polarity_to_sensor
+    criteria: >
+      The trigger port reaches the camera connector through a non-inverting
+      buffer channel; the buffer's enable is an FPGA output pulled to disabled
+      and driven from camera power-good, the same signal that enables the
+      trigger block; and whatever the trigger shows as the buffer opens reaches
+      a sensor held in reset. An inverting or misrouted channel, an enable
+      that floats or is driven otherwise, or a sensor out of reset at that
+      moment fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  # -------------------------------------------------------------------------
+  # DMAW -- DDR4 write performance and errors
+
+  - id:            VC-PF-0038
+    verifies:      [PF-DMAW-10]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_DMAW_10_write_bandwidth_budget
+    criteria: >
+      The DDR4 write-bandwidth budget uses 4581 lines, 6784 bytes per line and
+      70 FPS to size a 17.4 Gbit/s sustained image write stream, and shows each
+      selected DDR4 bank has positive margin while it is the write destination.
+    evidence:      [the recorded calculation]
+    # The plan's TBR statement is stale: this requirement now states 17.4 Gbit/s.
+
+  - id:            VC-PF-0039
+    verifies:      [PF-DMAW-10]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_dmaw_rate.py::test_PF_DMAW_10_17_4g_write_without_loss
+    criteria: >
+      At synthesis parameter values, each DDR4 write path in turn accepts a
+      sustained 17.4 Gbit/s image stream while selected and completes the frames
+      without dropping or duplicating frame data.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # PF_DDR4 is encrypted; simulation must use the QuestaSim-supported vendor
+    # model or an explicitly scoped boundary model, not open RTL internals.
+    # Written as the boundary model: the DMA write SmartDesign with its real
+    # COREFIFO, fed the camera line timing at 17.73 Gbit/s for a 200-line
+    # steady-state window, into an ideal arbiter. It shows the DMA path
+    # sustains the rate; the DDR4 controller's share is VC-PF-0038 and hardware.
+
+  - id:            VC-PF-0040
+    verifies:      [PF-DMAW-09]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_dmaw.py::test_PF_DMAW_09_stall_flag_within_10ms
+    criteria: >
+      With a write transfer stalled, the DMA raises its stalled-write flag no
+      earlier than 9.5 ms and no later than 10.5 ms after the stall begins.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The 8GB bank flags at 10.000 ms; the 16GB bank at 10.909 ms, its DMA
+    # configured for 150 MHz and clocked at 137.5 MHz. PF-F-28.
+
+  - id:            VC-PF-0041
+    verifies:      [PF-DMAW-09]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_DMAW_09_timeout_calculation
+    criteria: >
+      The timeout calculation identifies the DDR-write clock used by the DMA
+      and shows the implemented timeout is 10 ms +/-5%, including the clock
+      frequency source for the cycle count.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # 10.000 ms on the 8GB bank, 10.909 ms on the 16GB bank. PF-F-28.
+
+  # -------------------------------------------------------------------------
+  # DMAR -- DDR4 read and packetization
+
+  - id:            VC-PF-0042
+    verifies:      [PF-DMAR-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_dmar.py::test_PF_DMAR_08_read_timeout_conditions
+    criteria: >
+      For read request, active read and export-completion waits in turn, holding
+      the wait longer than the configured timeout raises the DDR4 read timeout
+      flag.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The requirement states no tolerance; the test applies PF-DMAW-09's +/-5%
+    # for the same 10 ms watchdog. The 8GB bank flags at 10.000 ms; the 16GB
+    # bank at 10.909 ms, its DMA configured for 150 MHz and clocked at
+    # 137.5 MHz. PF-F-28.
+
+  - id:            VC-PF-0043
+    verifies:      [PF-DMAR-24]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_DMAR_24_read_bandwidth_budget
+    criteria: >
+      The DDR4 read-bandwidth budget shows each bank can sustain 8.0 Gbit/s to
+      the active egress interface without underrun, and states whether the
+      margin is computed with or without concurrent capture traffic.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+
+  - id:            VC-PF-0044
+    verifies:      [PF-DMAR-24]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_dmar_rate.py::test_PF_DMAR_24_8g_read_without_underrun
+    criteria: >
+      For each DDR4 bank, the read path supplies the active egress interface at
+      a sustained 8.0 Gbit/s during a frame read and does not assert underrun or
+      insert a data gap caused by the read path.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # PF_DDR4 is encrypted; this test needs QuestaSim vendor support or a
+    # clearly scoped model that leaves the controller boundary visible.
+    # Written as the boundary model: eth_pcie_mux_hier as built, an ideal DDR4
+    # and the fastest legal PCIe host. 6.7 Gbit/s on each bank: one read in
+    # flight, answered about 95 ns after it is accepted. PF-F-43.
+
+  - id:            VC-PF-0045
+    verifies:      [PF-DMAR-16]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_dmar.py::test_PF_DMAR_16_done_after_final_line
+    criteria: >
+      For each requested line count in the stimulus set, the frame-transfer
+      controller asserts frame-read-done only after the final requested line has
+      been transferred.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Image reads of 1, 2 and 5 lines pass. The stimulus set includes a
+    # metadata read, a one-line read by the requirement's rationale, and it
+    # never raises frame-read-done. PF-F-29.
+
+  - id:            VC-PF-0046
+    verifies:      [PF-DMAR-18]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_dmar.py::test_PF_DMAR_18_payload_word_limits
+    criteria: >
+      With standard-payload mode selected, each Ethernet image packet contains
+      no more than 363 32-bit payload words; with jumbo mode selected, each
+      packet contains no more than 988 32-bit payload words.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0047
+    verifies:      [PF-DMAR-23]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_dmar.py::test_PF_DMAR_23_one_metadata_block
+    criteria: >
+      For each metadata-mode read, the DDR4 read controller emits exactly one
+      20-word metadata block before completing that metadata read.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The first read exposes the right block once, and never completes; the
+    # controller stays busy until its 10 ms watchdog and a second read 50 us
+    # later exposes nothing. PF-F-29.
+
+  # -------------------------------------------------------------------------
+  # PCIE -- PCIe image export
+
+  - id:            VC-PF-0048
+    verifies:      [PF-PCIE-07]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pcie.py::test_PF_PCIE_07_selected_ddr_read_route
+    criteria: >
+      For each DDR4 selection value exercised, a PCIe read is routed only to the
+      selected DDR4 memory read port and no read request is asserted to the
+      unselected memory.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # PCIE has no open simulation model; this item targets the custom demux
+    # boundary and needs QuestaSim support if the vendor core is present.
+
+  - id:            VC-PF-0049
+    verifies:      [PF-PCIE-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pcie.py::test_PF_PCIE_08_write_transactions_rejected
+    criteria: >
+      A PCIe write transaction presented at the translator boundary is rejected
+      and produces no DDR4 write or read-side image data side effect.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # No write reaches DDR4. But every write is taken as a control write,
+    # decoded on address bits 3:0, so a write anywhere retargets the bank or
+    # frame later reads return; and a burst is answered after its first beat
+    # and its remaining beats are never taken. PF-F-30.
+    # PCIE has no open simulation model; the test observes the translator
+    # boundary rather than vendor PCIe internals unless QuestaSim can elaborate it.
+
+  - id:            VC-PF-0050
+    verifies:      [PF-PCIE-09]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pcie.py::test_PF_PCIE_09_prefetch_chunk_alignment
+    criteria: >
+      For unaligned PCIe read offsets in the stimulus set, the translator issues
+      DDR read addresses aligned down to the configured 256-byte prefetch chunk
+      and returns data corresponding to the requested offset within that chunk.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # PCIE has no open simulation model; the observable is the custom translator
+    # request/response boundary.
+
+  - id:            VC-PF-0051
+    verifies:      [PF-PCIE-10]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_PCIE_10_pcie_payload_budget
+    criteria: >
+      The PCIe throughput budget shows 8.0 Gbit/s of image payload at the PCIe
+      boundary during a frame read, including PCIe Gen2 x2 coding overhead,
+      prefetch chunking and DDR4 arbitration margin.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+
+  - id:            VC-PF-0052
+    verifies:      [PF-PCIE-10]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pcie_bench.md::HW-PF-PCIE-10
+    criteria: >
+      On a powered board, the PCIe image-export path drains a frame at the PCIe
+      boundary with at least 8.0 Gbit/s sustained image payload while a frame
+      read is in progress.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+    # PCIE has no open simulation model; the hardware record is the boundary
+    # evidence that the vendor link and custom translator operate together.
+
+  - id:            VC-PF-0053
+    verifies:      [DRV-PF-11]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_DRV_PF_11_external_agent_sets_controls
+    criteria: >
+      The allocation and implementation evidence identify the external agent
+      that enables PCIe image export and sets frame index, DDR4 bank selection
+      and egress routing before a PCIe image read is issued. An unnamed agent or
+      missing control path fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     witnessed
+    expect:        FAIL
+    # The owning agent is outside this requirement set, so the inspection is a
+    # witnessed allocation check until the relevant software artifact exists.
+
+  - id:            VC-PF-0054
+    verifies:      [DRV-PF-11]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         integration
+    artifact:      test/hw/pcie_bench.md::HW-DRV-PF-11
+    criteria: >
+      In an integrated run with the external agent present, the agent enables
+      PCIe export and sets frame index, DDR4 bank selection and egress routing
+      before the host issues a PCIe image read.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+    # This spans payload/firmware control and the PolarFire PCIe path, so the
+    # hardware level is integration rather than a one-design bench test.
+
+  # -------------------------------------------------------------------------
+  # FOCUS -- Focus mechanism boundary
+
+  - id:            VC-PF-0055
+    verifies:      [PF-FOCUS-01]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_01_watchdog_inactive_suppresses_steps
+    criteria: >
+      With the watchdog inactive, commanded focus motion does not assert either
+      physical step output at the focus mechanism interface.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0056
+    verifies:      [PF-FOCUS-01]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/focus_bench.md::HW-PF-FOCUS-01
+    criteria: >
+      On a powered board, with the focus watchdog inactive, commanded focus
+      motion leaves both physical step outputs deasserted at the pins.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0057
+    verifies:      [PF-FOCUS-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_08_step_assertions_at_least_3us
+    criteria: >
+      During commanded stepping, the elapsed time between successive step
+      assertions at the stepper pin interface is never less than 3.0 us.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0058
+    verifies:      [PF-FOCUS-08]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_FOCUS_08_step_interval_calculation
+    criteria: >
+      The timing calculation names the focus clock source and shows the
+      implemented 150-cycle interval provides at least 3.0 us between step
+      assertions at the stepper pin interface.
+    evidence:      [the recorded calculation]
+
+  - id:            VC-PF-0059
+    verifies:      [PF-FOCUS-08]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/focus_bench.md::HW-PF-FOCUS-08
+    criteria: >
+      Pin measurements during commanded focus motion show at least 3.0 us
+      between every pair of successive step assertions observed.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0060
+    verifies:      [PF-FOCUS-09]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_09_step_low_at_least_1_5us
+    criteria: >
+      Each asserted step-low pulse at the stepper pin interface remains low for
+      at least 1.5 us before deasserting.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0061
+    verifies:      [PF-FOCUS-09]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_FOCUS_09_step_low_calculation
+    criteria: >
+      The timing calculation names the focus clock source and shows the
+      implemented 75-cycle step-low interval provides at least 1.5 us at the
+      stepper pin interface.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # 1.5 us only at the nominal frequency; 0.11 ns short with the clock
+    # +75 ppm fast (PF-F-53). The DRV8434's own 970 ns is met by 530 ns.
+
+  - id:            VC-PF-0062
+    verifies:      [PF-FOCUS-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/focus_bench.md::HW-PF-FOCUS-09
+    criteria: >
+      Pin measurements during commanded focus motion show each observed step-low
+      interval lasts at least 1.5 us.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0063
+    verifies:      [PF-FOCUS-10]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_10_direction_setup_at_least_0_3us
+    criteria: >
+      Before each step pulse, the direction output at the stepper pin interface
+      is stable for at least 0.3 us.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0064
+    verifies:      [PF-FOCUS-10]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_FOCUS_10_direction_setup_calculation
+    criteria: >
+      The timing calculation names the focus clock source and shows the
+      implemented 15-cycle setup interval provides at least 0.3 us of direction
+      setup before a step pulse.
+    evidence:      [the recorded calculation]
+
+  - id:            VC-PF-0065
+    verifies:      [PF-FOCUS-10]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/focus_bench.md::HW-PF-FOCUS-10
+    criteria: >
+      Pin measurements during commanded focus motion show the direction output
+      stable for at least 0.3 us before every observed step pulse.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0066
+    verifies:      [PF-FOCUS-12]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_12_watchdog_reload_on_clear_or_refresh
+    criteria: >
+      When firmware clears or refreshes the focus watchdog before expiry, the
+      timeout reloads and the watchdog remains active for a full programmed
+      timeout interval after that command.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0067
+    verifies:      [PF-FOCUS-13]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_focus.py::test_PF_FOCUS_13_inactive_after_timeout
+    criteria: >
+      If the programmed focus watchdog timeout elapses without a clear or
+      refresh, the watchdog reports inactive at its status output.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0068
+    verifies:      [PF-FOCUS-13]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/focus_bench.md::HW-PF-FOCUS-13
+    criteria: >
+      On a powered board, after the programmed watchdog timeout elapses without
+      refresh, the firmware-visible focus watchdog status reports inactive.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0125
+    verifies:      [PF-FOCUS-16]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_PF_FOCUS_16_firmware_controls_drivers
+    criteria: >
+      Every step, direction, enable, sleep, mode, decay, off-time and
+      current-reference input of both stepper drivers traces from its pin to an
+      APB register bit, the step generator or the current-reference PWM, and
+      every APB slave behind them is on the processor's bus. An input driven
+      from anything else fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0137
+    verifies:      [DRV-PF-12]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_DRV_PF_12_lvdt_2f_attenuation
+    criteria: >
+      The recorded calculation derives the per-coil sample rate, the excitation
+      frequency and the decimation as the RTL performs it, evaluates the
+      configured band-stop and low-pass sections at twice the excitation
+      frequency, and shows the product at least 90 dB (TBR) below the DC
+      response.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # 187.6 dB at the configured /5; 62.7 dB at the /4 the decimator performs
+    # (PF-F-38). The 90 dB bound is TBR, inheriting from DRV-PFW-02.
+
+  - id:            VC-PF-0138
+    verifies:      [DRV-PF-12]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_lvdt.py::test_DRV_PF_12_2f_attenuated_90db
+    criteria: >
+      On LVDT_READOUT as generated, with each coil's ADC input a sine at the
+      excitation frequency delivered through a datasheet model of the
+      ADC128S102, the 2f component fitted to each of the four I/Q outputs after
+      settling is at least 90 dB (TBR) below that coil's DC response.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # 62.6-62.7 dB on all four outputs. With the decimator corrected the same
+    # test measured 112-128 dB, so it can show a pass.
+
+  # -------------------------------------------------------------------------
+  # VER -- FPGA image identification and reproducibility
+
+  - id:            VC-PF-0069
+    verifies:      [PF-VER-01]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_ver.py::test_PF_VER_01_registers_expose_version_and_commit
+    criteria: >
+      Reading the hardware-version APB registers returns the build version and
+      source-control commit identifier supplied to the image build. Missing,
+      all-zero or stale fields fail.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # The registers are generated by the build's own Tcl procs and simulated.
+    # Whether the commit supplied is the source's is the build's to ensure,
+    # not the registers': a build from a modified tree supplies HEAD. PF-F-32.
+
+  - id:            VC-PF-0070
+    verifies:      [PF-VER-01]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/ver_bench.md::HW-PF-VER-01
+    criteria: >
+      On a powered board, firmware reads the hardware-version APB registers and
+      obtains the release build version and source-control commit identifier of
+      the programmed image.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  - id:            VC-PF-0071
+    verifies:      [PF-VER-02]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_build.py::test_PF_VER_02_identical_programming_files
+    criteria: >
+      Two builds from the same source, toolchain and build configuration produce
+      byte-identical programming files. Any differing byte in the programming
+      files fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+    # Although programming-file comparison is tool-assisted, the requirement is
+    # marked INSP and this item checks the produced artefacts directly.
+
+  # -------------------------------------------------------------------------
+  # META -- Image metadata
+
+  - id:            VC-PF-0072
+    verifies:      [PF-META-01]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_meta.py::test_PF_META_01_metadata_matches_icd_format
+    criteria: >
+      The emitted image metadata block contains the fields, order and widths
+      defined by CM-01979 section 17.4 at the host-visible boundary.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Every field is at its CM-01979 section 23.2 offset, but BUFF_WRITE_INDEX
+    # on the 8GB bank is 0x200 + index, outside 23.2's per-device 0x0-0xFF.
+    # PF-F-34.
+
+  - id:            VC-PF-0073
+    verifies:      [PF-META-01]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_interfaces.py::test_PF_META_01_metadata_schema_matches_icd
+    criteria: >
+      The metadata RTL and generated register description match the CM-01979
+      section 17.4 host-visible metadata format. A field order, width or name
+      mismatch fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+    # Checked against section 23.2, the metadata layout. Order and widths match;
+    # the field at 0x40 is VERSION in the RTL and both firmware headers, and
+    # PF_FPGA_VERSION in the ICD. PF-F-52.
+
+  - id:            VC-PF-0074
+    verifies:      [PF-META-02]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_meta.py::test_PF_META_02_reflected_crc32_payload
+    criteria: >
+      For metadata payloads in the stimulus set, the CRC field equals the
+      reflected IEEE CRC32 computed over the metadata payload and changes when a
+      payload bit is changed.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The CRC is the reflected IEEE CRC32, but of the previous cycle's block:
+    # the live RTC moves every cycle, so the CRC sent never matches the payload
+    # sent with it. With the RTC frozen it matches. PF-F-33.
+
+  - id:            VC-PF-0075
+    verifies:      [PF-META-03]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_meta.py::test_PF_META_03_trigger_low_duration_us_field
+    criteria: >
+      For commanded trigger-low durations in the stimulus set, the metadata
+      field defined by CM-01979 section 17.4 reports the duration with
+      microsecond resolution.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0076
+    verifies:      [PF-META-03]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/meta_bench.md::HW-PF-META-03
+    criteria: >
+      On a powered board, captured metadata reports the programmed
+      trigger-low duration in the CM-01979 section 17.4 field with microsecond
+      resolution.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0077
+    verifies:      [PF-META-04]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/meta_bench.md::HW-PF-META-04
+    criteria: >
+      On a powered board, metadata captured with an image reports the DDR frame
+      index associated with that stored image in the CM-01979 section 17.4
+      field.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0078
+    verifies:      [PF-META-09]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_pf_meta.py::test_PF_META_09_metadata_before_image_data
+    criteria: >
+      At the image pipeline output, exactly one metadata record is emitted ahead
+      of camera image data before the first image-data word of the frame.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0079
+    verifies:      [PF-META-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/meta_bench.md::HW-PF-META-09
+    criteria: >
+      On a powered board, the host-visible image stream contains one metadata
+      record immediately ahead of the camera image data for the captured frame.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0130
+    verifies:      [PF-META-10]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_PF_META_10_exposure_stop_detection
+    criteria: >
+      The recorded calculation counts the synchroniser and register stages
+      between the sensor's exposure output and the latched measurement, on
+      the clock that runs them, and shows the end of exposure detected within
+      100 ns, stating what it excludes.
+    evidence:      [the recorded calculation]
+
+  - id:            VC-PF-0132
+    verifies:      [PF-META-10]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/trig_bench.md::HW-PF-META-10
+    criteria: >
+      With the sensor's exposure output driven by a reference edge at the FPGA
+      pin, the end of exposure is latched no later than 100 ns after the edge,
+      including the input path the build does not time.
+    evidence:      [a hardware test record]
+
+  # -------------------------------------------------------------------------
+  # TEMP -- Temperature telemetry
+
+  - id:            VC-PF-0080
+    verifies:      [PF-TEMP-01]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/temp_bench.md::HW-PF-TEMP-01
+    criteria: >
+      During normal operation on a powered board, the FPGA junction-temperature
+      monitor remains enabled and produces firmware-visible temperature samples
+      without a separate enable command.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0081
+    verifies:      [PF-TEMP-02]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/temp_bench.md::HW-PF-TEMP-02
+    criteria: >
+      On a powered board, the junction-temperature APB register updates only
+      when the temperature monitor marks a sample valid, and ignores samples
+      from unrelated monitor channels.
+    evidence:      [a hardware test record]
+
+  # -------------------------------------------------------------------------
+  # PPS -- Timekeeping
+
+  - id:            VC-PF-0082
+    verifies:      [PF-PPS-02]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pps_discipline.py::test_PF_PPS_02_ignore_outside_tolerance
+    criteria: >
+      External PPS periods outside the accepted +/-50% tolerance window are
+      ignored and do not discipline or jam the mission-time state.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0083
+    verifies:      [PF-PPS-02]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pps_bench.md::HW-PF-PPS-02
+    criteria: >
+      On a powered board, injecting external PPS periods outside the accepted
+      +/-50% tolerance window does not corrupt the firmware-visible mission time.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0084
+    verifies:      [PF-PPS-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pps_jam_irq.py::test_PF_PPS_04_time_jam_loads_next_pps
+    criteria: >
+      After a PPS time-jam command, the requested time is loaded on the next PPS
+      edge and is not loaded before that edge.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0085
+    verifies:      [PF-PPS-04]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pps_bench.md::HW-PF-PPS-04
+    criteria: >
+      On a powered board, issuing a time-jam command updates firmware-visible
+      mission time on the next selected PPS edge.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0086
+    verifies:      [PF-PPS-06]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pps_jam_irq.py::test_PF_PPS_06_external_pps_interrupt
+    criteria: >
+      A rising edge on the external PPS input raises the PPS interrupt output
+      once for that edge.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0087
+    verifies:      [PF-PPS-06]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pps_bench.md::HW-PF-PPS-06
+    criteria: >
+      On a powered board, an external PPS rising edge produces a firmware-visible
+      PPS interrupt event.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0088
+    verifies:      [PF-PPS-07]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pps_local.py::test_PF_PPS_07_local_1hz_50pct_duty
+    criteria: >
+      With the local PPS generator selected, its output period is 1 s in
+      simulated clock time and the output is high for 50% of the period.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0089
+    verifies:      [PF-PPS-07]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_PPS_07_local_pps_calculation
+    criteria: >
+      The calculation names the generator clock and counter values and shows the
+      local PPS output has a 1 Hz period and 50% duty cycle before applying any
+      oscillator frequency-error budget.
+    evidence:      [the recorded calculation]
+
+  - id:            VC-PF-0090
+    verifies:      [PF-PPS-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_pps_local.py::test_PF_PPS_08_mux_selects_local_or_external
+    criteria: >
+      For each firmware control-bit value, the PPS mux output follows only the
+      selected local or external PPS source and does not toggle from the
+      unselected source.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0091
+    verifies:      [PF-PPS-08]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pps_bench.md::HW-PF-PPS-08
+    criteria: >
+      On a powered board, changing the firmware PPS source control bit selects
+      the local or external PPS source observed in firmware-visible timekeeping.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0092
+    verifies:      [PF-PPS-09]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_clocks.py::test_PF_PPS_09_local_pps_accuracy
+    criteria: >
+      The local PPS accuracy calculation states the frequency accuracy of the
+      generator output across the full operating temperature range and mission
+      life, and names the oscillator error inputs used to derive that value.
+    evidence:      [the recorded calculation]
+    # The requirement asks for a stated accuracy, not a pass/fail accuracy
+    # bound; Q-06 must supply the mission acceptability threshold separately.
+
+  - id:            VC-PF-0093
+    verifies:      [PF-PPS-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/pps_bench.md::HW-PF-PPS-09
+    criteria: >
+      On a powered board, the local PPS output frequency is measured and the
+      hardware record states the measured accuracy against the full-range,
+      full-life accuracy figure recorded for the build.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  - id:            VC-PF-0140
+    verifies:      [PF-PPS-06]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_PPS_06_external_pps_polarity
+    criteria: >
+      The external PPS port is built at its pin, whose net comes from an LVDS
+      receiver whose non-inverting input is the bus pair's P side and
+      inverting input its N side, both from the bus connector. A swapped pair,
+      which would raise the interrupt on the bus PPS's falling edge, fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0141
+    verifies:      [PF-PPS-08]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_PPS_08_mux_external_is_bus_pps
+    criteria: >
+      The PPS mux's external input is the external PPS pin, and that pin
+      carries the bus connector's PPS uninverted. Anything else on the
+      external input, or an inverted pair, fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  # -------------------------------------------------------------------------
+  # ETH -- Ethernet responder
+
+  - id:            VC-PF-0094
+    verifies:      [PF-ETH-02]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_eth.py::test_PF_ETH_02_accept_local_ipv4_mac
+    criteria: >
+      An IPv4 Ethernet frame addressed to the configured local MAC address is
+      accepted into the responder path, while the same frame with a non-local
+      destination MAC is not accepted.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # CORETSE is encrypted; this simulation observes the responder boundary and
+    # requires QuestaSim support if the vendor MAC is included.
+
+  - id:            VC-PF-0095
+    verifies:      [PF-ETH-02]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/eth_bench.md::HW-PF-ETH-02
+    criteria: >
+      On a powered board, an IPv4 frame addressed to the local MAC is accepted
+      by the payload Ethernet responder and a frame addressed elsewhere is not.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0096
+    verifies:      [PF-ETH-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_eth.py::test_PF_ETH_04_drop_nonlocal_arp_requests
+    criteria: >
+      ARP packets that are not requests for the configured local IPv4 address
+      produce no ARP reply and do not change responder state.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0097
+    verifies:      [PF-ETH-05]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_eth.py::test_PF_ETH_05_drop_unsupported_ipv4
+    criteria: >
+      IPv4 packets that are not local ICMP echo requests are dropped and do not
+      produce an Ethernet response from the hardware responder.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0098
+    verifies:      [PF-ETH-06]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_eth.py::test_PF_ETH_06_generate_arp_replies
+    criteria: >
+      For an accepted ARP request for the local IPv4 address, the responder
+      emits an ARP reply with the local MAC and IPv4 address fields populated.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0099
+    verifies:      [PF-ETH-06]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/eth_bench.md::HW-PF-ETH-06
+    criteria: >
+      On a powered board, an ARP request for the local IPv4 address produces an
+      ARP reply from the payload Ethernet interface.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0100
+    verifies:      [PF-ETH-07]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_eth.py::test_PF_ETH_07_generate_icmp_echo_replies
+    criteria: >
+      For an accepted local ICMP echo request, the responder emits an ICMP echo
+      reply with the matching identifier, sequence and payload.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Echo requests up to 64 data bytes are answered correctly. A 1472-byte
+    # one, delivered back-to-back as the MAC may, loses 96 bytes: the
+    # responder accepts words while its FIFO is full and drops them. PF-F-35.
+
+  - id:            VC-PF-0101
+    verifies:      [PF-ETH-07]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/eth_bench.md::HW-PF-ETH-07
+    criteria: >
+      On a powered board, a ping addressed to the payload Ethernet interface
+      receives an ICMP echo reply from the hardware responder.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0102
+    verifies:      [PF-ETH-09]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_ETH_09_unused_eth2_outputs_inactive
+    criteria: >
+      The top-level design ties every unused ETH2 control output to the inactive
+      value for the unused configuration. Any floating or fabric-driven ETH2
+      control output fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+    # The four control outputs are tied low; the RGMII transmit pins and MDIO
+    # are left as unused I/O, tristated with a weak pull-up. PF-F-50.
+
+  - id:            VC-PF-0103
+    verifies:      [PF-ETH-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         integration
+    artifact:      test/hw/eth_bench.md::HW-PF-ETH-09
+    criteria: >
+      On an integrated board, the unused ETH2 control outputs remain at their
+      inactive levels throughout PolarFire operation.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+    # ETH2 ownership is shared with the housekeeper hierarchy, so the board
+    # observation spans more than the PolarFire design alone.
+
+  - id:            VC-PF-0104
+    verifies:      [PF-ETH-10]
+    authorised_by: VVP-PF-003
+    method:        INSP
+    level:         subsystem
+    artifact:      verification/analysis/test_insp_board.py::test_PF_ETH_10_eth2_power_housekeeper_only
+    criteria: >
+      ETH2 power enable and status signals are exposed only through the
+      housekeeper hierarchy and are not controlled or observed as PolarFire
+      top-level network-path signals.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-PF-0105
+    verifies:      [PF-ETH-10]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         integration
+    artifact:      test/hw/eth_bench.md::HW-PF-ETH-10
+    criteria: >
+      On an integrated board, ETH2 power enable and status are controlled and
+      observed only through the housekeeper path, with no PolarFire-controlled
+      ETH2 power path active.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  # -------------------------------------------------------------------------
+  # UDP -- UDP image transmit
+
+  - id:            VC-PF-0106
+    verifies:      [PF-UDP-04]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_udp.py::test_PF_UDP_04_disabled_selection_idles_all_sources
+    criteria: >
+      For disabled and invalid UDP mux selection values, all transmit-source
+      valid outputs remain deasserted and no image data from any DDR4 source is
+      forwarded to the UDP transmitter.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-PF-0107
+    verifies:      [PF-UDP-15]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_udp.py::test_PF_UDP_15_configurable_inter_packet_gap
+    criteria: >
+      Changing the APB inter-packet-gap setting changes the delay between
+      emitted UDP datagrams, and the default setting is used when the register
+      value is zero.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Passes: the gap follows FRAME_GAP, and the default applies at zero. The
+    # default itself is too short; that is DRV-PF-08's to carry.
+
+  - id:            VC-PF-0108
+    verifies:      [PF-UDP-15]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_UDP_15_gap_calculation
+    criteria: >
+      The gap calculation identifies the APB frame-gap value and the default
+      cycle count used by the UDP transmitter, and shows how each setting maps
+      to elapsed inter-packet time.
+    evidence:      [the recorded calculation]
+    # Passes: the gap is FRAME_GAP cycles at 100 MHz, or 1000 when it is 0.
+
+
+  - id:            VC-PF-0109
+    verifies:      [DRV-PF-08]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_udp.py::test_DRV_PF_08_gap_at_least_20us
+    criteria: >
+      For the default inter-packet gap and for configured values in the stimulus
+      set, successive UDP datagrams are never emitted closer together than
+      20 us.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-PF-0110
+    verifies:      [DRV-PF-08]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_DRV_PF_08_gap_calculation
+    criteria: >
+      The inter-packet-gap calculation names the UDP transmitter clock and shows
+      the default and every permitted configured gap setting corresponds to at
+      least 20 us between successive datagrams.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+
+  - id:            VC-PF-0111
+    verifies:      [DRV-PF-09]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_DRV_PF_09_udp_egress_budget
+    criteria: >
+      The UDP egress-rate budget computes Ethernet-boundary throughput while
+      draining a frame buffer and shows at least 200 Mbit/s after applying the
+      inter-packet gap, packet payload size and Ethernet overhead inputs.
+    evidence:      [the recorded calculation]
+    # Passes as an upper bound: about 840 Mbit/s at the default gap. The
+    # requirement stays AMBIG on its parent's units.
+
+
+  - id:            VC-PF-0112
+    verifies:      [DRV-PF-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/drv_bench.md::HW-DRV-PF-09
+    criteria: >
+      On a powered board, the UDP image transmit path drains a frame buffer at
+      an Ethernet-boundary egress rate of at least 200 Mbit/s.
+    evidence:      [a hardware test record]
+    expect:        FAIL
+
+  - id:            VC-PF-0113
+    verifies:      [PF-UDP-16]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_udp.py::test_PF_UDP_16_error_datagram_on_watchdog_timeout
+    criteria: >
+      When the UDP transmitter watchdog times out, the transmitter emits an
+      error datagram and its payload contains the current error word.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # On timeout the transmitter ends the frame in progress with 0xEFBADBAD,
+    # but the frame keeps the lengths of the datagram it cut short, so a
+    # receiver's IP layer drops it. PF-F-37.
+
+  - id:            VC-PF-0114
+    verifies:      [PF-UDP-05]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_udp.py::test_PF_UDP_05_route_selected_ddr_source_only
+    criteria: >
+      For each legal DDR4 image-source selection, only the selected source is
+      forwarded to the Ethernet transmitter and unselected sources do not affect
+      the emitted UDP image stream.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  # -------------------------------------------------------------------------
+  # XCVR -- SLVS-EC lane recovery and ingest rate
+
+  - id:            VC-PF-0115
+    verifies:      [PF-XCVR-03]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_xcvr.py::test_PF_XCVR_03_flag_after_disparity_run
+    criteria: >
+      For each lane exercised, a run of 16 consecutive disparity-error samples
+      causes that lane to be flagged, and shorter non-qualifying runs do not
+      flag the lane.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Runs of 15 never reset the receiver, but a run of 16 does only 8 times
+    # in 40: its one-clock lane flag is lost crossing to the 50 MHz domain.
+    # PF-F-40.
+    # XCVR has no open simulation model; this targets the correction RTL
+    # boundary and needs QuestaSim support if the vendor receiver is elaborated.
+
+  - id:            VC-PF-0116
+    verifies:      [PF-XCVR-07]
+    authorised_by: VVP-PF-001
+    method:        SIM
+    level:         unit
+    artifact:      verification/tests/test_pf_xcvr.py::test_PF_XCVR_07_reset_after_qualifying_lane_error
+    criteria: >
+      After a qualifying lane-error condition, the correction path asserts the
+      camera lane receiver reset for at least 32 cycles of the 50 MHz system
+      clock, 640 ns (TBR), and then releases it.
+    requires:      [VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The reset is 31 cycles, 620 ns: the counter releases on its 32nd count.
+    # PF-F-41.
+    # XCVR has no open simulation model; this observes the reset request
+    # boundary rather than vendor lane internals unless QuestaSim provides them.
+
+  - id:            VC-PF-0117
+    verifies:      [PF-XCVR-07]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/xcvr_bench.md::HW-PF-XCVR-07
+    criteria: >
+      On a powered board, an induced qualifying SLVS-EC lane-error condition
+      causes the camera lane receiver reset to assert and then release.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0118
+    verifies:      [PF-XCVR-08]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_XCVR_08_interrupt_trace
+    criteria: >
+      The recorded analysis traces the lane-recovery sequence and shows the
+      firmware interrupt is generated only after receiver reset is released, not
+      while reset remains asserted.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # The interrupt follows the release in the block, but cam_rx_hier marks it
+    # unused: it reaches nothing. PF-F-44.
+    # This ANA is a recorded review/calculation because the requirement is a
+    # sequencing claim and no CDC, timing or utilisation tool report proves it.
+
+  - id:            VC-PF-0119
+    verifies:      [PF-XCVR-08]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/xcvr_bench.md::HW-PF-XCVR-08
+    criteria: >
+      On a powered board, after an induced lane recovery event, firmware sees
+      the interrupt only after the receiver reset has been released.
+    evidence:      [a hardware test record]
+
+  - id:            VC-PF-0120
+    verifies:      [PF-XCVR-09]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_budgets.py::test_PF_XCVR_09_ingest_budget
+    criteria: >
+      The receive-throughput budget uses the 17.4 Gbit/s aggregate pixel ingest
+      requirement and shows the eight SLVS-EC lanes provide positive payload
+      margin after line coding overhead.
+    evidence:      [the recorded calculation]
+    # The plan's TBR statement is stale: this requirement now states 17.4 Gbit/s.
+
+  - id:            VC-PF-0121
+    verifies:      [PF-XCVR-09]
+    authorised_by: VVP-PF-006
+    method:        HW
+    level:         bench
+    artifact:      test/hw/xcvr_bench.md::HW-PF-XCVR-09
+    criteria: >
+      On a powered board, the SLVS-EC receive path ingests an aggregate
+      17.4 Gbit/s pixel stream across eight camera lanes without loss of frame
+      data.
+    evidence:      [a hardware test record]
+    # SLVS_EC_RX is encrypted and XCVR has no open model; hardware is the
+    # boundary evidence that the vendor receive path carries the required rate.
+
+  # -------------------------------------------------------------------------
+  # SYS -- System data path
+
+  - id:            VC-PF-0122
+    verifies:      [PF-SYS-01]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_trace.py::test_PF_SYS_01_frames_buffered_in_ddr4
+    criteria: >
+      The recorded data-path analysis traces camera frames from ingress through
+      DDR4 buffering before Ethernet or PCIe export. Any path that exports a
+      camera frame while bypassing DDR4 fails.
+    evidence:      [the recorded calculation]
+    # Passes: pixel data reaches only the DDR4 groups, and the UDP and PCIe paths
+    # take image data only from them.
+    # The requirement text records a contradiction with bypass requirements in
+    # the system baseline, so this item is expected to fail until that is settled.
+
+  - id:            VC-PF-0127
+    verifies:      [PF-SYS-02]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_trace.py::test_PF_SYS_02_direct_transfer_path
+    criteria: >
+      The recorded data-path trace finds a path carrying camera image data to
+      Ethernet or PCIe export without passing through DDR4. No such path
+      fails.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # Unbuilt (PF-F-01): every exported frame goes through DDR4.
+
+  - id:            VC-PF-0128
+    verifies:      [PF-SYS-03]
+    authorised_by: VVP-PF-005
+    method:        ANA
+    level:         subsystem
+    artifact:      verification/analysis/test_ana_trace.py::test_PF_SYS_03_direct_transfer_rate
+    criteria: >
+      The recorded calculation budgets the direct sensor-to-export path against
+      the rate of the fastest export interface. No direct path, or a budget
+      short of that rate, fails.
+    evidence:      [the recorded calculation]
+    expect:        FAIL
+    # Unbuilt (PF-F-01): there is no direct path to budget.

@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['_5f_5fattribute_5f_5f_0',['__attribute__',['../command_8c.html#a36f229bbda63818246ec86181b1fdd42',1,'__attribute__((unused)):&#160;command.c'],['../hal__uart16550_8c.html#a36f229bbda63818246ec86181b1fdd42',1,'__attribute__((unused)):&#160;hal_uart16550.c'],['../serial__comm_8c.html#ad2a1d14b2e042518e96758b6de2390d5',1,'__attribute__((aligned(4))):&#160;serial_comm.c'],['../miv__rv32__stubs_8c.html#af9aace1b44b73111e15aa39f06f43456',1,'__attribute__((weak)):&#160;miv_rv32_stubs.c']]],
+  ['_5fattribute_1',['_ATTRIBUTE',['../misc_8c.html#a3a2d7c49268218a94eab25229689e937',1,'misc.c']]],
+  ['_5fclose_2',['_close',['../miv__rv32__syscall_8c.html#a58a559c63748012aab165d5f82af766d',1,'miv_rv32_syscall.c']]],
+  ['_5fexecve_3',['_execve',['../miv__rv32__syscall_8c.html#a987df051efd2a4a52fe02963376bed75',1,'miv_rv32_syscall.c']]],
+  ['_5fexit_4',['_exit',['../miv__rv32__syscall_8c.html#a2115a5a512e89dc34ce23bec2a9551fe',1,'miv_rv32_syscall.c']]],
+  ['_5ffini_5',['_fini',['../miv__rv32__init_8c.html#a173a20f19acf36985bbac6786a02b544',1,'miv_rv32_init.c']]],
+  ['_5ffork_6',['_fork',['../miv__rv32__syscall_8c.html#a6cb6331c9d166180903d5fb78b9c9dd7',1,'miv_rv32_syscall.c']]],
+  ['_5ffstat_7',['_fstat',['../miv__rv32__syscall_8c.html#a6e8d95db883bc4efe10c487d74e96b06',1,'miv_rv32_syscall.c']]],
+  ['_5fgetpid_8',['_getpid',['../miv__rv32__syscall_8c.html#a945e539df8e0f66d3c73c533fe1968ee',1,'miv_rv32_syscall.c']]],
+  ['_5finit_9',['_init',['../miv__rv32__init_8c.html#ad1cbc4315ef293463e6057dfb24c8115',1,'miv_rv32_init.c']]],
+  ['_5fisatty_10',['_isatty',['../miv__rv32__syscall_8c.html#a4284676ccba12d7f2061d338001f71fb',1,'miv_rv32_syscall.c']]],
+  ['_5fkill_11',['_kill',['../miv__rv32__syscall_8c.html#a062a5101199c3128edd5170f2575bb10',1,'miv_rv32_syscall.c']]],
+  ['_5flink_12',['_link',['../miv__rv32__syscall_8c.html#a07b4112e56d115914acf12d3349390d5',1,'miv_rv32_syscall.c']]],
+  ['_5flseek_13',['_lseek',['../miv__rv32__syscall_8c.html#aafa2544ceccf0b499d5c456d7bad68c6',1,'miv_rv32_syscall.c']]],
+  ['_5fopen_14',['_open',['../miv__rv32__syscall_8c.html#a7a287cf7e6fbdcbba731965aecf2dd8c',1,'miv_rv32_syscall.c']]],
+  ['_5fopenat_15',['_openat',['../miv__rv32__syscall_8c.html#a9e8e03d47c8728100f536cfa55e15d68',1,'miv_rv32_syscall.c']]],
+  ['_5fread_16',['_read',['../miv__rv32__syscall_8c.html#a858ae291d016ed0910d87e55beee5e84',1,'miv_rv32_syscall.c']]],
+  ['_5fsbrk_17',['_sbrk',['../miv__rv32__syscall_8c.html#a68125648bcce70b6bb3aa0be50e99700',1,'miv_rv32_syscall.c']]],
+  ['_5fstat_18',['_stat',['../miv__rv32__syscall_8c.html#a446970a86ae97e9633cb8f41e6f735be',1,'miv_rv32_syscall.c']]],
+  ['_5ftimes_19',['_times',['../miv__rv32__syscall_8c.html#a246d70ca40ab8628b6ad4fa9337fc726',1,'miv_rv32_syscall.c']]],
+  ['_5funlink_20',['_unlink',['../miv__rv32__syscall_8c.html#ad599bf257f9250292653296049317388',1,'miv_rv32_syscall.c']]],
+  ['_5fwait_21',['_wait',['../miv__rv32__syscall_8c.html#aeef0c3372d04caa1bcc99fed2ab6ec72',1,'miv_rv32_syscall.c']]],
+  ['_5fwrite_22',['_write',['../miv__rv32__syscall_8c.html#a8b12b3dea83ea95b57b38fc08919d759',1,'miv_rv32_syscall.c']]]
+];

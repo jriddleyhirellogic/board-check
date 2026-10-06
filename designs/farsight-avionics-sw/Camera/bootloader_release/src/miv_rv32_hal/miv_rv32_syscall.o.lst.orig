@@ -1,0 +1,2327 @@
+   1              		.file	"miv_rv32_syscall.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.write_hex,"ax",@progbits
+  10              		.align	2
+  11              		.globl	write_hex
+  13              	write_hex:
+  14              	.LFB18:
+  15              		.file 1 "../src/miv_rv32_hal/miv_rv32_syscall.c"
+   1:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*******************************************************************************
+   2:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3:../src/miv_rv32_hal/miv_rv32_syscall.c ****  *
+   4:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * SPDX-License-Identifier: MIT
+   5:../src/miv_rv32_hal/miv_rv32_syscall.c ****  *
+   6:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * @file miv_rv32_syscall.c
+   7:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * @author Microchip FPGA Embedded Systems Solutions
+   8:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * @brief Stubs for system calls.
+   9:../src/miv_rv32_hal/miv_rv32_syscall.c ****  *
+  10:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  11:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include <unistd.h>
+  12:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include <errno.h>
+  13:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include <sys/stat.h>
+  14:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include <sys/times.h>
+  15:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include "miv_rv32_hal.h"
+  16:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  17:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef MSCC_STDIO_THRU_CORE_UART_APB
+  18:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include <string.h>
+  19:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  20:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifndef LEGACY_DIR_STRUCTURE
+  21:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include "drivers/fabric_ip/CoreUARTapb/core_uart_apb.h"
+  22:../src/miv_rv32_hal/miv_rv32_syscall.c **** #else
+  23:../src/miv_rv32_hal/miv_rv32_syscall.c **** #include "core_uart_apb.h"
+  24:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif
+  25:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  26:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif  /*MSCC_STDIO_THRU_CORE_UART_APB*/
+  27:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  28:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef __cplusplus
+  29:../src/miv_rv32_hal/miv_rv32_syscall.c **** extern "C" {
+  30:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif
+  31:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  32:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef MSCC_STDIO_THRU_CORE_UART_APB
+  33:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  34:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*------------------------------------------------------------------------------
+  35:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * CoreUARTapb instance data for the CoreUARTapb instance used for standard
+  36:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * output.
+  37:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  38:../src/miv_rv32_hal/miv_rv32_syscall.c **** static UART_instance_t g_stdio_uart;
+  39:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  40:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*==============================================================================
+  41:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * Flag used to indicate if the UART driver needs to be initialized.
+  42:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  43:../src/miv_rv32_hal/miv_rv32_syscall.c **** static int g_stdio_uart_init_done = 0;
+  44:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  45:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*
+  46:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * Disable semihosting apis
+  47:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  48:../src/miv_rv32_hal/miv_rv32_syscall.c **** #pragma import(__use_no_semihosting_swi)
+  49:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  50:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*==============================================================================
+  51:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * sendchar()
+  52:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  53:../src/miv_rv32_hal/miv_rv32_syscall.c **** int sendchar(int ch)
+  54:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+  55:../src/miv_rv32_hal/miv_rv32_syscall.c ****     /*--------------------------------------------------------------------------
+  56:../src/miv_rv32_hal/miv_rv32_syscall.c ****     * Initialize the UART driver if it is the first time this function is
+  57:../src/miv_rv32_hal/miv_rv32_syscall.c ****     * called.
+  58:../src/miv_rv32_hal/miv_rv32_syscall.c ****     */
+  59:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if ( !g_stdio_uart_init_done )
+  60:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+  61:../src/miv_rv32_hal/miv_rv32_syscall.c ****         /******************************************************************************
+  62:../src/miv_rv32_hal/miv_rv32_syscall.c ****          * Baud value:
+  63:../src/miv_rv32_hal/miv_rv32_syscall.c ****          * This value is calculated using the following equation:
+  64:../src/miv_rv32_hal/miv_rv32_syscall.c ****          *      BAUD_VALUE = (CLOCK / (16 * BAUD_RATE)) - 1
+  65:../src/miv_rv32_hal/miv_rv32_syscall.c ****          *****************************************************************************/
+  66:../src/miv_rv32_hal/miv_rv32_syscall.c ****         UART_init( &g_stdio_uart,
+  67:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    MSCC_STDIO_UART_BASE_ADDR,
+  68:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    ((SYS_CLK_FREQ/(16 * MSCC_STDIO_BAUD_VALUE))-1),
+  69:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    (DATA_8_BITS | NO_PARITY));
+  70:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  71:../src/miv_rv32_hal/miv_rv32_syscall.c ****         g_stdio_uart_init_done = 1;
+  72:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+  73:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  74:../src/miv_rv32_hal/miv_rv32_syscall.c ****     /*--------------------------------------------------------------------------
+  75:../src/miv_rv32_hal/miv_rv32_syscall.c ****     * Output text to the UART.
+  76:../src/miv_rv32_hal/miv_rv32_syscall.c ****     */
+  77:../src/miv_rv32_hal/miv_rv32_syscall.c ****     UART_send( &g_stdio_uart, (uint8_t *)&ch, 1 );
+  78:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  79:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return (ch);
+  80:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+  81:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  82:../src/miv_rv32_hal/miv_rv32_syscall.c **** /*==============================================================================
+  83:../src/miv_rv32_hal/miv_rv32_syscall.c ****  * getachar()
+  84:../src/miv_rv32_hal/miv_rv32_syscall.c ****  */
+  85:../src/miv_rv32_hal/miv_rv32_syscall.c **** int getachar(void)
+  86:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+  87:../src/miv_rv32_hal/miv_rv32_syscall.c ****     uint8_t rx_size;
+  88:../src/miv_rv32_hal/miv_rv32_syscall.c ****     uint8_t rx_byte;
+  89:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+  90:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if ( !g_stdio_uart_init_done )
+  91:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+  92:../src/miv_rv32_hal/miv_rv32_syscall.c ****         /******************************************************************************
+  93:../src/miv_rv32_hal/miv_rv32_syscall.c ****          * Baud value:
+  94:../src/miv_rv32_hal/miv_rv32_syscall.c ****          * This value is calculated using the following equation:
+  95:../src/miv_rv32_hal/miv_rv32_syscall.c ****          *      BAUD_VALUE = (CLOCK / (16 * BAUD_RATE)) - 1
+  96:../src/miv_rv32_hal/miv_rv32_syscall.c ****          *****************************************************************************/
+  97:../src/miv_rv32_hal/miv_rv32_syscall.c ****         UART_init( &g_stdio_uart,
+  98:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    MSCC_STDIO_UART_BASE_ADDR,
+  99:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    ((SYS_CLK_FREQ/(16 * MSCC_STDIO_BAUD_VALUE))-1),
+ 100:../src/miv_rv32_hal/miv_rv32_syscall.c ****                    (DATA_8_BITS | NO_PARITY));
+ 101:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 102:../src/miv_rv32_hal/miv_rv32_syscall.c ****         g_stdio_uart_init_done = 1;
+ 103:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 104:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 105:../src/miv_rv32_hal/miv_rv32_syscall.c ****     do
+ 106:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 107:../src/miv_rv32_hal/miv_rv32_syscall.c ****         rx_size = UART_get_rx(&g_stdio_uart, &rx_byte, 1);
+ 108:../src/miv_rv32_hal/miv_rv32_syscall.c ****     } while(0u == rx_size);
+ 109:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 110:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return rx_byte;
+ 111:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 112:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 113:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif /*MSCC_STDIO_THRU_CORE_UART_APB*/
+ 114:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 115:../src/miv_rv32_hal/miv_rv32_syscall.c **** #undef errno
+ 116:../src/miv_rv32_hal/miv_rv32_syscall.c **** static int errno;
+ 117:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 118:../src/miv_rv32_hal/miv_rv32_syscall.c **** static char *__env[1] = { 0 };
+ 119:../src/miv_rv32_hal/miv_rv32_syscall.c **** char **environ = __env;
+ 120:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 121:../src/miv_rv32_hal/miv_rv32_syscall.c **** void write_hex(int fd, uint32_t hex)
+ 122:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+  16              		.loc 1 122 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+ 123:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char towrite;
+  19              		.loc 1 123 5
+ 124:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 125:../src/miv_rv32_hal/miv_rv32_syscall.c ****     write( fd , "0x", 2U );
+  20              		.loc 1 125 5
+ 122:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char towrite;
+  21              		.loc 1 122 1 is_stmt 0
+  22 0000 130101FD 		addi	sp,sp,-48
+  23              		.cfi_def_cfa_offset 48
+  24 0004 232E3101 		sw	s3,28(sp)
+  25              		.loc 1 125 5
+  26 0008 13062000 		li	a2,2
+  27              		.cfi_offset 19, -20
+ 122:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char towrite;
+  28              		.loc 1 122 1
+  29 000c 93890500 		mv	s3,a1
+  30              		.loc 1 125 5
+  31 0010 97050000 		lla	a1,.LC0
+  31      93850500 
+  32              	.LVL1:
+ 122:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char towrite;
+  33              		.loc 1 122 1
+  34 0018 23248102 		sw	s0,40(sp)
+  35 001c 23229102 		sw	s1,36(sp)
+  36 0020 23202103 		sw	s2,32(sp)
+  37 0024 232C4101 		sw	s4,24(sp)
+  38 0028 232A5101 		sw	s5,20(sp)
+  39 002c 23261102 		sw	ra,44(sp)
+  40              		.cfi_offset 8, -8
+  41              		.cfi_offset 9, -12
+  42              		.cfi_offset 18, -16
+  43              		.cfi_offset 20, -24
+  44              		.cfi_offset 21, -28
+  45              		.cfi_offset 1, -4
+ 122:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char towrite;
+  46              		.loc 1 122 1
+  47 0030 13090500 		mv	s2,a0
+  48              		.loc 1 125 5
+  49 0034 1304C001 		li	s0,28
+  50 0038 97000000 		call	write
+  50      E7800000 
+  51              	.LVL2:
+ 126:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 127:../src/miv_rv32_hal/miv_rv32_syscall.c ****     for (uint32_t ii = 8U ; ii > 0U; ii--)
+  52              		.loc 1 127 5 is_stmt 1
+  53              	.LBB34:
+  54              		.loc 1 127 10
+  55              	.LBB35:
+ 128:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 129:../src/miv_rv32_hal/miv_rv32_syscall.c ****         uint32_t jj = ii-1U;
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c **** 		uint8_t digit = ((hex & (0xFU << (jj*4U))) >> (jj*4U));
+  56              		.loc 1 130 33 is_stmt 0
+  57 0040 130AF000 		li	s4,15
+ 131:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  58              		.loc 1 131 17
+  59 0044 930A9000 		li	s5,9
+  60              	.LBE35:
+ 127:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+  61              		.loc 1 127 5
+  62 0048 9304C0FF 		li	s1,-4
+  63              	.LVL3:
+  64              	.L4:
+  65              	.LBB36:
+ 129:../src/miv_rv32_hal/miv_rv32_syscall.c **** 		uint8_t digit = ((hex & (0xFU << (jj*4U))) >> (jj*4U));
+  66              		.loc 1 129 9 is_stmt 1
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  67              		.loc 1 130 3
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  68              		.loc 1 130 33 is_stmt 0
+  69 004c B3178A00 		sll	a5,s4,s0
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  70              		.loc 1 130 25
+  71 0050 B3F73701 		and	a5,a5,s3
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  72              		.loc 1 130 46
+  73 0054 B3D78700 		srl	a5,a5,s0
+ 130:../src/miv_rv32_hal/miv_rv32_syscall.c ****         towrite = digit < 0xAU ? (0x48U + digit) : (0x65U +  (digit - 0xAU));
+  74              		.loc 1 130 11
+  75 0058 93F7F70F 		andi	a5,a5,0xff
+  76              	.LVL4:
+  77              		.loc 1 131 9 is_stmt 1
+  78              		.loc 1 131 17 is_stmt 0
+  79 005c 63EAFA04 		bgtu	a5,s5,.L2
+  80              		.loc 1 131 41 discriminator 1
+  81 0060 93878704 		addi	a5,a5,72
+  82              	.LVL5:
+  83              	.L7:
+  84              		.loc 1 131 17 discriminator 2
+  85 0064 93978701 		slli	a5,a5,24
+  86 0068 93D78741 		srai	a5,a5,24
+ 132:../src/miv_rv32_hal/miv_rv32_syscall.c ****         write( fd, &towrite, 1U);
+  87              		.loc 1 132 9 discriminator 2
+  88 006c 13061000 		li	a2,1
+  89 0070 9305F100 		addi	a1,sp,15
+  90 0074 13050900 		mv	a0,s2
+  91 0078 1304C4FF 		addi	s0,s0,-4
+  92              	.LVL6:
+ 131:../src/miv_rv32_hal/miv_rv32_syscall.c ****         write( fd, &towrite, 1U);
+  93              		.loc 1 131 17 discriminator 2
+  94 007c A307F100 		sb	a5,15(sp)
+  95              		.loc 1 132 9 is_stmt 1 discriminator 2
+  96 0080 97000000 		call	write
+  96      E7800000 
+  97              	.LVL7:
+  98              	.LBE36:
+ 127:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+  99              		.loc 1 127 5 is_stmt 0 discriminator 2
+ 100 0088 E31294FC 		bne	s0,s1,.L4
+ 101              	.LBE34:
+ 133:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 134:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 102              		.loc 1 134 1
+ 103 008c 8320C102 		lw	ra,44(sp)
+ 104              		.cfi_remember_state
+ 105              		.cfi_restore 1
+ 106 0090 03248102 		lw	s0,40(sp)
+ 107              		.cfi_restore 8
+ 108 0094 83244102 		lw	s1,36(sp)
+ 109              		.cfi_restore 9
+ 110 0098 03290102 		lw	s2,32(sp)
+ 111              		.cfi_restore 18
+ 112              	.LVL8:
+ 113 009c 8329C101 		lw	s3,28(sp)
+ 114              		.cfi_restore 19
+ 115              	.LVL9:
+ 116 00a0 032A8101 		lw	s4,24(sp)
+ 117              		.cfi_restore 20
+ 118 00a4 832A4101 		lw	s5,20(sp)
+ 119              		.cfi_restore 21
+ 120 00a8 13010103 		addi	sp,sp,48
+ 121              		.cfi_def_cfa_offset 0
+ 122 00ac 67800000 		jr	ra
+ 123              	.LVL10:
+ 124              	.L2:
+ 125              		.cfi_restore_state
+ 126              	.LBB38:
+ 127              	.LBB37:
+ 131:../src/miv_rv32_hal/miv_rv32_syscall.c ****         write( fd, &towrite, 1U);
+ 128              		.loc 1 131 59 discriminator 2
+ 129 00b0 9387B705 		addi	a5,a5,91
+ 130              	.LVL11:
+ 131 00b4 6FF01FFB 		j	.L7
+ 132              	.LBE37:
+ 133              	.LBE38:
+ 134              		.cfi_endproc
+ 135              	.LFE18:
+ 137              		.section	.text._exit,"ax",@progbits
+ 138              		.align	2
+ 139              		.globl	_exit
+ 141              	_exit:
+ 142              	.LFB19:
+ 135:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 136:../src/miv_rv32_hal/miv_rv32_syscall.c ****                
+ 137:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef GDB_TESTING
+ 138:../src/miv_rv32_hal/miv_rv32_syscall.c **** void __attribute__((optimize("O0"))) _exit(int code)
+ 139:../src/miv_rv32_hal/miv_rv32_syscall.c **** #else
+ 140:../src/miv_rv32_hal/miv_rv32_syscall.c **** void _exit(int code)
+ 141:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif
+ 142:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 143              		.loc 1 142 1 is_stmt 1
+ 144              		.cfi_startproc
+ 145              	.LVL12:
+ 146              	.L9:
+ 143:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef MSCC_STDIO_THRU_CORE_UART_APB
+ 144:../src/miv_rv32_hal/miv_rv32_syscall.c ****     const char * message = "\nProgam has exited with code:";
+ 145:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 146:../src/miv_rv32_hal/miv_rv32_syscall.c ****     write(STDERR_FILENO, message, strlen(message));
+ 147:../src/miv_rv32_hal/miv_rv32_syscall.c ****     write_hex(STDERR_FILENO, code);
+ 148:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif
+ 149:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 150:../src/miv_rv32_hal/miv_rv32_syscall.c ****     while (1){};
+ 147              		.loc 1 150 5 discriminator 1
+ 148              		.loc 1 150 15 discriminator 1
+ 149 0000 6F000000 		j	.L9
+ 150              		.cfi_endproc
+ 151              	.LFE19:
+ 153              		.section	.text._sbrk,"ax",@progbits
+ 154              		.align	2
+ 155              		.globl	_sbrk
+ 157              	_sbrk:
+ 158              	.LFB20:
+ 151:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 152:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 153:../src/miv_rv32_hal/miv_rv32_syscall.c **** void *_sbrk(ptrdiff_t incr)
+ 154:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 159              		.loc 1 154 1
+ 160              		.cfi_startproc
+ 161              	.LVL13:
+ 155:../src/miv_rv32_hal/miv_rv32_syscall.c ****     extern char _end;
+ 162              		.loc 1 155 5
+ 156:../src/miv_rv32_hal/miv_rv32_syscall.c ****     extern char _heap_end;
+ 163              		.loc 1 156 5
+ 157:../src/miv_rv32_hal/miv_rv32_syscall.c ****     extern char __heap_start;
+ 164              		.loc 1 157 5
+ 158:../src/miv_rv32_hal/miv_rv32_syscall.c ****     extern char __heap_end;
+ 165              		.loc 1 158 5
+ 159:../src/miv_rv32_hal/miv_rv32_syscall.c ****     static char *curbrk = &_end;
+ 166              		.loc 1 159 5
+ 160:../src/miv_rv32_hal/miv_rv32_syscall.c ****     void * ret = NULL;
+ 167              		.loc 1 160 5
+ 161:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 162:../src/miv_rv32_hal/miv_rv32_syscall.c ****     /*
+ 163:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * Did we allocated memory for the heap in the linker script?
+ 164:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * You need to set HEAP_SIZE to a non-zero value in your linker script if
+ 165:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * the following assertion fires.
+ 166:../src/miv_rv32_hal/miv_rv32_syscall.c ****      */
+ 167:../src/miv_rv32_hal/miv_rv32_syscall.c ****     ASSERT(&__heap_end > &__heap_start);
+ 168              		.loc 1 167 5
+ 169              		.loc 1 167 5
+ 170 0000 17070000 		lla	a4,__heap_start
+ 170      13070700 
+ 171 0008 97060000 		lla	a3,__heap_end
+ 171      93860600 
+ 154:../src/miv_rv32_hal/miv_rv32_syscall.c ****     extern char _end;
+ 172              		.loc 1 154 1 is_stmt 0
+ 173 0010 93070500 		mv	a5,a0
+ 174              		.loc 1 167 5
+ 175 0014 6364D700 		bgtu	a3,a4,.L11
+ 176              		.loc 1 167 5 is_stmt 1 discriminator 1
+ 177              	 #APP
+ 178              	# 167 "../src/miv_rv32_hal/miv_rv32_syscall.c" 1
+ 168              	
+ 179              		ebreak
+ 180              	# 0 "" 2
+ 181              	 #NO_APP
+ 182              	.L11:
+ 167:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 183              		.loc 1 167 40 discriminator 3
+ 169:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if (((curbrk + incr) < &_end) || ((curbrk + incr) > &_heap_end))
+ 184              		.loc 1 169 5 discriminator 3
+ 185              		.loc 1 169 18 is_stmt 0 discriminator 3
+ 186 001c 17070000 		lla	a4,.LANCHOR0
+ 186      13070700 
+ 187 0024 03250700 		lw	a0,0(a4)
+ 188              	.LVL14:
+ 189              		.loc 1 169 8 discriminator 3
+ 190 0028 17060000 		lla	a2,_end
+ 190      13060600 
+ 191              		.loc 1 169 18 discriminator 3
+ 192 0030 B307F500 		add	a5,a0,a5
+ 193              	.LVL15:
+ 194              		.loc 1 169 8 discriminator 3
+ 195 0034 63E4C702 		bltu	a5,a2,.L15
+ 196              		.loc 1 169 35 discriminator 1
+ 197 0038 17060000 		lla	a2,_heap_end
+ 197      13060600 
+ 198 0040 636EF600 		bgtu	a5,a2,.L15
+ 170:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 171:../src/miv_rv32_hal/miv_rv32_syscall.c ****         errno = ENOMEM;
+ 172:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = ((char *) - 1);
+ 173:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 174:../src/miv_rv32_hal/miv_rv32_syscall.c ****     else
+ 175:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 176:../src/miv_rv32_hal/miv_rv32_syscall.c ****         curbrk += incr;
+ 199              		.loc 1 176 9 is_stmt 1
+ 200              		.loc 1 176 16 is_stmt 0
+ 201 0044 17060000 		sw	a5,.LANCHOR0,a2
+ 201      2320F600 
+ 177:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = curbrk - incr;
+ 202              		.loc 1 177 9 is_stmt 1
+ 203              	.LVL16:
+ 204              	.L12:
+ 178:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 179:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 180:../src/miv_rv32_hal/miv_rv32_syscall.c ****     /*
+ 181:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * Did we run out of heap?
+ 182:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * You need to increase the heap size in the linker script if the following
+ 183:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * assertion fires.
+ 184:../src/miv_rv32_hal/miv_rv32_syscall.c ****      * */
+ 185:../src/miv_rv32_hal/miv_rv32_syscall.c ****     ASSERT(curbrk <= &__heap_end);
+ 205              		.loc 1 185 5
+ 206              		.loc 1 185 5
+ 207 004c 83270700 		lw	a5,0(a4)
+ 208 0050 63F4F600 		bleu	a5,a3,.L10
+ 209              		.loc 1 185 5 discriminator 1
+ 210              	 #APP
+ 211              	# 185 "../src/miv_rv32_hal/miv_rv32_syscall.c" 1
+ 186              	
+ 185:../src/miv_rv32_hal/miv_rv32_syscall.c ****     ASSERT(curbrk <= &__heap_end);
+ 212              		ebreak
+ 213              	# 0 "" 2
+ 214              		.loc 1 185 34 discriminator 1
+ 187:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return(ret);
+ 215              		.loc 1 187 5 discriminator 1
+ 216              	 #NO_APP
+ 217              	.L10:
+ 188:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 218              		.loc 1 188 1 is_stmt 0
+ 219 0058 67800000 		ret
+ 220              	.LVL17:
+ 221              	.L15:
+ 172:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 222              		.loc 1 172 13
+ 223 005c 1305F0FF 		li	a0,-1
+ 224 0060 6FF0DFFE 		j	.L12
+ 225              		.cfi_endproc
+ 226              	.LFE20:
+ 228              		.section	.text._isatty,"ax",@progbits
+ 229              		.align	2
+ 230              		.globl	_isatty
+ 232              	_isatty:
+ 233              	.LFB21:
+ 189:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 190:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _isatty(int fd)
+ 191:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 234              		.loc 1 191 1 is_stmt 1
+ 235              		.cfi_startproc
+ 236              	.LVL18:
+ 192:../src/miv_rv32_hal/miv_rv32_syscall.c ****     int ret = 0;
+ 237              		.loc 1 192 5
+ 193:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 194:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if (fd <= 2)    /* one of stdin, stdout, stderr */
+ 238              		.loc 1 194 5
+ 195:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 196:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = 1;
+ 197:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 198:../src/miv_rv32_hal/miv_rv32_syscall.c ****     else
+ 199:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 200:../src/miv_rv32_hal/miv_rv32_syscall.c ****         errno = EBADF;
+ 201:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = 0;
+ 202:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 203:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 204:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return(ret);
+ 239              		.loc 1 204 5
+ 205:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 240              		.loc 1 205 1 is_stmt 0
+ 241 0000 13253500 		slti	a0,a0,3
+ 242              	.LVL19:
+ 243 0004 67800000 		ret
+ 244              		.cfi_endproc
+ 245              	.LFE21:
+ 247              		.section	.text._open,"ax",@progbits
+ 248              		.align	2
+ 249              		.globl	_open
+ 251              	_open:
+ 252              	.LFB23:
+ 206:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 207:../src/miv_rv32_hal/miv_rv32_syscall.c **** static int stub(int err)
+ 208:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     errno = err;
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 211:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 212:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 213:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _open(const char* name, int flags, int mode)
+ 214:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 253              		.loc 1 214 1 is_stmt 1
+ 254              		.cfi_startproc
+ 255              	.LVL20:
+ 215:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(ENOENT);
+ 256              		.loc 1 215 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 257              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 258              		.loc 1 210 5
+ 216:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 259              		.loc 1 216 1 is_stmt 0
+ 260 0000 1305F0FF 		li	a0,-1
+ 261              	.LVL21:
+ 262 0004 67800000 		ret
+ 263              		.cfi_endproc
+ 264              	.LFE23:
+ 266              		.section	.text._openat,"ax",@progbits
+ 267              		.align	2
+ 268              		.globl	_openat
+ 270              	_openat:
+ 271              	.LFB24:
+ 217:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 218:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _openat(int dirfd, const char* name, int flags, int mode)
+ 219:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 272              		.loc 1 219 1 is_stmt 1
+ 273              		.cfi_startproc
+ 274              	.LVL22:
+ 220:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(ENOENT);
+ 275              		.loc 1 220 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 276              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 277              		.loc 1 210 5
+ 221:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 278              		.loc 1 221 1 is_stmt 0
+ 279 0000 1305F0FF 		li	a0,-1
+ 280              	.LVL23:
+ 281 0004 67800000 		ret
+ 282              		.cfi_endproc
+ 283              	.LFE24:
+ 285              		.section	.text._close,"ax",@progbits
+ 286              		.align	2
+ 287              		.globl	_close
+ 289              	_close:
+ 290              	.LFB25:
+ 222:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 223:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _close(int fd)
+ 224:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 291              		.loc 1 224 1 is_stmt 1
+ 292              		.cfi_startproc
+ 293              	.LVL24:
+ 225:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EBADF);
+ 294              		.loc 1 225 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 295              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 296              		.loc 1 210 5
+ 226:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 297              		.loc 1 226 1 is_stmt 0
+ 298 0000 1305F0FF 		li	a0,-1
+ 299              	.LVL25:
+ 300 0004 67800000 		ret
+ 301              		.cfi_endproc
+ 302              	.LFE25:
+ 304              		.section	.text._execve,"ax",@progbits
+ 305              		.align	2
+ 306              		.globl	_execve
+ 308              	_execve:
+ 309              	.LFB26:
+ 227:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 228:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _execve(const char* name, char* const argv[], char* const env[])
+ 229:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 310              		.loc 1 229 1 is_stmt 1
+ 311              		.cfi_startproc
+ 312              	.LVL26:
+ 230:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(ENOMEM);
+ 313              		.loc 1 230 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 314              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 315              		.loc 1 210 5
+ 231:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 316              		.loc 1 231 1 is_stmt 0
+ 317 0000 1305F0FF 		li	a0,-1
+ 318              	.LVL27:
+ 319 0004 67800000 		ret
+ 320              		.cfi_endproc
+ 321              	.LFE26:
+ 323              		.section	.text._fork,"ax",@progbits
+ 324              		.align	2
+ 325              		.globl	_fork
+ 327              	_fork:
+ 328              	.LFB27:
+ 232:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 233:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _fork(void)
+ 234:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 329              		.loc 1 234 1 is_stmt 1
+ 330              		.cfi_startproc
+ 235:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EAGAIN);
+ 331              		.loc 1 235 5
+ 332              	.LVL28:
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 333              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 334              		.loc 1 210 5
+ 236:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 335              		.loc 1 236 1 is_stmt 0
+ 336 0000 1305F0FF 		li	a0,-1
+ 337 0004 67800000 		ret
+ 338              		.cfi_endproc
+ 339              	.LFE27:
+ 341              		.section	.text._fstat,"ax",@progbits
+ 342              		.align	2
+ 343              		.globl	_fstat
+ 345              	_fstat:
+ 346              	.LFB28:
+ 237:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 238:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _fstat(int fd, struct stat *st)
+ 239:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 347              		.loc 1 239 1 is_stmt 1
+ 348              		.cfi_startproc
+ 349              	.LVL29:
+ 240:../src/miv_rv32_hal/miv_rv32_syscall.c ****     int ret = 0;
+ 350              		.loc 1 240 5
+ 241:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 242:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if (isatty(fd))
+ 351              		.loc 1 242 5
+ 239:../src/miv_rv32_hal/miv_rv32_syscall.c ****     int ret = 0;
+ 352              		.loc 1 239 1 is_stmt 0
+ 353 0000 130101FE 		addi	sp,sp,-32
+ 354              		.cfi_def_cfa_offset 32
+ 355 0004 232E1100 		sw	ra,28(sp)
+ 356              		.cfi_offset 1, -4
+ 239:../src/miv_rv32_hal/miv_rv32_syscall.c ****     int ret = 0;
+ 357              		.loc 1 239 1
+ 358 0008 2326B100 		sw	a1,12(sp)
+ 359              		.loc 1 242 9
+ 360 000c 97000000 		call	isatty
+ 360      E7800000 
+ 361              	.LVL30:
+ 362              		.loc 1 242 8
+ 363 0014 63000502 		beq	a0,zero,.L24
+ 243:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 244:../src/miv_rv32_hal/miv_rv32_syscall.c ****         st->st_mode = S_IFCHR;
+ 364              		.loc 1 244 9 is_stmt 1
+ 365              		.loc 1 244 21 is_stmt 0
+ 366 0018 8325C100 		lw	a1,12(sp)
+ 367 001c B7270000 		li	a5,8192
+ 245:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = 0;
+ 368              		.loc 1 245 13
+ 369 0020 13050000 		li	a0,0
+ 244:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = 0;
+ 370              		.loc 1 244 21
+ 371 0024 23A2F500 		sw	a5,4(a1)
+ 372              		.loc 1 245 9 is_stmt 1
+ 373              	.LVL31:
+ 374              	.L22:
+ 246:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 247:../src/miv_rv32_hal/miv_rv32_syscall.c ****     else
+ 248:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 249:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = stub(EBADF);
+ 250:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 251:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 252:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return ret;
+ 253:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 375              		.loc 1 253 1 is_stmt 0
+ 376 0028 8320C101 		lw	ra,28(sp)
+ 377              		.cfi_remember_state
+ 378              		.cfi_restore 1
+ 379 002c 13010102 		addi	sp,sp,32
+ 380              		.cfi_def_cfa_offset 0
+ 381              	.LVL32:
+ 382 0030 67800000 		jr	ra
+ 383              	.LVL33:
+ 384              	.L24:
+ 385              		.cfi_restore_state
+ 249:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 386              		.loc 1 249 15
+ 387 0034 1305F0FF 		li	a0,-1
+ 388              	.LVL34:
+ 252:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 389              		.loc 1 252 5 is_stmt 1
+ 252:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 390              		.loc 1 252 12 is_stmt 0
+ 391 0038 6FF01FFF 		j	.L22
+ 392              		.cfi_endproc
+ 393              	.LFE28:
+ 395              		.section	.text._getpid,"ax",@progbits
+ 396              		.align	2
+ 397              		.globl	_getpid
+ 399              	_getpid:
+ 400              	.LFB29:
+ 254:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 255:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _getpid(void)
+ 256:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 401              		.loc 1 256 1 is_stmt 1
+ 402              		.cfi_startproc
+ 257:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return 1;
+ 403              		.loc 1 257 5
+ 258:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 404              		.loc 1 258 1 is_stmt 0
+ 405 0000 13051000 		li	a0,1
+ 406 0004 67800000 		ret
+ 407              		.cfi_endproc
+ 408              	.LFE29:
+ 410              		.section	.text._kill,"ax",@progbits
+ 411              		.align	2
+ 412              		.globl	_kill
+ 414              	_kill:
+ 415              	.LFB30:
+ 259:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 260:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _kill(int pid, int sig)
+ 261:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 416              		.loc 1 261 1 is_stmt 1
+ 417              		.cfi_startproc
+ 418              	.LVL35:
+ 262:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EINVAL);
+ 419              		.loc 1 262 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 420              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 421              		.loc 1 210 5
+ 263:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 422              		.loc 1 263 1 is_stmt 0
+ 423 0000 1305F0FF 		li	a0,-1
+ 424              	.LVL36:
+ 425 0004 67800000 		ret
+ 426              		.cfi_endproc
+ 427              	.LFE30:
+ 429              		.section	.text._link,"ax",@progbits
+ 430              		.align	2
+ 431              		.globl	_link
+ 433              	_link:
+ 434              	.LFB31:
+ 264:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 265:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _link(const char *old_name, const char *new_name)
+ 266:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 435              		.loc 1 266 1 is_stmt 1
+ 436              		.cfi_startproc
+ 437              	.LVL37:
+ 267:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EMLINK);
+ 438              		.loc 1 267 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 439              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 440              		.loc 1 210 5
+ 268:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 441              		.loc 1 268 1 is_stmt 0
+ 442 0000 1305F0FF 		li	a0,-1
+ 443              	.LVL38:
+ 444 0004 67800000 		ret
+ 445              		.cfi_endproc
+ 446              	.LFE31:
+ 448              		.section	.text._lseek,"ax",@progbits
+ 449              		.align	2
+ 450              		.globl	_lseek
+ 452              	_lseek:
+ 453              	.LFB32:
+ 269:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 270:../src/miv_rv32_hal/miv_rv32_syscall.c **** off_t _lseek(int fd, off_t ptr, int dir)
+ 271:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 454              		.loc 1 271 1 is_stmt 1
+ 455              		.cfi_startproc
+ 456              	.LVL39:
+ 272:../src/miv_rv32_hal/miv_rv32_syscall.c ****     off_t ret = 0; 
+ 457              		.loc 1 272 5
+ 273:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if (_isatty(fd))
+ 458              		.loc 1 273 5
+ 459              	.LBB39:
+ 460              	.LBB40:
+ 192:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 461              		.loc 1 192 5
+ 194:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 462              		.loc 1 194 5
+ 463              	.LBE40:
+ 464              	.LBE39:
+ 274:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 275:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = 0;
+ 276:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 277:../src/miv_rv32_hal/miv_rv32_syscall.c ****     else
+ 278:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 279:../src/miv_rv32_hal/miv_rv32_syscall.c ****         ret = stub(EBADF);
+ 280:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 281:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 282:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return ret;
+ 465              		.loc 1 282 5
+ 466              	.LBB42:
+ 467              	.LBB41:
+ 194:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 468              		.loc 1 194 8 is_stmt 0
+ 469 0000 13253500 		slti	a0,a0,3
+ 470              	.LVL40:
+ 471              	.LBE41:
+ 472              	.LBE42:
+ 283:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 473              		.loc 1 283 1
+ 474 0004 1305F5FF 		addi	a0,a0,-1
+ 475 0008 67800000 		ret
+ 476              		.cfi_endproc
+ 477              	.LFE32:
+ 479              		.section	.text._read,"ax",@progbits
+ 480              		.align	2
+ 481              		.globl	_read
+ 483              	_read:
+ 484              	.LFB33:
+ 284:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 285:../src/miv_rv32_hal/miv_rv32_syscall.c **** ssize_t _read(int fd, void* ptr, size_t len)
+ 286:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 485              		.loc 1 286 1 is_stmt 1
+ 486              		.cfi_startproc
+ 487              	.LVL41:
+ 287:../src/miv_rv32_hal/miv_rv32_syscall.c **** #ifdef MSCC_STDIO_THRU_CORE_UART_APB
+ 288:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 289:../src/miv_rv32_hal/miv_rv32_syscall.c ****     char* ptr1 = (char*)ptr;
+ 290:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 291:../src/miv_rv32_hal/miv_rv32_syscall.c ****     if (_isatty(fd))
+ 292:../src/miv_rv32_hal/miv_rv32_syscall.c ****     {
+ 293:../src/miv_rv32_hal/miv_rv32_syscall.c ****         int  count;
+ 294:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 295:../src/miv_rv32_hal/miv_rv32_syscall.c ****         for (count = 0; count < len; count++)
+ 296:../src/miv_rv32_hal/miv_rv32_syscall.c ****         {
+ 297:../src/miv_rv32_hal/miv_rv32_syscall.c ****             ptr1[count] = getachar();
+ 298:../src/miv_rv32_hal/miv_rv32_syscall.c ****             sendchar(ptr1[count]);
+ 299:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 300:../src/miv_rv32_hal/miv_rv32_syscall.c ****             /* Return partial buffer if we get EOL */
+ 301:../src/miv_rv32_hal/miv_rv32_syscall.c ****             if (('\r' == ptr1[count])||('\n' == ptr1[count]))
+ 302:../src/miv_rv32_hal/miv_rv32_syscall.c ****             {
+ 303:../src/miv_rv32_hal/miv_rv32_syscall.c ****                 ptr1[count] = '\n';
+ 304:../src/miv_rv32_hal/miv_rv32_syscall.c ****                 return  count;
+ 305:../src/miv_rv32_hal/miv_rv32_syscall.c ****             }
+ 306:../src/miv_rv32_hal/miv_rv32_syscall.c ****         }
+ 307:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 308:../src/miv_rv32_hal/miv_rv32_syscall.c ****         return  count;          /* Filled the buffer */
+ 309:../src/miv_rv32_hal/miv_rv32_syscall.c ****     }
+ 310:../src/miv_rv32_hal/miv_rv32_syscall.c **** #endif
+ 311:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 312:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EBADF);
+ 488              		.loc 1 312 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 489              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 490              		.loc 1 210 5
+ 313:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 491              		.loc 1 313 1 is_stmt 0
+ 492 0000 1305F0FF 		li	a0,-1
+ 493              	.LVL42:
+ 494 0004 67800000 		ret
+ 495              		.cfi_endproc
+ 496              	.LFE33:
+ 498              		.section	.text._stat,"ax",@progbits
+ 499              		.align	2
+ 500              		.globl	_stat
+ 502              	_stat:
+ 503              	.LFB34:
+ 314:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 315:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _stat(const char* file, struct stat* st)
+ 316:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 504              		.loc 1 316 1 is_stmt 1
+ 505              		.cfi_startproc
+ 506              	.LVL43:
+ 317:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EACCES);
+ 507              		.loc 1 317 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 508              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 509              		.loc 1 210 5
+ 318:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 510              		.loc 1 318 1 is_stmt 0
+ 511 0000 1305F0FF 		li	a0,-1
+ 512              	.LVL44:
+ 513 0004 67800000 		ret
+ 514              		.cfi_endproc
+ 515              	.LFE34:
+ 517              		.section	.text._times,"ax",@progbits
+ 518              		.align	2
+ 519              		.globl	_times
+ 521              	_times:
+ 522              	.LFB35:
+ 319:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 320:../src/miv_rv32_hal/miv_rv32_syscall.c **** clock_t _times(struct tms* buf)
+ 321:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 523              		.loc 1 321 1 is_stmt 1
+ 524              		.cfi_startproc
+ 525              	.LVL45:
+ 322:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(EACCES);
+ 526              		.loc 1 322 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 527              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 528              		.loc 1 210 5
+ 323:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 529              		.loc 1 323 1 is_stmt 0
+ 530 0000 1305F0FF 		li	a0,-1
+ 531              	.LVL46:
+ 532 0004 67800000 		ret
+ 533              		.cfi_endproc
+ 534              	.LFE35:
+ 536              		.section	.text._unlink,"ax",@progbits
+ 537              		.align	2
+ 538              		.globl	_unlink
+ 540              	_unlink:
+ 541              	.LFB36:
+ 324:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 325:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _unlink(const char* name)
+ 326:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 542              		.loc 1 326 1 is_stmt 1
+ 543              		.cfi_startproc
+ 544              	.LVL47:
+ 327:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(ENOENT);
+ 545              		.loc 1 327 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 546              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 547              		.loc 1 210 5
+ 328:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 548              		.loc 1 328 1 is_stmt 0
+ 549 0000 1305F0FF 		li	a0,-1
+ 550              	.LVL48:
+ 551 0004 67800000 		ret
+ 552              		.cfi_endproc
+ 553              	.LFE36:
+ 555              		.section	.text._wait,"ax",@progbits
+ 556              		.align	2
+ 557              		.globl	_wait
+ 559              	_wait:
+ 560              	.LFB37:
+ 329:../src/miv_rv32_hal/miv_rv32_syscall.c **** 
+ 330:../src/miv_rv32_hal/miv_rv32_syscall.c **** int _wait(int* status)
+ 331:../src/miv_rv32_hal/miv_rv32_syscall.c **** {
+ 561              		.loc 1 331 1 is_stmt 1
+ 562              		.cfi_startproc
+ 563              	.LVL49:
+ 332:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return stub(ECHILD);
+ 564              		.loc 1 332 5
+ 209:../src/miv_rv32_hal/miv_rv32_syscall.c ****     return -1;
+ 565              		.loc 1 209 5
+ 210:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 566              		.loc 1 210 5
+ 333:../src/miv_rv32_hal/miv_rv32_syscall.c **** }
+ 567              		.loc 1 333 1 is_stmt 0
+ 568 0000 1305F0FF 		li	a0,-1
+ 569              	.LVL50:
+ 570 0004 67800000 		ret
+ 571              		.cfi_endproc
+ 572              	.LFE37:
+ 574              		.section	.text._write,"ax",@progbits
+ 575              		.align	2
+ 576              		.globl	_write
+ 578              	_write:
+ 579              	.LFB40:
+ 580              		.cfi_startproc
+ 581 0000 1305F0FF 		li	a0,-1
+ 582 0004 67800000 		ret
+ 583              		.cfi_endproc
+ 584              	.LFE40:
+ 586              		.globl	environ
+ 587              		.comm	MRV_LOCAL_IRQn_Type,4,4
+ 588              		.section	.rodata.write_hex.str1.4,"aMS",@progbits,1
+ 589              		.align	2
+ 590              	.LC0:
+ 591 0000 307800   		.string	"0x"
+ 592              		.section	.sbss.__env,"aw",@nobits
+ 593              		.align	2
+ 596              	__env:
+ 597 0000 00000000 		.zero	4
+ 598              		.section	.sdata.curbrk.2479,"aw"
+ 599              		.align	2
+ 600              		.set	.LANCHOR0,. + 0
+ 603              	curbrk.2479:
+ 604 0000 00000000 		.word	_end
+ 605              		.section	.sdata.environ,"aw"
+ 606              		.align	2
+ 609              	environ:
+ 610 0000 00000000 		.word	__env
+ 611              		.text
+ 612              	.Letext0:
+ 613              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 614              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 615              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 616              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 617              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_timeval.h
+ 618              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/types.h"
+ 619              		.file 8 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/unistd.h"
+ 620              		.file 9 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 621              		.file 10 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 622              		.file 11 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/errno.h"
+ 623              		.file 12 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/time.h"
+ 624              		.file 13 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/stat.h"
+ 625              		.file 14 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/times.h"
+ 626              		.file 15 "../src/miv_rv32_hal/miv_rv32_hal.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 miv_rv32_syscall.c
+<<<<<<< HEAD
+     /tmp/ccN1ZLMD.s:13     .text.write_hex:0000000000000000 write_hex
+     /tmp/ccN1ZLMD.s:17     .text.write_hex:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:19     .text.write_hex:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:20     .text.write_hex:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:21     .text.write_hex:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:22     .text.write_hex:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:23     .text.write_hex:0000000000000004 .L0 
+     /tmp/ccN1ZLMD.s:26     .text.write_hex:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:27     .text.write_hex:000000000000000c .L0 
+     /tmp/ccN1ZLMD.s:29     .text.write_hex:000000000000000c .L0 
+     /tmp/ccN1ZLMD.s:31     .text.write_hex:0000000000000010 .L0 
+     /tmp/ccN1ZLMD.s:34     .text.write_hex:0000000000000018 .L0 
+     /tmp/ccN1ZLMD.s:40     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:41     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:42     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:43     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:44     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:45     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:47     .text.write_hex:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:49     .text.write_hex:0000000000000034 .L0 
+     /tmp/ccN1ZLMD.s:54     .text.write_hex:0000000000000040 .L0 
+     /tmp/ccN1ZLMD.s:56     .text.write_hex:0000000000000040 .L0 
+     /tmp/ccN1ZLMD.s:57     .text.write_hex:0000000000000040 .L0 
+     /tmp/ccN1ZLMD.s:59     .text.write_hex:0000000000000044 .L0 
+     /tmp/ccN1ZLMD.s:62     .text.write_hex:0000000000000048 .L0 
+     /tmp/ccN1ZLMD.s:67     .text.write_hex:000000000000004c .L0 
+     /tmp/ccN1ZLMD.s:68     .text.write_hex:000000000000004c .L0 
+     /tmp/ccN1ZLMD.s:69     .text.write_hex:000000000000004c .L0 
+     /tmp/ccN1ZLMD.s:71     .text.write_hex:0000000000000050 .L0 
+     /tmp/ccN1ZLMD.s:73     .text.write_hex:0000000000000054 .L0 
+     /tmp/ccN1ZLMD.s:75     .text.write_hex:0000000000000058 .L0 
+     /tmp/ccN1ZLMD.s:78     .text.write_hex:000000000000005c .L0 
+     /tmp/ccN1ZLMD.s:79     .text.write_hex:000000000000005c .L0 
+     /tmp/ccN1ZLMD.s:81     .text.write_hex:0000000000000060 .L0 
+     /tmp/ccN1ZLMD.s:85     .text.write_hex:0000000000000064 .L0 
+     /tmp/ccN1ZLMD.s:88     .text.write_hex:000000000000006c .L0 
+     /tmp/ccN1ZLMD.s:94     .text.write_hex:000000000000007c .L0 
+     /tmp/ccN1ZLMD.s:96     .text.write_hex:0000000000000080 .L0 
+     /tmp/ccN1ZLMD.s:100    .text.write_hex:0000000000000088 .L0 
+     /tmp/ccN1ZLMD.s:103    .text.write_hex:000000000000008c .L0 
+     /tmp/ccN1ZLMD.s:104    .text.write_hex:0000000000000090 .L0 
+     /tmp/ccN1ZLMD.s:105    .text.write_hex:0000000000000090 .L0 
+     /tmp/ccN1ZLMD.s:107    .text.write_hex:0000000000000094 .L0 
+     /tmp/ccN1ZLMD.s:109    .text.write_hex:0000000000000098 .L0 
+     /tmp/ccN1ZLMD.s:111    .text.write_hex:000000000000009c .L0 
+     /tmp/ccN1ZLMD.s:114    .text.write_hex:00000000000000a0 .L0 
+     /tmp/ccN1ZLMD.s:117    .text.write_hex:00000000000000a4 .L0 
+     /tmp/ccN1ZLMD.s:119    .text.write_hex:00000000000000a8 .L0 
+     /tmp/ccN1ZLMD.s:121    .text.write_hex:00000000000000ac .L0 
+     /tmp/ccN1ZLMD.s:125    .text.write_hex:00000000000000b0 .L0 
+     /tmp/ccN1ZLMD.s:129    .text.write_hex:00000000000000b0 .L0 
+     /tmp/ccN1ZLMD.s:134    .text.write_hex:00000000000000b8 .L0 
+     /tmp/ccN1ZLMD.s:141    .text._exit:0000000000000000 _exit
+     /tmp/ccN1ZLMD.s:144    .text._exit:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:147    .text._exit:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:148    .text._exit:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:149    .text._exit:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:150    .text._exit:0000000000000004 .L0 
+     /tmp/ccN1ZLMD.s:157    .text._sbrk:0000000000000000 _sbrk
+     /tmp/ccN1ZLMD.s:160    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:162    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:163    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:164    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:165    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:166    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:167    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:168    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:169    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:170    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:173    .text._sbrk:0000000000000010 .L0 
+     /tmp/ccN1ZLMD.s:175    .text._sbrk:0000000000000014 .L0 
+../src/miv_rv32_hal/miv_rv32_syscall.c:167    .text._sbrk:0000000000000018 .L0 
+     /tmp/ccN1ZLMD.s:184    .text._sbrk:000000000000001c .L0 
+     /tmp/ccN1ZLMD.s:185    .text._sbrk:000000000000001c .L0 
+     /tmp/ccN1ZLMD.s:186    .text._sbrk:000000000000001c .L0 
+     /tmp/ccN1ZLMD.s:190    .text._sbrk:0000000000000028 .L0 
+     /tmp/ccN1ZLMD.s:192    .text._sbrk:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:195    .text._sbrk:0000000000000034 .L0 
+     /tmp/ccN1ZLMD.s:197    .text._sbrk:0000000000000038 .L0 
+     /tmp/ccN1ZLMD.s:200    .text._sbrk:0000000000000044 .L0 
+     /tmp/ccN1ZLMD.s:201    .text._sbrk:0000000000000044 .L0 
+     /tmp/ccN1ZLMD.s:205    .text._sbrk:000000000000004c .L0 
+     /tmp/ccN1ZLMD.s:206    .text._sbrk:000000000000004c .L0 
+     /tmp/ccN1ZLMD.s:207    .text._sbrk:000000000000004c .L0 
+../src/miv_rv32_hal/miv_rv32_syscall.c:185    .text._sbrk:0000000000000054 .L0 
+     /tmp/ccN1ZLMD.s:215    .text._sbrk:0000000000000058 .L0 
+     /tmp/ccN1ZLMD.s:218    .text._sbrk:0000000000000058 .L0 
+     /tmp/ccN1ZLMD.s:219    .text._sbrk:0000000000000058 .L0 
+     /tmp/ccN1ZLMD.s:223    .text._sbrk:000000000000005c .L0 
+     /tmp/ccN1ZLMD.s:225    .text._sbrk:0000000000000064 .L0 
+     /tmp/ccN1ZLMD.s:232    .text._isatty:0000000000000000 _isatty
+     /tmp/ccN1ZLMD.s:235    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:237    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:238    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:239    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:240    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:241    .text._isatty:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:244    .text._isatty:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:251    .text._open:0000000000000000 _open
+     /tmp/ccN1ZLMD.s:254    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:256    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:257    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:258    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:259    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:260    .text._open:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:263    .text._open:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:270    .text._openat:0000000000000000 _openat
+     /tmp/ccN1ZLMD.s:273    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:275    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:276    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:277    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:278    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:279    .text._openat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:282    .text._openat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:289    .text._close:0000000000000000 _close
+     /tmp/ccN1ZLMD.s:292    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:294    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:295    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:296    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:297    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:298    .text._close:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:301    .text._close:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:308    .text._execve:0000000000000000 _execve
+     /tmp/ccN1ZLMD.s:311    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:313    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:314    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:315    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:316    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:317    .text._execve:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:320    .text._execve:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:327    .text._fork:0000000000000000 _fork
+     /tmp/ccN1ZLMD.s:330    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:331    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:333    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:334    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:335    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:336    .text._fork:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:338    .text._fork:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:345    .text._fstat:0000000000000000 _fstat
+     /tmp/ccN1ZLMD.s:348    .text._fstat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:350    .text._fstat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:351    .text._fstat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:352    .text._fstat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:353    .text._fstat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:354    .text._fstat:0000000000000004 .L0 
+     /tmp/ccN1ZLMD.s:356    .text._fstat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:358    .text._fstat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:360    .text._fstat:000000000000000c .L0 
+     /tmp/ccN1ZLMD.s:363    .text._fstat:0000000000000014 .L0 
+     /tmp/ccN1ZLMD.s:365    .text._fstat:0000000000000018 .L0 
+     /tmp/ccN1ZLMD.s:366    .text._fstat:0000000000000018 .L0 
+     /tmp/ccN1ZLMD.s:369    .text._fstat:0000000000000020 .L0 
+     /tmp/ccN1ZLMD.s:371    .text._fstat:0000000000000024 .L0 
+     /tmp/ccN1ZLMD.s:375    .text._fstat:0000000000000028 .L0 
+     /tmp/ccN1ZLMD.s:376    .text._fstat:0000000000000028 .L0 
+     /tmp/ccN1ZLMD.s:377    .text._fstat:000000000000002c .L0 
+     /tmp/ccN1ZLMD.s:378    .text._fstat:000000000000002c .L0 
+     /tmp/ccN1ZLMD.s:380    .text._fstat:0000000000000030 .L0 
+     /tmp/ccN1ZLMD.s:385    .text._fstat:0000000000000034 .L0 
+     /tmp/ccN1ZLMD.s:387    .text._fstat:0000000000000034 .L0 
+     /tmp/ccN1ZLMD.s:390    .text._fstat:0000000000000038 .L0 
+     /tmp/ccN1ZLMD.s:391    .text._fstat:0000000000000038 .L0 
+     /tmp/ccN1ZLMD.s:392    .text._fstat:000000000000003c .L0 
+     /tmp/ccN1ZLMD.s:399    .text._getpid:0000000000000000 _getpid
+     /tmp/ccN1ZLMD.s:402    .text._getpid:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:403    .text._getpid:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:404    .text._getpid:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:405    .text._getpid:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:407    .text._getpid:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:414    .text._kill:0000000000000000 _kill
+     /tmp/ccN1ZLMD.s:417    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:419    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:420    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:421    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:422    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:423    .text._kill:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:426    .text._kill:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:433    .text._link:0000000000000000 _link
+     /tmp/ccN1ZLMD.s:436    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:438    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:439    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:440    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:441    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:442    .text._link:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:445    .text._link:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:452    .text._lseek:0000000000000000 _lseek
+     /tmp/ccN1ZLMD.s:455    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:457    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:458    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:461    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:462    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:465    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:468    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:469    .text._lseek:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:474    .text._lseek:0000000000000004 .L0 
+     /tmp/ccN1ZLMD.s:476    .text._lseek:000000000000000c .L0 
+     /tmp/ccN1ZLMD.s:483    .text._read:0000000000000000 _read
+     /tmp/ccN1ZLMD.s:486    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:488    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:489    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:490    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:491    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:492    .text._read:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:495    .text._read:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:502    .text._stat:0000000000000000 _stat
+     /tmp/ccN1ZLMD.s:505    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:507    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:508    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:509    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:510    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:511    .text._stat:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:514    .text._stat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:521    .text._times:0000000000000000 _times
+     /tmp/ccN1ZLMD.s:524    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:526    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:527    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:528    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:529    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:530    .text._times:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:533    .text._times:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:540    .text._unlink:0000000000000000 _unlink
+     /tmp/ccN1ZLMD.s:543    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:545    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:546    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:547    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:548    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:549    .text._unlink:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:552    .text._unlink:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:559    .text._wait:0000000000000000 _wait
+     /tmp/ccN1ZLMD.s:562    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:564    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:565    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:566    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:567    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:568    .text._wait:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:571    .text._wait:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:578    .text._write:0000000000000000 _write
+     /tmp/ccN1ZLMD.s:580    .text._write:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:583    .text._write:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:609    .sdata.environ:0000000000000000 environ
+                            *COM*:0000000000000004 MRV_LOCAL_IRQn_Type
+     /tmp/ccN1ZLMD.s:596    .sbss.__env:0000000000000000 __env
+     /tmp/ccN1ZLMD.s:600    .sdata.curbrk.2479:0000000000000000 .LANCHOR0
+     /tmp/ccN1ZLMD.s:603    .sdata.curbrk.2479:0000000000000000 curbrk.2479
+     /tmp/ccN1ZLMD.s:137    .text.write_hex:00000000000000b8 .L0 
+     /tmp/ccN1ZLMD.s:153    .text._exit:0000000000000004 .L0 
+     /tmp/ccN1ZLMD.s:228    .text._sbrk:0000000000000064 .L0 
+     /tmp/ccN1ZLMD.s:247    .text._isatty:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:266    .text._open:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:285    .text._openat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:304    .text._close:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:323    .text._execve:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:341    .text._fork:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:395    .text._fstat:000000000000003c .L0 
+     /tmp/ccN1ZLMD.s:410    .text._getpid:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:429    .text._kill:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:448    .text._link:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:479    .text._lseek:000000000000000c .L0 
+     /tmp/ccN1ZLMD.s:498    .text._read:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:517    .text._stat:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:536    .text._times:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:555    .text._unlink:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:574    .text._wait:0000000000000008 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:590    .rodata.write_hex.str1.4:0000000000000000 .LC0
+     /tmp/ccN1ZLMD.s:31     .text.write_hex:0000000000000010 .L0 
+     /tmp/ccN1ZLMD.s:124    .text.write_hex:00000000000000b0 .L2
+     /tmp/ccN1ZLMD.s:64     .text.write_hex:000000000000004c .L4
+     /tmp/ccN1ZLMD.s:83     .text.write_hex:0000000000000064 .L7
+     /tmp/ccN1ZLMD.s:146    .text._exit:0000000000000000 .L9
+     /tmp/ccN1ZLMD.s:170    .text._sbrk:0000000000000000 .L0 
+     /tmp/ccN1ZLMD.s:171    .text._sbrk:0000000000000008 .L0 
+     /tmp/ccN1ZLMD.s:186    .text._sbrk:000000000000001c .L0 
+     /tmp/ccN1ZLMD.s:190    .text._sbrk:0000000000000028 .L0 
+     /tmp/ccN1ZLMD.s:197    .text._sbrk:0000000000000038 .L0 
+     /tmp/ccN1ZLMD.s:201    .text._sbrk:0000000000000044 .L0 
+     /tmp/ccN1ZLMD.s:182    .text._sbrk:000000000000001c .L11
+     /tmp/ccN1ZLMD.s:221    .text._sbrk:000000000000005c .L15
+     /tmp/ccN1ZLMD.s:217    .text._sbrk:0000000000000058 .L10
+     /tmp/ccN1ZLMD.s:204    .text._sbrk:000000000000004c .L12
+     /tmp/ccN1ZLMD.s:384    .text._fstat:0000000000000034 .L24
+     /tmp/ccN1ZLMD.s:374    .text._fstat:0000000000000028 .L22
+     /tmp/ccN1ZLMD.s:3095   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccN1ZLMD.s:5231   .debug_str:0000000000000805 .LASF253
+     /tmp/ccN1ZLMD.s:5197   .debug_str:0000000000000749 .LASF254
+     /tmp/ccN1ZLMD.s:5169   .debug_str:000000000000069f .LASF255
+     /tmp/ccN1ZLMD.s:4731   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccN1ZLMD.s:4793   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccN1ZLMD.s:5253   .debug_str:0000000000000928 .LASF0
+     /tmp/ccN1ZLMD.s:5173   .debug_str:00000000000006de .LASF5
+     /tmp/ccN1ZLMD.s:5213   .debug_str:00000000000007ac .LASF1
+     /tmp/ccN1ZLMD.s:5133   .debug_str:00000000000005ef .LASF2
+     /tmp/ccN1ZLMD.s:5261   .debug_str:0000000000000948 .LASF3
+     /tmp/ccN1ZLMD.s:5141   .debug_str:0000000000000612 .LASF4
+     /tmp/ccN1ZLMD.s:5215   .debug_str:00000000000007ba .LASF6
+     /tmp/ccN1ZLMD.s:5195   .debug_str:0000000000000737 .LASF7
+     /tmp/ccN1ZLMD.s:5049   .debug_str:0000000000000476 .LASF8
+     /tmp/ccN1ZLMD.s:4913   .debug_str:000000000000020e .LASF9
+     /tmp/ccN1ZLMD.s:5125   .debug_str:00000000000005c5 .LASF10
+     /tmp/ccN1ZLMD.s:4829   .debug_str:0000000000000098 .LASF11
+     /tmp/ccN1ZLMD.s:5005   .debug_str:00000000000003ba .LASF12
+     /tmp/ccN1ZLMD.s:4945   .debug_str:00000000000002a7 .LASF13
+     /tmp/ccN1ZLMD.s:5203   .debug_str:0000000000000782 .LASF14
+     /tmp/ccN1ZLMD.s:5273   .debug_str:000000000000098e .LASF15
+     /tmp/ccN1ZLMD.s:5165   .debug_str:0000000000000684 .LASF16
+     /tmp/ccN1ZLMD.s:5279   .debug_str:00000000000009af .LASF17
+     /tmp/ccN1ZLMD.s:5059   .debug_str:00000000000004a6 .LASF18
+     /tmp/ccN1ZLMD.s:5171   .debug_str:00000000000006d6 .LASF19
+     /tmp/ccN1ZLMD.s:5117   .debug_str:00000000000005aa .LASF20
+     /tmp/ccN1ZLMD.s:4881   .debug_str:0000000000000180 .LASF21
+     /tmp/ccN1ZLMD.s:4951   .debug_str:00000000000002c5 .LASF22
+     /tmp/ccN1ZLMD.s:5247   .debug_str:000000000000090f .LASF23
+     /tmp/ccN1ZLMD.s:4867   .debug_str:0000000000000149 .LASF24
+     /tmp/ccN1ZLMD.s:5251   .debug_str:000000000000091f .LASF25
+     /tmp/ccN1ZLMD.s:5021   .debug_str:00000000000003fc .LASF26
+     /tmp/ccN1ZLMD.s:5157   .debug_str:000000000000064c .LASF27
+     /tmp/ccN1ZLMD.s:4897   .debug_str:00000000000001c5 .LASF28
+     /tmp/ccN1ZLMD.s:4979   .debug_str:000000000000033e .LASF29
+     /tmp/ccN1ZLMD.s:5083   .debug_str:000000000000050d .LASF30
+     /tmp/ccN1ZLMD.s:4845   .debug_str:00000000000000e2 .LASF31
+     /tmp/ccN1ZLMD.s:5025   .debug_str:0000000000000408 .LASF32
+     /tmp/ccN1ZLMD.s:4891   .debug_str:00000000000001a8 .LASF33
+     /tmp/ccN1ZLMD.s:5029   .debug_str:0000000000000417 .LASF34
+     /tmp/ccN1ZLMD.s:4993   .debug_str:000000000000037f .LASF35
+     /tmp/ccN1ZLMD.s:5225   .debug_str:00000000000007eb .LASF36
+     /tmp/ccN1ZLMD.s:4931   .debug_str:000000000000026a .LASF37
+     /tmp/ccN1ZLMD.s:4991   .debug_str:000000000000037a .LASF38
+     /tmp/ccN1ZLMD.s:4889   .debug_str:00000000000001a2 .LASF39
+     /tmp/ccN1ZLMD.s:5259   .debug_str:0000000000000942 .LASF40
+     /tmp/ccN1ZLMD.s:5073   .debug_str:00000000000004ea .LASF41
+     /tmp/ccN1ZLMD.s:5129   .debug_str:00000000000005dd .LASF42
+     /tmp/ccN1ZLMD.s:5121   .debug_str:00000000000005b9 .LASF43
+     /tmp/ccN1ZLMD.s:5017   .debug_str:00000000000003ef .LASF44
+     /tmp/ccN1ZLMD.s:5255   .debug_str:0000000000000934 .LASF45
+     /tmp/ccN1ZLMD.s:5209   .debug_str:000000000000079c .LASF46
+     /tmp/ccN1ZLMD.s:5113   .debug_str:0000000000000592 .LASF47
+     /tmp/ccN1ZLMD.s:5009   .debug_str:00000000000003cb .LASF48
+     /tmp/ccN1ZLMD.s:5109   .debug_str:0000000000000586 .LASF49
+     /tmp/ccN1ZLMD.s:5077   .debug_str:00000000000004f6 .LASF50
+     /tmp/ccN1ZLMD.s:4899   .debug_str:00000000000001cd .LASF51
+     /tmp/ccN1ZLMD.s:4815   .debug_str:000000000000005b .LASF52
+     /tmp/ccN1ZLMD.s:4961   .debug_str:00000000000002f0 .LASF53
+     /tmp/ccN1ZLMD.s:5063   .debug_str:00000000000004b4 .LASF54
+     /tmp/ccN1ZLMD.s:4875   .debug_str:0000000000000169 .LASF55
+     /tmp/ccN1ZLMD.s:5207   .debug_str:0000000000000795 .LASF152
+     /tmp/ccN1ZLMD.s:5011   .debug_str:00000000000003d3 .LASF56
+     /tmp/ccN1ZLMD.s:4879   .debug_str:0000000000000178 .LASF61
+     /tmp/ccN1ZLMD.s:4965   .debug_str:0000000000000300 .LASF57
+     /tmp/ccN1ZLMD.s:5181   .debug_str:00000000000006fa .LASF58
+     /tmp/ccN1ZLMD.s:5149   .debug_str:000000000000062f .LASF59
+     /tmp/ccN1ZLMD.s:4921   .debug_str:0000000000000244 .LASF60
+     /tmp/ccN1ZLMD.s:5191   .debug_str:000000000000072c .LASF62
+     /tmp/ccN1ZLMD.s:4953   .debug_str:00000000000002ce .LASF63
+     /tmp/ccN1ZLMD.s:4901   .debug_str:00000000000001d4 .LASF64
+     /tmp/ccN1ZLMD.s:4893   .debug_str:00000000000001b1 .LASF65
+     /tmp/ccN1ZLMD.s:4995   .debug_str:0000000000000388 .LASF66
+     /tmp/ccN1ZLMD.s:5107   .debug_str:000000000000057d .LASF67
+     /tmp/ccN1ZLMD.s:5163   .debug_str:000000000000067a .LASF68
+     /tmp/ccN1ZLMD.s:4883   .debug_str:0000000000000188 .LASF69
+     /tmp/ccN1ZLMD.s:4957   .debug_str:00000000000002e1 .LASF70
+     /tmp/ccN1ZLMD.s:5087   .debug_str:0000000000000520 .LASF71
+     /tmp/ccN1ZLMD.s:4803   .debug_str:000000000000001d .LASF72
+     /tmp/ccN1ZLMD.s:5085   .debug_str:0000000000000518 .LASF73
+     /tmp/ccN1ZLMD.s:5205   .debug_str:0000000000000789 .LASF74
+     /tmp/ccN1ZLMD.s:5267   .debug_str:0000000000000974 .LASF75
+     /tmp/ccN1ZLMD.s:5293   .debug_str:00000000000009fd .LASF76
+     /tmp/ccN1ZLMD.s:5127   .debug_str:00000000000005d5 .LASF77
+     /tmp/ccN1ZLMD.s:5093   .debug_str:0000000000000540 .LASF78
+     /tmp/ccN1ZLMD.s:4869   .debug_str:0000000000000151 .LASF79
+     /tmp/ccN1ZLMD.s:5233   .debug_str:00000000000008cb .LASF80
+     /tmp/ccN1ZLMD.s:5055   .debug_str:0000000000000496 .LASF81
+     /tmp/ccN1ZLMD.s:5269   .debug_str:000000000000097d .LASF82
+     /tmp/ccN1ZLMD.s:4919   .debug_str:000000000000023c .LASF83
+     /tmp/ccN1ZLMD.s:4835   .debug_str:00000000000000b9 .LASF84
+     /tmp/ccN1ZLMD.s:5075   .debug_str:00000000000004f0 .LASF85
+     /tmp/ccN1ZLMD.s:4833   .debug_str:00000000000000b0 .LASF86
+     /tmp/ccN1ZLMD.s:4871   .debug_str:0000000000000156 .LASF87
+     /tmp/ccN1ZLMD.s:4855   .debug_str:0000000000000111 .LASF88
+     /tmp/ccN1ZLMD.s:5119   .debug_str:00000000000005b2 .LASF89
+     /tmp/ccN1ZLMD.s:5303   .debug_str:0000000000000a27 .LASF90
+     /tmp/ccN1ZLMD.s:5031   .debug_str:000000000000041e .LASF91
+     /tmp/ccN1ZLMD.s:5309   .debug_str:0000000000000a3e .LASF92
+     /tmp/ccN1ZLMD.s:5281   .debug_str:00000000000009b6 .LASF93
+     /tmp/ccN1ZLMD.s:5189   .debug_str:0000000000000723 .LASF94
+     /tmp/ccN1ZLMD.s:4929   .debug_str:0000000000000262 .LASF95
+     /tmp/ccN1ZLMD.s:5155   .debug_str:0000000000000646 .LASF96
+     /tmp/ccN1ZLMD.s:5193   .debug_str:0000000000000731 .LASF97
+     /tmp/ccN1ZLMD.s:4851   .debug_str:00000000000000fd .LASF98
+     /tmp/ccN1ZLMD.s:5291   .debug_str:00000000000009f5 .LASF99
+     /tmp/ccN1ZLMD.s:5257   .debug_str:000000000000093b .LASF100
+     /tmp/ccN1ZLMD.s:4837   .debug_str:00000000000000c0 .LASF101
+     /tmp/ccN1ZLMD.s:5043   .debug_str:0000000000000454 .LASF102
+     /tmp/ccN1ZLMD.s:4865   .debug_str:0000000000000141 .LASF103
+     /tmp/ccN1ZLMD.s:5305   .debug_str:0000000000000a2d .LASF104
+     /tmp/ccN1ZLMD.s:4959   .debug_str:00000000000002eb .LASF105
+     /tmp/ccN1ZLMD.s:4937   .debug_str:0000000000000283 .LASF106
+     /tmp/ccN1ZLMD.s:5289   .debug_str:00000000000009dc .LASF107
+     /tmp/ccN1ZLMD.s:5249   .debug_str:0000000000000917 .LASF108
+     /tmp/ccN1ZLMD.s:5033   .debug_str:0000000000000425 .LASF109
+     /tmp/ccN1ZLMD.s:5081   .debug_str:0000000000000503 .LASF110
+     /tmp/ccN1ZLMD.s:4887   .debug_str:000000000000019a .LASF111
+     /tmp/ccN1ZLMD.s:4911   .debug_str:0000000000000204 .LASF112
+     /tmp/ccN1ZLMD.s:4981   .debug_str:0000000000000346 .LASF113
+     /tmp/ccN1ZLMD.s:5057   .debug_str:000000000000049c .LASF114
+     /tmp/ccN1ZLMD.s:5179   .debug_str:00000000000006f2 .LASF115
+     /tmp/ccN1ZLMD.s:5211   .debug_str:00000000000007a4 .LASF116
+     /tmp/ccN1ZLMD.s:5175   .debug_str:00000000000006e8 .LASF117
+     /tmp/ccN1ZLMD.s:5003   .debug_str:00000000000003b1 .LASF118
+     /tmp/ccN1ZLMD.s:4999   .debug_str:0000000000000398 .LASF119
+     /tmp/ccN1ZLMD.s:5241   .debug_str:00000000000008ec .LASF120
+     /tmp/ccN1ZLMD.s:5147   .debug_str:000000000000062a .LASF121
+     /tmp/ccN1ZLMD.s:4925   .debug_str:0000000000000252 .LASF122
+     /tmp/ccN1ZLMD.s:5239   .debug_str:00000000000008e6 .LASF123
+     /tmp/ccN1ZLMD.s:5201   .debug_str:000000000000077b .LASF124
+     /tmp/ccN1ZLMD.s:5023   .debug_str:0000000000000402 .LASF125
+     /tmp/ccN1ZLMD.s:4909   .debug_str:00000000000001fc .LASF126
+     /tmp/ccN1ZLMD.s:5297   .debug_str:0000000000000a0b .LASF127
+     /tmp/ccN1ZLMD.s:5061   .debug_str:00000000000004ae .LASF128
+     /tmp/ccN1ZLMD.s:5223   .debug_str:00000000000007e6 .LASF129
+     /tmp/ccN1ZLMD.s:5283   .debug_str:00000000000009bc .LASF130
+     /tmp/ccN1ZLMD.s:5243   .debug_str:00000000000008f4 .LASF131
+     /tmp/ccN1ZLMD.s:4917   .debug_str:000000000000022f .LASF132
+     /tmp/ccN1ZLMD.s:5167   .debug_str:0000000000000690 .LASF133
+     /tmp/ccN1ZLMD.s:5045   .debug_str:000000000000045b .LASF134
+     /tmp/ccN1ZLMD.s:5299   .debug_str:0000000000000a11 .LASF135
+     /tmp/ccN1ZLMD.s:4819   .debug_str:0000000000000068 .LASF136
+     /tmp/ccN1ZLMD.s:4987   .debug_str:0000000000000362 .LASF137
+     /tmp/ccN1ZLMD.s:5245   .debug_str:0000000000000901 .LASF138
+     /tmp/ccN1ZLMD.s:4813   .debug_str:000000000000004d .LASF139
+     /tmp/ccN1ZLMD.s:5183   .debug_str:0000000000000702 .LASF140
+     /tmp/ccN1ZLMD.s:4827   .debug_str:000000000000008c .LASF141
+     /tmp/ccN1ZLMD.s:5217   .debug_str:00000000000007c5 .LASF142
+     /tmp/ccN1ZLMD.s:4861   .debug_str:0000000000000128 .LASF143
+     /tmp/ccN1ZLMD.s:5001   .debug_str:00000000000003a2 .LASF144
+     /tmp/ccN1ZLMD.s:4969   .debug_str:000000000000030e .LASF145
+     /tmp/ccN1ZLMD.s:5071   .debug_str:00000000000004db .LASF146
+     /tmp/ccN1ZLMD.s:4985   .debug_str:0000000000000351 .LASF147
+     /tmp/ccN1ZLMD.s:4927   .debug_str:0000000000000259 .LASF148
+     /tmp/ccN1ZLMD.s:4905   .debug_str:00000000000001e9 .LASF149
+     /tmp/ccN1ZLMD.s:5307   .debug_str:0000000000000a35 .LASF150
+     /tmp/ccN1ZLMD.s:5227   .debug_str:00000000000007f5 .LASF151
+     /tmp/ccN1ZLMD.s:5301   .debug_str:0000000000000a1c .LASF153
+     /tmp/ccN1ZLMD.s:4903   .debug_str:00000000000001dd .LASF154
+     /tmp/ccN1ZLMD.s:5159   .debug_str:0000000000000653 .LASF155
+     /tmp/ccN1ZLMD.s:5263   .debug_str:000000000000095b .LASF156
+     /tmp/ccN1ZLMD.s:4847   .debug_str:00000000000000ec .LASF157
+     /tmp/ccN1ZLMD.s:5037   .debug_str:0000000000000437 .LASF158
+     /tmp/ccN1ZLMD.s:4809   .debug_str:000000000000003d .LASF159
+     /tmp/ccN1ZLMD.s:4975   .debug_str:0000000000000331 .LASF160
+     /tmp/ccN1ZLMD.s:4935   .debug_str:000000000000027e .LASF161
+     /tmp/ccN1ZLMD.s:4941   .debug_str:0000000000000294 .LASF162
+     /tmp/ccN1ZLMD.s:5035   .debug_str:0000000000000430 .LASF163
+     /tmp/ccN1ZLMD.s:4967   .debug_str:0000000000000306 .LASF164
+     /tmp/ccN1ZLMD.s:4973   .debug_str:0000000000000328 .LASF165
+     /tmp/ccN1ZLMD.s:5007   .debug_str:00000000000003c4 .LASF166
+     /tmp/ccN1ZLMD.s:4963   .debug_str:00000000000002f9 .LASF167
+     /tmp/ccN1ZLMD.s:5285   .debug_str:00000000000009c9 .LASF168
+     /tmp/ccN1ZLMD.s:5237   .debug_str:00000000000008de .LASF169
+     /tmp/ccN1ZLMD.s:5015   .debug_str:00000000000003e6 .LASF170
+     /tmp/ccN1ZLMD.s:5097   .debug_str:000000000000054a .LASF171
+     /tmp/ccN1ZLMD.s:4923   .debug_str:0000000000000249 .LASF172
+     /tmp/ccN1ZLMD.s:5099   .debug_str:0000000000000554 .LASF173
+     /tmp/ccN1ZLMD.s:5145   .debug_str:0000000000000621 .LASF174
+     /tmp/ccN1ZLMD.s:5101   .debug_str:000000000000055e .LASF175
+     /tmp/ccN1ZLMD.s:4831   .debug_str:00000000000000a5 .LASF176
+     /tmp/ccN1ZLMD.s:4915   .debug_str:0000000000000225 .LASF177
+     /tmp/ccN1ZLMD.s:5103   .debug_str:0000000000000568 .LASF178
+     /tmp/ccN1ZLMD.s:4955   .debug_str:00000000000002d7 .LASF179
+     /tmp/ccN1ZLMD.s:5013   .debug_str:00000000000003dc .LASF180
+     /tmp/ccN1ZLMD.s:5151   .debug_str:0000000000000635 .LASF181
+     /tmp/ccN1ZLMD.s:4989   .debug_str:000000000000036f .LASF182
+     /tmp/ccN1ZLMD.s:5069   .debug_str:00000000000004d0 .LASF183
+     /tmp/ccN1ZLMD.s:4863   .debug_str:0000000000000136 .LASF184
+     /tmp/ccN1ZLMD.s:5199   .debug_str:0000000000000770 .LASF185
+     /tmp/ccN1ZLMD.s:4949   .debug_str:00000000000002ba .LASF186
+     /tmp/ccN1ZLMD.s:5287   .debug_str:00000000000009d1 .LASF187
+     /tmp/ccN1ZLMD.s:5105   .debug_str:0000000000000572 .LASF188
+     /tmp/ccN1ZLMD.s:4853   .debug_str:0000000000000106 .LASF189
+     /tmp/ccN1ZLMD.s:5187   .debug_str:0000000000000718 .LASF190
+     /tmp/ccN1ZLMD.s:4873   .debug_str:000000000000015e .LASF191
+     /tmp/ccN1ZLMD.s:5271   .debug_str:0000000000000983 .LASF192
+     /tmp/ccN1ZLMD.s:5053   .debug_str:000000000000048a .LASF193
+     /tmp/ccN1ZLMD.s:4857   .debug_str:0000000000000117 .LASF194
+     /tmp/ccN1ZLMD.s:5131   .debug_str:00000000000005e3 .LASF195
+     /tmp/ccN1ZLMD.s:4943   .debug_str:000000000000029b .LASF196
+     /tmp/ccN1ZLMD.s:5275   .debug_str:0000000000000999 .LASF197
+     /tmp/ccN1ZLMD.s:5039   .debug_str:0000000000000441 .LASF198
+     /tmp/ccN1ZLMD.s:4843   .debug_str:00000000000000d6 .LASF199
+     /tmp/ccN1ZLMD.s:5185   .debug_str:000000000000070c .LASF200
+     /tmp/ccN1ZLMD.s:4933   .debug_str:0000000000000272 .LASF201
+     /tmp/ccN1ZLMD.s:5265   .debug_str:0000000000000968 .LASF202
+     /tmp/ccN1ZLMD.s:4821   .debug_str:000000000000006d .LASF203
+     /tmp/ccN1ZLMD.s:5089   .debug_str:000000000000052b .LASF204
+     /tmp/ccN1ZLMD.s:4907   .debug_str:00000000000001f0 .LASF205
+     /tmp/ccN1ZLMD.s:5235   .debug_str:00000000000008d2 .LASF206
+     /tmp/ccN1ZLMD.s:5067   .debug_str:00000000000004c4 .LASF207
+     /tmp/ccN1ZLMD.s:4807   .debug_str:0000000000000031 .LASF208
+     /tmp/ccN1ZLMD.s:5139   .debug_str:0000000000000606 .LASF209
+     /tmp/ccN1ZLMD.s:4947   .debug_str:00000000000002ae .LASF210
+     /tmp/ccN1ZLMD.s:5221   .debug_str:00000000000007da .LASF211
+     /tmp/ccN1ZLMD.s:5047   .debug_str:000000000000046a .LASF212
+     /tmp/ccN1ZLMD.s:5115   .debug_str:000000000000059e .LASF213
+     /tmp/ccN1ZLMD.s:5161   .debug_str:0000000000000666 .LASF214
+     /tmp/ccN1ZLMD.s:4823   .debug_str:0000000000000079 .LASF239
+     /tmp/ccN1ZLMD.s:4811   .debug_str:0000000000000047 .LASF223
+     /tmp/ccN1ZLMD.s:5295   .debug_str:0000000000000a05 .LASF215
+     /tmp/ccN1ZLMD.s:560    .text._wait:0000000000000000 .LFB37
+     /tmp/ccN1ZLMD.s:572    .text._wait:0000000000000008 .LFE37
+     /tmp/ccN1ZLMD.s:5027   .debug_str:0000000000000410 .LASF217
+     /tmp/ccN1ZLMD.s:4252   .debug_loc:0000000000000000 .LLST24
+     /tmp/ccN1ZLMD.s:4885   .debug_str:0000000000000192 .LASF216
+     /tmp/ccN1ZLMD.s:541    .text._unlink:0000000000000000 .LFB36
+     /tmp/ccN1ZLMD.s:553    .text._unlink:0000000000000008 .LFE36
+     /tmp/ccN1ZLMD.s:4801   .debug_str:0000000000000018 .LASF218
+     /tmp/ccN1ZLMD.s:4266   .debug_loc:0000000000000021 .LLST23
+     /tmp/ccN1ZLMD.s:4839   .debug_str:00000000000000c7 .LASF219
+     /tmp/ccN1ZLMD.s:522    .text._times:0000000000000000 .LFB35
+     /tmp/ccN1ZLMD.s:534    .text._times:0000000000000008 .LFE35
+     /tmp/ccN1ZLMD.s:4280   .debug_loc:0000000000000042 .LLST22
+     /tmp/ccN1ZLMD.s:5137   .debug_str:0000000000000600 .LASF220
+     /tmp/ccN1ZLMD.s:503    .text._stat:0000000000000000 .LFB34
+     /tmp/ccN1ZLMD.s:515    .text._stat:0000000000000008 .LFE34
+     /tmp/ccN1ZLMD.s:5019   .debug_str:00000000000003f7 .LASF221
+     /tmp/ccN1ZLMD.s:4294   .debug_loc:0000000000000063 .LLST21
+     /tmp/ccN1ZLMD.s:5041   .debug_str:000000000000044d .LASF222
+     /tmp/ccN1ZLMD.s:453    .text._lseek:0000000000000000 .LFB32
+     /tmp/ccN1ZLMD.s:477    .text._lseek:000000000000000c .LFE32
+     /tmp/ccN1ZLMD.s:4308   .debug_loc:0000000000000084 .LLST17
+     /tmp/ccN1ZLMD.s:4322   .debug_loc:00000000000000a5 .LLST18
+     /tmp/ccN1ZLMD.s:459    .text._lseek:0000000000000000 .LBB39
+     /tmp/ccN1ZLMD.s:4350   .debug_loc:00000000000000d4 .LLST19
+     /tmp/ccN1ZLMD.s:4983   .debug_str:000000000000034b .LASF224
+     /tmp/ccN1ZLMD.s:434    .text._link:0000000000000000 .LFB31
+     /tmp/ccN1ZLMD.s:446    .text._link:0000000000000008 .LFE31
+     /tmp/ccN1ZLMD.s:5091   .debug_str:0000000000000537 .LASF225
+     /tmp/ccN1ZLMD.s:4364   .debug_loc:00000000000000f5 .LLST16
+     /tmp/ccN1ZLMD.s:4971   .debug_str:000000000000031f .LASF226
+     /tmp/ccN1ZLMD.s:4997   .debug_str:0000000000000392 .LASF227
+     /tmp/ccN1ZLMD.s:415    .text._kill:0000000000000000 .LFB30
+     /tmp/ccN1ZLMD.s:427    .text._kill:0000000000000008 .LFE30
+     /tmp/ccN1ZLMD.s:4378   .debug_loc:0000000000000116 .LLST15
+     /tmp/ccN1ZLMD.s:5219   .debug_str:00000000000007d2 .LASF229
+     /tmp/ccN1ZLMD.s:400    .text._getpid:0000000000000000 .LFB29
+     /tmp/ccN1ZLMD.s:408    .text._getpid:0000000000000008 .LFE29
+     /tmp/ccN1ZLMD.s:4877   .debug_str:0000000000000171 .LASF228
+     /tmp/ccN1ZLMD.s:346    .text._fstat:0000000000000000 .LFB28
+     /tmp/ccN1ZLMD.s:393    .text._fstat:000000000000003c .LFE28
+     /tmp/ccN1ZLMD.s:4392   .debug_loc:0000000000000137 .LLST12
+     /tmp/ccN1ZLMD.s:4406   .debug_loc:0000000000000158 .LLST13
+     /tmp/ccN1ZLMD.s:4428   .debug_loc:000000000000018f .LLST14
+     /tmp/ccN1ZLMD.s:361    .text._fstat:0000000000000014 .LVL30
+     /tmp/ccN1ZLMD.s:4939   .debug_str:000000000000028e .LASF230
+     /tmp/ccN1ZLMD.s:328    .text._fork:0000000000000000 .LFB27
+     /tmp/ccN1ZLMD.s:339    .text._fork:0000000000000008 .LFE27
+     /tmp/ccN1ZLMD.s:4841   .debug_str:00000000000000ce .LASF231
+     /tmp/ccN1ZLMD.s:309    .text._execve:0000000000000000 .LFB26
+     /tmp/ccN1ZLMD.s:321    .text._execve:0000000000000008 .LFE26
+     /tmp/ccN1ZLMD.s:4447   .debug_loc:00000000000001bc .LLST11
+     /tmp/ccN1ZLMD.s:5111   .debug_str:000000000000058d .LASF232
+     /tmp/ccN1ZLMD.s:290    .text._close:0000000000000000 .LFB25
+     /tmp/ccN1ZLMD.s:302    .text._close:0000000000000008 .LFE25
+     /tmp/ccN1ZLMD.s:4461   .debug_loc:00000000000001dd .LLST10
+     /tmp/ccN1ZLMD.s:5229   .debug_str:00000000000007fd .LASF233
+     /tmp/ccN1ZLMD.s:271    .text._openat:0000000000000000 .LFB24
+     /tmp/ccN1ZLMD.s:283    .text._openat:0000000000000008 .LFE24
+     /tmp/ccN1ZLMD.s:5143   .debug_str:000000000000061b .LASF234
+     /tmp/ccN1ZLMD.s:4475   .debug_loc:00000000000001fe .LLST9
+     /tmp/ccN1ZLMD.s:4817   .debug_str:0000000000000062 .LASF235
+     /tmp/ccN1ZLMD.s:4859   .debug_str:0000000000000123 .LASF236
+     /tmp/ccN1ZLMD.s:4805   .debug_str:000000000000002b .LASF237
+     /tmp/ccN1ZLMD.s:252    .text._open:0000000000000000 .LFB23
+     /tmp/ccN1ZLMD.s:264    .text._open:0000000000000008 .LFE23
+     /tmp/ccN1ZLMD.s:4489   .debug_loc:000000000000021f .LLST8
+     /tmp/ccN1ZLMD.s:5095   .debug_str:0000000000000545 .LASF256
+     /tmp/ccN1ZLMD.s:5065   .debug_str:00000000000004bc .LASF238
+     /tmp/ccN1ZLMD.s:5123   .debug_str:00000000000005bf .LASF240
+     /tmp/ccN1ZLMD.s:158    .text._sbrk:0000000000000000 .LFB20
+     /tmp/ccN1ZLMD.s:226    .text._sbrk:0000000000000064 .LFE20
+     /tmp/ccN1ZLMD.s:4977   .debug_str:0000000000000339 .LASF241
+     /tmp/ccN1ZLMD.s:4503   .debug_loc:0000000000000240 .LLST4
+     /tmp/ccN1ZLMD.s:5177   .debug_str:00000000000006ed .LASF242
+     /tmp/ccN1ZLMD.s:4895   .debug_str:00000000000001bb .LASF243
+     /tmp/ccN1ZLMD.s:4825   .debug_str:000000000000007f .LASF244
+     /tmp/ccN1ZLMD.s:4795   .debug_str:0000000000000000 .LASF245
+     /tmp/ccN1ZLMD.s:4849   .debug_str:00000000000000f6 .LASF246
+     /tmp/ccN1ZLMD.s:4521   .debug_loc:000000000000026c .LLST5
+     /tmp/ccN1ZLMD.s:5153   .debug_str:0000000000000640 .LASF247
+     /tmp/ccN1ZLMD.s:142    .text._exit:0000000000000000 .LFB19
+     /tmp/ccN1ZLMD.s:151    .text._exit:0000000000000004 .LFE19
+     /tmp/ccN1ZLMD.s:4797   .debug_str:000000000000000b .LASF248
+     /tmp/ccN1ZLMD.s:5277   .debug_str:00000000000009a5 .LASF257
+     /tmp/ccN1ZLMD.s:14     .text.write_hex:0000000000000000 .LFB18
+     /tmp/ccN1ZLMD.s:135    .text.write_hex:00000000000000b8 .LFE18
+     /tmp/ccN1ZLMD.s:4538   .debug_loc:0000000000000297 .LLST0
+     /tmp/ccN1ZLMD.s:4560   .debug_loc:00000000000002ce .LLST1
+     /tmp/ccN1ZLMD.s:4799   .debug_str:0000000000000010 .LASF249
+     /tmp/ccN1ZLMD.s:4582   .debug_loc:0000000000000305 .LLST2
+     /tmp/ccN1ZLMD.s:5079   .debug_str:00000000000004fd .LASF250
+     /tmp/ccN1ZLMD.s:4590   .debug_loc:0000000000000319 .LLST3
+     /tmp/ccN1ZLMD.s:97     .text.write_hex:0000000000000088 .LVL7
+     /tmp/ccN1ZLMD.s:51     .text.write_hex:0000000000000040 .LVL2
+     /tmp/ccN1ZLMD.s:233    .text._isatty:0000000000000000 .LFB21
+     /tmp/ccN1ZLMD.s:245    .text._isatty:0000000000000008 .LFE21
+     /tmp/ccN1ZLMD.s:4628   .debug_loc:0000000000000361 .LLST6
+     /tmp/ccN1ZLMD.s:4642   .debug_loc:0000000000000382 .LLST7
+     /tmp/ccN1ZLMD.s:484    .text._read:0000000000000000 .LFB33
+     /tmp/ccN1ZLMD.s:496    .text._read:0000000000000008 .LFE33
+     /tmp/ccN1ZLMD.s:4668   .debug_loc:00000000000003af .LLST20
+     /tmp/ccN1ZLMD.s:5135   .debug_str:00000000000005f9 .LASF251
+     /tmp/ccN1ZLMD.s:5051   .debug_str:0000000000000484 .LASF252
+     /tmp/ccN1ZLMD.s:563    .text._wait:0000000000000000 .LVL49
+     /tmp/ccN1ZLMD.s:569    .text._wait:0000000000000004 .LVL50
+     /tmp/ccN1ZLMD.s:544    .text._unlink:0000000000000000 .LVL47
+     /tmp/ccN1ZLMD.s:550    .text._unlink:0000000000000004 .LVL48
+     /tmp/ccN1ZLMD.s:525    .text._times:0000000000000000 .LVL45
+     /tmp/ccN1ZLMD.s:531    .text._times:0000000000000004 .LVL46
+     /tmp/ccN1ZLMD.s:506    .text._stat:0000000000000000 .LVL43
+     /tmp/ccN1ZLMD.s:512    .text._stat:0000000000000004 .LVL44
+     /tmp/ccN1ZLMD.s:456    .text._lseek:0000000000000000 .LVL39
+     /tmp/ccN1ZLMD.s:470    .text._lseek:0000000000000004 .LVL40
+     /tmp/ccN1ZLMD.s:437    .text._link:0000000000000000 .LVL37
+     /tmp/ccN1ZLMD.s:443    .text._link:0000000000000004 .LVL38
+     /tmp/ccN1ZLMD.s:418    .text._kill:0000000000000000 .LVL35
+     /tmp/ccN1ZLMD.s:424    .text._kill:0000000000000004 .LVL36
+     /tmp/ccN1ZLMD.s:349    .text._fstat:0000000000000000 .LVL29
+     /tmp/ccN1ZLMD.s:381    .text._fstat:0000000000000030 .LVL32
+     /tmp/ccN1ZLMD.s:383    .text._fstat:0000000000000034 .LVL33
+     /tmp/ccN1ZLMD.s:373    .text._fstat:0000000000000028 .LVL31
+     /tmp/ccN1ZLMD.s:388    .text._fstat:0000000000000038 .LVL34
+     /tmp/ccN1ZLMD.s:312    .text._execve:0000000000000000 .LVL26
+     /tmp/ccN1ZLMD.s:318    .text._execve:0000000000000004 .LVL27
+     /tmp/ccN1ZLMD.s:293    .text._close:0000000000000000 .LVL24
+     /tmp/ccN1ZLMD.s:299    .text._close:0000000000000004 .LVL25
+     /tmp/ccN1ZLMD.s:274    .text._openat:0000000000000000 .LVL22
+     /tmp/ccN1ZLMD.s:280    .text._openat:0000000000000004 .LVL23
+     /tmp/ccN1ZLMD.s:255    .text._open:0000000000000000 .LVL20
+     /tmp/ccN1ZLMD.s:261    .text._open:0000000000000004 .LVL21
+     /tmp/ccN1ZLMD.s:161    .text._sbrk:0000000000000000 .LVL13
+     /tmp/ccN1ZLMD.s:188    .text._sbrk:0000000000000028 .LVL14
+     /tmp/ccN1ZLMD.s:193    .text._sbrk:0000000000000034 .LVL15
+     /tmp/ccN1ZLMD.s:203    .text._sbrk:000000000000004c .LVL16
+     /tmp/ccN1ZLMD.s:220    .text._sbrk:000000000000005c .LVL17
+     /tmp/ccN1ZLMD.s:18     .text.write_hex:0000000000000000 .LVL0
+     /tmp/ccN1ZLMD.s:112    .text.write_hex:000000000000009c .LVL8
+     /tmp/ccN1ZLMD.s:123    .text.write_hex:00000000000000b0 .LVL10
+     /tmp/ccN1ZLMD.s:32     .text.write_hex:0000000000000018 .LVL1
+     /tmp/ccN1ZLMD.s:115    .text.write_hex:00000000000000a0 .LVL9
+     /tmp/ccN1ZLMD.s:63     .text.write_hex:000000000000004c .LVL3
+     /tmp/ccN1ZLMD.s:76     .text.write_hex:000000000000005c .LVL4
+     /tmp/ccN1ZLMD.s:82     .text.write_hex:0000000000000064 .LVL5
+     /tmp/ccN1ZLMD.s:92     .text.write_hex:000000000000007c .LVL6
+     /tmp/ccN1ZLMD.s:130    .text.write_hex:00000000000000b4 .LVL11
+     /tmp/ccN1ZLMD.s:236    .text._isatty:0000000000000000 .LVL18
+     /tmp/ccN1ZLMD.s:242    .text._isatty:0000000000000004 .LVL19
+     /tmp/ccN1ZLMD.s:487    .text._read:0000000000000000 .LVL41
+     /tmp/ccN1ZLMD.s:493    .text._read:0000000000000004 .LVL42
+     /tmp/ccN1ZLMD.s:628    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccN1ZLMD.s:53     .text.write_hex:0000000000000040 .LBB34
+     /tmp/ccN1ZLMD.s:101    .text.write_hex:000000000000008c .LBE34
+     /tmp/ccN1ZLMD.s:126    .text.write_hex:00000000000000b0 .LBB38
+     /tmp/ccN1ZLMD.s:133    .text.write_hex:00000000000000b8 .LBE38
+     /tmp/ccN1ZLMD.s:55     .text.write_hex:0000000000000040 .LBB35
+     /tmp/ccN1ZLMD.s:60     .text.write_hex:0000000000000048 .LBE35
+     /tmp/ccN1ZLMD.s:65     .text.write_hex:000000000000004c .LBB36
+     /tmp/ccN1ZLMD.s:98     .text.write_hex:0000000000000088 .LBE36
+     /tmp/ccN1ZLMD.s:127    .text.write_hex:00000000000000b0 .LBB37
+     /tmp/ccN1ZLMD.s:132    .text.write_hex:00000000000000b8 .LBE37
+     /tmp/ccN1ZLMD.s:464    .text._lseek:0000000000000000 .LBE39
+     /tmp/ccN1ZLMD.s:466    .text._lseek:0000000000000000 .LBB42
+     /tmp/ccN1ZLMD.s:472    .text._lseek:0000000000000004 .LBE42
+=======
+     /tmp/cckZgI6h.s:13     .text.write_hex:0000000000000000 write_hex
+     /tmp/cckZgI6h.s:17     .text.write_hex:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:19     .text.write_hex:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:20     .text.write_hex:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:21     .text.write_hex:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:22     .text.write_hex:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:23     .text.write_hex:0000000000000004 .L0 
+     /tmp/cckZgI6h.s:26     .text.write_hex:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:27     .text.write_hex:000000000000000c .L0 
+     /tmp/cckZgI6h.s:29     .text.write_hex:000000000000000c .L0 
+     /tmp/cckZgI6h.s:31     .text.write_hex:0000000000000010 .L0 
+     /tmp/cckZgI6h.s:34     .text.write_hex:0000000000000018 .L0 
+     /tmp/cckZgI6h.s:40     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:41     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:42     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:43     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:44     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:45     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:47     .text.write_hex:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:49     .text.write_hex:0000000000000034 .L0 
+     /tmp/cckZgI6h.s:54     .text.write_hex:0000000000000040 .L0 
+     /tmp/cckZgI6h.s:56     .text.write_hex:0000000000000040 .L0 
+     /tmp/cckZgI6h.s:57     .text.write_hex:0000000000000040 .L0 
+     /tmp/cckZgI6h.s:59     .text.write_hex:0000000000000044 .L0 
+     /tmp/cckZgI6h.s:62     .text.write_hex:0000000000000048 .L0 
+     /tmp/cckZgI6h.s:67     .text.write_hex:000000000000004c .L0 
+     /tmp/cckZgI6h.s:68     .text.write_hex:000000000000004c .L0 
+     /tmp/cckZgI6h.s:69     .text.write_hex:000000000000004c .L0 
+     /tmp/cckZgI6h.s:71     .text.write_hex:0000000000000050 .L0 
+     /tmp/cckZgI6h.s:73     .text.write_hex:0000000000000054 .L0 
+     /tmp/cckZgI6h.s:75     .text.write_hex:0000000000000058 .L0 
+     /tmp/cckZgI6h.s:78     .text.write_hex:000000000000005c .L0 
+     /tmp/cckZgI6h.s:79     .text.write_hex:000000000000005c .L0 
+     /tmp/cckZgI6h.s:81     .text.write_hex:0000000000000060 .L0 
+     /tmp/cckZgI6h.s:85     .text.write_hex:0000000000000064 .L0 
+     /tmp/cckZgI6h.s:88     .text.write_hex:000000000000006c .L0 
+     /tmp/cckZgI6h.s:94     .text.write_hex:000000000000007c .L0 
+     /tmp/cckZgI6h.s:96     .text.write_hex:0000000000000080 .L0 
+     /tmp/cckZgI6h.s:100    .text.write_hex:0000000000000088 .L0 
+     /tmp/cckZgI6h.s:103    .text.write_hex:000000000000008c .L0 
+     /tmp/cckZgI6h.s:104    .text.write_hex:0000000000000090 .L0 
+     /tmp/cckZgI6h.s:105    .text.write_hex:0000000000000090 .L0 
+     /tmp/cckZgI6h.s:107    .text.write_hex:0000000000000094 .L0 
+     /tmp/cckZgI6h.s:109    .text.write_hex:0000000000000098 .L0 
+     /tmp/cckZgI6h.s:111    .text.write_hex:000000000000009c .L0 
+     /tmp/cckZgI6h.s:114    .text.write_hex:00000000000000a0 .L0 
+     /tmp/cckZgI6h.s:117    .text.write_hex:00000000000000a4 .L0 
+     /tmp/cckZgI6h.s:119    .text.write_hex:00000000000000a8 .L0 
+     /tmp/cckZgI6h.s:121    .text.write_hex:00000000000000ac .L0 
+     /tmp/cckZgI6h.s:125    .text.write_hex:00000000000000b0 .L0 
+     /tmp/cckZgI6h.s:129    .text.write_hex:00000000000000b0 .L0 
+     /tmp/cckZgI6h.s:134    .text.write_hex:00000000000000b8 .L0 
+     /tmp/cckZgI6h.s:141    .text._exit:0000000000000000 _exit
+     /tmp/cckZgI6h.s:144    .text._exit:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:147    .text._exit:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:148    .text._exit:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:149    .text._exit:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:150    .text._exit:0000000000000004 .L0 
+     /tmp/cckZgI6h.s:157    .text._sbrk:0000000000000000 _sbrk
+     /tmp/cckZgI6h.s:160    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:162    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:163    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:164    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:165    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:166    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:167    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:168    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:169    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:170    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:173    .text._sbrk:0000000000000010 .L0 
+     /tmp/cckZgI6h.s:175    .text._sbrk:0000000000000014 .L0 
+../src/miv_rv32_hal/miv_rv32_syscall.c:167    .text._sbrk:0000000000000018 .L0 
+     /tmp/cckZgI6h.s:184    .text._sbrk:000000000000001c .L0 
+     /tmp/cckZgI6h.s:185    .text._sbrk:000000000000001c .L0 
+     /tmp/cckZgI6h.s:186    .text._sbrk:000000000000001c .L0 
+     /tmp/cckZgI6h.s:190    .text._sbrk:0000000000000028 .L0 
+     /tmp/cckZgI6h.s:192    .text._sbrk:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:195    .text._sbrk:0000000000000034 .L0 
+     /tmp/cckZgI6h.s:197    .text._sbrk:0000000000000038 .L0 
+     /tmp/cckZgI6h.s:200    .text._sbrk:0000000000000044 .L0 
+     /tmp/cckZgI6h.s:201    .text._sbrk:0000000000000044 .L0 
+     /tmp/cckZgI6h.s:205    .text._sbrk:000000000000004c .L0 
+     /tmp/cckZgI6h.s:206    .text._sbrk:000000000000004c .L0 
+     /tmp/cckZgI6h.s:207    .text._sbrk:000000000000004c .L0 
+../src/miv_rv32_hal/miv_rv32_syscall.c:185    .text._sbrk:0000000000000054 .L0 
+     /tmp/cckZgI6h.s:215    .text._sbrk:0000000000000058 .L0 
+     /tmp/cckZgI6h.s:218    .text._sbrk:0000000000000058 .L0 
+     /tmp/cckZgI6h.s:219    .text._sbrk:0000000000000058 .L0 
+     /tmp/cckZgI6h.s:223    .text._sbrk:000000000000005c .L0 
+     /tmp/cckZgI6h.s:225    .text._sbrk:0000000000000064 .L0 
+     /tmp/cckZgI6h.s:232    .text._isatty:0000000000000000 _isatty
+     /tmp/cckZgI6h.s:235    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:237    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:238    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:239    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:240    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:241    .text._isatty:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:244    .text._isatty:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:251    .text._open:0000000000000000 _open
+     /tmp/cckZgI6h.s:254    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:256    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:257    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:258    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:259    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:260    .text._open:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:263    .text._open:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:270    .text._openat:0000000000000000 _openat
+     /tmp/cckZgI6h.s:273    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:275    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:276    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:277    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:278    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:279    .text._openat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:282    .text._openat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:289    .text._close:0000000000000000 _close
+     /tmp/cckZgI6h.s:292    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:294    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:295    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:296    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:297    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:298    .text._close:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:301    .text._close:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:308    .text._execve:0000000000000000 _execve
+     /tmp/cckZgI6h.s:311    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:313    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:314    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:315    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:316    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:317    .text._execve:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:320    .text._execve:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:327    .text._fork:0000000000000000 _fork
+     /tmp/cckZgI6h.s:330    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:331    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:333    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:334    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:335    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:336    .text._fork:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:338    .text._fork:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:345    .text._fstat:0000000000000000 _fstat
+     /tmp/cckZgI6h.s:348    .text._fstat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:350    .text._fstat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:351    .text._fstat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:352    .text._fstat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:353    .text._fstat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:354    .text._fstat:0000000000000004 .L0 
+     /tmp/cckZgI6h.s:356    .text._fstat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:358    .text._fstat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:360    .text._fstat:000000000000000c .L0 
+     /tmp/cckZgI6h.s:363    .text._fstat:0000000000000014 .L0 
+     /tmp/cckZgI6h.s:365    .text._fstat:0000000000000018 .L0 
+     /tmp/cckZgI6h.s:366    .text._fstat:0000000000000018 .L0 
+     /tmp/cckZgI6h.s:369    .text._fstat:0000000000000020 .L0 
+     /tmp/cckZgI6h.s:371    .text._fstat:0000000000000024 .L0 
+     /tmp/cckZgI6h.s:375    .text._fstat:0000000000000028 .L0 
+     /tmp/cckZgI6h.s:376    .text._fstat:0000000000000028 .L0 
+     /tmp/cckZgI6h.s:377    .text._fstat:000000000000002c .L0 
+     /tmp/cckZgI6h.s:378    .text._fstat:000000000000002c .L0 
+     /tmp/cckZgI6h.s:380    .text._fstat:0000000000000030 .L0 
+     /tmp/cckZgI6h.s:385    .text._fstat:0000000000000034 .L0 
+     /tmp/cckZgI6h.s:387    .text._fstat:0000000000000034 .L0 
+     /tmp/cckZgI6h.s:390    .text._fstat:0000000000000038 .L0 
+     /tmp/cckZgI6h.s:391    .text._fstat:0000000000000038 .L0 
+     /tmp/cckZgI6h.s:392    .text._fstat:000000000000003c .L0 
+     /tmp/cckZgI6h.s:399    .text._getpid:0000000000000000 _getpid
+     /tmp/cckZgI6h.s:402    .text._getpid:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:403    .text._getpid:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:404    .text._getpid:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:405    .text._getpid:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:407    .text._getpid:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:414    .text._kill:0000000000000000 _kill
+     /tmp/cckZgI6h.s:417    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:419    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:420    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:421    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:422    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:423    .text._kill:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:426    .text._kill:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:433    .text._link:0000000000000000 _link
+     /tmp/cckZgI6h.s:436    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:438    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:439    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:440    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:441    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:442    .text._link:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:445    .text._link:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:452    .text._lseek:0000000000000000 _lseek
+     /tmp/cckZgI6h.s:455    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:457    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:458    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:461    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:462    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:465    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:468    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:469    .text._lseek:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:474    .text._lseek:0000000000000004 .L0 
+     /tmp/cckZgI6h.s:476    .text._lseek:000000000000000c .L0 
+     /tmp/cckZgI6h.s:483    .text._read:0000000000000000 _read
+     /tmp/cckZgI6h.s:486    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:488    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:489    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:490    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:491    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:492    .text._read:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:495    .text._read:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:502    .text._stat:0000000000000000 _stat
+     /tmp/cckZgI6h.s:505    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:507    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:508    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:509    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:510    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:511    .text._stat:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:514    .text._stat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:521    .text._times:0000000000000000 _times
+     /tmp/cckZgI6h.s:524    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:526    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:527    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:528    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:529    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:530    .text._times:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:533    .text._times:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:540    .text._unlink:0000000000000000 _unlink
+     /tmp/cckZgI6h.s:543    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:545    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:546    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:547    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:548    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:549    .text._unlink:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:552    .text._unlink:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:559    .text._wait:0000000000000000 _wait
+     /tmp/cckZgI6h.s:562    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:564    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:565    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:566    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:567    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:568    .text._wait:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:571    .text._wait:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:578    .text._write:0000000000000000 _write
+     /tmp/cckZgI6h.s:580    .text._write:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:583    .text._write:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:609    .sdata.environ:0000000000000000 environ
+                            *COM*:0000000000000004 MRV_LOCAL_IRQn_Type
+     /tmp/cckZgI6h.s:596    .sbss.__env:0000000000000000 __env
+     /tmp/cckZgI6h.s:600    .sdata.curbrk.2479:0000000000000000 .LANCHOR0
+     /tmp/cckZgI6h.s:603    .sdata.curbrk.2479:0000000000000000 curbrk.2479
+     /tmp/cckZgI6h.s:137    .text.write_hex:00000000000000b8 .L0 
+     /tmp/cckZgI6h.s:153    .text._exit:0000000000000004 .L0 
+     /tmp/cckZgI6h.s:228    .text._sbrk:0000000000000064 .L0 
+     /tmp/cckZgI6h.s:247    .text._isatty:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:266    .text._open:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:285    .text._openat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:304    .text._close:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:323    .text._execve:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:341    .text._fork:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:395    .text._fstat:000000000000003c .L0 
+     /tmp/cckZgI6h.s:410    .text._getpid:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:429    .text._kill:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:448    .text._link:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:479    .text._lseek:000000000000000c .L0 
+     /tmp/cckZgI6h.s:498    .text._read:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:517    .text._stat:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:536    .text._times:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:555    .text._unlink:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:574    .text._wait:0000000000000008 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:590    .rodata.write_hex.str1.4:0000000000000000 .LC0
+     /tmp/cckZgI6h.s:31     .text.write_hex:0000000000000010 .L0 
+     /tmp/cckZgI6h.s:124    .text.write_hex:00000000000000b0 .L2
+     /tmp/cckZgI6h.s:64     .text.write_hex:000000000000004c .L4
+     /tmp/cckZgI6h.s:83     .text.write_hex:0000000000000064 .L7
+     /tmp/cckZgI6h.s:146    .text._exit:0000000000000000 .L9
+     /tmp/cckZgI6h.s:170    .text._sbrk:0000000000000000 .L0 
+     /tmp/cckZgI6h.s:171    .text._sbrk:0000000000000008 .L0 
+     /tmp/cckZgI6h.s:186    .text._sbrk:000000000000001c .L0 
+     /tmp/cckZgI6h.s:190    .text._sbrk:0000000000000028 .L0 
+     /tmp/cckZgI6h.s:197    .text._sbrk:0000000000000038 .L0 
+     /tmp/cckZgI6h.s:201    .text._sbrk:0000000000000044 .L0 
+     /tmp/cckZgI6h.s:182    .text._sbrk:000000000000001c .L11
+     /tmp/cckZgI6h.s:221    .text._sbrk:000000000000005c .L15
+     /tmp/cckZgI6h.s:217    .text._sbrk:0000000000000058 .L10
+     /tmp/cckZgI6h.s:204    .text._sbrk:000000000000004c .L12
+     /tmp/cckZgI6h.s:384    .text._fstat:0000000000000034 .L24
+     /tmp/cckZgI6h.s:374    .text._fstat:0000000000000028 .L22
+     /tmp/cckZgI6h.s:3095   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cckZgI6h.s:5231   .debug_str:0000000000000805 .LASF253
+     /tmp/cckZgI6h.s:5197   .debug_str:0000000000000749 .LASF254
+     /tmp/cckZgI6h.s:5169   .debug_str:000000000000069f .LASF255
+     /tmp/cckZgI6h.s:4731   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cckZgI6h.s:4793   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cckZgI6h.s:5253   .debug_str:0000000000000928 .LASF0
+     /tmp/cckZgI6h.s:5173   .debug_str:00000000000006de .LASF5
+     /tmp/cckZgI6h.s:5213   .debug_str:00000000000007ac .LASF1
+     /tmp/cckZgI6h.s:5133   .debug_str:00000000000005ef .LASF2
+     /tmp/cckZgI6h.s:5261   .debug_str:0000000000000948 .LASF3
+     /tmp/cckZgI6h.s:5141   .debug_str:0000000000000612 .LASF4
+     /tmp/cckZgI6h.s:5215   .debug_str:00000000000007ba .LASF6
+     /tmp/cckZgI6h.s:5195   .debug_str:0000000000000737 .LASF7
+     /tmp/cckZgI6h.s:5049   .debug_str:0000000000000476 .LASF8
+     /tmp/cckZgI6h.s:4913   .debug_str:000000000000020e .LASF9
+     /tmp/cckZgI6h.s:5125   .debug_str:00000000000005c5 .LASF10
+     /tmp/cckZgI6h.s:4829   .debug_str:0000000000000098 .LASF11
+     /tmp/cckZgI6h.s:5005   .debug_str:00000000000003ba .LASF12
+     /tmp/cckZgI6h.s:4945   .debug_str:00000000000002a7 .LASF13
+     /tmp/cckZgI6h.s:5203   .debug_str:0000000000000782 .LASF14
+     /tmp/cckZgI6h.s:5273   .debug_str:000000000000098e .LASF15
+     /tmp/cckZgI6h.s:5165   .debug_str:0000000000000684 .LASF16
+     /tmp/cckZgI6h.s:5279   .debug_str:00000000000009af .LASF17
+     /tmp/cckZgI6h.s:5059   .debug_str:00000000000004a6 .LASF18
+     /tmp/cckZgI6h.s:5171   .debug_str:00000000000006d6 .LASF19
+     /tmp/cckZgI6h.s:5117   .debug_str:00000000000005aa .LASF20
+     /tmp/cckZgI6h.s:4881   .debug_str:0000000000000180 .LASF21
+     /tmp/cckZgI6h.s:4951   .debug_str:00000000000002c5 .LASF22
+     /tmp/cckZgI6h.s:5247   .debug_str:000000000000090f .LASF23
+     /tmp/cckZgI6h.s:4867   .debug_str:0000000000000149 .LASF24
+     /tmp/cckZgI6h.s:5251   .debug_str:000000000000091f .LASF25
+     /tmp/cckZgI6h.s:5021   .debug_str:00000000000003fc .LASF26
+     /tmp/cckZgI6h.s:5157   .debug_str:000000000000064c .LASF27
+     /tmp/cckZgI6h.s:4897   .debug_str:00000000000001c5 .LASF28
+     /tmp/cckZgI6h.s:4979   .debug_str:000000000000033e .LASF29
+     /tmp/cckZgI6h.s:5083   .debug_str:000000000000050d .LASF30
+     /tmp/cckZgI6h.s:4845   .debug_str:00000000000000e2 .LASF31
+     /tmp/cckZgI6h.s:5025   .debug_str:0000000000000408 .LASF32
+     /tmp/cckZgI6h.s:4891   .debug_str:00000000000001a8 .LASF33
+     /tmp/cckZgI6h.s:5029   .debug_str:0000000000000417 .LASF34
+     /tmp/cckZgI6h.s:4993   .debug_str:000000000000037f .LASF35
+     /tmp/cckZgI6h.s:5225   .debug_str:00000000000007eb .LASF36
+     /tmp/cckZgI6h.s:4931   .debug_str:000000000000026a .LASF37
+     /tmp/cckZgI6h.s:4991   .debug_str:000000000000037a .LASF38
+     /tmp/cckZgI6h.s:4889   .debug_str:00000000000001a2 .LASF39
+     /tmp/cckZgI6h.s:5259   .debug_str:0000000000000942 .LASF40
+     /tmp/cckZgI6h.s:5073   .debug_str:00000000000004ea .LASF41
+     /tmp/cckZgI6h.s:5129   .debug_str:00000000000005dd .LASF42
+     /tmp/cckZgI6h.s:5121   .debug_str:00000000000005b9 .LASF43
+     /tmp/cckZgI6h.s:5017   .debug_str:00000000000003ef .LASF44
+     /tmp/cckZgI6h.s:5255   .debug_str:0000000000000934 .LASF45
+     /tmp/cckZgI6h.s:5209   .debug_str:000000000000079c .LASF46
+     /tmp/cckZgI6h.s:5113   .debug_str:0000000000000592 .LASF47
+     /tmp/cckZgI6h.s:5009   .debug_str:00000000000003cb .LASF48
+     /tmp/cckZgI6h.s:5109   .debug_str:0000000000000586 .LASF49
+     /tmp/cckZgI6h.s:5077   .debug_str:00000000000004f6 .LASF50
+     /tmp/cckZgI6h.s:4899   .debug_str:00000000000001cd .LASF51
+     /tmp/cckZgI6h.s:4815   .debug_str:000000000000005b .LASF52
+     /tmp/cckZgI6h.s:4961   .debug_str:00000000000002f0 .LASF53
+     /tmp/cckZgI6h.s:5063   .debug_str:00000000000004b4 .LASF54
+     /tmp/cckZgI6h.s:4875   .debug_str:0000000000000169 .LASF55
+     /tmp/cckZgI6h.s:5207   .debug_str:0000000000000795 .LASF152
+     /tmp/cckZgI6h.s:5011   .debug_str:00000000000003d3 .LASF56
+     /tmp/cckZgI6h.s:4879   .debug_str:0000000000000178 .LASF61
+     /tmp/cckZgI6h.s:4965   .debug_str:0000000000000300 .LASF57
+     /tmp/cckZgI6h.s:5181   .debug_str:00000000000006fa .LASF58
+     /tmp/cckZgI6h.s:5149   .debug_str:000000000000062f .LASF59
+     /tmp/cckZgI6h.s:4921   .debug_str:0000000000000244 .LASF60
+     /tmp/cckZgI6h.s:5191   .debug_str:000000000000072c .LASF62
+     /tmp/cckZgI6h.s:4953   .debug_str:00000000000002ce .LASF63
+     /tmp/cckZgI6h.s:4901   .debug_str:00000000000001d4 .LASF64
+     /tmp/cckZgI6h.s:4893   .debug_str:00000000000001b1 .LASF65
+     /tmp/cckZgI6h.s:4995   .debug_str:0000000000000388 .LASF66
+     /tmp/cckZgI6h.s:5107   .debug_str:000000000000057d .LASF67
+     /tmp/cckZgI6h.s:5163   .debug_str:000000000000067a .LASF68
+     /tmp/cckZgI6h.s:4883   .debug_str:0000000000000188 .LASF69
+     /tmp/cckZgI6h.s:4957   .debug_str:00000000000002e1 .LASF70
+     /tmp/cckZgI6h.s:5087   .debug_str:0000000000000520 .LASF71
+     /tmp/cckZgI6h.s:4803   .debug_str:000000000000001d .LASF72
+     /tmp/cckZgI6h.s:5085   .debug_str:0000000000000518 .LASF73
+     /tmp/cckZgI6h.s:5205   .debug_str:0000000000000789 .LASF74
+     /tmp/cckZgI6h.s:5267   .debug_str:0000000000000974 .LASF75
+     /tmp/cckZgI6h.s:5293   .debug_str:00000000000009fd .LASF76
+     /tmp/cckZgI6h.s:5127   .debug_str:00000000000005d5 .LASF77
+     /tmp/cckZgI6h.s:5093   .debug_str:0000000000000540 .LASF78
+     /tmp/cckZgI6h.s:4869   .debug_str:0000000000000151 .LASF79
+     /tmp/cckZgI6h.s:5233   .debug_str:00000000000008cb .LASF80
+     /tmp/cckZgI6h.s:5055   .debug_str:0000000000000496 .LASF81
+     /tmp/cckZgI6h.s:5269   .debug_str:000000000000097d .LASF82
+     /tmp/cckZgI6h.s:4919   .debug_str:000000000000023c .LASF83
+     /tmp/cckZgI6h.s:4835   .debug_str:00000000000000b9 .LASF84
+     /tmp/cckZgI6h.s:5075   .debug_str:00000000000004f0 .LASF85
+     /tmp/cckZgI6h.s:4833   .debug_str:00000000000000b0 .LASF86
+     /tmp/cckZgI6h.s:4871   .debug_str:0000000000000156 .LASF87
+     /tmp/cckZgI6h.s:4855   .debug_str:0000000000000111 .LASF88
+     /tmp/cckZgI6h.s:5119   .debug_str:00000000000005b2 .LASF89
+     /tmp/cckZgI6h.s:5303   .debug_str:0000000000000a27 .LASF90
+     /tmp/cckZgI6h.s:5031   .debug_str:000000000000041e .LASF91
+     /tmp/cckZgI6h.s:5309   .debug_str:0000000000000a3e .LASF92
+     /tmp/cckZgI6h.s:5281   .debug_str:00000000000009b6 .LASF93
+     /tmp/cckZgI6h.s:5189   .debug_str:0000000000000723 .LASF94
+     /tmp/cckZgI6h.s:4929   .debug_str:0000000000000262 .LASF95
+     /tmp/cckZgI6h.s:5155   .debug_str:0000000000000646 .LASF96
+     /tmp/cckZgI6h.s:5193   .debug_str:0000000000000731 .LASF97
+     /tmp/cckZgI6h.s:4851   .debug_str:00000000000000fd .LASF98
+     /tmp/cckZgI6h.s:5291   .debug_str:00000000000009f5 .LASF99
+     /tmp/cckZgI6h.s:5257   .debug_str:000000000000093b .LASF100
+     /tmp/cckZgI6h.s:4837   .debug_str:00000000000000c0 .LASF101
+     /tmp/cckZgI6h.s:5043   .debug_str:0000000000000454 .LASF102
+     /tmp/cckZgI6h.s:4865   .debug_str:0000000000000141 .LASF103
+     /tmp/cckZgI6h.s:5305   .debug_str:0000000000000a2d .LASF104
+     /tmp/cckZgI6h.s:4959   .debug_str:00000000000002eb .LASF105
+     /tmp/cckZgI6h.s:4937   .debug_str:0000000000000283 .LASF106
+     /tmp/cckZgI6h.s:5289   .debug_str:00000000000009dc .LASF107
+     /tmp/cckZgI6h.s:5249   .debug_str:0000000000000917 .LASF108
+     /tmp/cckZgI6h.s:5033   .debug_str:0000000000000425 .LASF109
+     /tmp/cckZgI6h.s:5081   .debug_str:0000000000000503 .LASF110
+     /tmp/cckZgI6h.s:4887   .debug_str:000000000000019a .LASF111
+     /tmp/cckZgI6h.s:4911   .debug_str:0000000000000204 .LASF112
+     /tmp/cckZgI6h.s:4981   .debug_str:0000000000000346 .LASF113
+     /tmp/cckZgI6h.s:5057   .debug_str:000000000000049c .LASF114
+     /tmp/cckZgI6h.s:5179   .debug_str:00000000000006f2 .LASF115
+     /tmp/cckZgI6h.s:5211   .debug_str:00000000000007a4 .LASF116
+     /tmp/cckZgI6h.s:5175   .debug_str:00000000000006e8 .LASF117
+     /tmp/cckZgI6h.s:5003   .debug_str:00000000000003b1 .LASF118
+     /tmp/cckZgI6h.s:4999   .debug_str:0000000000000398 .LASF119
+     /tmp/cckZgI6h.s:5241   .debug_str:00000000000008ec .LASF120
+     /tmp/cckZgI6h.s:5147   .debug_str:000000000000062a .LASF121
+     /tmp/cckZgI6h.s:4925   .debug_str:0000000000000252 .LASF122
+     /tmp/cckZgI6h.s:5239   .debug_str:00000000000008e6 .LASF123
+     /tmp/cckZgI6h.s:5201   .debug_str:000000000000077b .LASF124
+     /tmp/cckZgI6h.s:5023   .debug_str:0000000000000402 .LASF125
+     /tmp/cckZgI6h.s:4909   .debug_str:00000000000001fc .LASF126
+     /tmp/cckZgI6h.s:5297   .debug_str:0000000000000a0b .LASF127
+     /tmp/cckZgI6h.s:5061   .debug_str:00000000000004ae .LASF128
+     /tmp/cckZgI6h.s:5223   .debug_str:00000000000007e6 .LASF129
+     /tmp/cckZgI6h.s:5283   .debug_str:00000000000009bc .LASF130
+     /tmp/cckZgI6h.s:5243   .debug_str:00000000000008f4 .LASF131
+     /tmp/cckZgI6h.s:4917   .debug_str:000000000000022f .LASF132
+     /tmp/cckZgI6h.s:5167   .debug_str:0000000000000690 .LASF133
+     /tmp/cckZgI6h.s:5045   .debug_str:000000000000045b .LASF134
+     /tmp/cckZgI6h.s:5299   .debug_str:0000000000000a11 .LASF135
+     /tmp/cckZgI6h.s:4819   .debug_str:0000000000000068 .LASF136
+     /tmp/cckZgI6h.s:4987   .debug_str:0000000000000362 .LASF137
+     /tmp/cckZgI6h.s:5245   .debug_str:0000000000000901 .LASF138
+     /tmp/cckZgI6h.s:4813   .debug_str:000000000000004d .LASF139
+     /tmp/cckZgI6h.s:5183   .debug_str:0000000000000702 .LASF140
+     /tmp/cckZgI6h.s:4827   .debug_str:000000000000008c .LASF141
+     /tmp/cckZgI6h.s:5217   .debug_str:00000000000007c5 .LASF142
+     /tmp/cckZgI6h.s:4861   .debug_str:0000000000000128 .LASF143
+     /tmp/cckZgI6h.s:5001   .debug_str:00000000000003a2 .LASF144
+     /tmp/cckZgI6h.s:4969   .debug_str:000000000000030e .LASF145
+     /tmp/cckZgI6h.s:5071   .debug_str:00000000000004db .LASF146
+     /tmp/cckZgI6h.s:4985   .debug_str:0000000000000351 .LASF147
+     /tmp/cckZgI6h.s:4927   .debug_str:0000000000000259 .LASF148
+     /tmp/cckZgI6h.s:4905   .debug_str:00000000000001e9 .LASF149
+     /tmp/cckZgI6h.s:5307   .debug_str:0000000000000a35 .LASF150
+     /tmp/cckZgI6h.s:5227   .debug_str:00000000000007f5 .LASF151
+     /tmp/cckZgI6h.s:5301   .debug_str:0000000000000a1c .LASF153
+     /tmp/cckZgI6h.s:4903   .debug_str:00000000000001dd .LASF154
+     /tmp/cckZgI6h.s:5159   .debug_str:0000000000000653 .LASF155
+     /tmp/cckZgI6h.s:5263   .debug_str:000000000000095b .LASF156
+     /tmp/cckZgI6h.s:4847   .debug_str:00000000000000ec .LASF157
+     /tmp/cckZgI6h.s:5037   .debug_str:0000000000000437 .LASF158
+     /tmp/cckZgI6h.s:4809   .debug_str:000000000000003d .LASF159
+     /tmp/cckZgI6h.s:4975   .debug_str:0000000000000331 .LASF160
+     /tmp/cckZgI6h.s:4935   .debug_str:000000000000027e .LASF161
+     /tmp/cckZgI6h.s:4941   .debug_str:0000000000000294 .LASF162
+     /tmp/cckZgI6h.s:5035   .debug_str:0000000000000430 .LASF163
+     /tmp/cckZgI6h.s:4967   .debug_str:0000000000000306 .LASF164
+     /tmp/cckZgI6h.s:4973   .debug_str:0000000000000328 .LASF165
+     /tmp/cckZgI6h.s:5007   .debug_str:00000000000003c4 .LASF166
+     /tmp/cckZgI6h.s:4963   .debug_str:00000000000002f9 .LASF167
+     /tmp/cckZgI6h.s:5285   .debug_str:00000000000009c9 .LASF168
+     /tmp/cckZgI6h.s:5237   .debug_str:00000000000008de .LASF169
+     /tmp/cckZgI6h.s:5015   .debug_str:00000000000003e6 .LASF170
+     /tmp/cckZgI6h.s:5097   .debug_str:000000000000054a .LASF171
+     /tmp/cckZgI6h.s:4923   .debug_str:0000000000000249 .LASF172
+     /tmp/cckZgI6h.s:5099   .debug_str:0000000000000554 .LASF173
+     /tmp/cckZgI6h.s:5145   .debug_str:0000000000000621 .LASF174
+     /tmp/cckZgI6h.s:5101   .debug_str:000000000000055e .LASF175
+     /tmp/cckZgI6h.s:4831   .debug_str:00000000000000a5 .LASF176
+     /tmp/cckZgI6h.s:4915   .debug_str:0000000000000225 .LASF177
+     /tmp/cckZgI6h.s:5103   .debug_str:0000000000000568 .LASF178
+     /tmp/cckZgI6h.s:4955   .debug_str:00000000000002d7 .LASF179
+     /tmp/cckZgI6h.s:5013   .debug_str:00000000000003dc .LASF180
+     /tmp/cckZgI6h.s:5151   .debug_str:0000000000000635 .LASF181
+     /tmp/cckZgI6h.s:4989   .debug_str:000000000000036f .LASF182
+     /tmp/cckZgI6h.s:5069   .debug_str:00000000000004d0 .LASF183
+     /tmp/cckZgI6h.s:4863   .debug_str:0000000000000136 .LASF184
+     /tmp/cckZgI6h.s:5199   .debug_str:0000000000000770 .LASF185
+     /tmp/cckZgI6h.s:4949   .debug_str:00000000000002ba .LASF186
+     /tmp/cckZgI6h.s:5287   .debug_str:00000000000009d1 .LASF187
+     /tmp/cckZgI6h.s:5105   .debug_str:0000000000000572 .LASF188
+     /tmp/cckZgI6h.s:4853   .debug_str:0000000000000106 .LASF189
+     /tmp/cckZgI6h.s:5187   .debug_str:0000000000000718 .LASF190
+     /tmp/cckZgI6h.s:4873   .debug_str:000000000000015e .LASF191
+     /tmp/cckZgI6h.s:5271   .debug_str:0000000000000983 .LASF192
+     /tmp/cckZgI6h.s:5053   .debug_str:000000000000048a .LASF193
+     /tmp/cckZgI6h.s:4857   .debug_str:0000000000000117 .LASF194
+     /tmp/cckZgI6h.s:5131   .debug_str:00000000000005e3 .LASF195
+     /tmp/cckZgI6h.s:4943   .debug_str:000000000000029b .LASF196
+     /tmp/cckZgI6h.s:5275   .debug_str:0000000000000999 .LASF197
+     /tmp/cckZgI6h.s:5039   .debug_str:0000000000000441 .LASF198
+     /tmp/cckZgI6h.s:4843   .debug_str:00000000000000d6 .LASF199
+     /tmp/cckZgI6h.s:5185   .debug_str:000000000000070c .LASF200
+     /tmp/cckZgI6h.s:4933   .debug_str:0000000000000272 .LASF201
+     /tmp/cckZgI6h.s:5265   .debug_str:0000000000000968 .LASF202
+     /tmp/cckZgI6h.s:4821   .debug_str:000000000000006d .LASF203
+     /tmp/cckZgI6h.s:5089   .debug_str:000000000000052b .LASF204
+     /tmp/cckZgI6h.s:4907   .debug_str:00000000000001f0 .LASF205
+     /tmp/cckZgI6h.s:5235   .debug_str:00000000000008d2 .LASF206
+     /tmp/cckZgI6h.s:5067   .debug_str:00000000000004c4 .LASF207
+     /tmp/cckZgI6h.s:4807   .debug_str:0000000000000031 .LASF208
+     /tmp/cckZgI6h.s:5139   .debug_str:0000000000000606 .LASF209
+     /tmp/cckZgI6h.s:4947   .debug_str:00000000000002ae .LASF210
+     /tmp/cckZgI6h.s:5221   .debug_str:00000000000007da .LASF211
+     /tmp/cckZgI6h.s:5047   .debug_str:000000000000046a .LASF212
+     /tmp/cckZgI6h.s:5115   .debug_str:000000000000059e .LASF213
+     /tmp/cckZgI6h.s:5161   .debug_str:0000000000000666 .LASF214
+     /tmp/cckZgI6h.s:4823   .debug_str:0000000000000079 .LASF239
+     /tmp/cckZgI6h.s:4811   .debug_str:0000000000000047 .LASF223
+     /tmp/cckZgI6h.s:5295   .debug_str:0000000000000a05 .LASF215
+     /tmp/cckZgI6h.s:560    .text._wait:0000000000000000 .LFB37
+     /tmp/cckZgI6h.s:572    .text._wait:0000000000000008 .LFE37
+     /tmp/cckZgI6h.s:5027   .debug_str:0000000000000410 .LASF217
+     /tmp/cckZgI6h.s:4252   .debug_loc:0000000000000000 .LLST24
+     /tmp/cckZgI6h.s:4885   .debug_str:0000000000000192 .LASF216
+     /tmp/cckZgI6h.s:541    .text._unlink:0000000000000000 .LFB36
+     /tmp/cckZgI6h.s:553    .text._unlink:0000000000000008 .LFE36
+     /tmp/cckZgI6h.s:4801   .debug_str:0000000000000018 .LASF218
+     /tmp/cckZgI6h.s:4266   .debug_loc:0000000000000021 .LLST23
+     /tmp/cckZgI6h.s:4839   .debug_str:00000000000000c7 .LASF219
+     /tmp/cckZgI6h.s:522    .text._times:0000000000000000 .LFB35
+     /tmp/cckZgI6h.s:534    .text._times:0000000000000008 .LFE35
+     /tmp/cckZgI6h.s:4280   .debug_loc:0000000000000042 .LLST22
+     /tmp/cckZgI6h.s:5137   .debug_str:0000000000000600 .LASF220
+     /tmp/cckZgI6h.s:503    .text._stat:0000000000000000 .LFB34
+     /tmp/cckZgI6h.s:515    .text._stat:0000000000000008 .LFE34
+     /tmp/cckZgI6h.s:5019   .debug_str:00000000000003f7 .LASF221
+     /tmp/cckZgI6h.s:4294   .debug_loc:0000000000000063 .LLST21
+     /tmp/cckZgI6h.s:5041   .debug_str:000000000000044d .LASF222
+     /tmp/cckZgI6h.s:453    .text._lseek:0000000000000000 .LFB32
+     /tmp/cckZgI6h.s:477    .text._lseek:000000000000000c .LFE32
+     /tmp/cckZgI6h.s:4308   .debug_loc:0000000000000084 .LLST17
+     /tmp/cckZgI6h.s:4322   .debug_loc:00000000000000a5 .LLST18
+     /tmp/cckZgI6h.s:459    .text._lseek:0000000000000000 .LBB39
+     /tmp/cckZgI6h.s:4350   .debug_loc:00000000000000d4 .LLST19
+     /tmp/cckZgI6h.s:4983   .debug_str:000000000000034b .LASF224
+     /tmp/cckZgI6h.s:434    .text._link:0000000000000000 .LFB31
+     /tmp/cckZgI6h.s:446    .text._link:0000000000000008 .LFE31
+     /tmp/cckZgI6h.s:5091   .debug_str:0000000000000537 .LASF225
+     /tmp/cckZgI6h.s:4364   .debug_loc:00000000000000f5 .LLST16
+     /tmp/cckZgI6h.s:4971   .debug_str:000000000000031f .LASF226
+     /tmp/cckZgI6h.s:4997   .debug_str:0000000000000392 .LASF227
+     /tmp/cckZgI6h.s:415    .text._kill:0000000000000000 .LFB30
+     /tmp/cckZgI6h.s:427    .text._kill:0000000000000008 .LFE30
+     /tmp/cckZgI6h.s:4378   .debug_loc:0000000000000116 .LLST15
+     /tmp/cckZgI6h.s:5219   .debug_str:00000000000007d2 .LASF229
+     /tmp/cckZgI6h.s:400    .text._getpid:0000000000000000 .LFB29
+     /tmp/cckZgI6h.s:408    .text._getpid:0000000000000008 .LFE29
+     /tmp/cckZgI6h.s:4877   .debug_str:0000000000000171 .LASF228
+     /tmp/cckZgI6h.s:346    .text._fstat:0000000000000000 .LFB28
+     /tmp/cckZgI6h.s:393    .text._fstat:000000000000003c .LFE28
+     /tmp/cckZgI6h.s:4392   .debug_loc:0000000000000137 .LLST12
+     /tmp/cckZgI6h.s:4406   .debug_loc:0000000000000158 .LLST13
+     /tmp/cckZgI6h.s:4428   .debug_loc:000000000000018f .LLST14
+     /tmp/cckZgI6h.s:361    .text._fstat:0000000000000014 .LVL30
+     /tmp/cckZgI6h.s:4939   .debug_str:000000000000028e .LASF230
+     /tmp/cckZgI6h.s:328    .text._fork:0000000000000000 .LFB27
+     /tmp/cckZgI6h.s:339    .text._fork:0000000000000008 .LFE27
+     /tmp/cckZgI6h.s:4841   .debug_str:00000000000000ce .LASF231
+     /tmp/cckZgI6h.s:309    .text._execve:0000000000000000 .LFB26
+     /tmp/cckZgI6h.s:321    .text._execve:0000000000000008 .LFE26
+     /tmp/cckZgI6h.s:4447   .debug_loc:00000000000001bc .LLST11
+     /tmp/cckZgI6h.s:5111   .debug_str:000000000000058d .LASF232
+     /tmp/cckZgI6h.s:290    .text._close:0000000000000000 .LFB25
+     /tmp/cckZgI6h.s:302    .text._close:0000000000000008 .LFE25
+     /tmp/cckZgI6h.s:4461   .debug_loc:00000000000001dd .LLST10
+     /tmp/cckZgI6h.s:5229   .debug_str:00000000000007fd .LASF233
+     /tmp/cckZgI6h.s:271    .text._openat:0000000000000000 .LFB24
+     /tmp/cckZgI6h.s:283    .text._openat:0000000000000008 .LFE24
+     /tmp/cckZgI6h.s:5143   .debug_str:000000000000061b .LASF234
+     /tmp/cckZgI6h.s:4475   .debug_loc:00000000000001fe .LLST9
+     /tmp/cckZgI6h.s:4817   .debug_str:0000000000000062 .LASF235
+     /tmp/cckZgI6h.s:4859   .debug_str:0000000000000123 .LASF236
+     /tmp/cckZgI6h.s:4805   .debug_str:000000000000002b .LASF237
+     /tmp/cckZgI6h.s:252    .text._open:0000000000000000 .LFB23
+     /tmp/cckZgI6h.s:264    .text._open:0000000000000008 .LFE23
+     /tmp/cckZgI6h.s:4489   .debug_loc:000000000000021f .LLST8
+     /tmp/cckZgI6h.s:5095   .debug_str:0000000000000545 .LASF256
+     /tmp/cckZgI6h.s:5065   .debug_str:00000000000004bc .LASF238
+     /tmp/cckZgI6h.s:5123   .debug_str:00000000000005bf .LASF240
+     /tmp/cckZgI6h.s:158    .text._sbrk:0000000000000000 .LFB20
+     /tmp/cckZgI6h.s:226    .text._sbrk:0000000000000064 .LFE20
+     /tmp/cckZgI6h.s:4977   .debug_str:0000000000000339 .LASF241
+     /tmp/cckZgI6h.s:4503   .debug_loc:0000000000000240 .LLST4
+     /tmp/cckZgI6h.s:5177   .debug_str:00000000000006ed .LASF242
+     /tmp/cckZgI6h.s:4895   .debug_str:00000000000001bb .LASF243
+     /tmp/cckZgI6h.s:4825   .debug_str:000000000000007f .LASF244
+     /tmp/cckZgI6h.s:4795   .debug_str:0000000000000000 .LASF245
+     /tmp/cckZgI6h.s:4849   .debug_str:00000000000000f6 .LASF246
+     /tmp/cckZgI6h.s:4521   .debug_loc:000000000000026c .LLST5
+     /tmp/cckZgI6h.s:5153   .debug_str:0000000000000640 .LASF247
+     /tmp/cckZgI6h.s:142    .text._exit:0000000000000000 .LFB19
+     /tmp/cckZgI6h.s:151    .text._exit:0000000000000004 .LFE19
+     /tmp/cckZgI6h.s:4797   .debug_str:000000000000000b .LASF248
+     /tmp/cckZgI6h.s:5277   .debug_str:00000000000009a5 .LASF257
+     /tmp/cckZgI6h.s:14     .text.write_hex:0000000000000000 .LFB18
+     /tmp/cckZgI6h.s:135    .text.write_hex:00000000000000b8 .LFE18
+     /tmp/cckZgI6h.s:4538   .debug_loc:0000000000000297 .LLST0
+     /tmp/cckZgI6h.s:4560   .debug_loc:00000000000002ce .LLST1
+     /tmp/cckZgI6h.s:4799   .debug_str:0000000000000010 .LASF249
+     /tmp/cckZgI6h.s:4582   .debug_loc:0000000000000305 .LLST2
+     /tmp/cckZgI6h.s:5079   .debug_str:00000000000004fd .LASF250
+     /tmp/cckZgI6h.s:4590   .debug_loc:0000000000000319 .LLST3
+     /tmp/cckZgI6h.s:97     .text.write_hex:0000000000000088 .LVL7
+     /tmp/cckZgI6h.s:51     .text.write_hex:0000000000000040 .LVL2
+     /tmp/cckZgI6h.s:233    .text._isatty:0000000000000000 .LFB21
+     /tmp/cckZgI6h.s:245    .text._isatty:0000000000000008 .LFE21
+     /tmp/cckZgI6h.s:4628   .debug_loc:0000000000000361 .LLST6
+     /tmp/cckZgI6h.s:4642   .debug_loc:0000000000000382 .LLST7
+     /tmp/cckZgI6h.s:484    .text._read:0000000000000000 .LFB33
+     /tmp/cckZgI6h.s:496    .text._read:0000000000000008 .LFE33
+     /tmp/cckZgI6h.s:4668   .debug_loc:00000000000003af .LLST20
+     /tmp/cckZgI6h.s:5135   .debug_str:00000000000005f9 .LASF251
+     /tmp/cckZgI6h.s:5051   .debug_str:0000000000000484 .LASF252
+     /tmp/cckZgI6h.s:563    .text._wait:0000000000000000 .LVL49
+     /tmp/cckZgI6h.s:569    .text._wait:0000000000000004 .LVL50
+     /tmp/cckZgI6h.s:544    .text._unlink:0000000000000000 .LVL47
+     /tmp/cckZgI6h.s:550    .text._unlink:0000000000000004 .LVL48
+     /tmp/cckZgI6h.s:525    .text._times:0000000000000000 .LVL45
+     /tmp/cckZgI6h.s:531    .text._times:0000000000000004 .LVL46
+     /tmp/cckZgI6h.s:506    .text._stat:0000000000000000 .LVL43
+     /tmp/cckZgI6h.s:512    .text._stat:0000000000000004 .LVL44
+     /tmp/cckZgI6h.s:456    .text._lseek:0000000000000000 .LVL39
+     /tmp/cckZgI6h.s:470    .text._lseek:0000000000000004 .LVL40
+     /tmp/cckZgI6h.s:437    .text._link:0000000000000000 .LVL37
+     /tmp/cckZgI6h.s:443    .text._link:0000000000000004 .LVL38
+     /tmp/cckZgI6h.s:418    .text._kill:0000000000000000 .LVL35
+     /tmp/cckZgI6h.s:424    .text._kill:0000000000000004 .LVL36
+     /tmp/cckZgI6h.s:349    .text._fstat:0000000000000000 .LVL29
+     /tmp/cckZgI6h.s:381    .text._fstat:0000000000000030 .LVL32
+     /tmp/cckZgI6h.s:383    .text._fstat:0000000000000034 .LVL33
+     /tmp/cckZgI6h.s:373    .text._fstat:0000000000000028 .LVL31
+     /tmp/cckZgI6h.s:388    .text._fstat:0000000000000038 .LVL34
+     /tmp/cckZgI6h.s:312    .text._execve:0000000000000000 .LVL26
+     /tmp/cckZgI6h.s:318    .text._execve:0000000000000004 .LVL27
+     /tmp/cckZgI6h.s:293    .text._close:0000000000000000 .LVL24
+     /tmp/cckZgI6h.s:299    .text._close:0000000000000004 .LVL25
+     /tmp/cckZgI6h.s:274    .text._openat:0000000000000000 .LVL22
+     /tmp/cckZgI6h.s:280    .text._openat:0000000000000004 .LVL23
+     /tmp/cckZgI6h.s:255    .text._open:0000000000000000 .LVL20
+     /tmp/cckZgI6h.s:261    .text._open:0000000000000004 .LVL21
+     /tmp/cckZgI6h.s:161    .text._sbrk:0000000000000000 .LVL13
+     /tmp/cckZgI6h.s:188    .text._sbrk:0000000000000028 .LVL14
+     /tmp/cckZgI6h.s:193    .text._sbrk:0000000000000034 .LVL15
+     /tmp/cckZgI6h.s:203    .text._sbrk:000000000000004c .LVL16
+     /tmp/cckZgI6h.s:220    .text._sbrk:000000000000005c .LVL17
+     /tmp/cckZgI6h.s:18     .text.write_hex:0000000000000000 .LVL0
+     /tmp/cckZgI6h.s:112    .text.write_hex:000000000000009c .LVL8
+     /tmp/cckZgI6h.s:123    .text.write_hex:00000000000000b0 .LVL10
+     /tmp/cckZgI6h.s:32     .text.write_hex:0000000000000018 .LVL1
+     /tmp/cckZgI6h.s:115    .text.write_hex:00000000000000a0 .LVL9
+     /tmp/cckZgI6h.s:63     .text.write_hex:000000000000004c .LVL3
+     /tmp/cckZgI6h.s:76     .text.write_hex:000000000000005c .LVL4
+     /tmp/cckZgI6h.s:82     .text.write_hex:0000000000000064 .LVL5
+     /tmp/cckZgI6h.s:92     .text.write_hex:000000000000007c .LVL6
+     /tmp/cckZgI6h.s:130    .text.write_hex:00000000000000b4 .LVL11
+     /tmp/cckZgI6h.s:236    .text._isatty:0000000000000000 .LVL18
+     /tmp/cckZgI6h.s:242    .text._isatty:0000000000000004 .LVL19
+     /tmp/cckZgI6h.s:487    .text._read:0000000000000000 .LVL41
+     /tmp/cckZgI6h.s:493    .text._read:0000000000000004 .LVL42
+     /tmp/cckZgI6h.s:628    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cckZgI6h.s:53     .text.write_hex:0000000000000040 .LBB34
+     /tmp/cckZgI6h.s:101    .text.write_hex:000000000000008c .LBE34
+     /tmp/cckZgI6h.s:126    .text.write_hex:00000000000000b0 .LBB38
+     /tmp/cckZgI6h.s:133    .text.write_hex:00000000000000b8 .LBE38
+     /tmp/cckZgI6h.s:55     .text.write_hex:0000000000000040 .LBB35
+     /tmp/cckZgI6h.s:60     .text.write_hex:0000000000000048 .LBE35
+     /tmp/cckZgI6h.s:65     .text.write_hex:000000000000004c .LBB36
+     /tmp/cckZgI6h.s:98     .text.write_hex:0000000000000088 .LBE36
+     /tmp/cckZgI6h.s:127    .text.write_hex:00000000000000b0 .LBB37
+     /tmp/cckZgI6h.s:132    .text.write_hex:00000000000000b8 .LBE37
+     /tmp/cckZgI6h.s:464    .text._lseek:0000000000000000 .LBE39
+     /tmp/cckZgI6h.s:466    .text._lseek:0000000000000000 .LBB42
+     /tmp/cckZgI6h.s:472    .text._lseek:0000000000000004 .LBE42
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+write
+__heap_start
+__heap_end
+_end
+_heap_end
+isatty

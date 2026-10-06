@@ -1,0 +1,50 @@
+\doxysection{Idle\+\_\+\+State.\+c}
+\hypertarget{Idle__State_8c_source}{}\label{Idle__State_8c_source}\index{src/Focus\_States/Idle\_State.c@{src/Focus\_States/Idle\_State.c}}
+\doxymbox{\hyperlink{Idle__State_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00002}00002\ \textcolor{comment}{\ *\ idle\_state.c}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 18,\ 2025}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <focus.h>}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <focus\_states.h>}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{states_8h}{states.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__gpio_8h}{debug\_gpio.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00013}00013\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{Idle__State_8c_a9e7990d4c5b8b4420932c895aa26ae93}{v\_Set\_Focus\_Destination}}(\ int32\_t\ i32\_Destination\ );}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00015}\doxymbox{\hyperlink{Idle__State_8c_ab1d107ccd3e7db89f92eebb09d9b52c2}{00015}}\ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{Idle__State_8c_ab1d107ccd3e7db89f92eebb09d9b52c2}{Idle\_State}}(\ \doxymbox{\hyperlink{structContext__t}{Context\_t}}\ *context,\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00017}00017\ \ \ \ \ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{Idle__State_8c_ab1d107ccd3e7db89f92eebb09d9b52c2}{Idle\_State}};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00019}00019\ \ \ \ \ \textcolor{keywordflow}{switch}(\ event-\/>\doxymbox{\hyperlink{unionEvent__t_a4e19afe281edd9a97e66b2d7284e07e4}{no\_data}}.\doxymbox{\hyperlink{structEvent__Msg__No__Data__t_a4df35076881d8d9a55c56ba5a26857ae}{sig}}\ )}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00020}00020\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00021}00021\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aca71c643694e2a3478c60f35b622db2a}{ENTRANCE}}:}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00022}00022\ \ \ \ \ \ \ \ \ \textcolor{comment}{//v\_Start\_Focus\_Timer(10);}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00023}00023\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00025}00025\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a7a10b5d68d31711288e1fe0fa17dbf4f}{EXIT}}:}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00026}00026\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}{v\_Stop\_Focus\_Timer}}();}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00027}00027\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00029}00029\ \ \ \ \ \textcolor{keywordflow}{case}\ FOCUS\_TIMER\_EXPIRED:}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00030}00030\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3}{v\_Set\_Debug\_GPIO}}(\ \doxymbox{\hyperlink{debug__gpio_8h_af3ba63c9ab89af80d3e24497d62752d5}{J7\_PIN\_6}}\ ,\ \doxymbox{\hyperlink{debug__gpio_8h_af3ba63c9ab89af80d3e24497d62752d5}{J7\_PIN\_6}}\ \ );}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00031}00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00033}00033\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a8a002582b568b22bd492cbdd19d84f26}{GOTO\_POSITION}}:}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00034}00034\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{Idle__State_8c_a9e7990d4c5b8b4420932c895aa26ae93}{v\_Set\_Focus\_Destination}}(\ event-\/>\doxymbox{\hyperlink{unionEvent__t_a2e62e3179cc4c07742dbdee9e19b461c}{position}}.\doxymbox{\hyperlink{structEvent__Msg__Position__t_a709cfa04a0cc164d52bb9544cdfbf23a}{i32\_Position}}\ );}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00035}00035\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54}{Focus\_State}};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00036}00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00038}00038\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00040}00040\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00042}00042\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}};}
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{Idle__State_8c_source_l00044}00044\ \}}
+
+\end{DoxyCode}

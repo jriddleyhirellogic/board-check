@@ -1,0 +1,106 @@
+\doxysection{hal.\+h}
+\hypertarget{hal_8h_source}{}\label{hal_8h_source}\index{src/hal/hal.h@{src/hal/hal.h}}
+\doxymbox{\hyperlink{hal_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00001}00001\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00029}00029\ \textcolor{preprocessor}{\#ifndef\ \_\_HAL\_H}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00030}00030\ \textcolor{preprocessor}{\#define\ \_\_HAL\_H\ 1}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00032}00032\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00033}00033\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00034}00034\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00036}00036\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h}{cpu\_types.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00037}00037\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hw__reg__access_8h}{hw\_reg\_access.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00038}00038\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2hal__assert_8h}{hal\_assert.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00039}00039\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00042}\doxymbox{\hyperlink{hal_8h_a8308aabd47cb412adb3daa0705aac3c0}{00042}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal_8h_a8308aabd47cb412adb3daa0705aac3c0}{HAL\_enable\_interrupts}}(\ \textcolor{keywordtype}{void}\ );}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00044}00044\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00049}\doxymbox{\hyperlink{hal_8h_afa288018c44ac7bafe9312b821087ed1}{00049}}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\_t}}\ \doxymbox{\hyperlink{hal_8h_afa288018c44ac7bafe9312b821087ed1}{HAL\_disable\_interrupts}}(\ \textcolor{keywordtype}{void}\ );}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00051}00051\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00056}\doxymbox{\hyperlink{hal_8h_a75310e76bf81a6195ca657bb89fb39b8}{00056}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal_8h_a75310e76bf81a6195ca657bb89fb39b8}{HAL\_restore\_interrupts}}(\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\_t}}\ saved\_psr\ );}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00058}00058\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00060}\doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{00060}}\ \textcolor{preprocessor}{\#define\ FIELD\_OFFSET(FIELD\_NAME)\ \ (FIELD\_NAME\#\#\_OFFSET)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00061}\doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{00061}}\ \textcolor{preprocessor}{\#define\ FIELD\_SHIFT(FIELD\_NAME)\ \ \ (FIELD\_NAME\#\#\_SHIFT)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00062}\doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{00062}}\ \textcolor{preprocessor}{\#define\ FIELD\_MASK(FIELD\_NAME)\ \ \ \ (FIELD\_NAME\#\#\_MASK)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00064}00064\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00073}\doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{00073}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_32bit\_reg(BASE\_ADDR,\ REG\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00074}00074\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ (HW\_set\_32bit\_reg(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00076}00076\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00086}\doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{00086}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_32bit\_reg(BASE\_ADDR,\ REG\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00087}00087\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ (HW\_get\_32bit\_reg(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET))\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00089}00089\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00099}\doxymbox{\hyperlink{hal_8h_aa6c28ab1d317e7f59b0a8d33141ffcdd}{00099}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_32bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00100}00100\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_set\_32bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00101}00101\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00102}00102\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00103}00103\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00104}00104\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (VALUE)))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00105}00105\ \ \ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00106}00106\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00116}\doxymbox{\hyperlink{hal_8h_aeb00702b2ff71ad62aa9a6e83ccc9a17}{00116}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_32bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00117}00117\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_get\_32bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00118}00118\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00119}00119\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00120}00120\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME)))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00121}00121\ \ \ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00122}00122\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00131}\doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{00131}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_16bit\_reg(BASE\_ADDR,\ REG\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00132}00132\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_set\_16bit\_reg(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00133}00133\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00134}00134\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00144}\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{00144}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_16bit\_reg(BASE\_ADDR,\ REG\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00145}00145\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_get\_16bit\_reg(\ (BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00147}00147\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00157}\doxymbox{\hyperlink{hal_8h_add246d8af0303c0ab4cd6bbb5be2ef41}{00157}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_16bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00158}00158\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_set\_16bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00159}00159\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00160}00160\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00161}00161\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00162}00162\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (VALUE)))\ \ }}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00164}00164\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00174}\doxymbox{\hyperlink{hal_8h_a67f9c2891aa74a6b7ec5b623acb97b82}{00174}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_16bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00175}00175\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_get\_16bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00176}00176\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00177}00177\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00178}00178\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME)))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00180}00180\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00189}\doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{00189}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_8bit\_reg(BASE\_ADDR,\ REG\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00190}00190\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ (HW\_set\_8bit\_reg(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00191}00191\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00192}00192\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00202}\doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{00202}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_8bit\_reg(BASE\_ADDR,\ REG\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00203}00203\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ (HW\_get\_8bit\_reg(\ (BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)\ ))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00204}00204\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00205}00205\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00207}\doxymbox{\hyperlink{hal_8h_a90ecaaf7be5257b546f698cd7e48b075}{00207}}\ \textcolor{preprocessor}{\#define\ HAL\_set\_8bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME,\ VALUE)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00208}00208\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_set\_8bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00209}00209\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00210}00210\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00211}00211\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00212}00212\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (VALUE)))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00214}00214\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00224}\doxymbox{\hyperlink{hal_8h_af46ba807da37be5de5b7dccc81dc9e5f}{00224}}\ \textcolor{preprocessor}{\#define\ HAL\_get\_8bit\_reg\_field(BASE\_ADDR,\ FIELD\_NAME)\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00225}00225\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ (HW\_get\_8bit\_reg\_field(\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00226}00226\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (BASE\_ADDR)\ +\ FIELD\_OFFSET(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00227}00227\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_SHIFT(FIELD\_NAME),\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00228}00228\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FIELD\_MASK(FIELD\_NAME)))}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00229}00229\ \ \ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00230}00230\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00231}00231\ \}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00232}00232\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00234}00234\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*HAL\_H*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{hal_8h_source_l00235}00235\ }
+
+\end{DoxyCode}

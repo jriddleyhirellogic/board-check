@@ -1,0 +1,89 @@
+\doxysection{main.\+c}
+\hypertarget{main_8c_source}{}\label{main_8c_source}\index{src/main.c@{src/main.c}}
+\doxymbox{\hyperlink{main_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00002}00002\ \textcolor{comment}{\ ============================================================================}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00003}00003\ \textcolor{comment}{\ Name\ \ \ \ \ \ \ \ :\ main.c}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00004}00004\ \textcolor{comment}{\ Author\ \ \ \ \ \ :\ ian}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00005}00005\ \textcolor{comment}{\ Version\ \ \ \ \ :}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00006}00006\ \textcolor{comment}{\ Copyright\ \ \ :\ Your\ copyright\ notice}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00007}00007\ \textcolor{comment}{\ Description\ :\ Top\ level\ for\ camera\ control\ program}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00008}00008\ \textcolor{comment}{\ ============================================================================}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00009}00009\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ <\doxymbox{\hyperlink{camera__task_8h}{camera\_task.h}}>}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <focus.h>}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00023}00023\ \textcolor{comment}{//\ Synchronization\ point\ to\ make\ sure\ all\ threads\ are\ initialized}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00024}\doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{00024}}\ \doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{EventGroupHandle\_t}}\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}};}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00026}00026\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982}{v\_Hw\_Init}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00028}00028\ \textcolor{comment}{//\ Tasks}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00029}00029\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{main_8c_ad274afb53f96e3260f8c463d70d16a25}{v\_Serial\_Comm\_Task}}(\textcolor{keywordtype}{void}\ *pvParameters);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00030}00030\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{main_8c_a9a9175987165a91248fcc2d4284f0a3f}{v\_System\_Task}}(\textcolor{keywordtype}{void}\ *pvParameters);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00038}\doxymbox{\hyperlink{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}{00038}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}{main}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00039}00039\ \{}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00040}00040\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ retval;}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00042}00042\ \ \ \ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}}\ =\ \ xEventGroupCreate();}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00044}00044\ \ \ \ \ \doxymbox{\hyperlink{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982}{v\_Hw\_Init}}();}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00046}00046\ \ \ \ \ retval\ =\ xTaskCreate(\ \doxymbox{\hyperlink{main_8c_a9a9175987165a91248fcc2d4284f0a3f}{v\_System\_Task}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ System\ level}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}System"{}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00048}00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_a8ca2d7d86da62aab1eeb2d4439731c76}{SYSTEM\_STACK\_SIZE}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00049}00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL,}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_ada690eef53d4d43b44a9e2cec658ec8e}{SYSTEM\_TASK\_PRIORITY}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00053}00053\ \ \ \ \ assert(\ retval\ ==\ \doxymbox{\hyperlink{projdefs_8h_a07848d3078849bd32353c69d30a479b3}{pdPASS}}\ );}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00055}00055\ \ \ \ \ retval\ =\ xTaskCreate(\ \doxymbox{\hyperlink{serial__comm_8c_ad274afb53f96e3260f8c463d70d16a25}{v\_Serial\_Comm\_Task}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ handling\ received\ messages}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}serial\_comm"{}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_aee8674a641a440633f662fcb754dd768}{SERIAL\_COMM\_STACK\_SIZE\_WORDS}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL,}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_a0c770415fffb98036f85d01a76008a6c}{COMM\_TASK\_PRIORITY}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00062}00062\ \ \ \ \ assert(\ retval\ ==\ \doxymbox{\hyperlink{projdefs_8h_a07848d3078849bd32353c69d30a479b3}{pdPASS}}\ );}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00064}00064\ \ \ \ \ retval\ =\ xTaskCreate(\ \doxymbox{\hyperlink{focus_8c_addba0c0da21d334acceced044449639f}{v\_Focus\_Task}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Control\ updates\ for\ stepper}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}control"{}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FOCUS\_STACK\_SIZE\_WORDS,}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL,}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_a216790bc8a1eef08a3047e8806725eb1}{CONTROL\_TASK\_PRIORITY}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00071}00071\ \ \ \ \ assert(\ retval\ ==\ \doxymbox{\hyperlink{projdefs_8h_a07848d3078849bd32353c69d30a479b3}{pdPASS}}\ );}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00073}00073\ \ \ \ \ retval\ =\ xTaskCreate(\ \doxymbox{\hyperlink{camera__task_8c_a419160974a53b716df1c675a527ecca4}{v\_Camera\_Task}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Camera\ handling}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}camera"{}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_ad29a4607e91dfd2d682cf28cda71766f}{CAMERA\_STACK\_SIZE}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL,}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{config_8h_afebd491ac476a1acef2bd491dc09dc52}{CAMERA\_TASK\_PRIORITY}},}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NULL);}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00080}00080\ \ \ \ \ assert(\ retval\ ==\ \doxymbox{\hyperlink{projdefs_8h_a07848d3078849bd32353c69d30a479b3}{pdPASS}}\ );}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00082}00082\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aaf9dca1065c60abdeb309d56ab7293cb}{vTaskStartScheduler}}();}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00084}00084\ \ \ \ \ \textcolor{keywordflow}{while}(1);\ \textcolor{comment}{//\ Should\ never\ reach\ this\ point}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00086}00086\ \}}
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{main_8c_source_l00089}00089\ }
+
+\end{DoxyCode}

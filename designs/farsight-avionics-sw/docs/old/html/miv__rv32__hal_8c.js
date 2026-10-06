@@ -1,0 +1,25 @@
+var miv__rv32__hal_8c =
+[
+    [ "ERROR", "miv__rv32__hal_8c.html#a8fe83ac76edc595f6b98cd4a4127aed5", null ],
+    [ "MASK_32BIT", "miv__rv32__hal_8c.html#a7fd616fd57c2abdc3dbe745fa8bd3789", null ],
+    [ "SUCCESS", "miv__rv32__hal_8c.html#aa90cac659d18e8ef6294c7ae337f6b58", null ],
+    [ "WRITE_MTIME", "miv__rv32__hal_8c.html#a2772b4d86b782674867ffa80499c501d", null ],
+    [ "WRITE_MTIMECMP", "miv__rv32__hal_8c.html#abb0269fa1177da7690ba0849d1e5b02b", null ],
+    [ "External_IRQHandler", "miv__rv32__hal_8c.html#acb6a0629ad4111c0d20935401fd325cf", null ],
+    [ "handle_m_soft_interrupt", "miv__rv32__hal_8c.html#a38f7c323c1e69de5a49864d3ccacf53f", null ],
+    [ "handle_m_timer_interrupt", "miv__rv32__hal_8c.html#a21327102ba9787d227e507040c41d0d7", null ],
+    [ "handle_trap", "miv__rv32__hal_8c.html#a723b80d57924293782be9489e40ae93a", null ],
+    [ "MGECI_IRQHandler", "miv__rv32__hal_8c.html#a612d509266ba3f050102a16945492722", null ],
+    [ "MGEUI_IRQHandler", "miv__rv32__hal_8c.html#a979f2b6275b51866c8392789bb0bfe3c", null ],
+    [ "MRV_systick_config", "miv__rv32__hal_8c.html#a403d7fe4ec086afc20bb2adb505d6c6c", null ],
+    [ "MSYS_EI0_IRQHandler", "miv__rv32__hal_8c.html#a75caed1ad9c75303545f16b8afc990f1", null ],
+    [ "MSYS_EI1_IRQHandler", "miv__rv32__hal_8c.html#afc6cba99b49aa1ff9406d48747cb0437", null ],
+    [ "MSYS_EI2_IRQHandler", "miv__rv32__hal_8c.html#a6f7a5f800aee6755a5166179a08e6e1e", null ],
+    [ "MSYS_EI3_IRQHandler", "miv__rv32__hal_8c.html#ae4416f5b19a2fa4d52da23e0b2cba8a5", null ],
+    [ "MSYS_EI4_IRQHandler", "miv__rv32__hal_8c.html#a5d262de9dcb8f7f02d8d35ff01b247dc", null ],
+    [ "MSYS_EI5_IRQHandler", "miv__rv32__hal_8c.html#a24b5664e91d20bb38328994b423b1af0", null ],
+    [ "OPSRV_IRQHandler", "miv__rv32__hal_8c.html#a446168fa41fe3ae92433c726a4bc3e61", null ],
+    [ "Software_IRQHandler", "miv__rv32__hal_8c.html#a8d495c01b4280bd025966c6822e87fd1", null ],
+    [ "g_systick_cmp_value", "miv__rv32__hal_8c.html#a5095180e7de6c83009518e7c0a80bd35", null ],
+    [ "g_systick_increment", "miv__rv32__hal_8c.html#ab22a4f91b71c9b7e9f1765f391030ce1", null ]
+];

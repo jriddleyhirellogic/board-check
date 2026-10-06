@@ -1,0 +1,124 @@
+\doxysection{src/\+hal/\+debug\+\_\+gpio.c File Reference}
+\hypertarget{debug__gpio_8c}{}\label{debug__gpio_8c}\index{src/hal/debug\_gpio.c@{src/hal/debug\_gpio.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}core\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+Include dependency graph for debug\+\_\+gpio.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3}{v\+\_\+\+Init\+\_\+\+Debug\+\_\+\+GPIO}} (void)
+\item 
+void \doxymbox{\hyperlink{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3}{v\+\_\+\+Set\+\_\+\+Debug\+\_\+\+GPIO}} (uint32\+\_\+t u32\+\_\+\+Set, uint32\+\_\+t u32\+\_\+\+Clear)
+\item 
+void \doxymbox{\hyperlink{debug__gpio_8c_aa7de0b62ec179533cde17322174fc472}{v\+\_\+\+Set\+\_\+\+LED}} (uint8\+\_\+t b\+\_\+\+On)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \doxymbox{\hyperlink{debug__gpio_8c_ae7d80985507ff256a36082eb1ea03625}{debug\+\_\+gpios}}
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{debug__gpio_8c_ac02c08443682006309e79efc5859c305}{u32\+\_\+\+Current\+\_\+\+Output}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{debug__gpio_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3}\index{debug\_gpio.c@{debug\_gpio.c}!v\_Init\_Debug\_GPIO@{v\_Init\_Debug\_GPIO}}
+\index{v\_Init\_Debug\_GPIO@{v\_Init\_Debug\_GPIO}!debug\_gpio.c@{debug\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Debug\_GPIO()}{v\_Init\_Debug\_GPIO()}}
+{\footnotesize\ttfamily \label{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3} 
+void v\+\_\+\+Init\+\_\+\+Debug\+\_\+\+GPIO (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__gpio_8c_source_l00015}{15}} of file \doxymbox{\hyperlink{debug__gpio_8c_source}{debug\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3}\index{debug\_gpio.c@{debug\_gpio.c}!v\_Set\_Debug\_GPIO@{v\_Set\_Debug\_GPIO}}
+\index{v\_Set\_Debug\_GPIO@{v\_Set\_Debug\_GPIO}!debug\_gpio.c@{debug\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Debug\_GPIO()}{v\_Set\_Debug\_GPIO()}}
+{\footnotesize\ttfamily \label{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3} 
+void v\+\_\+\+Set\+\_\+\+Debug\+\_\+\+GPIO (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Set}{, }\item[{uint32\+\_\+t}]{u32\+\_\+\+Clear}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__gpio_8c_source_l00039}{39}} of file \doxymbox{\hyperlink{debug__gpio_8c_source}{debug\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c_a78dbac6d4cad71b819310869f1e3c5a3_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{debug__gpio_8c_aa7de0b62ec179533cde17322174fc472}\index{debug\_gpio.c@{debug\_gpio.c}!v\_Set\_LED@{v\_Set\_LED}}
+\index{v\_Set\_LED@{v\_Set\_LED}!debug\_gpio.c@{debug\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_LED()}{v\_Set\_LED()}}
+{\footnotesize\ttfamily \label{debug__gpio_8c_aa7de0b62ec179533cde17322174fc472} 
+void v\+\_\+\+Set\+\_\+\+LED (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{b\+\_\+\+On}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__gpio_8c_source_l00054}{54}} of file \doxymbox{\hyperlink{debug__gpio_8c_source}{debug\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{debug__gpio_8c_aa7de0b62ec179533cde17322174fc472_cgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{debug__gpio_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{debug__gpio_8c_ae7d80985507ff256a36082eb1ea03625}\index{debug\_gpio.c@{debug\_gpio.c}!debug\_gpios@{debug\_gpios}}
+\index{debug\_gpios@{debug\_gpios}!debug\_gpio.c@{debug\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{debug\_gpios}{debug\_gpios}}
+{\footnotesize\ttfamily \label{debug__gpio_8c_ae7d80985507ff256a36082eb1ea03625} 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} debug\+\_\+gpios\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__gpio_8c_source_l00012}{12}} of file \doxymbox{\hyperlink{debug__gpio_8c_source}{debug\+\_\+gpio.\+c}}.
+
+\Hypertarget{debug__gpio_8c_ac02c08443682006309e79efc5859c305}\index{debug\_gpio.c@{debug\_gpio.c}!u32\_Current\_Output@{u32\_Current\_Output}}
+\index{u32\_Current\_Output@{u32\_Current\_Output}!debug\_gpio.c@{debug\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{u32\_Current\_Output}{u32\_Current\_Output}}
+{\footnotesize\ttfamily \label{debug__gpio_8c_ac02c08443682006309e79efc5859c305} 
+uint32\+\_\+t u32\+\_\+\+Current\+\_\+\+Output\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__gpio_8c_source_l00013}{13}} of file \doxymbox{\hyperlink{debug__gpio_8c_source}{debug\+\_\+gpio.\+c}}.
+

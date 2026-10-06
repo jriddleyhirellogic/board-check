@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREDDS:4.0.108",
+  "definition_digest": "61afcdc8b818fb6afc0034ddd1af197e2e134fd1108640bc825dd1249790f21c",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "SIN_COS_GEN",
+  "sources_digest": "ec0e13c2994a991c8149937075c11266cd045effbbfc7748544e50d3ff43d077"
+}

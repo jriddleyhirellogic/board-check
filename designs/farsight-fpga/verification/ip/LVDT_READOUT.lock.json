@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:LVDT_READOUT",
+  "definition_digest": "335d6d9456b17a92c4ded5db9484c89fee9d6cd4ff717e9a9f7332f643b64255",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "LVDT_READOUT",
+  "sources_digest": "0943df770c97d3acabc3ddd8da177ec0d062b6767609d818e8c10988e3102209"
+}

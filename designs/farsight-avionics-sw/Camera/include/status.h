@@ -1,0 +1,20 @@
+/*
+ * status.h
+ *
+ *  Created on: Oct 20, 2025
+ *      Author: iboard
+ */
+
+#ifndef STATUS_H_
+#define STATUS_H_
+
+typedef struct
+{
+    int32_t i32_Velocity; // Velocity Increment
+    int32_t i32_Position_Microns;// Current Position
+    uint8_t u8_Fault_Status;
+}Status_t;
+
+void v_Get_Status( Status_t *p_Status );
+
+#endif /* STATUS_H_ */

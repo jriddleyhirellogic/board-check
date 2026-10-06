@@ -1,0 +1,1582 @@
+   1              		.file	"system.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_System_Task,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_System_Task
+  13              	v_System_Task:
+  14              	.LFB7:
+  15              		.file 1 "../src/system.c"
+   1:../src/system.c **** /*
+   2:../src/system.c ****  * test.c
+   3:../src/system.c ****  * For test purposes
+   4:../src/system.c ****  *  Created on: Oct 3, 2025
+   5:../src/system.c ****  *      Author: iboard
+   6:../src/system.c ****  */
+   7:../src/system.c **** #include <focus.h>
+   8:../src/system.c **** #include <stdint.h>
+   9:../src/system.c **** #include <stdio.h>
+  10:../src/system.c **** 
+  11:../src/system.c **** #include "FreeRTOSConfig.h"
+  12:../src/system.c **** #include "FreeRTOS.h"
+  13:../src/system.c **** #include "task.h"
+  14:../src/system.c **** #include "queue.h"
+  15:../src/system.c **** #include "event_groups.h"
+  16:../src/system.c **** #include "mem_map.h"
+  17:../src/system.c **** #include "config.h"
+  18:../src/system.c **** #include "misc.h"
+  19:../src/system.c **** #include "lvdt.h"
+  20:../src/system.c **** #include "serial_comm.h"
+  21:../src/system.c **** #include "camera_task.h"
+  22:../src/system.c **** #include "debug_gpio.h"
+  23:../src/system.c **** #include "misc.h"
+  24:../src/system.c **** #include "pid.h"
+  25:../src/system.c **** #include "debug_mux.h"
+  26:../src/system.c **** #include "hal_stepper.h"
+  27:../src/system.c **** #include "core_spi.h"
+  28:../src/system.c **** #include "core_qspi.h"
+  29:../src/system.c **** #include "flash.h"
+  30:../src/system.c **** #include "tlm_adc.h"
+  31:../src/system.c **** #include "pps.h"
+  32:../src/system.c **** 
+  33:../src/system.c **** extern EventGroupHandle_t initialized;
+  34:../src/system.c **** static uint32_t u32_Counter;
+  35:../src/system.c **** 
+  36:../src/system.c **** static QueueHandle_t System_Queue;
+  37:../src/system.c **** 
+  38:../src/system.c **** uint32_t u32_Get_Power_Enables(void);
+  39:../src/system.c **** uint32_t u32_Get_Power_Status(void);
+  40:../src/system.c **** 
+  41:../src/system.c **** static uint16_t u16_TLM_Data[NUMBER_TLM_SENSORS];
+  42:../src/system.c **** 
+  43:../src/system.c **** // System task is for monitoring and controlling system as a whole. It can poll periodically for
+  44:../src/system.c **** // things like voltage and temperature.
+  45:../src/system.c **** 
+  46:../src/system.c **** static uint8_t u8_N_TLM_Sensor;
+  47:../src/system.c **** 
+  48:../src/system.c **** void v_System_Task(void *pvParameters)
+  49:../src/system.c **** {
+  16              		.loc 1 49 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  50:../src/system.c ****     uint8_t n;
+  19              		.loc 1 50 5
+  51:../src/system.c ****     uint8_t n_written;
+  20              		.loc 1 51 5
+  52:../src/system.c ****     uint8_t u8_Heartbeat_Counter;
+  21              		.loc 1 52 5
+  53:../src/system.c ****     uint8_t u8_Status;
+  22              		.loc 1 53 5
+  54:../src/system.c ****     uint32_t u32_Fpga_Temp;
+  23              		.loc 1 54 5
+  55:../src/system.c **** 
+  56:../src/system.c ****     // Initialization
+  57:../src/system.c ****     TickType_t xDelay = pdMS_TO_TICKS(250); // system task responds to events and polls periodicall
+  24              		.loc 1 57 5
+  58:../src/system.c ****     uint32_t u32_Heap_Remaining;
+  25              		.loc 1 58 5
+  59:../src/system.c **** 
+  60:../src/system.c ****     v_Init_TLM();
+  26              		.loc 1 60 5
+  49:../src/system.c ****     uint8_t n;
+  27              		.loc 1 49 1 is_stmt 0
+  28 0000 130101FC 		addi	sp,sp,-64
+  29              		.cfi_def_cfa_offset 64
+  30 0004 232E1102 		sw	ra,60(sp)
+  31 0008 232C8102 		sw	s0,56(sp)
+  32 000c 232A9102 		sw	s1,52(sp)
+  33 0010 23282103 		sw	s2,48(sp)
+  34 0014 23263103 		sw	s3,44(sp)
+  35 0018 23244103 		sw	s4,40(sp)
+  36 001c 23225103 		sw	s5,36(sp)
+  37              		.cfi_offset 1, -4
+  38              		.cfi_offset 8, -8
+  39              		.cfi_offset 9, -12
+  40              		.cfi_offset 18, -16
+  41              		.cfi_offset 19, -20
+  42              		.cfi_offset 20, -24
+  43              		.cfi_offset 21, -28
+  44              		.loc 1 60 5
+  45 0020 97000000 		call	v_Init_TLM
+  45      E7800000 
+  46              	.LVL1:
+  61:../src/system.c **** 
+  62:../src/system.c ****     System_Queue = xQueueCreate( SYSTEM_QUEUE_LENGTH , sizeof(Event_t) );
+  47              		.loc 1 62 5 is_stmt 1
+  48              		.loc 1 62 20 is_stmt 0
+  49 0028 13060000 		li	a2,0
+  50 002c 93054001 		li	a1,20
+  51 0030 13052000 		li	a0,2
+  52 0034 97000000 		call	xQueueGenericCreate
+  52      E7800000 
+  53              	.LVL2:
+  63:../src/system.c ****     xEventGroupSetBits( initialized,  SYSTEM_INITIALIZED );
+  54              		.loc 1 63 5
+  55 003c 97040000 		lla	s1,initialized
+  55      93840400 
+  62:../src/system.c ****     xEventGroupSetBits( initialized,  SYSTEM_INITIALIZED );
+  56              		.loc 1 62 18
+  57 0044 97070000 		sw	a0,.LANCHOR0,a5
+  57      23A0A700 
+  58              		.loc 1 63 5 is_stmt 1
+  59 004c 03A50400 		lw	a0,0(s1)
+  60 0050 93051000 		li	a1,1
+  49:../src/system.c ****     uint8_t n;
+  61              		.loc 1 49 1 is_stmt 0
+  62 0054 13040000 		li	s0,0
+  63              		.loc 1 63 5
+  64 0058 97000000 		call	xEventGroupSetBits
+  64      E7800000 
+  65              	.LVL3:
+  64:../src/system.c **** 
+  65:../src/system.c ****     // Wait for all tasks to be initialized
+  66:../src/system.c ****     xEventGroupWaitBits( initialized, ALL_INITIALIZED, pdFALSE, pdTRUE, portMAX_DELAY );
+  66              		.loc 1 66 5 is_stmt 1
+  67 0060 03A50400 		lw	a0,0(s1)
+  68 0064 1307F0FF 		li	a4,-1
+  69 0068 93061000 		li	a3,1
+  70 006c 13060000 		li	a2,0
+  71 0070 9305F000 		li	a1,15
+  72 0074 97000000 		call	xEventGroupWaitBits
+  72      E7800000 
+  73              	.LVL4:
+  67:../src/system.c **** 
+  68:../src/system.c ****     v_Enable_PPS_IRQ( 0 );
+  74              		.loc 1 68 5
+  75 007c 13050000 		li	a0,0
+  76 0080 97000000 		call	v_Enable_PPS_IRQ
+  76      E7800000 
+  77              	.LVL5:
+  78              	.LBB2:
+  69:../src/system.c **** 
+  70:../src/system.c ****     while(1)
+  71:../src/system.c ****     {
+  72:../src/system.c ****         BaseType_t b_Event_Received;
+  73:../src/system.c ****         Event_t Rcvd_Event;
+  74:../src/system.c ****         Event_t event;
+  75:../src/system.c ****         uint32_t u32_Arg;
+  76:../src/system.c ****         uint32_t u32_Address;
+  77:../src/system.c ****         uint8_t u8_N_TLM_Readings;
+  78:../src/system.c **** 
+  79:../src/system.c ****         b_Event_Received = xQueueReceive( System_Queue,
+  79              		.loc 1 79 28 is_stmt 0
+  80 0088 17090000 		lla	s2,.LANCHOR0
+  80      13090900 
+  81              	.LBB3:
+  80:../src/system.c ****                                           &Rcvd_Event,
+  81:../src/system.c ****                                           xDelay );
+  82:../src/system.c **** 
+  83:../src/system.c ****          if( b_Event_Received) // Event received
+  84:../src/system.c ****          {
+  85:../src/system.c ****              switch( Rcvd_Event.no_data.sig )
+  86:../src/system.c ****              {
+  87:../src/system.c ****              case RESET_RECEIVED:
+  88:../src/system.c ****                  v_Post_Camera_Event( &Rcvd_Event );
+  89:../src/system.c ****                  v_Post_Focus_Event( &Rcvd_Event );
+  90:../src/system.c ****                  break;
+  91:../src/system.c **** 
+  92:../src/system.c ****              case DO_FLASH_SECTOR_ERASE:
+  93:../src/system.c ****                  u32_Address = Rcvd_Event.flash_data.u32_Address;
+  94:../src/system.c ****                  v_Flash_Sector_Erase( u32_Address );
+  95:../src/system.c ****                  break;
+  96:../src/system.c **** 
+  97:../src/system.c ****              case DO_FLASH_BLOCK_ERASE:
+  98:../src/system.c ****                  u32_Address = Rcvd_Event.flash_data.u32_Address;
+  99:../src/system.c ****                  v_Flash_Block_Erase( u32_Address );
+ 100:../src/system.c ****                  break;
+ 101:../src/system.c **** 
+ 102:../src/system.c ****              default:
+ 103:../src/system.c ****                  ++u32_Counter;
+ 104:../src/system.c ****                  break;
+ 105:../src/system.c ****              }
+ 106:../src/system.c ****          }
+ 107:../src/system.c ****          else                  // Timeout for things that need to be polled periodically
+ 108:../src/system.c ****          {
+ 109:../src/system.c ****              uint32_t u32_Status = u32_Get_Power_Enables();
+ 110:../src/system.c ****              u32_Status = u32_Get_Power_Status();
+ 111:../src/system.c ****              u32_Status = u8_Get_Stepper_NFAULT();
+ 112:../src/system.c **** 
+ 113:../src/system.c ****              u8_Heartbeat_Counter = (u8_Heartbeat_Counter + 1) & 3;
+ 114:../src/system.c ****              v_Set_Heartbeat_LED( u8_Heartbeat_Counter == 0 );
+ 115:../src/system.c ****              u8_Status = u8_Get_Stepper_Watchdog_Status();
+ 116:../src/system.c **** 
+ 117:../src/system.c ****              for(u8_N_TLM_Readings = 0; u8_N_TLM_Readings < 3; u8_N_TLM_Readings++)
+ 118:../src/system.c ****              {
+ 119:../src/system.c ****                  u16_TLM_Data[u8_N_TLM_Sensor] = u32_Read_TLM( u8_N_TLM_Sensor );
+  82              		.loc 1 119 48
+  83 0090 97090000 		lla	s3,.LANCHOR3
+  83      93890900 
+ 120:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 121:../src/system.c ****                  u8_N_TLM_Sensor = u8_N_TLM_Sensor == NUMBER_TLM_SENSORS ? 0 : u8_N_TLM_Sensor;
+  84              		.loc 1 121 34
+  85 0098 130A0003 		li	s4,48
+  86              	.LBE3:
+ 103:../src/system.c ****                  break;
+  87              		.loc 1 103 18
+  88 009c 970A0000 		lla	s5,.LANCHOR1
+  88      938A0A00 
+  89              	.L9:
+  90              	.LVL6:
+  91              	.LBE2:
+  70:../src/system.c ****     {
+  92              		.loc 1 70 5 is_stmt 1
+  93              	.LBB5:
+  72:../src/system.c ****         Event_t Rcvd_Event;
+  94              		.loc 1 72 9
+  73:../src/system.c ****         Event_t event;
+  95              		.loc 1 73 9
+  74:../src/system.c ****         uint32_t u32_Arg;
+  96              		.loc 1 74 9
+  75:../src/system.c ****         uint32_t u32_Address;
+  97              		.loc 1 75 9
+  76:../src/system.c ****         uint8_t u8_N_TLM_Readings;
+  98              		.loc 1 76 9
+  77:../src/system.c **** 
+  99              		.loc 1 77 9
+  79:../src/system.c ****                                           &Rcvd_Event,
+ 100              		.loc 1 79 9
+  79:../src/system.c ****                                           &Rcvd_Event,
+ 101              		.loc 1 79 28 is_stmt 0
+ 102 00a4 03250900 		lw	a0,0(s2)
+ 103 00a8 1306A00F 		li	a2,250
+ 104 00ac 9305C100 		addi	a1,sp,12
+ 105 00b0 97000000 		call	xQueueReceive
+ 105      E7800000 
+ 106              	.LVL7:
+  83:../src/system.c ****          {
+ 107              		.loc 1 83 10 is_stmt 1
+  83:../src/system.c ****          {
+ 108              		.loc 1 83 12 is_stmt 0
+ 109 00b8 63080506 		beq	a0,zero,.L2
+  85:../src/system.c ****              {
+ 110              		.loc 1 85 14 is_stmt 1
+  85:../src/system.c ****              {
+ 111              		.loc 1 85 40 is_stmt 0
+ 112 00bc 8327C100 		lw	a5,12(sp)
+  85:../src/system.c ****              {
+ 113              		.loc 1 85 14
+ 114 00c0 13077001 		li	a4,23
+ 115 00c4 6388E702 		beq	a5,a4,.L3
+ 116 00c8 13078001 		li	a4,24
+ 117 00cc 638CE702 		beq	a5,a4,.L4
+ 118 00d0 13076000 		li	a4,6
+ 119 00d4 6390E704 		bne	a5,a4,.L5
+  88:../src/system.c ****                  v_Post_Focus_Event( &Rcvd_Event );
+ 120              		.loc 1 88 18 is_stmt 1
+ 121 00d8 1305C100 		addi	a0,sp,12
+ 122              	.LVL8:
+ 123 00dc 97000000 		call	v_Post_Camera_Event
+ 123      E7800000 
+ 124              	.LVL9:
+  89:../src/system.c ****                  break;
+ 125              		.loc 1 89 18
+ 126 00e4 1305C100 		addi	a0,sp,12
+ 127 00e8 97000000 		call	v_Post_Focus_Event
+ 127      E7800000 
+ 128              	.LVL10:
+  90:../src/system.c **** 
+ 129              		.loc 1 90 18
+ 130 00f0 6FF05FFB 		j	.L9
+ 131              	.LVL11:
+ 132              	.L3:
+  93:../src/system.c ****                  v_Flash_Sector_Erase( u32_Address );
+ 133              		.loc 1 93 18
+  94:../src/system.c ****                  break;
+ 134              		.loc 1 94 18
+ 135 00f4 03250101 		lw	a0,16(sp)
+ 136              	.LVL12:
+ 137 00f8 97000000 		call	v_Flash_Sector_Erase
+ 137      E7800000 
+ 138              	.LVL13:
+  95:../src/system.c **** 
+ 139              		.loc 1 95 18
+ 140 0100 6FF05FFA 		j	.L9
+ 141              	.LVL14:
+ 142              	.L4:
+  98:../src/system.c ****                  v_Flash_Block_Erase( u32_Address );
+ 143              		.loc 1 98 18
+  99:../src/system.c ****                  break;
+ 144              		.loc 1 99 18
+ 145 0104 03250101 		lw	a0,16(sp)
+ 146              	.LVL15:
+ 147 0108 97000000 		call	v_Flash_Block_Erase
+ 147      E7800000 
+ 148              	.LVL16:
+ 100:../src/system.c **** 
+ 149              		.loc 1 100 18
+ 150 0110 6FF05FF9 		j	.L9
+ 151              	.LVL17:
+ 152              	.L5:
+ 103:../src/system.c ****                  break;
+ 153              		.loc 1 103 18
+ 154 0114 83A70A00 		lw	a5,0(s5)
+ 155 0118 93871700 		addi	a5,a5,1
+ 156 011c 17070000 		sw	a5,.LANCHOR1,a4
+ 156      2320F700 
+ 104:../src/system.c ****              }
+ 157              		.loc 1 104 18
+ 158 0124 6FF01FF8 		j	.L9
+ 159              	.L2:
+ 160              	.LBB4:
+ 109:../src/system.c ****              u32_Status = u32_Get_Power_Status();
+ 161              		.loc 1 109 14
+ 109:../src/system.c ****              u32_Status = u32_Get_Power_Status();
+ 162              		.loc 1 109 36 is_stmt 0
+ 163 0128 97000000 		call	u32_Get_Power_Enables
+ 163      E7800000 
+ 164              	.LVL18:
+ 110:../src/system.c ****              u32_Status = u8_Get_Stepper_NFAULT();
+ 165              		.loc 1 110 14 is_stmt 1
+ 110:../src/system.c ****              u32_Status = u8_Get_Stepper_NFAULT();
+ 166              		.loc 1 110 27 is_stmt 0
+ 167 0130 97000000 		call	u32_Get_Power_Status
+ 167      E7800000 
+ 168              	.LVL19:
+ 111:../src/system.c **** 
+ 169              		.loc 1 111 14 is_stmt 1
+ 113:../src/system.c ****              v_Set_Heartbeat_LED( u8_Heartbeat_Counter == 0 );
+ 170              		.loc 1 113 59 is_stmt 0
+ 171 0138 13041400 		addi	s0,s0,1
+ 172              	.LVL20:
+ 111:../src/system.c **** 
+ 173              		.loc 1 111 27
+ 174 013c 97000000 		call	u8_Get_Stepper_NFAULT
+ 174      E7800000 
+ 175              	.LVL21:
+ 113:../src/system.c ****              v_Set_Heartbeat_LED( u8_Heartbeat_Counter == 0 );
+ 176              		.loc 1 113 14 is_stmt 1
+ 113:../src/system.c ****              v_Set_Heartbeat_LED( u8_Heartbeat_Counter == 0 );
+ 177              		.loc 1 113 35 is_stmt 0
+ 178 0144 13743400 		andi	s0,s0,3
+ 179              	.LVL22:
+ 114:../src/system.c ****              u8_Status = u8_Get_Stepper_Watchdog_Status();
+ 180              		.loc 1 114 14 is_stmt 1
+ 181 0148 13351400 		seqz	a0,s0
+ 182 014c 97000000 		call	v_Set_Heartbeat_LED
+ 182      E7800000 
+ 183              	.LVL23:
+ 115:../src/system.c **** 
+ 184              		.loc 1 115 14
+ 115:../src/system.c **** 
+ 185              		.loc 1 115 26 is_stmt 0
+ 186 0154 97000000 		call	u8_Get_Stepper_Watchdog_Status
+ 186      E7800000 
+ 187              	.LVL24:
+ 117:../src/system.c ****              {
+ 188              		.loc 1 117 14 is_stmt 1
+ 115:../src/system.c **** 
+ 189              		.loc 1 115 26 is_stmt 0
+ 190 015c 93043000 		li	s1,3
+ 191              	.LVL25:
+ 192              	.L8:
+ 119:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 193              		.loc 1 119 18 is_stmt 1
+ 119:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 194              		.loc 1 119 50 is_stmt 0
+ 195 0160 17050000 		lbu	a0,.LANCHOR2
+ 195      03450500 
+ 196 0168 97000000 		call	u32_Read_TLM
+ 196      E7800000 
+ 197              	.LVL26:
+ 119:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 198              		.loc 1 119 30
+ 199 0170 97070000 		lbu	a5,.LANCHOR2
+ 199      83C70700 
+ 119:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 200              		.loc 1 119 48
+ 201 0178 13971700 		slli	a4,a5,1
+ 202 017c 3387E900 		add	a4,s3,a4
+ 120:../src/system.c ****                  u8_N_TLM_Sensor = u8_N_TLM_Sensor == NUMBER_TLM_SENSORS ? 0 : u8_N_TLM_Sensor;
+ 203              		.loc 1 120 18
+ 204 0180 93871700 		addi	a5,a5,1
+ 119:../src/system.c ****                  ++u8_N_TLM_Sensor;
+ 205              		.loc 1 119 48
+ 206 0184 2310A700 		sh	a0,0(a4)
+ 120:../src/system.c ****                  u8_N_TLM_Sensor = u8_N_TLM_Sensor == NUMBER_TLM_SENSORS ? 0 : u8_N_TLM_Sensor;
+ 207              		.loc 1 120 18 is_stmt 1
+ 208 0188 93F7F70F 		andi	a5,a5,0xff
+ 209              		.loc 1 121 18
+ 210              		.loc 1 121 34 is_stmt 0
+ 211 018c 63944701 		bne	a5,s4,.L7
+ 212 0190 93070000 		li	a5,0
+ 213              	.L7:
+ 214 0194 9384F4FF 		addi	s1,s1,-1
+ 215              	.LVL27:
+ 216              		.loc 1 121 34 discriminator 4
+ 217 0198 17070000 		sb	a5,.LANCHOR2,a4
+ 217      2300F700 
+ 218 01a0 93F4F40F 		andi	s1,s1,0xff
+ 117:../src/system.c ****              {
+ 219              		.loc 1 117 14 discriminator 4
+ 220 01a4 E39E04FA 		bne	s1,zero,.L8
+ 221 01a8 6FF0DFEF 		j	.L9
+ 222              	.LBE4:
+ 223              	.LBE5:
+ 224              		.cfi_endproc
+ 225              	.LFE7:
+ 227              		.section	.text.v_Get_Copy_TLM_Data,"ax",@progbits
+ 228              		.align	2
+ 229              		.globl	v_Get_Copy_TLM_Data
+ 231              	v_Get_Copy_TLM_Data:
+ 232              	.LFB8:
+ 122:../src/system.c ****              }
+ 123:../src/system.c ****          }
+ 124:../src/system.c **** #ifdef  MEM_CHECK
+ 125:../src/system.c ****         UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL); // Stack high water mark -
+ 126:../src/system.c ****         u32_Heap_Remaining = xPortGetFreeHeapSize();
+ 127:../src/system.c **** #endif
+ 128:../src/system.c **** 
+ 129:../src/system.c ****     }
+ 130:../src/system.c **** }
+ 131:../src/system.c **** 
+ 132:../src/system.c **** void v_Get_Copy_TLM_Data(uint8_t *buffer)
+ 133:../src/system.c **** {
+ 233              		.loc 1 133 1 is_stmt 1
+ 234              		.cfi_startproc
+ 235              	.LVL28:
+ 134:../src/system.c ****     memcpy(buffer, u16_TLM_Data, sizeof(u16_TLM_Data) );
+ 236              		.loc 1 134 5
+ 237 0000 13060006 		li	a2,96
+ 238 0004 97050000 		lla	a1,.LANCHOR3
+ 238      93850500 
+ 239 000c 17030000 		tail	memcpy
+ 239      67000300 
+ 240              	.LVL29:
+ 241              		.cfi_endproc
+ 242              	.LFE8:
+ 244              		.section	.text.v_Post_System_Event,"ax",@progbits
+ 245              		.align	2
+ 246              		.globl	v_Post_System_Event
+ 248              	v_Post_System_Event:
+ 249              	.LFB9:
+ 135:../src/system.c **** }
+ 136:../src/system.c **** 
+ 137:../src/system.c **** void v_Post_System_Event( Event_t *event )
+ 138:../src/system.c **** {
+ 250              		.loc 1 138 1
+ 251              		.cfi_startproc
+ 252              	.LVL30:
+ 139:../src/system.c ****     BaseType_t Ret_Val;
+ 253              		.loc 1 139 5
+ 140:../src/system.c ****     Ret_Val = xQueueSend( System_Queue, event, 2 );
+ 254              		.loc 1 140 5
+ 255              		.loc 1 140 15 is_stmt 0
+ 256 0000 97070000 		lla	a5,.LANCHOR0
+ 256      93870700 
+ 257 0008 93050500 		mv	a1,a0
+ 258 000c 03A50700 		lw	a0,0(a5)
+ 259              	.LVL31:
+ 260 0010 93060000 		li	a3,0
+ 261 0014 13062000 		li	a2,2
+ 262 0018 17030000 		tail	xQueueGenericSend
+ 262      67000300 
+ 263              	.LVL32:
+ 264              		.cfi_endproc
+ 265              	.LFE9:
+ 267              		.section	.text.v_Post_System_Event_ISR,"ax",@progbits
+ 268              		.align	2
+ 269              		.globl	v_Post_System_Event_ISR
+ 271              	v_Post_System_Event_ISR:
+ 272              	.LFB10:
+ 141:../src/system.c **** }
+ 142:../src/system.c **** 
+ 143:../src/system.c **** void v_Post_System_Event_ISR( Event_t *event )
+ 144:../src/system.c **** {
+ 273              		.loc 1 144 1 is_stmt 1
+ 274              		.cfi_startproc
+ 275              	.LVL33:
+ 145:../src/system.c ****     BaseType_t Ret_Val;
+ 276              		.loc 1 145 5
+ 146:../src/system.c ****     Ret_Val = xQueueSendFromISR(  System_Queue, event, NULL );
+ 277              		.loc 1 146 5
+ 278              		.loc 1 146 15 is_stmt 0
+ 279 0000 97070000 		lla	a5,.LANCHOR0
+ 279      93870700 
+ 280 0008 93050500 		mv	a1,a0
+ 281 000c 03A50700 		lw	a0,0(a5)
+ 282              	.LVL34:
+ 283 0010 93060000 		li	a3,0
+ 284 0014 13060000 		li	a2,0
+ 285 0018 17030000 		tail	xQueueGenericSendFromISR
+ 285      67000300 
+ 286              	.LVL35:
+ 287              		.cfi_endproc
+ 288              	.LFE10:
+ 290              		.section	.bss.u16_TLM_Data,"aw",@nobits
+ 291              		.align	2
+ 292              		.set	.LANCHOR3,. + 0
+ 295              	u16_TLM_Data:
+ 296 0000 00000000 		.zero	96
+ 296      00000000 
+ 296      00000000 
+ 296      00000000 
+ 296      00000000 
+ 297              		.section	.sbss.System_Queue,"aw",@nobits
+ 298              		.align	2
+ 299              		.set	.LANCHOR0,. + 0
+ 302              	System_Queue:
+ 303 0000 00000000 		.zero	4
+ 304              		.section	.sbss.u32_Counter,"aw",@nobits
+ 305              		.align	2
+ 306              		.set	.LANCHOR1,. + 0
+ 309              	u32_Counter:
+ 310 0000 00000000 		.zero	4
+ 311              		.section	.sbss.u8_N_TLM_Sensor,"aw",@nobits
+ 312              		.set	.LANCHOR2,. + 0
+ 315              	u8_N_TLM_Sensor:
+ 316 0000 00       		.zero	1
+ 317              		.text
+ 318              	.Letext0:
+ 319              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 320              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 321              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 322              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 323              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 324              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 325              		.file 8 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 326              		.file 9 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 327              		.file 10 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 328              		.file 11 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/queue.h"
+ 329              		.file 12 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/event_groups.h"
+ 330              		.file 13 "/home/iboard/farsight/avtemp/Camera/include/tlm_adc.h"
+ 331              		.file 14 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 332              		.file 15 "/home/iboard/farsight/avtemp/Camera/include/debug_mux.h"
+ 333              		.file 16 "/home/iboard/farsight/avtemp/Camera/include/camera_task.h"
+ 334              		.file 17 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+ 335              		.file 18 "/home/iboard/farsight/avtemp/Camera/include/flash.h"
+ 336              		.file 19 "/home/iboard/farsight/avtemp/Camera/include/pps.h"
+ 337              		.file 20 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 system.c
+<<<<<<< HEAD
+     /tmp/ccDD54vC.s:13     .text.v_System_Task:0000000000000000 v_System_Task
+     /tmp/ccDD54vC.s:17     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:19     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:20     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:21     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:22     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:23     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:24     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:25     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:26     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:27     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:28     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:29     .text.v_System_Task:0000000000000004 .L0 
+     /tmp/ccDD54vC.s:37     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:38     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:39     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:40     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:41     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:42     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:43     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:45     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:48     .text.v_System_Task:0000000000000028 .L0 
+     /tmp/ccDD54vC.s:49     .text.v_System_Task:0000000000000028 .L0 
+     /tmp/ccDD54vC.s:55     .text.v_System_Task:000000000000003c .L0 
+     /tmp/ccDD54vC.s:57     .text.v_System_Task:0000000000000044 .L0 
+     /tmp/ccDD54vC.s:59     .text.v_System_Task:000000000000004c .L0 
+     /tmp/ccDD54vC.s:62     .text.v_System_Task:0000000000000054 .L0 
+     /tmp/ccDD54vC.s:64     .text.v_System_Task:0000000000000058 .L0 
+     /tmp/ccDD54vC.s:67     .text.v_System_Task:0000000000000060 .L0 
+     /tmp/ccDD54vC.s:75     .text.v_System_Task:000000000000007c .L0 
+     /tmp/ccDD54vC.s:80     .text.v_System_Task:0000000000000088 .L0 
+     /tmp/ccDD54vC.s:83     .text.v_System_Task:0000000000000090 .L0 
+     /tmp/ccDD54vC.s:85     .text.v_System_Task:0000000000000098 .L0 
+     /tmp/ccDD54vC.s:88     .text.v_System_Task:000000000000009c .L0 
+     /tmp/ccDD54vC.s:94     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:95     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:96     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:97     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:98     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:99     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:100    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:101    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:102    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccDD54vC.s:108    .text.v_System_Task:00000000000000b8 .L0 
+     /tmp/ccDD54vC.s:109    .text.v_System_Task:00000000000000b8 .L0 
+     /tmp/ccDD54vC.s:111    .text.v_System_Task:00000000000000bc .L0 
+     /tmp/ccDD54vC.s:112    .text.v_System_Task:00000000000000bc .L0 
+     /tmp/ccDD54vC.s:114    .text.v_System_Task:00000000000000c0 .L0 
+     /tmp/ccDD54vC.s:121    .text.v_System_Task:00000000000000d8 .L0 
+     /tmp/ccDD54vC.s:126    .text.v_System_Task:00000000000000e4 .L0 
+     /tmp/ccDD54vC.s:130    .text.v_System_Task:00000000000000f0 .L0 
+     /tmp/ccDD54vC.s:134    .text.v_System_Task:00000000000000f4 .L0 
+     /tmp/ccDD54vC.s:135    .text.v_System_Task:00000000000000f4 .L0 
+     /tmp/ccDD54vC.s:140    .text.v_System_Task:0000000000000100 .L0 
+     /tmp/ccDD54vC.s:144    .text.v_System_Task:0000000000000104 .L0 
+     /tmp/ccDD54vC.s:145    .text.v_System_Task:0000000000000104 .L0 
+     /tmp/ccDD54vC.s:150    .text.v_System_Task:0000000000000110 .L0 
+     /tmp/ccDD54vC.s:154    .text.v_System_Task:0000000000000114 .L0 
+     /tmp/ccDD54vC.s:158    .text.v_System_Task:0000000000000124 .L0 
+     /tmp/ccDD54vC.s:162    .text.v_System_Task:0000000000000128 .L0 
+     /tmp/ccDD54vC.s:163    .text.v_System_Task:0000000000000128 .L0 
+     /tmp/ccDD54vC.s:166    .text.v_System_Task:0000000000000130 .L0 
+     /tmp/ccDD54vC.s:167    .text.v_System_Task:0000000000000130 .L0 
+     /tmp/ccDD54vC.s:170    .text.v_System_Task:0000000000000138 .L0 
+     /tmp/ccDD54vC.s:171    .text.v_System_Task:0000000000000138 .L0 
+     /tmp/ccDD54vC.s:174    .text.v_System_Task:000000000000013c .L0 
+     /tmp/ccDD54vC.s:177    .text.v_System_Task:0000000000000144 .L0 
+     /tmp/ccDD54vC.s:178    .text.v_System_Task:0000000000000144 .L0 
+     /tmp/ccDD54vC.s:181    .text.v_System_Task:0000000000000148 .L0 
+     /tmp/ccDD54vC.s:185    .text.v_System_Task:0000000000000154 .L0 
+     /tmp/ccDD54vC.s:186    .text.v_System_Task:0000000000000154 .L0 
+     /tmp/ccDD54vC.s:189    .text.v_System_Task:000000000000015c .L0 
+     /tmp/ccDD54vC.s:190    .text.v_System_Task:000000000000015c .L0 
+     /tmp/ccDD54vC.s:194    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccDD54vC.s:195    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccDD54vC.s:199    .text.v_System_Task:0000000000000170 .L0 
+     /tmp/ccDD54vC.s:201    .text.v_System_Task:0000000000000178 .L0 
+     /tmp/ccDD54vC.s:204    .text.v_System_Task:0000000000000180 .L0 
+     /tmp/ccDD54vC.s:206    .text.v_System_Task:0000000000000184 .L0 
+     /tmp/ccDD54vC.s:208    .text.v_System_Task:0000000000000188 .L0 
+     /tmp/ccDD54vC.s:210    .text.v_System_Task:000000000000018c .L0 
+     /tmp/ccDD54vC.s:211    .text.v_System_Task:000000000000018c .L0 
+     /tmp/ccDD54vC.s:217    .text.v_System_Task:0000000000000198 .L0 
+     /tmp/ccDD54vC.s:220    .text.v_System_Task:00000000000001a4 .L0 
+     /tmp/ccDD54vC.s:224    .text.v_System_Task:00000000000001ac .L0 
+     /tmp/ccDD54vC.s:231    .text.v_Get_Copy_TLM_Data:0000000000000000 v_Get_Copy_TLM_Data
+     /tmp/ccDD54vC.s:234    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:236    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:237    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:241    .text.v_Get_Copy_TLM_Data:0000000000000014 .L0 
+     /tmp/ccDD54vC.s:248    .text.v_Post_System_Event:0000000000000000 v_Post_System_Event
+     /tmp/ccDD54vC.s:251    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:253    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:254    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:255    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:256    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:264    .text.v_Post_System_Event:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:271    .text.v_Post_System_Event_ISR:0000000000000000 v_Post_System_Event_ISR
+     /tmp/ccDD54vC.s:274    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:276    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:277    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:278    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:279    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:287    .text.v_Post_System_Event_ISR:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:292    .bss.u16_TLM_Data:0000000000000000 .LANCHOR3
+     /tmp/ccDD54vC.s:295    .bss.u16_TLM_Data:0000000000000000 u16_TLM_Data
+     /tmp/ccDD54vC.s:299    .sbss.System_Queue:0000000000000000 .LANCHOR0
+     /tmp/ccDD54vC.s:302    .sbss.System_Queue:0000000000000000 System_Queue
+     /tmp/ccDD54vC.s:306    .sbss.u32_Counter:0000000000000000 .LANCHOR1
+     /tmp/ccDD54vC.s:309    .sbss.u32_Counter:0000000000000000 u32_Counter
+     /tmp/ccDD54vC.s:312    .sbss.u8_N_TLM_Sensor:0000000000000000 .LANCHOR2
+     /tmp/ccDD54vC.s:315    .sbss.u8_N_TLM_Sensor:0000000000000000 u8_N_TLM_Sensor
+     /tmp/ccDD54vC.s:227    .text.v_System_Task:00000000000001ac .L0 
+     /tmp/ccDD54vC.s:244    .text.v_Get_Copy_TLM_Data:0000000000000014 .L0 
+     /tmp/ccDD54vC.s:267    .text.v_Post_System_Event:0000000000000020 .L0 
+     /tmp/ccDD54vC.s:290    .text.v_Post_System_Event_ISR:0000000000000020 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:55     .text.v_System_Task:000000000000003c .L0 
+     /tmp/ccDD54vC.s:57     .text.v_System_Task:0000000000000044 .L0 
+     /tmp/ccDD54vC.s:80     .text.v_System_Task:0000000000000088 .L0 
+     /tmp/ccDD54vC.s:83     .text.v_System_Task:0000000000000090 .L0 
+     /tmp/ccDD54vC.s:88     .text.v_System_Task:000000000000009c .L0 
+     /tmp/ccDD54vC.s:156    .text.v_System_Task:000000000000011c .L0 
+     /tmp/ccDD54vC.s:195    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccDD54vC.s:199    .text.v_System_Task:0000000000000170 .L0 
+     /tmp/ccDD54vC.s:217    .text.v_System_Task:0000000000000198 .L0 
+     /tmp/ccDD54vC.s:159    .text.v_System_Task:0000000000000128 .L2
+     /tmp/ccDD54vC.s:132    .text.v_System_Task:00000000000000f4 .L3
+     /tmp/ccDD54vC.s:142    .text.v_System_Task:0000000000000104 .L4
+     /tmp/ccDD54vC.s:152    .text.v_System_Task:0000000000000114 .L5
+     /tmp/ccDD54vC.s:89     .text.v_System_Task:00000000000000a4 .L9
+     /tmp/ccDD54vC.s:213    .text.v_System_Task:0000000000000194 .L7
+     /tmp/ccDD54vC.s:192    .text.v_System_Task:0000000000000160 .L8
+     /tmp/ccDD54vC.s:238    .text.v_Get_Copy_TLM_Data:0000000000000004 .L0 
+     /tmp/ccDD54vC.s:256    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:279    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccDD54vC.s:2801   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccDD54vC.s:4155   .debug_str:0000000000000b74 .LASF296
+     /tmp/ccDD54vC.s:4203   .debug_str:0000000000000d62 .LASF297
+     /tmp/ccDD54vC.s:3965   .debug_str:00000000000006b7 .LASF298
+     /tmp/ccDD54vC.s:3675   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccDD54vC.s:3699   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccDD54vC.s:3705   .debug_str:0000000000000017 .LASF4
+     /tmp/ccDD54vC.s:4037   .debug_str:0000000000000896 .LASF0
+     /tmp/ccDD54vC.s:4005   .debug_str:00000000000007e1 .LASF1
+     /tmp/ccDD54vC.s:4091   .debug_str:00000000000009d2 .LASF2
+     /tmp/ccDD54vC.s:3829   .debug_str:0000000000000317 .LASF3
+     /tmp/ccDD54vC.s:3783   .debug_str:00000000000001ec .LASF5
+     /tmp/ccDD54vC.s:3851   .debug_str:00000000000003b2 .LASF6
+     /tmp/ccDD54vC.s:4205   .debug_str:0000000000000d72 .LASF7
+     /tmp/ccDD54vC.s:3879   .debug_str:000000000000046d .LASF8
+     /tmp/ccDD54vC.s:4265   .debug_str:0000000000000ea2 .LASF9
+     /tmp/ccDD54vC.s:4279   .debug_str:0000000000000f06 .LASF10
+     /tmp/ccDD54vC.s:3791   .debug_str:0000000000000218 .LASF11
+     /tmp/ccDD54vC.s:4001   .debug_str:00000000000007cb .LASF12
+     /tmp/ccDD54vC.s:3955   .debug_str:0000000000000683 .LASF13
+     /tmp/ccDD54vC.s:3947   .debug_str:0000000000000649 .LASF14
+     /tmp/ccDD54vC.s:4119   .debug_str:0000000000000a83 .LASF15
+     /tmp/ccDD54vC.s:3831   .debug_str:0000000000000323 .LASF16
+     /tmp/ccDD54vC.s:4123   .debug_str:0000000000000aa2 .LASF17
+     /tmp/ccDD54vC.s:3725   .debug_str:0000000000000079 .LASF18
+     /tmp/ccDD54vC.s:4257   .debug_str:0000000000000e85 .LASF19
+     /tmp/ccDD54vC.s:4209   .debug_str:0000000000000d87 .LASF20
+     /tmp/ccDD54vC.s:3749   .debug_str:0000000000000101 .LASF21
+     /tmp/ccDD54vC.s:4151   .debug_str:0000000000000b5c .LASF22
+     /tmp/ccDD54vC.s:3853   .debug_str:00000000000003c0 .LASF197
+     /tmp/ccDD54vC.s:3869   .debug_str:0000000000000437 .LASF23
+     /tmp/ccDD54vC.s:4243   .debug_str:0000000000000e38 .LASF24
+     /tmp/ccDD54vC.s:4301   .debug_str:0000000000000f88 .LASF25
+     /tmp/ccDD54vC.s:3767   .debug_str:0000000000000179 .LASF26
+     /tmp/ccDD54vC.s:4277   .debug_str:0000000000000ef7 .LASF27
+     /tmp/ccDD54vC.s:4161   .debug_str:0000000000000c57 .LASF28
+     /tmp/ccDD54vC.s:4113   .debug_str:0000000000000a54 .LASF29
+     /tmp/ccDD54vC.s:4231   .debug_str:0000000000000e04 .LASF30
+     /tmp/ccDD54vC.s:3757   .debug_str:0000000000000128 .LASF31
+     /tmp/ccDD54vC.s:3911   .debug_str:000000000000056a .LASF32
+     /tmp/ccDD54vC.s:3779   .debug_str:00000000000001d2 .LASF33
+     /tmp/ccDD54vC.s:4189   .debug_str:0000000000000cee .LASF34
+     /tmp/ccDD54vC.s:4165   .debug_str:0000000000000c6c .LASF35
+     /tmp/ccDD54vC.s:4107   .debug_str:0000000000000a36 .LASF36
+     /tmp/ccDD54vC.s:4193   .debug_str:0000000000000d1c .LASF37
+     /tmp/ccDD54vC.s:4289   .debug_str:0000000000000f3c .LASF38
+     /tmp/ccDD54vC.s:3771   .debug_str:000000000000019a .LASF39
+     /tmp/ccDD54vC.s:4049   .debug_str:00000000000008d2 .LASF40
+     /tmp/ccDD54vC.s:4211   .debug_str:0000000000000d90 .LASF41
+     /tmp/ccDD54vC.s:3803   .debug_str:0000000000000254 .LASF42
+     /tmp/ccDD54vC.s:4057   .debug_str:000000000000090a .LASF43
+     /tmp/ccDD54vC.s:3973   .debug_str:0000000000000712 .LASF44
+     /tmp/ccDD54vC.s:3833   .debug_str:000000000000032b .LASF45
+     /tmp/ccDD54vC.s:3903   .debug_str:000000000000052d .LASF46
+     /tmp/ccDD54vC.s:3935   .debug_str:00000000000005eb .LASF47
+     /tmp/ccDD54vC.s:4085   .debug_str:000000000000099f .LASF48
+     /tmp/ccDD54vC.s:4225   .debug_str:0000000000000de3 .LASF49
+     /tmp/ccDD54vC.s:3925   .debug_str:00000000000005b3 .LASF50
+     /tmp/ccDD54vC.s:3897   .debug_str:00000000000004f3 .LASF51
+     /tmp/ccDD54vC.s:4013   .debug_str:0000000000000816 .LASF52
+     /tmp/ccDD54vC.s:3949   .debug_str:0000000000000654 .LASF53
+     /tmp/ccDD54vC.s:3843   .debug_str:0000000000000371 .LASF54
+     /tmp/ccDD54vC.s:3977   .debug_str:000000000000072e .LASF55
+     /tmp/ccDD54vC.s:3823   .debug_str:00000000000002ed .LASF56
+     /tmp/ccDD54vC.s:3835   .debug_str:000000000000033e .LASF57
+     /tmp/ccDD54vC.s:3837   .debug_str:000000000000034b .LASF58
+     /tmp/ccDD54vC.s:4215   .debug_str:0000000000000da4 .LASF59
+     /tmp/ccDD54vC.s:4131   .debug_str:0000000000000ad4 .LASF60
+     /tmp/ccDD54vC.s:3865   .debug_str:0000000000000424 .LASF61
+     /tmp/ccDD54vC.s:4201   .debug_str:0000000000000d5d .LASF62
+     /tmp/ccDD54vC.s:3731   .debug_str:0000000000000096 .LASF63
+     /tmp/ccDD54vC.s:3957   .debug_str:0000000000000695 .LASF64
+     /tmp/ccDD54vC.s:3839   .debug_str:0000000000000358 .LASF65
+     /tmp/ccDD54vC.s:4015   .debug_str:0000000000000823 .LASF66
+     /tmp/ccDD54vC.s:3881   .debug_str:0000000000000478 .LASF67
+     /tmp/ccDD54vC.s:3883   .debug_str:000000000000048b .LASF68
+     /tmp/ccDD54vC.s:3733   .debug_str:00000000000000ae .LASF69
+     /tmp/ccDD54vC.s:3813   .debug_str:00000000000002a5 .LASF70
+     /tmp/ccDD54vC.s:4009   .debug_str:00000000000007f6 .LASF71
+     /tmp/ccDD54vC.s:4297   .debug_str:0000000000000f74 .LASF72
+     /tmp/ccDD54vC.s:3773   .debug_str:00000000000001aa .LASF73
+     /tmp/ccDD54vC.s:3841   .debug_str:0000000000000364 .LASF74
+     /tmp/ccDD54vC.s:4147   .debug_str:0000000000000b41 .LASF75
+     /tmp/ccDD54vC.s:3907   .debug_str:0000000000000552 .LASF76
+     /tmp/ccDD54vC.s:4045   .debug_str:00000000000008c2 .LASF77
+     /tmp/ccDD54vC.s:3945   .debug_str:000000000000063c .LASF78
+     /tmp/ccDD54vC.s:4195   .debug_str:0000000000000d29 .LASF79
+     /tmp/ccDD54vC.s:3931   .debug_str:00000000000005db .LASF80
+     /tmp/ccDD54vC.s:3817   .debug_str:00000000000002bf .LASF81
+     /tmp/ccDD54vC.s:4121   .debug_str:0000000000000a9a .LASF82
+     /tmp/ccDD54vC.s:4043   .debug_str:00000000000008b9 .LASF83
+     /tmp/ccDD54vC.s:3919   .debug_str:000000000000059c .LASF84
+     /tmp/ccDD54vC.s:3735   .debug_str:00000000000000b6 .LASF85
+     /tmp/ccDD54vC.s:3753   .debug_str:0000000000000116 .LASF86
+     /tmp/ccDD54vC.s:4069   .debug_str:000000000000094b .LASF87
+     /tmp/ccDD54vC.s:4183   .debug_str:0000000000000cdb .LASF88
+     /tmp/ccDD54vC.s:4261   .debug_str:0000000000000e96 .LASF89
+     /tmp/ccDD54vC.s:4109   .debug_str:0000000000000a45 .LASF90
+     /tmp/ccDD54vC.s:3703   .debug_str:000000000000000e .LASF91
+     /tmp/ccDD54vC.s:3781   .debug_str:00000000000001e6 .LASF92
+     /tmp/ccDD54vC.s:4111   .debug_str:0000000000000a4d .LASF93
+     /tmp/ccDD54vC.s:4083   .debug_str:0000000000000997 .LASF94
+     /tmp/ccDD54vC.s:3713   .debug_str:0000000000000045 .LASF95
+     /tmp/ccDD54vC.s:4179   .debug_str:0000000000000ccb .LASF96
+     /tmp/ccDD54vC.s:4253   .debug_str:0000000000000e6c .LASF97
+     /tmp/ccDD54vC.s:4241   .debug_str:0000000000000e30 .LASF98
+     /tmp/ccDD54vC.s:3923   .debug_str:00000000000005ac .LASF195
+     /tmp/ccDD54vC.s:4163   .debug_str:0000000000000c63 .LASF99
+     /tmp/ccDD54vC.s:3981   .debug_str:000000000000074f .LASF104
+     /tmp/ccDD54vC.s:4185   .debug_str:0000000000000ce2 .LASF100
+     /tmp/ccDD54vC.s:3985   .debug_str:0000000000000764 .LASF101
+     /tmp/ccDD54vC.s:4027   .debug_str:0000000000000862 .LASF102
+     /tmp/ccDD54vC.s:3921   .debug_str:00000000000005a7 .LASF103
+     /tmp/ccDD54vC.s:3741   .debug_str:00000000000000dc .LASF105
+     /tmp/ccDD54vC.s:3747   .debug_str:00000000000000f8 .LASF106
+     /tmp/ccDD54vC.s:4293   .debug_str:0000000000000f57 .LASF107
+     /tmp/ccDD54vC.s:4267   .debug_str:0000000000000eb5 .LASF108
+     /tmp/ccDD54vC.s:4053   .debug_str:00000000000008f3 .LASF109
+     /tmp/ccDD54vC.s:3815   .debug_str:00000000000002b6 .LASF110
+     /tmp/ccDD54vC.s:4219   .debug_str:0000000000000dba .LASF111
+     /tmp/ccDD54vC.s:4089   .debug_str:00000000000009c8 .LASF112
+     /tmp/ccDD54vC.s:4093   .debug_str:00000000000009de .LASF113
+     /tmp/ccDD54vC.s:4287   .debug_str:0000000000000f31 .LASF114
+     /tmp/ccDD54vC.s:3787   .debug_str:00000000000001fc .LASF115
+     /tmp/ccDD54vC.s:4285   .debug_str:0000000000000f29 .LASF116
+     /tmp/ccDD54vC.s:4125   .debug_str:0000000000000aab .LASF117
+     /tmp/ccDD54vC.s:4213   .debug_str:0000000000000d9b .LASF118
+     /tmp/ccDD54vC.s:4239   .debug_str:0000000000000e28 .LASF119
+     /tmp/ccDD54vC.s:4077   .debug_str:0000000000000971 .LASF120
+     /tmp/ccDD54vC.s:4229   .debug_str:0000000000000dff .LASF121
+     /tmp/ccDD54vC.s:3871   .debug_str:000000000000043c .LASF122
+     /tmp/ccDD54vC.s:4235   .debug_str:0000000000000e1a .LASF123
+     /tmp/ccDD54vC.s:4149   .debug_str:0000000000000b56 .LASF124
+     /tmp/ccDD54vC.s:3801   .debug_str:000000000000024e .LASF125
+     /tmp/ccDD54vC.s:3959   .debug_str:000000000000069c .LASF126
+     /tmp/ccDD54vC.s:4075   .debug_str:000000000000096a .LASF127
+     /tmp/ccDD54vC.s:3785   .debug_str:00000000000001f6 .LASF128
+     /tmp/ccDD54vC.s:4223   .debug_str:0000000000000dda .LASF129
+     /tmp/ccDD54vC.s:3915   .debug_str:0000000000000589 .LASF130
+     /tmp/ccDD54vC.s:3719   .debug_str:0000000000000059 .LASF131
+     /tmp/ccDD54vC.s:3723   .debug_str:0000000000000072 .LASF132
+     /tmp/ccDD54vC.s:4101   .debug_str:0000000000000a0e .LASF133
+     /tmp/ccDD54vC.s:3873   .debug_str:0000000000000441 .LASF134
+     /tmp/ccDD54vC.s:4059   .debug_str:000000000000091e .LASF135
+     /tmp/ccDD54vC.s:3745   .debug_str:00000000000000f2 .LASF136
+     /tmp/ccDD54vC.s:4143   .debug_str:0000000000000b24 .LASF137
+     /tmp/ccDD54vC.s:3929   .debug_str:00000000000005d3 .LASF138
+     /tmp/ccDD54vC.s:4187   .debug_str:0000000000000ce8 .LASF139
+     /tmp/ccDD54vC.s:3755   .debug_str:0000000000000122 .LASF140
+     /tmp/ccDD54vC.s:4067   .debug_str:0000000000000942 .LASF141
+     /tmp/ccDD54vC.s:3963   .debug_str:00000000000006af .LASF142
+     /tmp/ccDD54vC.s:3859   .debug_str:00000000000003f6 .LASF143
+     /tmp/ccDD54vC.s:3967   .debug_str:00000000000006ee .LASF144
+     /tmp/ccDD54vC.s:3885   .debug_str:000000000000049f .LASF145
+     /tmp/ccDD54vC.s:4135   .debug_str:0000000000000af3 .LASF146
+     /tmp/ccDD54vC.s:4061   .debug_str:0000000000000924 .LASF147
+     /tmp/ccDD54vC.s:4227   .debug_str:0000000000000dfa .LASF148
+     /tmp/ccDD54vC.s:4003   .debug_str:00000000000007d6 .LASF149
+     /tmp/ccDD54vC.s:3857   .debug_str:00000000000003dd .LASF150
+     /tmp/ccDD54vC.s:4251   .debug_str:0000000000000e64 .LASF151
+     /tmp/ccDD54vC.s:3961   .debug_str:00000000000006a4 .LASF152
+     /tmp/ccDD54vC.s:3987   .debug_str:000000000000076c .LASF153
+     /tmp/ccDD54vC.s:4259   .debug_str:0000000000000e8e .LASF154
+     /tmp/ccDD54vC.s:3799   .debug_str:0000000000000244 .LASF155
+     /tmp/ccDD54vC.s:3953   .debug_str:000000000000067e .LASF156
+     /tmp/ccDD54vC.s:4021   .debug_str:000000000000084c .LASF157
+     /tmp/ccDD54vC.s:3729   .debug_str:000000000000008e .LASF158
+     /tmp/ccDD54vC.s:3933   .debug_str:00000000000005e3 .LASF159
+     /tmp/ccDD54vC.s:4137   .debug_str:0000000000000afb .LASF160
+     /tmp/ccDD54vC.s:3989   .debug_str:0000000000000776 .LASF161
+     /tmp/ccDD54vC.s:3927   .debug_str:00000000000005c9 .LASF162
+     /tmp/ccDD54vC.s:4283   .debug_str:0000000000000f21 .LASF163
+     /tmp/ccDD54vC.s:3715   .debug_str:000000000000004d .LASF164
+     /tmp/ccDD54vC.s:4167   .debug_str:0000000000000c81 .LASF165
+     /tmp/ccDD54vC.s:4025   .debug_str:000000000000085c .LASF166
+     /tmp/ccDD54vC.s:4007   .debug_str:00000000000007ef .LASF167
+     /tmp/ccDD54vC.s:4023   .debug_str:0000000000000856 .LASF168
+     /tmp/ccDD54vC.s:4129   .debug_str:0000000000000acc .LASF169
+     /tmp/ccDD54vC.s:4097   .debug_str:00000000000009f4 .LASF170
+     /tmp/ccDD54vC.s:3761   .debug_str:000000000000014c .LASF171
+     /tmp/ccDD54vC.s:4263   .debug_str:0000000000000e9d .LASF172
+     /tmp/ccDD54vC.s:3825   .debug_str:00000000000002fc .LASF173
+     /tmp/ccDD54vC.s:4153   .debug_str:0000000000000b67 .LASF174
+     /tmp/ccDD54vC.s:3727   .debug_str:0000000000000081 .LASF175
+     /tmp/ccDD54vC.s:3805   .debug_str:0000000000000260 .LASF176
+     /tmp/ccDD54vC.s:4019   .debug_str:000000000000083d .LASF177
+     /tmp/ccDD54vC.s:4073   .debug_str:000000000000095f .LASF178
+     /tmp/ccDD54vC.s:4181   .debug_str:0000000000000cd6 .LASF179
+     /tmp/ccDD54vC.s:4055   .debug_str:00000000000008fd .LASF180
+     /tmp/ccDD54vC.s:4115   .debug_str:0000000000000a68 .LASF181
+     /tmp/ccDD54vC.s:4065   .debug_str:0000000000000934 .LASF182
+     /tmp/ccDD54vC.s:3751   .debug_str:000000000000010c .LASF183
+     /tmp/ccDD54vC.s:3975   .debug_str:0000000000000722 .LASF184
+     /tmp/ccDD54vC.s:4299   .debug_str:0000000000000f7b .LASF185
+     /tmp/ccDD54vC.s:3789   .debug_str:000000000000020a .LASF186
+     /tmp/ccDD54vC.s:4157   .debug_str:0000000000000c3a .LASF187
+     /tmp/ccDD54vC.s:4271   .debug_str:0000000000000ecc .LASF188
+     /tmp/ccDD54vC.s:4051   .debug_str:00000000000008e4 .LASF189
+     /tmp/ccDD54vC.s:3743   .debug_str:00000000000000e1 .LASF190
+     /tmp/ccDD54vC.s:4041   .debug_str:00000000000008b0 .LASF191
+     /tmp/ccDD54vC.s:4245   .debug_str:0000000000000e42 .LASF192
+     /tmp/ccDD54vC.s:4017   .debug_str:0000000000000834 .LASF193
+     /tmp/ccDD54vC.s:3739   .debug_str:00000000000000d4 .LASF194
+     /tmp/ccDD54vC.s:3711   .debug_str:000000000000003a .LASF196
+     /tmp/ccDD54vC.s:3793   .debug_str:0000000000000221 .LASF198
+     /tmp/ccDD54vC.s:3863   .debug_str:0000000000000411 .LASF199
+     /tmp/ccDD54vC.s:3827   .debug_str:0000000000000309 .LASF200
+     /tmp/ccDD54vC.s:3895   .debug_str:00000000000004e3 .LASF201
+     /tmp/ccDD54vC.s:3721   .debug_str:000000000000005f .LASF202
+     /tmp/ccDD54vC.s:3845   .debug_str:0000000000000386 .LASF203
+     /tmp/ccDD54vC.s:4031   .debug_str:000000000000087a .LASF204
+     /tmp/ccDD54vC.s:4191   .debug_str:0000000000000d08 .LASF205
+     /tmp/ccDD54vC.s:4217   .debug_str:0000000000000dad .LASF206
+     /tmp/ccDD54vC.s:3971   .debug_str:0000000000000703 .LASF207
+     /tmp/ccDD54vC.s:4207   .debug_str:0000000000000d7c .LASF208
+     /tmp/ccDD54vC.s:3979   .debug_str:000000000000073c .LASF209
+     /tmp/ccDD54vC.s:4173   .debug_str:0000000000000ca2 .LASF210
+     /tmp/ccDD54vC.s:4103   .debug_str:0000000000000a14 .LASF211
+     /tmp/ccDD54vC.s:4133   .debug_str:0000000000000ae0 .LASF212
+     /tmp/ccDD54vC.s:3807   .debug_str:000000000000026f .LASF213
+     /tmp/ccDD54vC.s:3993   .debug_str:000000000000078a .LASF214
+     /tmp/ccDD54vC.s:3951   .debug_str:000000000000066a .LASF215
+     /tmp/ccDD54vC.s:3765   .debug_str:0000000000000165 .LASF216
+     /tmp/ccDD54vC.s:4197   .debug_str:0000000000000d3d .LASF217
+     /tmp/ccDD54vC.s:4177   .debug_str:0000000000000cbd .LASF218
+     /tmp/ccDD54vC.s:3849   .debug_str:00000000000003a4 .LASF219
+     /tmp/ccDD54vC.s:4039   .debug_str:00000000000008a3 .LASF220
+     /tmp/ccDD54vC.s:3937   .debug_str:00000000000005f4 .LASF221
+     /tmp/ccDD54vC.s:3999   .debug_str:00000000000007be .LASF222
+     /tmp/ccDD54vC.s:4117   .debug_str:0000000000000a76 .LASF223
+     /tmp/ccDD54vC.s:4255   .debug_str:0000000000000e74 .LASF224
+     /tmp/ccDD54vC.s:4291   .debug_str:0000000000000f4a .LASF225
+     /tmp/ccDD54vC.s:3847   .debug_str:0000000000000396 .LASF226
+     /tmp/ccDD54vC.s:3889   .debug_str:00000000000004b3 .LASF227
+     /tmp/ccDD54vC.s:4171   .debug_str:0000000000000c95 .LASF228
+     /tmp/ccDD54vC.s:3855   .debug_str:00000000000003d1 .LASF229
+     /tmp/ccDD54vC.s:4071   .debug_str:0000000000000953 .LASF230
+     /tmp/ccDD54vC.s:4095   .debug_str:00000000000009e8 .LASF231
+     /tmp/ccDD54vC.s:4199   .debug_str:0000000000000d51 .LASF232
+     /tmp/ccDD54vC.s:4139   .debug_str:0000000000000b00 .LASF233
+     /tmp/ccDD54vC.s:4169   .debug_str:0000000000000c88 .LASF234
+     /tmp/ccDD54vC.s:3887   .debug_str:00000000000004a6 .LASF235
+     /tmp/ccDD54vC.s:4175   .debug_str:0000000000000caf .LASF236
+     /tmp/ccDD54vC.s:3877   .debug_str:000000000000045d .LASF237
+     /tmp/ccDD54vC.s:4087   .debug_str:00000000000009b8 .LASF238
+     /tmp/ccDD54vC.s:3701   .debug_str:0000000000000000 .LASF239
+     /tmp/ccDD54vC.s:3809   .debug_str:0000000000000282 .LASF240
+     /tmp/ccDD54vC.s:4249   .debug_str:0000000000000e56 .LASF241
+     /tmp/ccDD54vC.s:3707   .debug_str:000000000000001e .LASF242
+     /tmp/ccDD54vC.s:4269   .debug_str:0000000000000ebf .LASF243
+     /tmp/ccDD54vC.s:4159   .debug_str:0000000000000c49 .LASF244
+     /tmp/ccDD54vC.s:4233   .debug_str:0000000000000e0d .LASF245
+     /tmp/ccDD54vC.s:3901   .debug_str:000000000000051c .LASF246
+     /tmp/ccDD54vC.s:3939   .debug_str:0000000000000607 .LASF247
+     /tmp/ccDD54vC.s:3709   .debug_str:000000000000002a .LASF248
+     /tmp/ccDD54vC.s:4035   .debug_str:0000000000000886 .LASF249
+     /tmp/ccDD54vC.s:3821   .debug_str:00000000000002e1 .LASF250
+     /tmp/ccDD54vC.s:3737   .debug_str:00000000000000c1 .LASF251
+     /tmp/ccDD54vC.s:3891   .debug_str:00000000000004c0 .LASF252
+     /tmp/ccDD54vC.s:3899   .debug_str:0000000000000509 .LASF253
+     /tmp/ccDD54vC.s:3797   .debug_str:0000000000000238 .LASF254
+     /tmp/ccDD54vC.s:3867   .debug_str:000000000000042b .LASF255
+     /tmp/ccDD54vC.s:4275   .debug_str:0000000000000eea .LASF256
+     /tmp/ccDD54vC.s:3983   .debug_str:0000000000000757 .LASF257
+     /tmp/ccDD54vC.s:3893   .debug_str:00000000000004d3 .LASF258
+     /tmp/ccDD54vC.s:4141   .debug_str:0000000000000b0c .LASF259
+     /tmp/ccDD54vC.s:272    .text.v_Post_System_Event_ISR:0000000000000000 .LFB10
+     /tmp/ccDD54vC.s:288    .text.v_Post_System_Event_ISR:0000000000000020 .LFE10
+     /tmp/ccDD54vC.s:4033   .debug_str:0000000000000880 .LASF261
+     /tmp/ccDD54vC.s:3533   .debug_loc:0000000000000000 .LLST7
+     /tmp/ccDD54vC.s:4063   .debug_str:000000000000092c .LASF262
+     /tmp/ccDD54vC.s:286    .text.v_Post_System_Event_ISR:0000000000000020 .LVL35
+     /tmp/ccDD54vC.s:4081   .debug_str:0000000000000983 .LASF260
+     /tmp/ccDD54vC.s:249    .text.v_Post_System_Event:0000000000000000 .LFB9
+     /tmp/ccDD54vC.s:265    .text.v_Post_System_Event:0000000000000020 .LFE9
+     /tmp/ccDD54vC.s:3551   .debug_loc:000000000000002c .LLST6
+     /tmp/ccDD54vC.s:263    .text.v_Post_System_Event:0000000000000020 .LVL32
+     /tmp/ccDD54vC.s:3811   .debug_str:0000000000000291 .LASF263
+     /tmp/ccDD54vC.s:232    .text.v_Get_Copy_TLM_Data:0000000000000000 .LFB8
+     /tmp/ccDD54vC.s:242    .text.v_Get_Copy_TLM_Data:0000000000000014 .LFE8
+     /tmp/ccDD54vC.s:3913   .debug_str:0000000000000582 .LASF264
+     /tmp/ccDD54vC.s:3569   .debug_loc:0000000000000058 .LLST5
+     /tmp/ccDD54vC.s:4237   .debug_str:0000000000000e21 .LASF299
+     /tmp/ccDD54vC.s:240    .text.v_Get_Copy_TLM_Data:0000000000000014 .LVL29
+     /tmp/ccDD54vC.s:3995   .debug_str:000000000000079d .LASF265
+     /tmp/ccDD54vC.s:14     .text.v_System_Task:0000000000000000 .LFB7
+     /tmp/ccDD54vC.s:225    .text.v_System_Task:00000000000001ac .LFE7
+     /tmp/ccDD54vC.s:4247   .debug_str:0000000000000e49 .LASF266
+     /tmp/ccDD54vC.s:3583   .debug_loc:0000000000000079 .LLST0
+     /tmp/ccDD54vC.s:3777   .debug_str:00000000000001c8 .LASF267
+     /tmp/ccDD54vC.s:3769   .debug_str:0000000000000185 .LASF268
+     /tmp/ccDD54vC.s:3597   .debug_loc:000000000000009a .LLST1
+     /tmp/ccDD54vC.s:4079   .debug_str:0000000000000979 .LASF269
+     /tmp/ccDD54vC.s:3909   .debug_str:000000000000055c .LASF270
+     /tmp/ccDD54vC.s:3717   .debug_str:0000000000000052 .LASF271
+     /tmp/ccDD54vC.s:3763   .debug_str:0000000000000152 .LASF272
+     /tmp/ccDD54vC.s:3905   .debug_str:0000000000000541 .LASF273
+     /tmp/ccDD54vC.s:3608   .debug_loc:00000000000000b8 .LLST2
+     /tmp/ccDD54vC.s:3991   .debug_str:000000000000077f .LASF274
+     /tmp/ccDD54vC.s:4047   .debug_str:00000000000008ca .LASF275
+     /tmp/ccDD54vC.s:3627   .debug_loc:00000000000000ec .LLST3
+     /tmp/ccDD54vC.s:4029   .debug_str:0000000000000868 .LASF276
+     /tmp/ccDD54vC.s:3640   .debug_loc:000000000000010c .LLST4
+     /tmp/ccDD54vC.s:3795   .debug_str:000000000000022d .LASF277
+     /tmp/ccDD54vC.s:164    .text.v_System_Task:0000000000000130 .LVL18
+     /tmp/ccDD54vC.s:168    .text.v_System_Task:0000000000000138 .LVL19
+     /tmp/ccDD54vC.s:175    .text.v_System_Task:0000000000000144 .LVL21
+     /tmp/ccDD54vC.s:183    .text.v_System_Task:0000000000000154 .LVL23
+     /tmp/ccDD54vC.s:187    .text.v_System_Task:000000000000015c .LVL24
+     /tmp/ccDD54vC.s:197    .text.v_System_Task:0000000000000170 .LVL26
+     /tmp/ccDD54vC.s:106    .text.v_System_Task:00000000000000b8 .LVL7
+     /tmp/ccDD54vC.s:124    .text.v_System_Task:00000000000000e4 .LVL9
+     /tmp/ccDD54vC.s:128    .text.v_System_Task:00000000000000f0 .LVL10
+     /tmp/ccDD54vC.s:138    .text.v_System_Task:0000000000000100 .LVL13
+     /tmp/ccDD54vC.s:148    .text.v_System_Task:0000000000000110 .LVL16
+     /tmp/ccDD54vC.s:46     .text.v_System_Task:0000000000000028 .LVL1
+     /tmp/ccDD54vC.s:53     .text.v_System_Task:000000000000003c .LVL2
+     /tmp/ccDD54vC.s:65     .text.v_System_Task:0000000000000060 .LVL3
+     /tmp/ccDD54vC.s:73     .text.v_System_Task:000000000000007c .LVL4
+     /tmp/ccDD54vC.s:77     .text.v_System_Task:0000000000000088 .LVL5
+     /tmp/ccDD54vC.s:3819   .debug_str:00000000000002c8 .LASF278
+     /tmp/ccDD54vC.s:3941   .debug_str:0000000000000617 .LASF279
+     /tmp/ccDD54vC.s:3775   .debug_str:00000000000001b7 .LASF300
+     /tmp/ccDD54vC.s:4105   .debug_str:0000000000000a20 .LASF280
+     /tmp/ccDD54vC.s:4127   .debug_str:0000000000000ab7 .LASF281
+     /tmp/ccDD54vC.s:4221   .debug_str:0000000000000dc4 .LASF282
+     /tmp/ccDD54vC.s:4011   .debug_str:0000000000000802 .LASF283
+     /tmp/ccDD54vC.s:3759   .debug_str:000000000000012d .LASF284
+     /tmp/ccDD54vC.s:4273   .debug_str:0000000000000edd .LASF285
+     /tmp/ccDD54vC.s:3969   .debug_str:00000000000006f5 .LASF286
+     /tmp/ccDD54vC.s:4099   .debug_str:00000000000009fa .LASF287
+     /tmp/ccDD54vC.s:3943   .debug_str:0000000000000629 .LASF288
+     /tmp/ccDD54vC.s:3875   .debug_str:0000000000000448 .LASF289
+     /tmp/ccDD54vC.s:4145   .debug_str:0000000000000b2d .LASF290
+     /tmp/ccDD54vC.s:3917   .debug_str:0000000000000591 .LASF291
+     /tmp/ccDD54vC.s:3861   .debug_str:00000000000003fd .LASF292
+     /tmp/ccDD54vC.s:3997   .debug_str:00000000000007ab .LASF293
+     /tmp/ccDD54vC.s:4295   .debug_str:0000000000000f60 .LASF294
+     /tmp/ccDD54vC.s:4281   .debug_str:0000000000000f10 .LASF295
+     /tmp/ccDD54vC.s:275    .text.v_Post_System_Event_ISR:0000000000000000 .LVL33
+     /tmp/ccDD54vC.s:282    .text.v_Post_System_Event_ISR:0000000000000010 .LVL34
+     /tmp/ccDD54vC.s:252    .text.v_Post_System_Event:0000000000000000 .LVL30
+     /tmp/ccDD54vC.s:259    .text.v_Post_System_Event:0000000000000010 .LVL31
+     /tmp/ccDD54vC.s:235    .text.v_Get_Copy_TLM_Data:0000000000000000 .LVL28
+     /tmp/ccDD54vC.s:18     .text.v_System_Task:0000000000000000 .LVL0
+     /tmp/ccDD54vC.s:90     .text.v_System_Task:00000000000000a4 .LVL6
+     /tmp/ccDD54vC.s:172    .text.v_System_Task:000000000000013c .LVL20
+     /tmp/ccDD54vC.s:179    .text.v_System_Task:0000000000000148 .LVL22
+     /tmp/ccDD54vC.s:122    .text.v_System_Task:00000000000000dc .LVL8
+     /tmp/ccDD54vC.s:131    .text.v_System_Task:00000000000000f4 .LVL11
+     /tmp/ccDD54vC.s:136    .text.v_System_Task:00000000000000f8 .LVL12
+     /tmp/ccDD54vC.s:141    .text.v_System_Task:0000000000000104 .LVL14
+     /tmp/ccDD54vC.s:146    .text.v_System_Task:0000000000000108 .LVL15
+     /tmp/ccDD54vC.s:151    .text.v_System_Task:0000000000000114 .LVL17
+     /tmp/ccDD54vC.s:191    .text.v_System_Task:0000000000000160 .LVL25
+     /tmp/ccDD54vC.s:215    .text.v_System_Task:0000000000000198 .LVL27
+     /tmp/ccDD54vC.s:339    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccDD54vC.s:78     .text.v_System_Task:0000000000000088 .LBB2
+     /tmp/ccDD54vC.s:91     .text.v_System_Task:00000000000000a4 .LBE2
+     /tmp/ccDD54vC.s:93     .text.v_System_Task:00000000000000a4 .LBB5
+     /tmp/ccDD54vC.s:223    .text.v_System_Task:00000000000001ac .LBE5
+     /tmp/ccDD54vC.s:81     .text.v_System_Task:0000000000000090 .LBB3
+     /tmp/ccDD54vC.s:86     .text.v_System_Task:000000000000009c .LBE3
+     /tmp/ccDD54vC.s:160    .text.v_System_Task:0000000000000128 .LBB4
+     /tmp/ccDD54vC.s:222    .text.v_System_Task:00000000000001ac .LBE4
+=======
+     /tmp/ccvMG0p5.s:13     .text.v_System_Task:0000000000000000 v_System_Task
+     /tmp/ccvMG0p5.s:17     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:19     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:20     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:21     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:22     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:23     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:24     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:25     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:26     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:27     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:28     .text.v_System_Task:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:29     .text.v_System_Task:0000000000000004 .L0 
+     /tmp/ccvMG0p5.s:37     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:38     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:39     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:40     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:41     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:42     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:43     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:45     .text.v_System_Task:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:48     .text.v_System_Task:0000000000000028 .L0 
+     /tmp/ccvMG0p5.s:49     .text.v_System_Task:0000000000000028 .L0 
+     /tmp/ccvMG0p5.s:55     .text.v_System_Task:000000000000003c .L0 
+     /tmp/ccvMG0p5.s:57     .text.v_System_Task:0000000000000044 .L0 
+     /tmp/ccvMG0p5.s:59     .text.v_System_Task:000000000000004c .L0 
+     /tmp/ccvMG0p5.s:62     .text.v_System_Task:0000000000000054 .L0 
+     /tmp/ccvMG0p5.s:64     .text.v_System_Task:0000000000000058 .L0 
+     /tmp/ccvMG0p5.s:67     .text.v_System_Task:0000000000000060 .L0 
+     /tmp/ccvMG0p5.s:75     .text.v_System_Task:000000000000007c .L0 
+     /tmp/ccvMG0p5.s:80     .text.v_System_Task:0000000000000088 .L0 
+     /tmp/ccvMG0p5.s:83     .text.v_System_Task:0000000000000090 .L0 
+     /tmp/ccvMG0p5.s:85     .text.v_System_Task:0000000000000098 .L0 
+     /tmp/ccvMG0p5.s:88     .text.v_System_Task:000000000000009c .L0 
+     /tmp/ccvMG0p5.s:94     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:95     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:96     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:97     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:98     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:99     .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:100    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:101    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:102    .text.v_System_Task:00000000000000a4 .L0 
+     /tmp/ccvMG0p5.s:108    .text.v_System_Task:00000000000000b8 .L0 
+     /tmp/ccvMG0p5.s:109    .text.v_System_Task:00000000000000b8 .L0 
+     /tmp/ccvMG0p5.s:111    .text.v_System_Task:00000000000000bc .L0 
+     /tmp/ccvMG0p5.s:112    .text.v_System_Task:00000000000000bc .L0 
+     /tmp/ccvMG0p5.s:114    .text.v_System_Task:00000000000000c0 .L0 
+     /tmp/ccvMG0p5.s:121    .text.v_System_Task:00000000000000d8 .L0 
+     /tmp/ccvMG0p5.s:126    .text.v_System_Task:00000000000000e4 .L0 
+     /tmp/ccvMG0p5.s:130    .text.v_System_Task:00000000000000f0 .L0 
+     /tmp/ccvMG0p5.s:134    .text.v_System_Task:00000000000000f4 .L0 
+     /tmp/ccvMG0p5.s:135    .text.v_System_Task:00000000000000f4 .L0 
+     /tmp/ccvMG0p5.s:140    .text.v_System_Task:0000000000000100 .L0 
+     /tmp/ccvMG0p5.s:144    .text.v_System_Task:0000000000000104 .L0 
+     /tmp/ccvMG0p5.s:145    .text.v_System_Task:0000000000000104 .L0 
+     /tmp/ccvMG0p5.s:150    .text.v_System_Task:0000000000000110 .L0 
+     /tmp/ccvMG0p5.s:154    .text.v_System_Task:0000000000000114 .L0 
+     /tmp/ccvMG0p5.s:158    .text.v_System_Task:0000000000000124 .L0 
+     /tmp/ccvMG0p5.s:162    .text.v_System_Task:0000000000000128 .L0 
+     /tmp/ccvMG0p5.s:163    .text.v_System_Task:0000000000000128 .L0 
+     /tmp/ccvMG0p5.s:166    .text.v_System_Task:0000000000000130 .L0 
+     /tmp/ccvMG0p5.s:167    .text.v_System_Task:0000000000000130 .L0 
+     /tmp/ccvMG0p5.s:170    .text.v_System_Task:0000000000000138 .L0 
+     /tmp/ccvMG0p5.s:171    .text.v_System_Task:0000000000000138 .L0 
+     /tmp/ccvMG0p5.s:174    .text.v_System_Task:000000000000013c .L0 
+     /tmp/ccvMG0p5.s:177    .text.v_System_Task:0000000000000144 .L0 
+     /tmp/ccvMG0p5.s:178    .text.v_System_Task:0000000000000144 .L0 
+     /tmp/ccvMG0p5.s:181    .text.v_System_Task:0000000000000148 .L0 
+     /tmp/ccvMG0p5.s:185    .text.v_System_Task:0000000000000154 .L0 
+     /tmp/ccvMG0p5.s:186    .text.v_System_Task:0000000000000154 .L0 
+     /tmp/ccvMG0p5.s:189    .text.v_System_Task:000000000000015c .L0 
+     /tmp/ccvMG0p5.s:190    .text.v_System_Task:000000000000015c .L0 
+     /tmp/ccvMG0p5.s:194    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccvMG0p5.s:195    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccvMG0p5.s:199    .text.v_System_Task:0000000000000170 .L0 
+     /tmp/ccvMG0p5.s:201    .text.v_System_Task:0000000000000178 .L0 
+     /tmp/ccvMG0p5.s:204    .text.v_System_Task:0000000000000180 .L0 
+     /tmp/ccvMG0p5.s:206    .text.v_System_Task:0000000000000184 .L0 
+     /tmp/ccvMG0p5.s:208    .text.v_System_Task:0000000000000188 .L0 
+     /tmp/ccvMG0p5.s:210    .text.v_System_Task:000000000000018c .L0 
+     /tmp/ccvMG0p5.s:211    .text.v_System_Task:000000000000018c .L0 
+     /tmp/ccvMG0p5.s:217    .text.v_System_Task:0000000000000198 .L0 
+     /tmp/ccvMG0p5.s:220    .text.v_System_Task:00000000000001a4 .L0 
+     /tmp/ccvMG0p5.s:224    .text.v_System_Task:00000000000001ac .L0 
+     /tmp/ccvMG0p5.s:231    .text.v_Get_Copy_TLM_Data:0000000000000000 v_Get_Copy_TLM_Data
+     /tmp/ccvMG0p5.s:234    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:236    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:237    .text.v_Get_Copy_TLM_Data:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:241    .text.v_Get_Copy_TLM_Data:0000000000000014 .L0 
+     /tmp/ccvMG0p5.s:248    .text.v_Post_System_Event:0000000000000000 v_Post_System_Event
+     /tmp/ccvMG0p5.s:251    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:253    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:254    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:255    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:256    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:264    .text.v_Post_System_Event:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:271    .text.v_Post_System_Event_ISR:0000000000000000 v_Post_System_Event_ISR
+     /tmp/ccvMG0p5.s:274    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:276    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:277    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:278    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:279    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:287    .text.v_Post_System_Event_ISR:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:292    .bss.u16_TLM_Data:0000000000000000 .LANCHOR3
+     /tmp/ccvMG0p5.s:295    .bss.u16_TLM_Data:0000000000000000 u16_TLM_Data
+     /tmp/ccvMG0p5.s:299    .sbss.System_Queue:0000000000000000 .LANCHOR0
+     /tmp/ccvMG0p5.s:302    .sbss.System_Queue:0000000000000000 System_Queue
+     /tmp/ccvMG0p5.s:306    .sbss.u32_Counter:0000000000000000 .LANCHOR1
+     /tmp/ccvMG0p5.s:309    .sbss.u32_Counter:0000000000000000 u32_Counter
+     /tmp/ccvMG0p5.s:312    .sbss.u8_N_TLM_Sensor:0000000000000000 .LANCHOR2
+     /tmp/ccvMG0p5.s:315    .sbss.u8_N_TLM_Sensor:0000000000000000 u8_N_TLM_Sensor
+     /tmp/ccvMG0p5.s:227    .text.v_System_Task:00000000000001ac .L0 
+     /tmp/ccvMG0p5.s:244    .text.v_Get_Copy_TLM_Data:0000000000000014 .L0 
+     /tmp/ccvMG0p5.s:267    .text.v_Post_System_Event:0000000000000020 .L0 
+     /tmp/ccvMG0p5.s:290    .text.v_Post_System_Event_ISR:0000000000000020 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:55     .text.v_System_Task:000000000000003c .L0 
+     /tmp/ccvMG0p5.s:57     .text.v_System_Task:0000000000000044 .L0 
+     /tmp/ccvMG0p5.s:80     .text.v_System_Task:0000000000000088 .L0 
+     /tmp/ccvMG0p5.s:83     .text.v_System_Task:0000000000000090 .L0 
+     /tmp/ccvMG0p5.s:88     .text.v_System_Task:000000000000009c .L0 
+     /tmp/ccvMG0p5.s:156    .text.v_System_Task:000000000000011c .L0 
+     /tmp/ccvMG0p5.s:195    .text.v_System_Task:0000000000000160 .L0 
+     /tmp/ccvMG0p5.s:199    .text.v_System_Task:0000000000000170 .L0 
+     /tmp/ccvMG0p5.s:217    .text.v_System_Task:0000000000000198 .L0 
+     /tmp/ccvMG0p5.s:159    .text.v_System_Task:0000000000000128 .L2
+     /tmp/ccvMG0p5.s:132    .text.v_System_Task:00000000000000f4 .L3
+     /tmp/ccvMG0p5.s:142    .text.v_System_Task:0000000000000104 .L4
+     /tmp/ccvMG0p5.s:152    .text.v_System_Task:0000000000000114 .L5
+     /tmp/ccvMG0p5.s:89     .text.v_System_Task:00000000000000a4 .L9
+     /tmp/ccvMG0p5.s:213    .text.v_System_Task:0000000000000194 .L7
+     /tmp/ccvMG0p5.s:192    .text.v_System_Task:0000000000000160 .L8
+     /tmp/ccvMG0p5.s:238    .text.v_Get_Copy_TLM_Data:0000000000000004 .L0 
+     /tmp/ccvMG0p5.s:256    .text.v_Post_System_Event:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:279    .text.v_Post_System_Event_ISR:0000000000000000 .L0 
+     /tmp/ccvMG0p5.s:2801   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccvMG0p5.s:4155   .debug_str:0000000000000b74 .LASF296
+     /tmp/ccvMG0p5.s:4203   .debug_str:0000000000000d62 .LASF297
+     /tmp/ccvMG0p5.s:3965   .debug_str:00000000000006b7 .LASF298
+     /tmp/ccvMG0p5.s:3675   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccvMG0p5.s:3699   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccvMG0p5.s:3705   .debug_str:0000000000000017 .LASF4
+     /tmp/ccvMG0p5.s:4037   .debug_str:0000000000000896 .LASF0
+     /tmp/ccvMG0p5.s:4005   .debug_str:00000000000007e1 .LASF1
+     /tmp/ccvMG0p5.s:4091   .debug_str:00000000000009d2 .LASF2
+     /tmp/ccvMG0p5.s:3829   .debug_str:0000000000000317 .LASF3
+     /tmp/ccvMG0p5.s:3783   .debug_str:00000000000001ec .LASF5
+     /tmp/ccvMG0p5.s:3851   .debug_str:00000000000003b2 .LASF6
+     /tmp/ccvMG0p5.s:4205   .debug_str:0000000000000d72 .LASF7
+     /tmp/ccvMG0p5.s:3879   .debug_str:000000000000046d .LASF8
+     /tmp/ccvMG0p5.s:4265   .debug_str:0000000000000ea2 .LASF9
+     /tmp/ccvMG0p5.s:4279   .debug_str:0000000000000f06 .LASF10
+     /tmp/ccvMG0p5.s:3791   .debug_str:0000000000000218 .LASF11
+     /tmp/ccvMG0p5.s:4001   .debug_str:00000000000007cb .LASF12
+     /tmp/ccvMG0p5.s:3955   .debug_str:0000000000000683 .LASF13
+     /tmp/ccvMG0p5.s:3947   .debug_str:0000000000000649 .LASF14
+     /tmp/ccvMG0p5.s:4119   .debug_str:0000000000000a83 .LASF15
+     /tmp/ccvMG0p5.s:3831   .debug_str:0000000000000323 .LASF16
+     /tmp/ccvMG0p5.s:4123   .debug_str:0000000000000aa2 .LASF17
+     /tmp/ccvMG0p5.s:3725   .debug_str:0000000000000079 .LASF18
+     /tmp/ccvMG0p5.s:4257   .debug_str:0000000000000e85 .LASF19
+     /tmp/ccvMG0p5.s:4209   .debug_str:0000000000000d87 .LASF20
+     /tmp/ccvMG0p5.s:3749   .debug_str:0000000000000101 .LASF21
+     /tmp/ccvMG0p5.s:4151   .debug_str:0000000000000b5c .LASF22
+     /tmp/ccvMG0p5.s:3853   .debug_str:00000000000003c0 .LASF197
+     /tmp/ccvMG0p5.s:3869   .debug_str:0000000000000437 .LASF23
+     /tmp/ccvMG0p5.s:4243   .debug_str:0000000000000e38 .LASF24
+     /tmp/ccvMG0p5.s:4301   .debug_str:0000000000000f88 .LASF25
+     /tmp/ccvMG0p5.s:3767   .debug_str:0000000000000179 .LASF26
+     /tmp/ccvMG0p5.s:4277   .debug_str:0000000000000ef7 .LASF27
+     /tmp/ccvMG0p5.s:4161   .debug_str:0000000000000c57 .LASF28
+     /tmp/ccvMG0p5.s:4113   .debug_str:0000000000000a54 .LASF29
+     /tmp/ccvMG0p5.s:4231   .debug_str:0000000000000e04 .LASF30
+     /tmp/ccvMG0p5.s:3757   .debug_str:0000000000000128 .LASF31
+     /tmp/ccvMG0p5.s:3911   .debug_str:000000000000056a .LASF32
+     /tmp/ccvMG0p5.s:3779   .debug_str:00000000000001d2 .LASF33
+     /tmp/ccvMG0p5.s:4189   .debug_str:0000000000000cee .LASF34
+     /tmp/ccvMG0p5.s:4165   .debug_str:0000000000000c6c .LASF35
+     /tmp/ccvMG0p5.s:4107   .debug_str:0000000000000a36 .LASF36
+     /tmp/ccvMG0p5.s:4193   .debug_str:0000000000000d1c .LASF37
+     /tmp/ccvMG0p5.s:4289   .debug_str:0000000000000f3c .LASF38
+     /tmp/ccvMG0p5.s:3771   .debug_str:000000000000019a .LASF39
+     /tmp/ccvMG0p5.s:4049   .debug_str:00000000000008d2 .LASF40
+     /tmp/ccvMG0p5.s:4211   .debug_str:0000000000000d90 .LASF41
+     /tmp/ccvMG0p5.s:3803   .debug_str:0000000000000254 .LASF42
+     /tmp/ccvMG0p5.s:4057   .debug_str:000000000000090a .LASF43
+     /tmp/ccvMG0p5.s:3973   .debug_str:0000000000000712 .LASF44
+     /tmp/ccvMG0p5.s:3833   .debug_str:000000000000032b .LASF45
+     /tmp/ccvMG0p5.s:3903   .debug_str:000000000000052d .LASF46
+     /tmp/ccvMG0p5.s:3935   .debug_str:00000000000005eb .LASF47
+     /tmp/ccvMG0p5.s:4085   .debug_str:000000000000099f .LASF48
+     /tmp/ccvMG0p5.s:4225   .debug_str:0000000000000de3 .LASF49
+     /tmp/ccvMG0p5.s:3925   .debug_str:00000000000005b3 .LASF50
+     /tmp/ccvMG0p5.s:3897   .debug_str:00000000000004f3 .LASF51
+     /tmp/ccvMG0p5.s:4013   .debug_str:0000000000000816 .LASF52
+     /tmp/ccvMG0p5.s:3949   .debug_str:0000000000000654 .LASF53
+     /tmp/ccvMG0p5.s:3843   .debug_str:0000000000000371 .LASF54
+     /tmp/ccvMG0p5.s:3977   .debug_str:000000000000072e .LASF55
+     /tmp/ccvMG0p5.s:3823   .debug_str:00000000000002ed .LASF56
+     /tmp/ccvMG0p5.s:3835   .debug_str:000000000000033e .LASF57
+     /tmp/ccvMG0p5.s:3837   .debug_str:000000000000034b .LASF58
+     /tmp/ccvMG0p5.s:4215   .debug_str:0000000000000da4 .LASF59
+     /tmp/ccvMG0p5.s:4131   .debug_str:0000000000000ad4 .LASF60
+     /tmp/ccvMG0p5.s:3865   .debug_str:0000000000000424 .LASF61
+     /tmp/ccvMG0p5.s:4201   .debug_str:0000000000000d5d .LASF62
+     /tmp/ccvMG0p5.s:3731   .debug_str:0000000000000096 .LASF63
+     /tmp/ccvMG0p5.s:3957   .debug_str:0000000000000695 .LASF64
+     /tmp/ccvMG0p5.s:3839   .debug_str:0000000000000358 .LASF65
+     /tmp/ccvMG0p5.s:4015   .debug_str:0000000000000823 .LASF66
+     /tmp/ccvMG0p5.s:3881   .debug_str:0000000000000478 .LASF67
+     /tmp/ccvMG0p5.s:3883   .debug_str:000000000000048b .LASF68
+     /tmp/ccvMG0p5.s:3733   .debug_str:00000000000000ae .LASF69
+     /tmp/ccvMG0p5.s:3813   .debug_str:00000000000002a5 .LASF70
+     /tmp/ccvMG0p5.s:4009   .debug_str:00000000000007f6 .LASF71
+     /tmp/ccvMG0p5.s:4297   .debug_str:0000000000000f74 .LASF72
+     /tmp/ccvMG0p5.s:3773   .debug_str:00000000000001aa .LASF73
+     /tmp/ccvMG0p5.s:3841   .debug_str:0000000000000364 .LASF74
+     /tmp/ccvMG0p5.s:4147   .debug_str:0000000000000b41 .LASF75
+     /tmp/ccvMG0p5.s:3907   .debug_str:0000000000000552 .LASF76
+     /tmp/ccvMG0p5.s:4045   .debug_str:00000000000008c2 .LASF77
+     /tmp/ccvMG0p5.s:3945   .debug_str:000000000000063c .LASF78
+     /tmp/ccvMG0p5.s:4195   .debug_str:0000000000000d29 .LASF79
+     /tmp/ccvMG0p5.s:3931   .debug_str:00000000000005db .LASF80
+     /tmp/ccvMG0p5.s:3817   .debug_str:00000000000002bf .LASF81
+     /tmp/ccvMG0p5.s:4121   .debug_str:0000000000000a9a .LASF82
+     /tmp/ccvMG0p5.s:4043   .debug_str:00000000000008b9 .LASF83
+     /tmp/ccvMG0p5.s:3919   .debug_str:000000000000059c .LASF84
+     /tmp/ccvMG0p5.s:3735   .debug_str:00000000000000b6 .LASF85
+     /tmp/ccvMG0p5.s:3753   .debug_str:0000000000000116 .LASF86
+     /tmp/ccvMG0p5.s:4069   .debug_str:000000000000094b .LASF87
+     /tmp/ccvMG0p5.s:4183   .debug_str:0000000000000cdb .LASF88
+     /tmp/ccvMG0p5.s:4261   .debug_str:0000000000000e96 .LASF89
+     /tmp/ccvMG0p5.s:4109   .debug_str:0000000000000a45 .LASF90
+     /tmp/ccvMG0p5.s:3703   .debug_str:000000000000000e .LASF91
+     /tmp/ccvMG0p5.s:3781   .debug_str:00000000000001e6 .LASF92
+     /tmp/ccvMG0p5.s:4111   .debug_str:0000000000000a4d .LASF93
+     /tmp/ccvMG0p5.s:4083   .debug_str:0000000000000997 .LASF94
+     /tmp/ccvMG0p5.s:3713   .debug_str:0000000000000045 .LASF95
+     /tmp/ccvMG0p5.s:4179   .debug_str:0000000000000ccb .LASF96
+     /tmp/ccvMG0p5.s:4253   .debug_str:0000000000000e6c .LASF97
+     /tmp/ccvMG0p5.s:4241   .debug_str:0000000000000e30 .LASF98
+     /tmp/ccvMG0p5.s:3923   .debug_str:00000000000005ac .LASF195
+     /tmp/ccvMG0p5.s:4163   .debug_str:0000000000000c63 .LASF99
+     /tmp/ccvMG0p5.s:3981   .debug_str:000000000000074f .LASF104
+     /tmp/ccvMG0p5.s:4185   .debug_str:0000000000000ce2 .LASF100
+     /tmp/ccvMG0p5.s:3985   .debug_str:0000000000000764 .LASF101
+     /tmp/ccvMG0p5.s:4027   .debug_str:0000000000000862 .LASF102
+     /tmp/ccvMG0p5.s:3921   .debug_str:00000000000005a7 .LASF103
+     /tmp/ccvMG0p5.s:3741   .debug_str:00000000000000dc .LASF105
+     /tmp/ccvMG0p5.s:3747   .debug_str:00000000000000f8 .LASF106
+     /tmp/ccvMG0p5.s:4293   .debug_str:0000000000000f57 .LASF107
+     /tmp/ccvMG0p5.s:4267   .debug_str:0000000000000eb5 .LASF108
+     /tmp/ccvMG0p5.s:4053   .debug_str:00000000000008f3 .LASF109
+     /tmp/ccvMG0p5.s:3815   .debug_str:00000000000002b6 .LASF110
+     /tmp/ccvMG0p5.s:4219   .debug_str:0000000000000dba .LASF111
+     /tmp/ccvMG0p5.s:4089   .debug_str:00000000000009c8 .LASF112
+     /tmp/ccvMG0p5.s:4093   .debug_str:00000000000009de .LASF113
+     /tmp/ccvMG0p5.s:4287   .debug_str:0000000000000f31 .LASF114
+     /tmp/ccvMG0p5.s:3787   .debug_str:00000000000001fc .LASF115
+     /tmp/ccvMG0p5.s:4285   .debug_str:0000000000000f29 .LASF116
+     /tmp/ccvMG0p5.s:4125   .debug_str:0000000000000aab .LASF117
+     /tmp/ccvMG0p5.s:4213   .debug_str:0000000000000d9b .LASF118
+     /tmp/ccvMG0p5.s:4239   .debug_str:0000000000000e28 .LASF119
+     /tmp/ccvMG0p5.s:4077   .debug_str:0000000000000971 .LASF120
+     /tmp/ccvMG0p5.s:4229   .debug_str:0000000000000dff .LASF121
+     /tmp/ccvMG0p5.s:3871   .debug_str:000000000000043c .LASF122
+     /tmp/ccvMG0p5.s:4235   .debug_str:0000000000000e1a .LASF123
+     /tmp/ccvMG0p5.s:4149   .debug_str:0000000000000b56 .LASF124
+     /tmp/ccvMG0p5.s:3801   .debug_str:000000000000024e .LASF125
+     /tmp/ccvMG0p5.s:3959   .debug_str:000000000000069c .LASF126
+     /tmp/ccvMG0p5.s:4075   .debug_str:000000000000096a .LASF127
+     /tmp/ccvMG0p5.s:3785   .debug_str:00000000000001f6 .LASF128
+     /tmp/ccvMG0p5.s:4223   .debug_str:0000000000000dda .LASF129
+     /tmp/ccvMG0p5.s:3915   .debug_str:0000000000000589 .LASF130
+     /tmp/ccvMG0p5.s:3719   .debug_str:0000000000000059 .LASF131
+     /tmp/ccvMG0p5.s:3723   .debug_str:0000000000000072 .LASF132
+     /tmp/ccvMG0p5.s:4101   .debug_str:0000000000000a0e .LASF133
+     /tmp/ccvMG0p5.s:3873   .debug_str:0000000000000441 .LASF134
+     /tmp/ccvMG0p5.s:4059   .debug_str:000000000000091e .LASF135
+     /tmp/ccvMG0p5.s:3745   .debug_str:00000000000000f2 .LASF136
+     /tmp/ccvMG0p5.s:4143   .debug_str:0000000000000b24 .LASF137
+     /tmp/ccvMG0p5.s:3929   .debug_str:00000000000005d3 .LASF138
+     /tmp/ccvMG0p5.s:4187   .debug_str:0000000000000ce8 .LASF139
+     /tmp/ccvMG0p5.s:3755   .debug_str:0000000000000122 .LASF140
+     /tmp/ccvMG0p5.s:4067   .debug_str:0000000000000942 .LASF141
+     /tmp/ccvMG0p5.s:3963   .debug_str:00000000000006af .LASF142
+     /tmp/ccvMG0p5.s:3859   .debug_str:00000000000003f6 .LASF143
+     /tmp/ccvMG0p5.s:3967   .debug_str:00000000000006ee .LASF144
+     /tmp/ccvMG0p5.s:3885   .debug_str:000000000000049f .LASF145
+     /tmp/ccvMG0p5.s:4135   .debug_str:0000000000000af3 .LASF146
+     /tmp/ccvMG0p5.s:4061   .debug_str:0000000000000924 .LASF147
+     /tmp/ccvMG0p5.s:4227   .debug_str:0000000000000dfa .LASF148
+     /tmp/ccvMG0p5.s:4003   .debug_str:00000000000007d6 .LASF149
+     /tmp/ccvMG0p5.s:3857   .debug_str:00000000000003dd .LASF150
+     /tmp/ccvMG0p5.s:4251   .debug_str:0000000000000e64 .LASF151
+     /tmp/ccvMG0p5.s:3961   .debug_str:00000000000006a4 .LASF152
+     /tmp/ccvMG0p5.s:3987   .debug_str:000000000000076c .LASF153
+     /tmp/ccvMG0p5.s:4259   .debug_str:0000000000000e8e .LASF154
+     /tmp/ccvMG0p5.s:3799   .debug_str:0000000000000244 .LASF155
+     /tmp/ccvMG0p5.s:3953   .debug_str:000000000000067e .LASF156
+     /tmp/ccvMG0p5.s:4021   .debug_str:000000000000084c .LASF157
+     /tmp/ccvMG0p5.s:3729   .debug_str:000000000000008e .LASF158
+     /tmp/ccvMG0p5.s:3933   .debug_str:00000000000005e3 .LASF159
+     /tmp/ccvMG0p5.s:4137   .debug_str:0000000000000afb .LASF160
+     /tmp/ccvMG0p5.s:3989   .debug_str:0000000000000776 .LASF161
+     /tmp/ccvMG0p5.s:3927   .debug_str:00000000000005c9 .LASF162
+     /tmp/ccvMG0p5.s:4283   .debug_str:0000000000000f21 .LASF163
+     /tmp/ccvMG0p5.s:3715   .debug_str:000000000000004d .LASF164
+     /tmp/ccvMG0p5.s:4167   .debug_str:0000000000000c81 .LASF165
+     /tmp/ccvMG0p5.s:4025   .debug_str:000000000000085c .LASF166
+     /tmp/ccvMG0p5.s:4007   .debug_str:00000000000007ef .LASF167
+     /tmp/ccvMG0p5.s:4023   .debug_str:0000000000000856 .LASF168
+     /tmp/ccvMG0p5.s:4129   .debug_str:0000000000000acc .LASF169
+     /tmp/ccvMG0p5.s:4097   .debug_str:00000000000009f4 .LASF170
+     /tmp/ccvMG0p5.s:3761   .debug_str:000000000000014c .LASF171
+     /tmp/ccvMG0p5.s:4263   .debug_str:0000000000000e9d .LASF172
+     /tmp/ccvMG0p5.s:3825   .debug_str:00000000000002fc .LASF173
+     /tmp/ccvMG0p5.s:4153   .debug_str:0000000000000b67 .LASF174
+     /tmp/ccvMG0p5.s:3727   .debug_str:0000000000000081 .LASF175
+     /tmp/ccvMG0p5.s:3805   .debug_str:0000000000000260 .LASF176
+     /tmp/ccvMG0p5.s:4019   .debug_str:000000000000083d .LASF177
+     /tmp/ccvMG0p5.s:4073   .debug_str:000000000000095f .LASF178
+     /tmp/ccvMG0p5.s:4181   .debug_str:0000000000000cd6 .LASF179
+     /tmp/ccvMG0p5.s:4055   .debug_str:00000000000008fd .LASF180
+     /tmp/ccvMG0p5.s:4115   .debug_str:0000000000000a68 .LASF181
+     /tmp/ccvMG0p5.s:4065   .debug_str:0000000000000934 .LASF182
+     /tmp/ccvMG0p5.s:3751   .debug_str:000000000000010c .LASF183
+     /tmp/ccvMG0p5.s:3975   .debug_str:0000000000000722 .LASF184
+     /tmp/ccvMG0p5.s:4299   .debug_str:0000000000000f7b .LASF185
+     /tmp/ccvMG0p5.s:3789   .debug_str:000000000000020a .LASF186
+     /tmp/ccvMG0p5.s:4157   .debug_str:0000000000000c3a .LASF187
+     /tmp/ccvMG0p5.s:4271   .debug_str:0000000000000ecc .LASF188
+     /tmp/ccvMG0p5.s:4051   .debug_str:00000000000008e4 .LASF189
+     /tmp/ccvMG0p5.s:3743   .debug_str:00000000000000e1 .LASF190
+     /tmp/ccvMG0p5.s:4041   .debug_str:00000000000008b0 .LASF191
+     /tmp/ccvMG0p5.s:4245   .debug_str:0000000000000e42 .LASF192
+     /tmp/ccvMG0p5.s:4017   .debug_str:0000000000000834 .LASF193
+     /tmp/ccvMG0p5.s:3739   .debug_str:00000000000000d4 .LASF194
+     /tmp/ccvMG0p5.s:3711   .debug_str:000000000000003a .LASF196
+     /tmp/ccvMG0p5.s:3793   .debug_str:0000000000000221 .LASF198
+     /tmp/ccvMG0p5.s:3863   .debug_str:0000000000000411 .LASF199
+     /tmp/ccvMG0p5.s:3827   .debug_str:0000000000000309 .LASF200
+     /tmp/ccvMG0p5.s:3895   .debug_str:00000000000004e3 .LASF201
+     /tmp/ccvMG0p5.s:3721   .debug_str:000000000000005f .LASF202
+     /tmp/ccvMG0p5.s:3845   .debug_str:0000000000000386 .LASF203
+     /tmp/ccvMG0p5.s:4031   .debug_str:000000000000087a .LASF204
+     /tmp/ccvMG0p5.s:4191   .debug_str:0000000000000d08 .LASF205
+     /tmp/ccvMG0p5.s:4217   .debug_str:0000000000000dad .LASF206
+     /tmp/ccvMG0p5.s:3971   .debug_str:0000000000000703 .LASF207
+     /tmp/ccvMG0p5.s:4207   .debug_str:0000000000000d7c .LASF208
+     /tmp/ccvMG0p5.s:3979   .debug_str:000000000000073c .LASF209
+     /tmp/ccvMG0p5.s:4173   .debug_str:0000000000000ca2 .LASF210
+     /tmp/ccvMG0p5.s:4103   .debug_str:0000000000000a14 .LASF211
+     /tmp/ccvMG0p5.s:4133   .debug_str:0000000000000ae0 .LASF212
+     /tmp/ccvMG0p5.s:3807   .debug_str:000000000000026f .LASF213
+     /tmp/ccvMG0p5.s:3993   .debug_str:000000000000078a .LASF214
+     /tmp/ccvMG0p5.s:3951   .debug_str:000000000000066a .LASF215
+     /tmp/ccvMG0p5.s:3765   .debug_str:0000000000000165 .LASF216
+     /tmp/ccvMG0p5.s:4197   .debug_str:0000000000000d3d .LASF217
+     /tmp/ccvMG0p5.s:4177   .debug_str:0000000000000cbd .LASF218
+     /tmp/ccvMG0p5.s:3849   .debug_str:00000000000003a4 .LASF219
+     /tmp/ccvMG0p5.s:4039   .debug_str:00000000000008a3 .LASF220
+     /tmp/ccvMG0p5.s:3937   .debug_str:00000000000005f4 .LASF221
+     /tmp/ccvMG0p5.s:3999   .debug_str:00000000000007be .LASF222
+     /tmp/ccvMG0p5.s:4117   .debug_str:0000000000000a76 .LASF223
+     /tmp/ccvMG0p5.s:4255   .debug_str:0000000000000e74 .LASF224
+     /tmp/ccvMG0p5.s:4291   .debug_str:0000000000000f4a .LASF225
+     /tmp/ccvMG0p5.s:3847   .debug_str:0000000000000396 .LASF226
+     /tmp/ccvMG0p5.s:3889   .debug_str:00000000000004b3 .LASF227
+     /tmp/ccvMG0p5.s:4171   .debug_str:0000000000000c95 .LASF228
+     /tmp/ccvMG0p5.s:3855   .debug_str:00000000000003d1 .LASF229
+     /tmp/ccvMG0p5.s:4071   .debug_str:0000000000000953 .LASF230
+     /tmp/ccvMG0p5.s:4095   .debug_str:00000000000009e8 .LASF231
+     /tmp/ccvMG0p5.s:4199   .debug_str:0000000000000d51 .LASF232
+     /tmp/ccvMG0p5.s:4139   .debug_str:0000000000000b00 .LASF233
+     /tmp/ccvMG0p5.s:4169   .debug_str:0000000000000c88 .LASF234
+     /tmp/ccvMG0p5.s:3887   .debug_str:00000000000004a6 .LASF235
+     /tmp/ccvMG0p5.s:4175   .debug_str:0000000000000caf .LASF236
+     /tmp/ccvMG0p5.s:3877   .debug_str:000000000000045d .LASF237
+     /tmp/ccvMG0p5.s:4087   .debug_str:00000000000009b8 .LASF238
+     /tmp/ccvMG0p5.s:3701   .debug_str:0000000000000000 .LASF239
+     /tmp/ccvMG0p5.s:3809   .debug_str:0000000000000282 .LASF240
+     /tmp/ccvMG0p5.s:4249   .debug_str:0000000000000e56 .LASF241
+     /tmp/ccvMG0p5.s:3707   .debug_str:000000000000001e .LASF242
+     /tmp/ccvMG0p5.s:4269   .debug_str:0000000000000ebf .LASF243
+     /tmp/ccvMG0p5.s:4159   .debug_str:0000000000000c49 .LASF244
+     /tmp/ccvMG0p5.s:4233   .debug_str:0000000000000e0d .LASF245
+     /tmp/ccvMG0p5.s:3901   .debug_str:000000000000051c .LASF246
+     /tmp/ccvMG0p5.s:3939   .debug_str:0000000000000607 .LASF247
+     /tmp/ccvMG0p5.s:3709   .debug_str:000000000000002a .LASF248
+     /tmp/ccvMG0p5.s:4035   .debug_str:0000000000000886 .LASF249
+     /tmp/ccvMG0p5.s:3821   .debug_str:00000000000002e1 .LASF250
+     /tmp/ccvMG0p5.s:3737   .debug_str:00000000000000c1 .LASF251
+     /tmp/ccvMG0p5.s:3891   .debug_str:00000000000004c0 .LASF252
+     /tmp/ccvMG0p5.s:3899   .debug_str:0000000000000509 .LASF253
+     /tmp/ccvMG0p5.s:3797   .debug_str:0000000000000238 .LASF254
+     /tmp/ccvMG0p5.s:3867   .debug_str:000000000000042b .LASF255
+     /tmp/ccvMG0p5.s:4275   .debug_str:0000000000000eea .LASF256
+     /tmp/ccvMG0p5.s:3983   .debug_str:0000000000000757 .LASF257
+     /tmp/ccvMG0p5.s:3893   .debug_str:00000000000004d3 .LASF258
+     /tmp/ccvMG0p5.s:4141   .debug_str:0000000000000b0c .LASF259
+     /tmp/ccvMG0p5.s:272    .text.v_Post_System_Event_ISR:0000000000000000 .LFB10
+     /tmp/ccvMG0p5.s:288    .text.v_Post_System_Event_ISR:0000000000000020 .LFE10
+     /tmp/ccvMG0p5.s:4033   .debug_str:0000000000000880 .LASF261
+     /tmp/ccvMG0p5.s:3533   .debug_loc:0000000000000000 .LLST7
+     /tmp/ccvMG0p5.s:4063   .debug_str:000000000000092c .LASF262
+     /tmp/ccvMG0p5.s:286    .text.v_Post_System_Event_ISR:0000000000000020 .LVL35
+     /tmp/ccvMG0p5.s:4081   .debug_str:0000000000000983 .LASF260
+     /tmp/ccvMG0p5.s:249    .text.v_Post_System_Event:0000000000000000 .LFB9
+     /tmp/ccvMG0p5.s:265    .text.v_Post_System_Event:0000000000000020 .LFE9
+     /tmp/ccvMG0p5.s:3551   .debug_loc:000000000000002c .LLST6
+     /tmp/ccvMG0p5.s:263    .text.v_Post_System_Event:0000000000000020 .LVL32
+     /tmp/ccvMG0p5.s:3811   .debug_str:0000000000000291 .LASF263
+     /tmp/ccvMG0p5.s:232    .text.v_Get_Copy_TLM_Data:0000000000000000 .LFB8
+     /tmp/ccvMG0p5.s:242    .text.v_Get_Copy_TLM_Data:0000000000000014 .LFE8
+     /tmp/ccvMG0p5.s:3913   .debug_str:0000000000000582 .LASF264
+     /tmp/ccvMG0p5.s:3569   .debug_loc:0000000000000058 .LLST5
+     /tmp/ccvMG0p5.s:4237   .debug_str:0000000000000e21 .LASF299
+     /tmp/ccvMG0p5.s:240    .text.v_Get_Copy_TLM_Data:0000000000000014 .LVL29
+     /tmp/ccvMG0p5.s:3995   .debug_str:000000000000079d .LASF265
+     /tmp/ccvMG0p5.s:14     .text.v_System_Task:0000000000000000 .LFB7
+     /tmp/ccvMG0p5.s:225    .text.v_System_Task:00000000000001ac .LFE7
+     /tmp/ccvMG0p5.s:4247   .debug_str:0000000000000e49 .LASF266
+     /tmp/ccvMG0p5.s:3583   .debug_loc:0000000000000079 .LLST0
+     /tmp/ccvMG0p5.s:3777   .debug_str:00000000000001c8 .LASF267
+     /tmp/ccvMG0p5.s:3769   .debug_str:0000000000000185 .LASF268
+     /tmp/ccvMG0p5.s:3597   .debug_loc:000000000000009a .LLST1
+     /tmp/ccvMG0p5.s:4079   .debug_str:0000000000000979 .LASF269
+     /tmp/ccvMG0p5.s:3909   .debug_str:000000000000055c .LASF270
+     /tmp/ccvMG0p5.s:3717   .debug_str:0000000000000052 .LASF271
+     /tmp/ccvMG0p5.s:3763   .debug_str:0000000000000152 .LASF272
+     /tmp/ccvMG0p5.s:3905   .debug_str:0000000000000541 .LASF273
+     /tmp/ccvMG0p5.s:3608   .debug_loc:00000000000000b8 .LLST2
+     /tmp/ccvMG0p5.s:3991   .debug_str:000000000000077f .LASF274
+     /tmp/ccvMG0p5.s:4047   .debug_str:00000000000008ca .LASF275
+     /tmp/ccvMG0p5.s:3627   .debug_loc:00000000000000ec .LLST3
+     /tmp/ccvMG0p5.s:4029   .debug_str:0000000000000868 .LASF276
+     /tmp/ccvMG0p5.s:3640   .debug_loc:000000000000010c .LLST4
+     /tmp/ccvMG0p5.s:3795   .debug_str:000000000000022d .LASF277
+     /tmp/ccvMG0p5.s:164    .text.v_System_Task:0000000000000130 .LVL18
+     /tmp/ccvMG0p5.s:168    .text.v_System_Task:0000000000000138 .LVL19
+     /tmp/ccvMG0p5.s:175    .text.v_System_Task:0000000000000144 .LVL21
+     /tmp/ccvMG0p5.s:183    .text.v_System_Task:0000000000000154 .LVL23
+     /tmp/ccvMG0p5.s:187    .text.v_System_Task:000000000000015c .LVL24
+     /tmp/ccvMG0p5.s:197    .text.v_System_Task:0000000000000170 .LVL26
+     /tmp/ccvMG0p5.s:106    .text.v_System_Task:00000000000000b8 .LVL7
+     /tmp/ccvMG0p5.s:124    .text.v_System_Task:00000000000000e4 .LVL9
+     /tmp/ccvMG0p5.s:128    .text.v_System_Task:00000000000000f0 .LVL10
+     /tmp/ccvMG0p5.s:138    .text.v_System_Task:0000000000000100 .LVL13
+     /tmp/ccvMG0p5.s:148    .text.v_System_Task:0000000000000110 .LVL16
+     /tmp/ccvMG0p5.s:46     .text.v_System_Task:0000000000000028 .LVL1
+     /tmp/ccvMG0p5.s:53     .text.v_System_Task:000000000000003c .LVL2
+     /tmp/ccvMG0p5.s:65     .text.v_System_Task:0000000000000060 .LVL3
+     /tmp/ccvMG0p5.s:73     .text.v_System_Task:000000000000007c .LVL4
+     /tmp/ccvMG0p5.s:77     .text.v_System_Task:0000000000000088 .LVL5
+     /tmp/ccvMG0p5.s:3819   .debug_str:00000000000002c8 .LASF278
+     /tmp/ccvMG0p5.s:3941   .debug_str:0000000000000617 .LASF279
+     /tmp/ccvMG0p5.s:3775   .debug_str:00000000000001b7 .LASF300
+     /tmp/ccvMG0p5.s:4105   .debug_str:0000000000000a20 .LASF280
+     /tmp/ccvMG0p5.s:4127   .debug_str:0000000000000ab7 .LASF281
+     /tmp/ccvMG0p5.s:4221   .debug_str:0000000000000dc4 .LASF282
+     /tmp/ccvMG0p5.s:4011   .debug_str:0000000000000802 .LASF283
+     /tmp/ccvMG0p5.s:3759   .debug_str:000000000000012d .LASF284
+     /tmp/ccvMG0p5.s:4273   .debug_str:0000000000000edd .LASF285
+     /tmp/ccvMG0p5.s:3969   .debug_str:00000000000006f5 .LASF286
+     /tmp/ccvMG0p5.s:4099   .debug_str:00000000000009fa .LASF287
+     /tmp/ccvMG0p5.s:3943   .debug_str:0000000000000629 .LASF288
+     /tmp/ccvMG0p5.s:3875   .debug_str:0000000000000448 .LASF289
+     /tmp/ccvMG0p5.s:4145   .debug_str:0000000000000b2d .LASF290
+     /tmp/ccvMG0p5.s:3917   .debug_str:0000000000000591 .LASF291
+     /tmp/ccvMG0p5.s:3861   .debug_str:00000000000003fd .LASF292
+     /tmp/ccvMG0p5.s:3997   .debug_str:00000000000007ab .LASF293
+     /tmp/ccvMG0p5.s:4295   .debug_str:0000000000000f60 .LASF294
+     /tmp/ccvMG0p5.s:4281   .debug_str:0000000000000f10 .LASF295
+     /tmp/ccvMG0p5.s:275    .text.v_Post_System_Event_ISR:0000000000000000 .LVL33
+     /tmp/ccvMG0p5.s:282    .text.v_Post_System_Event_ISR:0000000000000010 .LVL34
+     /tmp/ccvMG0p5.s:252    .text.v_Post_System_Event:0000000000000000 .LVL30
+     /tmp/ccvMG0p5.s:259    .text.v_Post_System_Event:0000000000000010 .LVL31
+     /tmp/ccvMG0p5.s:235    .text.v_Get_Copy_TLM_Data:0000000000000000 .LVL28
+     /tmp/ccvMG0p5.s:18     .text.v_System_Task:0000000000000000 .LVL0
+     /tmp/ccvMG0p5.s:90     .text.v_System_Task:00000000000000a4 .LVL6
+     /tmp/ccvMG0p5.s:172    .text.v_System_Task:000000000000013c .LVL20
+     /tmp/ccvMG0p5.s:179    .text.v_System_Task:0000000000000148 .LVL22
+     /tmp/ccvMG0p5.s:122    .text.v_System_Task:00000000000000dc .LVL8
+     /tmp/ccvMG0p5.s:131    .text.v_System_Task:00000000000000f4 .LVL11
+     /tmp/ccvMG0p5.s:136    .text.v_System_Task:00000000000000f8 .LVL12
+     /tmp/ccvMG0p5.s:141    .text.v_System_Task:0000000000000104 .LVL14
+     /tmp/ccvMG0p5.s:146    .text.v_System_Task:0000000000000108 .LVL15
+     /tmp/ccvMG0p5.s:151    .text.v_System_Task:0000000000000114 .LVL17
+     /tmp/ccvMG0p5.s:191    .text.v_System_Task:0000000000000160 .LVL25
+     /tmp/ccvMG0p5.s:215    .text.v_System_Task:0000000000000198 .LVL27
+     /tmp/ccvMG0p5.s:339    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccvMG0p5.s:78     .text.v_System_Task:0000000000000088 .LBB2
+     /tmp/ccvMG0p5.s:91     .text.v_System_Task:00000000000000a4 .LBE2
+     /tmp/ccvMG0p5.s:93     .text.v_System_Task:00000000000000a4 .LBB5
+     /tmp/ccvMG0p5.s:223    .text.v_System_Task:00000000000001ac .LBE5
+     /tmp/ccvMG0p5.s:81     .text.v_System_Task:0000000000000090 .LBB3
+     /tmp/ccvMG0p5.s:86     .text.v_System_Task:000000000000009c .LBE3
+     /tmp/ccvMG0p5.s:160    .text.v_System_Task:0000000000000128 .LBB4
+     /tmp/ccvMG0p5.s:222    .text.v_System_Task:00000000000001ac .LBE4
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Init_TLM
+xQueueGenericCreate
+initialized
+xEventGroupSetBits
+xEventGroupWaitBits
+v_Enable_PPS_IRQ
+xQueueReceive
+v_Post_Camera_Event
+v_Post_Focus_Event
+v_Flash_Sector_Erase
+v_Flash_Block_Erase
+u32_Get_Power_Enables
+u32_Get_Power_Status
+u8_Get_Stepper_NFAULT
+v_Set_Heartbeat_LED
+u8_Get_Stepper_Watchdog_Status
+u32_Read_TLM
+memcpy
+xQueueGenericSend
+xQueueGenericSendFromISR

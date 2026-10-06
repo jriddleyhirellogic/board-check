@@ -1,0 +1,65 @@
+\doxysection{x\+Semaphore\+Take }
+\hypertarget{group__xSemaphoreTake}{}\label{group__xSemaphoreTake}\index{xSemaphoreTake@{xSemaphoreTake}}
+semphr. h 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{semphr_8h_af116e436d2a5ae5bd72dbade2b5ea930}{xSemaphoreTake}}(}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{semphr_8h_ad88c6df4a04beedeac782918c8a332f5}{SemaphoreHandle\_t}}\ xSemaphore,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ xBlockTime}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+
+\end{DoxyCode}
+
+
+{\itshape Macro} to obtain a semaphore. The semaphore must have previously been created with a call to x\+Semaphore\+Create\+Binary(), x\+Semaphore\+Create\+Mutex() or x\+Semaphore\+Create\+Counting().
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Semaphore} & A handle to the semaphore being taken -\/ obtained when the semaphore was created.\\
+\hline
+{\em x\+Block\+Time} & The time in ticks to wait for the semaphore to become available. The macro port\+TICK\+\_\+\+PERIOD\+\_\+\+MS can be used to convert this to a real time. A block time of zero can be used to poll the semaphore. A block time of port\+MAX\+\_\+\+DELAY can be used to block indefinitely (provided INCLUDE\+\_\+v\+Task\+Suspend is set to 1 in \doxylink{FreeRTOSConfig_8h}{Free\+RTOSConfig.\+h}).\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pd\+TRUE if the semaphore was obtained. pd\+FALSE if x\+Block\+Time expired without the semaphore becoming available.
+\end{DoxyReturn}
+Example usage:\+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{semphr_8h_ad88c6df4a04beedeac782918c8a332f5}{SemaphoreHandle\_t}}\ xSemaphore\ =\ NULL;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ A\ task\ that\ creates\ a\ semaphore.}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ vATask(\ \textcolor{keywordtype}{void}\ *\ pvParameters\ )}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \textcolor{comment}{//\ Create\ the\ semaphore\ to\ guard\ a\ shared\ resource.}}
+\DoxyCodeLine{\ xSemaphore\ =\ xSemaphoreCreateBinary();}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{//\ A\ task\ that\ uses\ the\ semaphore.}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ vAnotherTask(\ \textcolor{keywordtype}{void}\ *\ pvParameters\ )}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \textcolor{comment}{//\ ...\ Do\ other\ things.}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \textcolor{keywordflow}{if}(\ xSemaphore\ !=\ NULL\ )}
+\DoxyCodeLine{\ \{}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{comment}{//\ See\ if\ we\ can\ obtain\ the\ semaphore.\ \ If\ the\ semaphore\ is\ not\ available}}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{comment}{//\ wait\ 10\ ticks\ to\ see\ if\ it\ becomes\ free.}}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{semphr_8h_af116e436d2a5ae5bd72dbade2b5ea930}{xSemaphoreTake}}(\ xSemaphore,\ (\ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ )\ 10\ )\ ==\ \doxymbox{\hyperlink{projdefs_8h_af268cf937960eb029256bd9c4d949fbe}{pdTRUE}}\ )}
+\DoxyCodeLine{\ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ were\ able\ to\ obtain\ the\ semaphore\ and\ can\ now\ access\ the}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shared\ resource.}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ...}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ have\ finished\ accessing\ the\ shared\ resource.\ \ Release\ the}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ semaphore.}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{semphr_8h_aae55761cabfa9bf85c8f4430f78c0953}{xSemaphoreGive}}(\ xSemaphore\ );}
+\DoxyCodeLine{\ \ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\ \ \ \ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ could\ not\ obtain\ the\ semaphore\ and\ can\ therefore\ not\ access}}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ the\ shared\ resource\ safely.}}
+\DoxyCodeLine{\ \ \ \ \ \}}
+\DoxyCodeLine{\ \}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ 

@@ -1,0 +1,1820 @@
+   1              		.file	"focus.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.b_Is_Idle,"ax",@progbits
+  10              		.align	2
+  11              		.globl	b_Is_Idle
+  13              	b_Is_Idle:
+  14              	.LFB4:
+  15              		.file 1 "../src/focus.c"
+   1:../src/focus.c **** /*
+   2:../src/focus.c ****  * control.c
+   3:../src/focus.c ****  *
+   4:../src/focus.c ****  *  Created on: Oct 17, 2025
+   5:../src/focus.c ****  *      Author: iboard
+   6:../src/focus.c ****  */
+   7:../src/focus.c **** 
+   8:../src/focus.c **** 
+   9:../src/focus.c **** #include <stdint.h>
+  10:../src/focus.c **** #include <stdio.h>
+  11:../src/focus.c **** #include <assert.h>
+  12:../src/focus.c **** #include <focus_states.h>
+  13:../src/focus.c **** 
+  14:../src/focus.c **** #include "FreeRTOSConfig.h"
+  15:../src/focus.c **** #include "FreeRTOS.h"
+  16:../src/focus.c **** #include "task.h"
+  17:../src/focus.c **** #include "event_groups.h"
+  18:../src/focus.c **** #include "queue.h"
+  19:../src/focus.c **** #include "timers.h"
+  20:../src/focus.c **** #include "mem_map.h"
+  21:../src/focus.c **** #include "config.h"
+  22:../src/focus.c **** #include "misc.h"
+  23:../src/focus.c **** #include "lvdt.h"
+  24:../src/focus.c **** #include "serial_comm.h"
+  25:../src/focus.c **** #include "states.h"
+  26:../src/focus.c **** #include "pid.h"
+  27:../src/focus.c **** #include "debug_gpio.h"
+  28:../src/focus.c **** 
+  29:../src/focus.c **** extern EventGroupHandle_t initialized;
+  30:../src/focus.c **** 
+  31:../src/focus.c **** static QueueHandle_t Control_Queue;
+  32:../src/focus.c **** TimerHandle_t Focus_Timer;
+  33:../src/focus.c **** TimerHandle_t Focus_Fault_Timer;
+  34:../src/focus.c **** 
+  35:../src/focus.c **** static uint32_t u32_Timeout_Counter;
+  36:../src/focus.c **** static void Focus_Timer_Expiration( TimerHandle_t xTimer );
+  37:../src/focus.c **** static void Focus_Fault_Timer_Expiration( TimerHandle_t xTimer );
+  38:../src/focus.c **** static Context_t focus_context;
+  39:../src/focus.c **** 
+  40:../src/focus.c **** void v_Focus_Task(void *pvParameters)
+  41:../src/focus.c **** {
+  42:../src/focus.c ****     uint8_t u8_Timer_ID;
+  43:../src/focus.c ****     TickType_t Control_Update_Period = pdMS_TO_TICKS(10);  // For periodic tasks
+  44:../src/focus.c **** 
+  45:../src/focus.c ****     // Queue for events directed at control thread
+  46:../src/focus.c ****     Control_Queue = xQueueCreate( CONTROL_QUEUE_LENGTH , sizeof(Event_t) );
+  47:../src/focus.c **** 
+  48:../src/focus.c ****     // Control timer
+  49:../src/focus.c ****      Focus_Timer = xTimerCreate(
+  50:../src/focus.c ****                                   "Focus_Timer",
+  51:../src/focus.c ****                                    100,                        // Default period (mS)
+  52:../src/focus.c ****                                    pdFALSE,                    // One shot, no auto-reload
+  53:../src/focus.c ****                                    &u8_Timer_ID,
+  54:../src/focus.c ****                                    Focus_Timer_Expiration  );
+  55:../src/focus.c **** 
+  56:../src/focus.c ****      Focus_Fault_Timer = xTimerCreate(
+  57:../src/focus.c ****                                   "Control_Fault",
+  58:../src/focus.c ****                                    100,                        // Default period (mS)
+  59:../src/focus.c ****                                    pdFALSE,                    // One shot, no auto-reload
+  60:../src/focus.c ****                                    &u8_Timer_ID,
+  61:../src/focus.c ****                                    Focus_Fault_Timer_Expiration  );
+  62:../src/focus.c **** 
+  63:../src/focus.c **** 
+  64:../src/focus.c ****     // Initialization complete
+  65:../src/focus.c ****     xEventGroupSetBits( initialized,  CONTROL_INITIALIZED );
+  66:../src/focus.c **** 
+  67:../src/focus.c ****     // Wait for all tasks to be initialized
+  68:../src/focus.c ****     xEventGroupWaitBits( initialized, ALL_INITIALIZED, pdFALSE, pdTRUE, portMAX_DELAY );
+  69:../src/focus.c **** 
+  70:../src/focus.c ****     v_Stop_Focus_Timer();
+  71:../src/focus.c **** 
+  72:../src/focus.c ****     v_Init_Focus_State_Machine( &focus_context, Initial_State );
+  73:../src/focus.c **** 
+  74:../src/focus.c ****     while(1)
+  75:../src/focus.c ****     {
+  76:../src/focus.c ****         BaseType_t b_Event_Received;
+  77:../src/focus.c ****         Event_t Rcvd_Event;
+  78:../src/focus.c **** 
+  79:../src/focus.c ****         b_Event_Received = xQueueReceive( Control_Queue,
+  80:../src/focus.c ****                                           &Rcvd_Event,
+  81:../src/focus.c ****                                           portMAX_DELAY );
+  82:../src/focus.c **** 
+  83:../src/focus.c ****          if( b_Event_Received) // Event received
+  84:../src/focus.c ****          {
+  85:../src/focus.c ****              v_Update_Focus_State( &focus_context, &Rcvd_Event );
+  86:../src/focus.c ****          }
+  87:../src/focus.c ****          else                  // Timeout for period updates
+  88:../src/focus.c ****          {
+  89:../src/focus.c ****              ++u32_Timeout_Counter;
+  90:../src/focus.c ****          }
+  91:../src/focus.c **** 
+  92:../src/focus.c **** #ifdef MEM_CHECK
+  93:../src/focus.c ****          // Measure remaining stack space
+  94:../src/focus.c ****          UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+  95:../src/focus.c **** #endif
+  96:../src/focus.c **** 
+  97:../src/focus.c ****     }
+  98:../src/focus.c **** }
+  99:../src/focus.c **** 
+ 100:../src/focus.c **** uint8_t b_Is_Idle(void)
+ 101:../src/focus.c **** {
+  16              		.loc 1 101 1
+  17              		.cfi_startproc
+ 102:../src/focus.c ****     return focus_context.current_state == (State_t)Idle_State;
+  18              		.loc 1 102 5
+  19              		.loc 1 102 25 is_stmt 0
+  20 0000 97070000 		lla	a5,.LANCHOR0
+  20      93870700 
+  21              		.loc 1 102 40
+  22 0008 03A50700 		lw	a0,0(a5)
+  23 000c 97070000 		lla	a5,Idle_State
+  23      93870700 
+  24 0014 3305F540 		sub	a0,a0,a5
+ 103:../src/focus.c **** }
+  25              		.loc 1 103 1
+  26 0018 13351500 		seqz	a0,a0
+  27 001c 67800000 		ret
+  28              		.cfi_endproc
+  29              	.LFE4:
+  31              		.section	.text.v_Post_Focus_Event,"ax",@progbits
+  32              		.align	2
+  33              		.globl	v_Post_Focus_Event
+  35              	v_Post_Focus_Event:
+  36              	.LFB5:
+ 104:../src/focus.c **** 
+ 105:../src/focus.c **** void v_Post_Focus_Event( Event_t *event )
+ 106:../src/focus.c **** {
+  37              		.loc 1 106 1 is_stmt 1
+  38              		.cfi_startproc
+  39              	.LVL0:
+ 107:../src/focus.c ****     BaseType_t Ret_Val;
+  40              		.loc 1 107 5
+ 108:../src/focus.c ****     Ret_Val = xQueueSend( Control_Queue, event, 2 );
+  41              		.loc 1 108 5
+  42              		.loc 1 108 15 is_stmt 0
+  43 0000 97070000 		lla	a5,.LANCHOR1
+  43      93870700 
+  44 0008 93050500 		mv	a1,a0
+  45 000c 03A50700 		lw	a0,0(a5)
+  46              	.LVL1:
+  47 0010 93060000 		li	a3,0
+  48 0014 13062000 		li	a2,2
+  49 0018 17030000 		tail	xQueueGenericSend
+  49      67000300 
+  50              	.LVL2:
+  51              		.cfi_endproc
+  52              	.LFE5:
+  54              		.section	.text.Focus_Fault_Timer_Expiration,"ax",@progbits
+  55              		.align	2
+  57              	Focus_Fault_Timer_Expiration:
+  58              	.LFB12:
+ 109:../src/focus.c **** }
+ 110:../src/focus.c **** 
+ 111:../src/focus.c **** void v_Post_Focus_Event_ISR( Event_t *event )
+ 112:../src/focus.c **** {
+ 113:../src/focus.c ****     BaseType_t Ret_Val;
+ 114:../src/focus.c ****     Ret_Val = xQueueSendFromISR(  Control_Queue, event, NULL );
+ 115:../src/focus.c **** }
+ 116:../src/focus.c **** 
+ 117:../src/focus.c **** void v_Start_Focus_Timer( TickType_t ticks)
+ 118:../src/focus.c **** {
+ 119:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Timer, ticks, 5);
+ 120:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 121:../src/focus.c **** }
+ 122:../src/focus.c **** 
+ 123:../src/focus.c **** void v_Stop_Focus_Timer(void)
+ 124:../src/focus.c **** {
+ 125:../src/focus.c ****     BaseType_t ret_val = xTimerStop( Focus_Timer, 5 );
+ 126:../src/focus.c **** }
+ 127:../src/focus.c **** 
+ 128:../src/focus.c **** static void Focus_Timer_Expiration( TimerHandle_t xTimer )
+ 129:../src/focus.c **** {
+ 130:../src/focus.c ****     Event_t event;
+ 131:../src/focus.c ****     event.no_data.sig = FOCUS_TIMER_EXPIRED;
+ 132:../src/focus.c ****     v_Post_Focus_Event( &event );
+ 133:../src/focus.c **** }
+ 134:../src/focus.c **** 
+ 135:../src/focus.c **** // Fault timer for focusing operations
+ 136:../src/focus.c **** 
+ 137:../src/focus.c **** void v_Start_Focus_Fault_Timer( TickType_t ticks)
+ 138:../src/focus.c **** {
+ 139:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Fault_Timer, ticks, 5);
+ 140:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 141:../src/focus.c **** }
+ 142:../src/focus.c **** 
+ 143:../src/focus.c **** void v_Stop_Focus_Fault_Timer(void)
+ 144:../src/focus.c **** {
+ 145:../src/focus.c ****     BaseType_t ret_val = xTimerStop( Focus_Fault_Timer, 5 );
+ 146:../src/focus.c **** }
+ 147:../src/focus.c **** 
+ 148:../src/focus.c **** static void Focus_Fault_Timer_Expiration( TimerHandle_t xTimer )
+ 149:../src/focus.c **** {
+  59              		.loc 1 149 1 is_stmt 1
+  60              		.cfi_startproc
+  61              	.LVL3:
+ 150:../src/focus.c ****     Event_t event;
+  62              		.loc 1 150 5
+ 151:../src/focus.c ****     event.no_data.sig = FOCUS_FAULT_TIMER_EXPIRED;
+  63              		.loc 1 151 5
+ 149:../src/focus.c ****     Event_t event;
+  64              		.loc 1 149 1 is_stmt 0
+  65 0000 130101FD 		addi	sp,sp,-48
+  66              		.cfi_def_cfa_offset 48
+  67              		.loc 1 151 23
+  68 0004 93074000 		li	a5,4
+ 152:../src/focus.c ****     v_Post_Focus_Event( &event );
+  69              		.loc 1 152 5
+  70 0008 1305C100 		addi	a0,sp,12
+  71              	.LVL4:
+ 149:../src/focus.c ****     Event_t event;
+  72              		.loc 1 149 1
+  73 000c 23261102 		sw	ra,44(sp)
+  74              		.cfi_offset 1, -4
+ 151:../src/focus.c ****     event.no_data.sig = FOCUS_FAULT_TIMER_EXPIRED;
+  75              		.loc 1 151 23
+  76 0010 2326F100 		sw	a5,12(sp)
+  77              		.loc 1 152 5 is_stmt 1
+  78 0014 97000000 		call	v_Post_Focus_Event
+  78      E7800000 
+  79              	.LVL5:
+ 153:../src/focus.c **** }
+  80              		.loc 1 153 1 is_stmt 0
+  81 001c 8320C102 		lw	ra,44(sp)
+  82              		.cfi_restore 1
+  83 0020 13010103 		addi	sp,sp,48
+  84              		.cfi_def_cfa_offset 0
+  85 0024 67800000 		jr	ra
+  86              		.cfi_endproc
+  87              	.LFE12:
+  89              		.section	.text.Focus_Timer_Expiration,"ax",@progbits
+  90              		.align	2
+  92              	Focus_Timer_Expiration:
+  93              	.LFB9:
+ 129:../src/focus.c ****     Event_t event;
+  94              		.loc 1 129 1 is_stmt 1
+  95              		.cfi_startproc
+  96              	.LVL6:
+ 130:../src/focus.c ****     event.no_data.sig = FOCUS_TIMER_EXPIRED;
+  97              		.loc 1 130 5
+ 131:../src/focus.c ****     v_Post_Focus_Event( &event );
+  98              		.loc 1 131 5
+ 129:../src/focus.c ****     Event_t event;
+  99              		.loc 1 129 1 is_stmt 0
+ 100 0000 130101FD 		addi	sp,sp,-48
+ 101              		.cfi_def_cfa_offset 48
+ 131:../src/focus.c ****     v_Post_Focus_Event( &event );
+ 102              		.loc 1 131 23
+ 103 0004 93073000 		li	a5,3
+ 132:../src/focus.c **** }
+ 104              		.loc 1 132 5
+ 105 0008 1305C100 		addi	a0,sp,12
+ 106              	.LVL7:
+ 129:../src/focus.c ****     Event_t event;
+ 107              		.loc 1 129 1
+ 108 000c 23261102 		sw	ra,44(sp)
+ 109              		.cfi_offset 1, -4
+ 131:../src/focus.c ****     v_Post_Focus_Event( &event );
+ 110              		.loc 1 131 23
+ 111 0010 2326F100 		sw	a5,12(sp)
+ 132:../src/focus.c **** }
+ 112              		.loc 1 132 5 is_stmt 1
+ 113 0014 97000000 		call	v_Post_Focus_Event
+ 113      E7800000 
+ 114              	.LVL8:
+ 133:../src/focus.c **** 
+ 115              		.loc 1 133 1 is_stmt 0
+ 116 001c 8320C102 		lw	ra,44(sp)
+ 117              		.cfi_restore 1
+ 118 0020 13010103 		addi	sp,sp,48
+ 119              		.cfi_def_cfa_offset 0
+ 120 0024 67800000 		jr	ra
+ 121              		.cfi_endproc
+ 122              	.LFE9:
+ 124              		.section	.text.v_Post_Focus_Event_ISR,"ax",@progbits
+ 125              		.align	2
+ 126              		.globl	v_Post_Focus_Event_ISR
+ 128              	v_Post_Focus_Event_ISR:
+ 129              	.LFB6:
+ 112:../src/focus.c ****     BaseType_t Ret_Val;
+ 130              		.loc 1 112 1 is_stmt 1
+ 131              		.cfi_startproc
+ 132              	.LVL9:
+ 113:../src/focus.c ****     Ret_Val = xQueueSendFromISR(  Control_Queue, event, NULL );
+ 133              		.loc 1 113 5
+ 114:../src/focus.c **** }
+ 134              		.loc 1 114 5
+ 114:../src/focus.c **** }
+ 135              		.loc 1 114 15 is_stmt 0
+ 136 0000 97070000 		lla	a5,.LANCHOR1
+ 136      93870700 
+ 137 0008 93050500 		mv	a1,a0
+ 138 000c 03A50700 		lw	a0,0(a5)
+ 139              	.LVL10:
+ 140 0010 93060000 		li	a3,0
+ 141 0014 13060000 		li	a2,0
+ 142 0018 17030000 		tail	xQueueGenericSendFromISR
+ 142      67000300 
+ 143              	.LVL11:
+ 144              		.cfi_endproc
+ 145              	.LFE6:
+ 147              		.section	.text.v_Start_Focus_Timer,"ax",@progbits
+ 148              		.align	2
+ 149              		.globl	v_Start_Focus_Timer
+ 151              	v_Start_Focus_Timer:
+ 152              	.LFB7:
+ 118:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Timer, ticks, 5);
+ 153              		.loc 1 118 1 is_stmt 1
+ 154              		.cfi_startproc
+ 155              	.LVL12:
+ 119:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 156              		.loc 1 119 5
+ 118:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Timer, ticks, 5);
+ 157              		.loc 1 118 1 is_stmt 0
+ 158 0000 130101FF 		addi	sp,sp,-16
+ 159              		.cfi_def_cfa_offset 16
+ 160 0004 23248100 		sw	s0,8(sp)
+ 161              		.cfi_offset 8, -8
+ 119:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 162              		.loc 1 119 27
+ 163 0008 17040000 		lla	s0,Focus_Timer
+ 163      13040400 
+ 164 0010 13060500 		mv	a2,a0
+ 165 0014 03250400 		lw	a0,0(s0)
+ 166              	.LVL13:
+ 167 0018 13075000 		li	a4,5
+ 168 001c 93060000 		li	a3,0
+ 169 0020 93054000 		li	a1,4
+ 118:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Timer, ticks, 5);
+ 170              		.loc 1 118 1
+ 171 0024 23261100 		sw	ra,12(sp)
+ 172              		.cfi_offset 1, -4
+ 119:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 173              		.loc 1 119 27
+ 174 0028 97000000 		call	xTimerGenericCommandFromTask
+ 174      E7800000 
+ 175              	.LVL14:
+ 120:../src/focus.c **** }
+ 176              		.loc 1 120 5 is_stmt 1
+ 120:../src/focus.c **** }
+ 177              		.loc 1 120 15 is_stmt 0
+ 178 0030 03240400 		lw	s0,0(s0)
+ 179 0034 97000000 		call	xTaskGetTickCount
+ 179      E7800000 
+ 180              	.LVL15:
+ 181 003c 13060500 		mv	a2,a0
+ 182 0040 13050400 		mv	a0,s0
+ 121:../src/focus.c **** 
+ 183              		.loc 1 121 1
+ 184 0044 03248100 		lw	s0,8(sp)
+ 185              		.cfi_restore 8
+ 186 0048 8320C100 		lw	ra,12(sp)
+ 187              		.cfi_restore 1
+ 120:../src/focus.c **** }
+ 188              		.loc 1 120 15
+ 189 004c 13075000 		li	a4,5
+ 121:../src/focus.c **** 
+ 190              		.loc 1 121 1
+ 120:../src/focus.c **** }
+ 191              		.loc 1 120 15
+ 192 0050 93060000 		li	a3,0
+ 193 0054 93051000 		li	a1,1
+ 121:../src/focus.c **** 
+ 194              		.loc 1 121 1
+ 195 0058 13010101 		addi	sp,sp,16
+ 196              		.cfi_def_cfa_offset 0
+ 120:../src/focus.c **** }
+ 197              		.loc 1 120 15
+ 198 005c 17030000 		tail	xTimerGenericCommandFromTask
+ 198      67000300 
+ 199              	.LVL16:
+ 200              		.cfi_endproc
+ 201              	.LFE7:
+ 203              		.section	.text.v_Stop_Focus_Timer,"ax",@progbits
+ 204              		.align	2
+ 205              		.globl	v_Stop_Focus_Timer
+ 207              	v_Stop_Focus_Timer:
+ 208              	.LFB8:
+ 124:../src/focus.c ****     BaseType_t ret_val = xTimerStop( Focus_Timer, 5 );
+ 209              		.loc 1 124 1 is_stmt 1
+ 210              		.cfi_startproc
+ 125:../src/focus.c **** }
+ 211              		.loc 1 125 5
+ 125:../src/focus.c **** }
+ 212              		.loc 1 125 26 is_stmt 0
+ 213 0000 97070000 		lla	a5,Focus_Timer
+ 213      93870700 
+ 214 0008 03A50700 		lw	a0,0(a5)
+ 215 000c 13075000 		li	a4,5
+ 216 0010 93060000 		li	a3,0
+ 217 0014 13060000 		li	a2,0
+ 218 0018 93053000 		li	a1,3
+ 219 001c 17030000 		tail	xTimerGenericCommandFromTask
+ 219      67000300 
+ 220              	.LVL17:
+ 221              		.cfi_endproc
+ 222              	.LFE8:
+ 224              		.section	.text.v_Focus_Task,"ax",@progbits
+ 225              		.align	2
+ 226              		.globl	v_Focus_Task
+ 228              	v_Focus_Task:
+ 229              	.LFB3:
+  41:../src/focus.c ****     uint8_t u8_Timer_ID;
+ 230              		.loc 1 41 1 is_stmt 1
+ 231              		.cfi_startproc
+ 232              	.LVL18:
+  42:../src/focus.c ****     TickType_t Control_Update_Period = pdMS_TO_TICKS(10);  // For periodic tasks
+ 233              		.loc 1 42 5
+  43:../src/focus.c **** 
+ 234              		.loc 1 43 5
+  46:../src/focus.c **** 
+ 235              		.loc 1 46 5
+  41:../src/focus.c ****     uint8_t u8_Timer_ID;
+ 236              		.loc 1 41 1 is_stmt 0
+ 237 0000 130101FD 		addi	sp,sp,-48
+ 238              		.cfi_def_cfa_offset 48
+  46:../src/focus.c **** 
+ 239              		.loc 1 46 21
+ 240 0004 13060000 		li	a2,0
+ 241 0008 93054001 		li	a1,20
+ 242 000c 13053000 		li	a0,3
+ 243              	.LVL19:
+  41:../src/focus.c ****     uint8_t u8_Timer_ID;
+ 244              		.loc 1 41 1
+ 245 0010 23261102 		sw	ra,44(sp)
+ 246 0014 23248102 		sw	s0,40(sp)
+ 247 0018 23229102 		sw	s1,36(sp)
+ 248 001c 23202103 		sw	s2,32(sp)
+ 249              		.cfi_offset 1, -4
+ 250              		.cfi_offset 8, -8
+ 251              		.cfi_offset 9, -12
+ 252              		.cfi_offset 18, -16
+  46:../src/focus.c **** 
+ 253              		.loc 1 46 21
+ 254 0020 97000000 		call	xQueueGenericCreate
+ 254      E7800000 
+ 255              	.LVL20:
+  46:../src/focus.c **** 
+ 256              		.loc 1 46 19
+ 257 0028 97070000 		sw	a0,.LANCHOR1,a5
+ 257      23A0A700 
+  49:../src/focus.c ****                                   "Focus_Timer",
+ 258              		.loc 1 49 6 is_stmt 1
+  49:../src/focus.c ****                                   "Focus_Timer",
+ 259              		.loc 1 49 20 is_stmt 0
+ 260 0030 17070000 		lla	a4,Focus_Timer_Expiration
+ 260      13070700 
+ 261 0038 9306B100 		addi	a3,sp,11
+ 262 003c 13060000 		li	a2,0
+ 263 0040 93054006 		li	a1,100
+ 264 0044 17050000 		lla	a0,.LC0
+ 264      13050500 
+ 265 004c 97000000 		call	xTimerCreate
+ 265      E7800000 
+ 266              	.LVL21:
+  56:../src/focus.c ****                                   "Control_Fault",
+ 267              		.loc 1 56 26
+ 268 0054 17070000 		lla	a4,Focus_Fault_Timer_Expiration
+ 268      13070700 
+ 269 005c 9306B100 		addi	a3,sp,11
+ 270 0060 13060000 		li	a2,0
+  49:../src/focus.c ****                                   "Focus_Timer",
+ 271              		.loc 1 49 18
+ 272 0064 97070000 		sw	a0,Focus_Timer,a5
+ 272      23A0A700 
+  56:../src/focus.c ****                                   "Control_Fault",
+ 273              		.loc 1 56 6 is_stmt 1
+  56:../src/focus.c ****                                   "Control_Fault",
+ 274              		.loc 1 56 26 is_stmt 0
+ 275 006c 93054006 		li	a1,100
+ 276 0070 17050000 		lla	a0,.LC1
+ 276      13050500 
+ 277 0078 97000000 		call	xTimerCreate
+ 277      E7800000 
+ 278              	.LVL22:
+  65:../src/focus.c **** 
+ 279              		.loc 1 65 5
+ 280 0080 17040000 		lla	s0,initialized
+ 280      13040400 
+  56:../src/focus.c ****                                   "Control_Fault",
+ 281              		.loc 1 56 24
+ 282 0088 97070000 		sw	a0,Focus_Fault_Timer,a5
+ 282      23A0A700 
+  65:../src/focus.c **** 
+ 283              		.loc 1 65 5 is_stmt 1
+ 284 0090 03250400 		lw	a0,0(s0)
+ 285 0094 93054000 		li	a1,4
+ 286              	.LBB2:
+  79:../src/focus.c ****                                           &Rcvd_Event,
+ 287              		.loc 1 79 28 is_stmt 0
+ 288 0098 97040000 		lla	s1,.LANCHOR1
+ 288      93840400 
+ 289              	.LBE2:
+  65:../src/focus.c **** 
+ 290              		.loc 1 65 5
+ 291 00a0 97000000 		call	xEventGroupSetBits
+ 291      E7800000 
+ 292              	.LVL23:
+  68:../src/focus.c **** 
+ 293              		.loc 1 68 5 is_stmt 1
+ 294 00a8 03250400 		lw	a0,0(s0)
+ 295 00ac 1307F0FF 		li	a4,-1
+ 296 00b0 93061000 		li	a3,1
+ 297 00b4 13060000 		li	a2,0
+ 298 00b8 9305F000 		li	a1,15
+ 299 00bc 97000000 		call	xEventGroupWaitBits
+ 299      E7800000 
+ 300              	.LVL24:
+  70:../src/focus.c **** 
+ 301              		.loc 1 70 5
+ 302 00c4 97000000 		call	v_Stop_Focus_Timer
+ 302      E7800000 
+ 303              	.LVL25:
+  72:../src/focus.c **** 
+ 304              		.loc 1 72 5
+ 305 00cc 97050000 		lla	a1,Initial_State
+ 305      93850500 
+ 306 00d4 17050000 		lla	a0,.LANCHOR0
+ 306      13050500 
+ 307 00dc 97000000 		call	v_Init_Focus_State_Machine
+ 307      E7800000 
+ 308              	.LVL26:
+ 309              	.LBB3:
+  89:../src/focus.c ****          }
+ 310              		.loc 1 89 14 is_stmt 0
+ 311 00e4 17040000 		lla	s0,.LANCHOR2
+ 311      13040400 
+  85:../src/focus.c ****          }
+ 312              		.loc 1 85 14
+ 313 00ec 17090000 		lla	s2,.LANCHOR0
+ 313      13090900 
+ 314              	.L14:
+ 315              	.LBE3:
+  74:../src/focus.c ****     {
+ 316              		.loc 1 74 5 is_stmt 1
+ 317              	.LBB4:
+  76:../src/focus.c ****         Event_t Rcvd_Event;
+ 318              		.loc 1 76 9
+  77:../src/focus.c **** 
+ 319              		.loc 1 77 9
+  79:../src/focus.c ****                                           &Rcvd_Event,
+ 320              		.loc 1 79 9
+  79:../src/focus.c ****                                           &Rcvd_Event,
+ 321              		.loc 1 79 28 is_stmt 0
+ 322 00f4 03A50400 		lw	a0,0(s1)
+ 323 00f8 1306F0FF 		li	a2,-1
+ 324 00fc 9305C100 		addi	a1,sp,12
+ 325 0100 97000000 		call	xQueueReceive
+ 325      E7800000 
+ 326              	.LVL27:
+  83:../src/focus.c ****          {
+ 327              		.loc 1 83 10 is_stmt 1
+  83:../src/focus.c ****          {
+ 328              		.loc 1 83 12 is_stmt 0
+ 329 0108 630C0500 		beq	a0,zero,.L12
+  85:../src/focus.c ****          }
+ 330              		.loc 1 85 14 is_stmt 1
+ 331 010c 9305C100 		addi	a1,sp,12
+ 332 0110 13050900 		mv	a0,s2
+ 333              	.LVL28:
+ 334 0114 97000000 		call	v_Update_Focus_State
+ 334      E7800000 
+ 335              	.LVL29:
+ 336 011c 6FF09FFD 		j	.L14
+ 337              	.LVL30:
+ 338              	.L12:
+  89:../src/focus.c ****          }
+ 339              		.loc 1 89 14
+ 340 0120 83270400 		lw	a5,0(s0)
+ 341 0124 93871700 		addi	a5,a5,1
+ 342 0128 17070000 		sw	a5,.LANCHOR2,a4
+ 342      2320F700 
+ 343              	.LBE4:
+  75:../src/focus.c ****         BaseType_t b_Event_Received;
+ 344              		.loc 1 75 5 is_stmt 0
+ 345 0130 6FF05FFC 		j	.L14
+ 346              		.cfi_endproc
+ 347              	.LFE3:
+ 349              		.section	.text.v_Start_Focus_Fault_Timer,"ax",@progbits
+ 350              		.align	2
+ 351              		.globl	v_Start_Focus_Fault_Timer
+ 353              	v_Start_Focus_Fault_Timer:
+ 354              	.LFB10:
+ 138:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Fault_Timer, ticks, 5);
+ 355              		.loc 1 138 1 is_stmt 1
+ 356              		.cfi_startproc
+ 357              	.LVL31:
+ 139:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 358              		.loc 1 139 5
+ 139:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 359              		.loc 1 139 27 is_stmt 0
+ 360 0000 97070000 		lla	a5,Focus_Fault_Timer
+ 360      93870700 
+ 361 0008 13060500 		mv	a2,a0
+ 362 000c 03A50700 		lw	a0,0(a5)
+ 363              	.LVL32:
+ 138:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Fault_Timer, ticks, 5);
+ 364              		.loc 1 138 1
+ 365 0010 130101FF 		addi	sp,sp,-16
+ 366              		.cfi_def_cfa_offset 16
+ 139:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 367              		.loc 1 139 27
+ 368 0014 13075000 		li	a4,5
+ 369 0018 93060000 		li	a3,0
+ 370 001c 93054000 		li	a1,4
+ 138:../src/focus.c ****     BaseType_t ret_val =  xTimerChangePeriod( Focus_Fault_Timer, ticks, 5);
+ 371              		.loc 1 138 1
+ 372 0020 23261100 		sw	ra,12(sp)
+ 373 0024 23248100 		sw	s0,8(sp)
+ 374              		.cfi_offset 1, -4
+ 375              		.cfi_offset 8, -8
+ 139:../src/focus.c ****     ret_val = xTimerStart( Focus_Timer, 5 );
+ 376              		.loc 1 139 27
+ 377 0028 97000000 		call	xTimerGenericCommandFromTask
+ 377      E7800000 
+ 378              	.LVL33:
+ 140:../src/focus.c **** }
+ 379              		.loc 1 140 5 is_stmt 1
+ 140:../src/focus.c **** }
+ 380              		.loc 1 140 15 is_stmt 0
+ 381 0030 97070000 		lla	a5,Focus_Timer
+ 381      93870700 
+ 382 0038 03A40700 		lw	s0,0(a5)
+ 383 003c 97000000 		call	xTaskGetTickCount
+ 383      E7800000 
+ 384              	.LVL34:
+ 385 0044 13060500 		mv	a2,a0
+ 386 0048 13050400 		mv	a0,s0
+ 141:../src/focus.c **** 
+ 387              		.loc 1 141 1
+ 388 004c 03248100 		lw	s0,8(sp)
+ 389              		.cfi_restore 8
+ 390 0050 8320C100 		lw	ra,12(sp)
+ 391              		.cfi_restore 1
+ 140:../src/focus.c **** }
+ 392              		.loc 1 140 15
+ 393 0054 13075000 		li	a4,5
+ 141:../src/focus.c **** 
+ 394              		.loc 1 141 1
+ 140:../src/focus.c **** }
+ 395              		.loc 1 140 15
+ 396 0058 93060000 		li	a3,0
+ 397 005c 93051000 		li	a1,1
+ 141:../src/focus.c **** 
+ 398              		.loc 1 141 1
+ 399 0060 13010101 		addi	sp,sp,16
+ 400              		.cfi_def_cfa_offset 0
+ 140:../src/focus.c **** }
+ 401              		.loc 1 140 15
+ 402 0064 17030000 		tail	xTimerGenericCommandFromTask
+ 402      67000300 
+ 403              	.LVL35:
+ 404              		.cfi_endproc
+ 405              	.LFE10:
+ 407              		.section	.text.v_Stop_Focus_Fault_Timer,"ax",@progbits
+ 408              		.align	2
+ 409              		.globl	v_Stop_Focus_Fault_Timer
+ 411              	v_Stop_Focus_Fault_Timer:
+ 412              	.LFB11:
+ 144:../src/focus.c ****     BaseType_t ret_val = xTimerStop( Focus_Fault_Timer, 5 );
+ 413              		.loc 1 144 1 is_stmt 1
+ 414              		.cfi_startproc
+ 145:../src/focus.c **** }
+ 415              		.loc 1 145 5
+ 145:../src/focus.c **** }
+ 416              		.loc 1 145 26 is_stmt 0
+ 417 0000 97070000 		lla	a5,Focus_Fault_Timer
+ 417      93870700 
+ 418 0008 03A50700 		lw	a0,0(a5)
+ 419 000c 13075000 		li	a4,5
+ 420 0010 93060000 		li	a3,0
+ 421 0014 13060000 		li	a2,0
+ 422 0018 93053000 		li	a1,3
+ 423 001c 17030000 		tail	xTimerGenericCommandFromTask
+ 423      67000300 
+ 424              	.LVL36:
+ 425              		.cfi_endproc
+ 426              	.LFE11:
+ 428              		.comm	Focus_Fault_Timer,4,4
+ 429              		.comm	Focus_Timer,4,4
+ 430              		.section	.bss.focus_context,"aw",@nobits
+ 431              		.align	2
+ 432              		.set	.LANCHOR0,. + 0
+ 435              	focus_context:
+ 436 0000 00000000 		.zero	12
+ 436      00000000 
+ 436      00000000 
+ 437              		.section	.rodata.v_Focus_Task.str1.4,"aMS",@progbits,1
+ 438              		.align	2
+ 439              	.LC0:
+ 440 0000 466F6375 		.string	"Focus_Timer"
+ 440      735F5469 
+ 440      6D657200 
+ 441              	.LC1:
+ 442 000c 436F6E74 		.string	"Control_Fault"
+ 442      726F6C5F 
+ 442      4661756C 
+ 442      7400
+ 443              		.section	.sbss.Control_Queue,"aw",@nobits
+ 444              		.align	2
+ 445              		.set	.LANCHOR1,. + 0
+ 448              	Control_Queue:
+ 449 0000 00000000 		.zero	4
+ 450              		.section	.sbss.u32_Timeout_Counter,"aw",@nobits
+ 451              		.align	2
+ 452              		.set	.LANCHOR2,. + 0
+ 455              	u32_Timeout_Counter:
+ 456 0000 00000000 		.zero	4
+ 457              		.text
+ 458              	.Letext0:
+ 459              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 460              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 461              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 462              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 463              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 464              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 465              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 466              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 467              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 468              		.file 11 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 469              		.file 12 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/timers.h"
+ 470              		.file 13 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/event_groups.h"
+ 471              		.file 14 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/queue.h"
+ 472              		.file 15 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/task.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 focus.c
+<<<<<<< HEAD
+     /tmp/cc2PiBEg.s:13     .text.b_Is_Idle:0000000000000000 b_Is_Idle
+     /tmp/cc2PiBEg.s:17     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:18     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:19     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:20     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:22     .text.b_Is_Idle:0000000000000008 .L0 
+     /tmp/cc2PiBEg.s:26     .text.b_Is_Idle:0000000000000018 .L0 
+     /tmp/cc2PiBEg.s:28     .text.b_Is_Idle:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:35     .text.v_Post_Focus_Event:0000000000000000 v_Post_Focus_Event
+     /tmp/cc2PiBEg.s:38     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:40     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:41     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:42     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:43     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:51     .text.v_Post_Focus_Event:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:57     .text.Focus_Fault_Timer_Expiration:0000000000000000 Focus_Fault_Timer_Expiration
+     /tmp/cc2PiBEg.s:60     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:62     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:63     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:64     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:65     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:66     .text.Focus_Fault_Timer_Expiration:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:68     .text.Focus_Fault_Timer_Expiration:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:70     .text.Focus_Fault_Timer_Expiration:0000000000000008 .L0 
+     /tmp/cc2PiBEg.s:73     .text.Focus_Fault_Timer_Expiration:000000000000000c .L0 
+     /tmp/cc2PiBEg.s:74     .text.Focus_Fault_Timer_Expiration:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:76     .text.Focus_Fault_Timer_Expiration:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:78     .text.Focus_Fault_Timer_Expiration:0000000000000014 .L0 
+     /tmp/cc2PiBEg.s:81     .text.Focus_Fault_Timer_Expiration:000000000000001c .L0 
+     /tmp/cc2PiBEg.s:82     .text.Focus_Fault_Timer_Expiration:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:84     .text.Focus_Fault_Timer_Expiration:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:86     .text.Focus_Fault_Timer_Expiration:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:92     .text.Focus_Timer_Expiration:0000000000000000 Focus_Timer_Expiration
+     /tmp/cc2PiBEg.s:95     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:97     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:98     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:99     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:100    .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:101    .text.Focus_Timer_Expiration:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:103    .text.Focus_Timer_Expiration:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:105    .text.Focus_Timer_Expiration:0000000000000008 .L0 
+     /tmp/cc2PiBEg.s:108    .text.Focus_Timer_Expiration:000000000000000c .L0 
+     /tmp/cc2PiBEg.s:109    .text.Focus_Timer_Expiration:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:111    .text.Focus_Timer_Expiration:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:113    .text.Focus_Timer_Expiration:0000000000000014 .L0 
+     /tmp/cc2PiBEg.s:116    .text.Focus_Timer_Expiration:000000000000001c .L0 
+     /tmp/cc2PiBEg.s:117    .text.Focus_Timer_Expiration:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:119    .text.Focus_Timer_Expiration:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:121    .text.Focus_Timer_Expiration:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:128    .text.v_Post_Focus_Event_ISR:0000000000000000 v_Post_Focus_Event_ISR
+     /tmp/cc2PiBEg.s:131    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:133    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:134    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:135    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:136    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:144    .text.v_Post_Focus_Event_ISR:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:151    .text.v_Start_Focus_Timer:0000000000000000 v_Start_Focus_Timer
+     /tmp/cc2PiBEg.s:154    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:156    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:157    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:158    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:159    .text.v_Start_Focus_Timer:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:161    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+                            *COM*:0000000000000004 Focus_Timer
+     /tmp/cc2PiBEg.s:163    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+     /tmp/cc2PiBEg.s:171    .text.v_Start_Focus_Timer:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:172    .text.v_Start_Focus_Timer:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:174    .text.v_Start_Focus_Timer:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:177    .text.v_Start_Focus_Timer:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:178    .text.v_Start_Focus_Timer:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:184    .text.v_Start_Focus_Timer:0000000000000044 .L0 
+     /tmp/cc2PiBEg.s:185    .text.v_Start_Focus_Timer:0000000000000048 .L0 
+     /tmp/cc2PiBEg.s:187    .text.v_Start_Focus_Timer:000000000000004c .L0 
+     /tmp/cc2PiBEg.s:189    .text.v_Start_Focus_Timer:000000000000004c .L0 
+     /tmp/cc2PiBEg.s:191    .text.v_Start_Focus_Timer:0000000000000050 .L0 
+     /tmp/cc2PiBEg.s:192    .text.v_Start_Focus_Timer:0000000000000050 .L0 
+     /tmp/cc2PiBEg.s:195    .text.v_Start_Focus_Timer:0000000000000058 .L0 
+     /tmp/cc2PiBEg.s:196    .text.v_Start_Focus_Timer:000000000000005c .L0 
+     /tmp/cc2PiBEg.s:198    .text.v_Start_Focus_Timer:000000000000005c .L0 
+     /tmp/cc2PiBEg.s:200    .text.v_Start_Focus_Timer:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:207    .text.v_Stop_Focus_Timer:0000000000000000 v_Stop_Focus_Timer
+     /tmp/cc2PiBEg.s:210    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:211    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:212    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:213    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:221    .text.v_Stop_Focus_Timer:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:228    .text.v_Focus_Task:0000000000000000 v_Focus_Task
+     /tmp/cc2PiBEg.s:231    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:233    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:234    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:235    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:236    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:237    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:238    .text.v_Focus_Task:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:240    .text.v_Focus_Task:0000000000000004 .L0 
+     /tmp/cc2PiBEg.s:245    .text.v_Focus_Task:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:249    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:250    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:251    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:252    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:254    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:257    .text.v_Focus_Task:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:259    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:260    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:268    .text.v_Focus_Task:0000000000000054 .L0 
+     /tmp/cc2PiBEg.s:272    .text.v_Focus_Task:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:274    .text.v_Focus_Task:000000000000006c .L0 
+     /tmp/cc2PiBEg.s:275    .text.v_Focus_Task:000000000000006c .L0 
+     /tmp/cc2PiBEg.s:280    .text.v_Focus_Task:0000000000000080 .L0 
+                            *COM*:0000000000000004 Focus_Fault_Timer
+     /tmp/cc2PiBEg.s:282    .text.v_Focus_Task:0000000000000088 .L0 
+     /tmp/cc2PiBEg.s:284    .text.v_Focus_Task:0000000000000090 .L0 
+     /tmp/cc2PiBEg.s:288    .text.v_Focus_Task:0000000000000098 .L0 
+     /tmp/cc2PiBEg.s:291    .text.v_Focus_Task:00000000000000a0 .L0 
+     /tmp/cc2PiBEg.s:294    .text.v_Focus_Task:00000000000000a8 .L0 
+     /tmp/cc2PiBEg.s:302    .text.v_Focus_Task:00000000000000c4 .L0 
+     /tmp/cc2PiBEg.s:305    .text.v_Focus_Task:00000000000000cc .L0 
+     /tmp/cc2PiBEg.s:311    .text.v_Focus_Task:00000000000000e4 .L0 
+     /tmp/cc2PiBEg.s:313    .text.v_Focus_Task:00000000000000ec .L0 
+     /tmp/cc2PiBEg.s:318    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/cc2PiBEg.s:319    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/cc2PiBEg.s:320    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/cc2PiBEg.s:321    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/cc2PiBEg.s:322    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/cc2PiBEg.s:328    .text.v_Focus_Task:0000000000000108 .L0 
+     /tmp/cc2PiBEg.s:329    .text.v_Focus_Task:0000000000000108 .L0 
+     /tmp/cc2PiBEg.s:331    .text.v_Focus_Task:000000000000010c .L0 
+     /tmp/cc2PiBEg.s:340    .text.v_Focus_Task:0000000000000120 .L0 
+     /tmp/cc2PiBEg.s:345    .text.v_Focus_Task:0000000000000130 .L0 
+     /tmp/cc2PiBEg.s:346    .text.v_Focus_Task:0000000000000134 .L0 
+     /tmp/cc2PiBEg.s:353    .text.v_Start_Focus_Fault_Timer:0000000000000000 v_Start_Focus_Fault_Timer
+     /tmp/cc2PiBEg.s:356    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:358    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:359    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:360    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:365    .text.v_Start_Focus_Fault_Timer:0000000000000010 .L0 
+     /tmp/cc2PiBEg.s:366    .text.v_Start_Focus_Fault_Timer:0000000000000014 .L0 
+     /tmp/cc2PiBEg.s:368    .text.v_Start_Focus_Fault_Timer:0000000000000014 .L0 
+     /tmp/cc2PiBEg.s:372    .text.v_Start_Focus_Fault_Timer:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:374    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:375    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:377    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:380    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:381    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:388    .text.v_Start_Focus_Fault_Timer:000000000000004c .L0 
+     /tmp/cc2PiBEg.s:389    .text.v_Start_Focus_Fault_Timer:0000000000000050 .L0 
+     /tmp/cc2PiBEg.s:391    .text.v_Start_Focus_Fault_Timer:0000000000000054 .L0 
+     /tmp/cc2PiBEg.s:393    .text.v_Start_Focus_Fault_Timer:0000000000000054 .L0 
+     /tmp/cc2PiBEg.s:395    .text.v_Start_Focus_Fault_Timer:0000000000000058 .L0 
+     /tmp/cc2PiBEg.s:396    .text.v_Start_Focus_Fault_Timer:0000000000000058 .L0 
+     /tmp/cc2PiBEg.s:399    .text.v_Start_Focus_Fault_Timer:0000000000000060 .L0 
+     /tmp/cc2PiBEg.s:400    .text.v_Start_Focus_Fault_Timer:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:402    .text.v_Start_Focus_Fault_Timer:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:404    .text.v_Start_Focus_Fault_Timer:000000000000006c .L0 
+     /tmp/cc2PiBEg.s:411    .text.v_Stop_Focus_Fault_Timer:0000000000000000 v_Stop_Focus_Fault_Timer
+     /tmp/cc2PiBEg.s:414    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:415    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:416    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:417    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:425    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:432    .bss.focus_context:0000000000000000 .LANCHOR0
+     /tmp/cc2PiBEg.s:435    .bss.focus_context:0000000000000000 focus_context
+     /tmp/cc2PiBEg.s:445    .sbss.Control_Queue:0000000000000000 .LANCHOR1
+     /tmp/cc2PiBEg.s:448    .sbss.Control_Queue:0000000000000000 Control_Queue
+     /tmp/cc2PiBEg.s:452    .sbss.u32_Timeout_Counter:0000000000000000 .LANCHOR2
+     /tmp/cc2PiBEg.s:455    .sbss.u32_Timeout_Counter:0000000000000000 u32_Timeout_Counter
+     /tmp/cc2PiBEg.s:31     .text.b_Is_Idle:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:54     .text.v_Post_Focus_Event:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:89     .text.Focus_Fault_Timer_Expiration:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:124    .text.Focus_Timer_Expiration:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:147    .text.v_Post_Focus_Event_ISR:0000000000000020 .L0 
+     /tmp/cc2PiBEg.s:203    .text.v_Start_Focus_Timer:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:224    .text.v_Stop_Focus_Timer:0000000000000024 .L0 
+     /tmp/cc2PiBEg.s:349    .text.v_Focus_Task:0000000000000134 .L0 
+     /tmp/cc2PiBEg.s:407    .text.v_Start_Focus_Fault_Timer:000000000000006c .L0 
+     /tmp/cc2PiBEg.s:430    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:20     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:23     .text.b_Is_Idle:000000000000000c .L0 
+     /tmp/cc2PiBEg.s:43     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:136    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:163    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+     /tmp/cc2PiBEg.s:213    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:257    .text.v_Focus_Task:0000000000000028 .L0 
+     /tmp/cc2PiBEg.s:260    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:439    .rodata.v_Focus_Task.str1.4:0000000000000000 .LC0
+     /tmp/cc2PiBEg.s:264    .text.v_Focus_Task:0000000000000044 .L0 
+     /tmp/cc2PiBEg.s:268    .text.v_Focus_Task:0000000000000054 .L0 
+     /tmp/cc2PiBEg.s:272    .text.v_Focus_Task:0000000000000064 .L0 
+     /tmp/cc2PiBEg.s:441    .rodata.v_Focus_Task.str1.4:000000000000000c .LC1
+     /tmp/cc2PiBEg.s:276    .text.v_Focus_Task:0000000000000070 .L0 
+     /tmp/cc2PiBEg.s:280    .text.v_Focus_Task:0000000000000080 .L0 
+     /tmp/cc2PiBEg.s:282    .text.v_Focus_Task:0000000000000088 .L0 
+     /tmp/cc2PiBEg.s:288    .text.v_Focus_Task:0000000000000098 .L0 
+     /tmp/cc2PiBEg.s:305    .text.v_Focus_Task:00000000000000cc .L0 
+     /tmp/cc2PiBEg.s:306    .text.v_Focus_Task:00000000000000d4 .L0 
+     /tmp/cc2PiBEg.s:311    .text.v_Focus_Task:00000000000000e4 .L0 
+     /tmp/cc2PiBEg.s:313    .text.v_Focus_Task:00000000000000ec .L0 
+     /tmp/cc2PiBEg.s:342    .text.v_Focus_Task:0000000000000128 .L0 
+     /tmp/cc2PiBEg.s:338    .text.v_Focus_Task:0000000000000120 .L12
+     /tmp/cc2PiBEg.s:314    .text.v_Focus_Task:00000000000000f4 .L14
+     /tmp/cc2PiBEg.s:360    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:381    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/cc2PiBEg.s:417    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/cc2PiBEg.s:3003   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc2PiBEg.s:4356   .debug_str:0000000000000a05 .LASF248
+     /tmp/cc2PiBEg.s:4004   .debug_str:00000000000001bf .LASF249
+     /tmp/cc2PiBEg.s:4280   .debug_str:0000000000000809 .LASF250
+     /tmp/cc2PiBEg.s:3904   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc2PiBEg.s:3936   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc2PiBEg.s:4380   .debug_str:0000000000000b44 .LASF0
+     /tmp/cc2PiBEg.s:4284   .debug_str:0000000000000848 .LASF3
+     /tmp/cc2PiBEg.s:4336   .debug_str:0000000000000982 .LASF1
+     /tmp/cc2PiBEg.s:4252   .debug_str:000000000000077d .LASF2
+     /tmp/cc2PiBEg.s:4062   .debug_str:000000000000031a .LASF4
+     /tmp/cc2PiBEg.s:4384   .debug_str:0000000000000b57 .LASF5
+     /tmp/cc2PiBEg.s:3976   .debug_str:000000000000011c .LASF6
+     /tmp/cc2PiBEg.s:4258   .debug_str:000000000000079b .LASF7
+     /tmp/cc2PiBEg.s:4340   .debug_str:000000000000099c .LASF8
+     /tmp/cc2PiBEg.s:4308   .debug_str:00000000000008ca .LASF9
+     /tmp/cc2PiBEg.s:4180   .debug_str:00000000000005ce .LASF10
+     /tmp/cc2PiBEg.s:4106   .debug_str:0000000000000407 .LASF11
+     /tmp/cc2PiBEg.s:4052   .debug_str:00000000000002e1 .LASF12
+     /tmp/cc2PiBEg.s:3968   .debug_str:00000000000000ed .LASF13
+     /tmp/cc2PiBEg.s:4162   .debug_str:0000000000000565 .LASF14
+     /tmp/cc2PiBEg.s:4238   .debug_str:000000000000070d .LASF15
+     /tmp/cc2PiBEg.s:4320   .debug_str:000000000000091b .LASF16
+     /tmp/cc2PiBEg.s:4020   .debug_str:0000000000000226 .LASF17
+     /tmp/cc2PiBEg.s:4272   .debug_str:00000000000007d4 .LASF18
+     /tmp/cc2PiBEg.s:4086   .debug_str:00000000000003a1 .LASF19
+     /tmp/cc2PiBEg.s:4234   .debug_str:00000000000006f9 .LASF20
+     /tmp/cc2PiBEg.s:4316   .debug_str:00000000000008ff .LASF21
+     /tmp/cc2PiBEg.s:4404   .debug_str:0000000000000bf0 .LASF22
+     /tmp/cc2PiBEg.s:4000   .debug_str:00000000000001b2 .LASF23
+     /tmp/cc2PiBEg.s:4378   .debug_str:0000000000000b3b .LASF24
+     /tmp/cc2PiBEg.s:4156   .debug_str:0000000000000549 .LASF25
+     /tmp/cc2PiBEg.s:4270   .debug_str:00000000000007cd .LASF26
+     /tmp/cc2PiBEg.s:4032   .debug_str:0000000000000278 .LASF27
+     /tmp/cc2PiBEg.s:4122   .debug_str:000000000000048b .LASF28
+     /tmp/cc2PiBEg.s:4210   .debug_str:0000000000000679 .LASF29
+     /tmp/cc2PiBEg.s:4190   .debug_str:00000000000005fc .LASF30
+     /tmp/cc2PiBEg.s:4236   .debug_str:0000000000000705 .LASF31
+     /tmp/cc2PiBEg.s:4326   .debug_str:0000000000000944 .LASF129
+     /tmp/cc2PiBEg.s:4152   .debug_str:0000000000000532 .LASF32
+     /tmp/cc2PiBEg.s:4010   .debug_str:00000000000001e9 .LASF37
+     /tmp/cc2PiBEg.s:4102   .debug_str:00000000000003f0 .LASF33
+     /tmp/cc2PiBEg.s:4292   .debug_str:000000000000086b .LASF34
+     /tmp/cc2PiBEg.s:4266   .debug_str:00000000000007c1 .LASF35
+     /tmp/cc2PiBEg.s:4058   .debug_str:000000000000030d .LASF36
+     /tmp/cc2PiBEg.s:4304   .debug_str:00000000000008bf .LASF38
+     /tmp/cc2PiBEg.s:4090   .debug_str:00000000000003b4 .LASF39
+     /tmp/cc2PiBEg.s:4038   .debug_str:000000000000028c .LASF40
+     /tmp/cc2PiBEg.s:4024   .debug_str:0000000000000243 .LASF41
+     /tmp/cc2PiBEg.s:4140   .debug_str:00000000000004ea .LASF42
+     /tmp/cc2PiBEg.s:4230   .debug_str:00000000000006e9 .LASF43
+     /tmp/cc2PiBEg.s:4274   .debug_str:00000000000007dd .LASF44
+     /tmp/cc2PiBEg.s:4014   .debug_str:0000000000000209 .LASF45
+     /tmp/cc2PiBEg.s:4092   .debug_str:00000000000003bd .LASF46
+     /tmp/cc2PiBEg.s:4216   .debug_str:0000000000000694 .LASF47
+     /tmp/cc2PiBEg.s:3946   .debug_str:000000000000004e .LASF48
+     /tmp/cc2PiBEg.s:4212   .debug_str:0000000000000684 .LASF49
+     /tmp/cc2PiBEg.s:4324   .debug_str:0000000000000938 .LASF50
+     /tmp/cc2PiBEg.s:4394   .debug_str:0000000000000bb3 .LASF51
+     /tmp/cc2PiBEg.s:4414   .debug_str:0000000000000c2b .LASF52
+     /tmp/cc2PiBEg.s:4248   .debug_str:000000000000075c .LASF53
+     /tmp/cc2PiBEg.s:4096   .debug_str:00000000000003cc .LASF54
+     /tmp/cc2PiBEg.s:4002   .debug_str:00000000000001ba .LASF55
+     /tmp/cc2PiBEg.s:4360   .debug_str:0000000000000ad8 .LASF56
+     /tmp/cc2PiBEg.s:4182   .debug_str:00000000000005dc .LASF57
+     /tmp/cc2PiBEg.s:4396   .debug_str:0000000000000bbc .LASF58
+     /tmp/cc2PiBEg.s:4056   .debug_str:0000000000000305 .LASF59
+     /tmp/cc2PiBEg.s:3974   .debug_str:0000000000000115 .LASF60
+     /tmp/cc2PiBEg.s:4198   .debug_str:0000000000000632 .LASF61
+     /tmp/cc2PiBEg.s:3972   .debug_str:000000000000010c .LASF62
+     /tmp/cc2PiBEg.s:4006   .debug_str:00000000000001ce .LASF63
+     /tmp/cc2PiBEg.s:3990   .debug_str:000000000000017d .LASF64
+     /tmp/cc2PiBEg.s:4240   .debug_str:0000000000000716 .LASF65
+     /tmp/cc2PiBEg.s:4424   .debug_str:0000000000000c54 .LASF66
+     /tmp/cc2PiBEg.s:4164   .debug_str:000000000000056d .LASF67
+     /tmp/cc2PiBEg.s:4434   .debug_str:0000000000000c87 .LASF68
+     /tmp/cc2PiBEg.s:4406   .debug_str:0000000000000bf7 .LASF69
+     /tmp/cc2PiBEg.s:4302   .debug_str:00000000000008b6 .LASF70
+     /tmp/cc2PiBEg.s:4068   .debug_str:0000000000000335 .LASF71
+     /tmp/cc2PiBEg.s:4268   .debug_str:00000000000007c7 .LASF72
+     /tmp/cc2PiBEg.s:4306   .debug_str:00000000000008c4 .LASF73
+     /tmp/cc2PiBEg.s:3986   .debug_str:0000000000000166 .LASF74
+     /tmp/cc2PiBEg.s:4412   .debug_str:0000000000000c23 .LASF75
+     /tmp/cc2PiBEg.s:4382   .debug_str:0000000000000b50 .LASF76
+     /tmp/cc2PiBEg.s:3980   .debug_str:000000000000013f .LASF77
+     /tmp/cc2PiBEg.s:4176   .debug_str:00000000000005b8 .LASF78
+     /tmp/cc2PiBEg.s:3998   .debug_str:00000000000001aa .LASF79
+     /tmp/cc2PiBEg.s:4430   .debug_str:0000000000000c76 .LASF80
+     /tmp/cc2PiBEg.s:4094   .debug_str:00000000000003c7 .LASF81
+     /tmp/cc2PiBEg.s:4080   .debug_str:0000000000000374 .LASF82
+     /tmp/cc2PiBEg.s:4410   .debug_str:0000000000000c0a .LASF83
+     /tmp/cc2PiBEg.s:4376   .debug_str:0000000000000b33 .LASF84
+     /tmp/cc2PiBEg.s:4168   .debug_str:000000000000057c .LASF85
+     /tmp/cc2PiBEg.s:4206   .debug_str:0000000000000658 .LASF86
+     /tmp/cc2PiBEg.s:4018   .debug_str:000000000000021e .LASF87
+     /tmp/cc2PiBEg.s:4050   .debug_str:00000000000002d7 .LASF88
+     /tmp/cc2PiBEg.s:4124   .debug_str:0000000000000493 .LASF89
+     /tmp/cc2PiBEg.s:4184   .debug_str:00000000000005e2 .LASF90
+     /tmp/cc2PiBEg.s:4290   .debug_str:0000000000000863 .LASF91
+     /tmp/cc2PiBEg.s:4332   .debug_str:0000000000000964 .LASF92
+     /tmp/cc2PiBEg.s:4286   .debug_str:0000000000000852 .LASF93
+     /tmp/cc2PiBEg.s:4146   .debug_str:000000000000050d .LASF94
+     /tmp/cc2PiBEg.s:4142   .debug_str:00000000000004f4 .LASF95
+     /tmp/cc2PiBEg.s:4368   .debug_str:0000000000000b00 .LASF96
+     /tmp/cc2PiBEg.s:4264   .debug_str:00000000000007bc .LASF97
+     /tmp/cc2PiBEg.s:4138   .debug_str:00000000000004e5 .LASF98
+     /tmp/cc2PiBEg.s:4066   .debug_str:000000000000032e .LASF99
+     /tmp/cc2PiBEg.s:4362   .debug_str:0000000000000adf .LASF100
+     /tmp/cc2PiBEg.s:4314   .debug_str:00000000000008f8 .LASF101
+     /tmp/cc2PiBEg.s:4158   .debug_str:000000000000054f .LASF102
+     /tmp/cc2PiBEg.s:4046   .debug_str:00000000000002b8 .LASF103
+     /tmp/cc2PiBEg.s:4416   .debug_str:0000000000000c33 .LASF104
+     /tmp/cc2PiBEg.s:4188   .debug_str:00000000000005f6 .LASF105
+     /tmp/cc2PiBEg.s:4350   .debug_str:00000000000009ec .LASF106
+     /tmp/cc2PiBEg.s:4408   .debug_str:0000000000000bfd .LASF107
+     /tmp/cc2PiBEg.s:4370   .debug_str:0000000000000b08 .LASF108
+     /tmp/cc2PiBEg.s:4054   .debug_str:00000000000002f8 .LASF109
+     /tmp/cc2PiBEg.s:4278   .debug_str:00000000000007fa .LASF110
+     /tmp/cc2PiBEg.s:4178   .debug_str:00000000000005bf .LASF111
+     /tmp/cc2PiBEg.s:4418   .debug_str:0000000000000c39 .LASF112
+     /tmp/cc2PiBEg.s:3958   .debug_str:00000000000000aa .LASF113
+     /tmp/cc2PiBEg.s:4132   .debug_str:00000000000004c6 .LASF114
+     /tmp/cc2PiBEg.s:4372   .debug_str:0000000000000b15 .LASF115
+     /tmp/cc2PiBEg.s:3952   .debug_str:0000000000000072 .LASF116
+     /tmp/cc2PiBEg.s:4294   .debug_str:0000000000000873 .LASF117
+     /tmp/cc2PiBEg.s:3964   .debug_str:00000000000000cd .LASF118
+     /tmp/cc2PiBEg.s:4344   .debug_str:00000000000009b7 .LASF119
+     /tmp/cc2PiBEg.s:3994   .debug_str:0000000000000197 .LASF120
+     /tmp/cc2PiBEg.s:4144   .debug_str:00000000000004fe .LASF121
+     /tmp/cc2PiBEg.s:4104   .debug_str:00000000000003f6 .LASF122
+     /tmp/cc2PiBEg.s:4194   .debug_str:0000000000000618 .LASF123
+     /tmp/cc2PiBEg.s:4130   .debug_str:00000000000004b5 .LASF124
+     /tmp/cc2PiBEg.s:4220   .debug_str:00000000000006a6 .LASF125
+     /tmp/cc2PiBEg.s:4044   .debug_str:00000000000002b1 .LASF126
+     /tmp/cc2PiBEg.s:4432   .debug_str:0000000000000c7e .LASF127
+     /tmp/cc2PiBEg.s:4282   .debug_str:0000000000000840 .LASF128
+     /tmp/cc2PiBEg.s:4420   .debug_str:0000000000000c44 .LASF130
+     /tmp/cc2PiBEg.s:4040   .debug_str:0000000000000295 .LASF131
+     /tmp/cc2PiBEg.s:4008   .debug_str:00000000000001d6 .LASF132
+     /tmp/cc2PiBEg.s:4398   .debug_str:0000000000000bc2 .LASF133
+     /tmp/cc2PiBEg.s:4436   .debug_str:0000000000000c8d .LASF134
+     /tmp/cc2PiBEg.s:4288   .debug_str:0000000000000857 .LASF135
+     /tmp/cc2PiBEg.s:4402   .debug_str:0000000000000be1 .LASF136
+     /tmp/cc2PiBEg.s:4390   .debug_str:0000000000000b9b .LASF137
+     /tmp/cc2PiBEg.s:4028   .debug_str:0000000000000256 .LASF138
+     /tmp/cc2PiBEg.s:4026   .debug_str:000000000000024d .LASF139
+     /tmp/cc2PiBEg.s:3996   .debug_str:00000000000001a5 .LASF140
+     /tmp/cc2PiBEg.s:4298   .debug_str:0000000000000888 .LASF141
+     /tmp/cc2PiBEg.s:4022   .debug_str:000000000000022f .LASF142
+     /tmp/cc2PiBEg.s:3940   .debug_str:0000000000000014 .LASF143
+     /tmp/cc2PiBEg.s:4400   .debug_str:0000000000000bcc .LASF144
+     /tmp/cc2PiBEg.s:3944   .debug_str:000000000000003f .LASF145
+     /tmp/cc2PiBEg.s:3954   .debug_str:0000000000000080 .LASF146
+     /tmp/cc2PiBEg.s:4078   .debug_str:0000000000000366 .LASF147
+     /tmp/cc2PiBEg.s:4374   .debug_str:0000000000000b23 .LASF148
+     /tmp/cc2PiBEg.s:4112   .debug_str:000000000000043e .LASF149
+     /tmp/cc2PiBEg.s:4074   .debug_str:000000000000034f .LASF150
+     /tmp/cc2PiBEg.s:4114   .debug_str:0000000000000450 .LASF151
+     /tmp/cc2PiBEg.s:4244   .debug_str:000000000000072e .LASF152
+     /tmp/cc2PiBEg.s:3962   .debug_str:00000000000000bd .LASF153
+     /tmp/cc2PiBEg.s:4222   .debug_str:00000000000006af .LASF154
+     /tmp/cc2PiBEg.s:4228   .debug_str:00000000000006d5 .LASF155
+     /tmp/cc2PiBEg.s:4134   .debug_str:00000000000004d3 .LASF156
+     /tmp/cc2PiBEg.s:3978   .debug_str:0000000000000126 .LASF157
+     /tmp/cc2PiBEg.s:4208   .debug_str:0000000000000662 .LASF158
+     /tmp/cc2PiBEg.s:4334   .debug_str:000000000000096c .LASF159
+     /tmp/cc2PiBEg.s:4116   .debug_str:000000000000045c .LASF160
+     /tmp/cc2PiBEg.s:4438   .debug_str:0000000000000c9b .LASF161
+     /tmp/cc2PiBEg.s:4300   .debug_str:00000000000008a0 .LASF162
+     /tmp/cc2PiBEg.s:4318   .debug_str:0000000000000906 .LASF163
+     /tmp/cc2PiBEg.s:3988   .debug_str:000000000000016f .LASF164
+     /tmp/cc2PiBEg.s:4150   .debug_str:0000000000000523 .LASF165
+     /tmp/cc2PiBEg.s:4200   .debug_str:0000000000000638 .LASF166
+     /tmp/cc2PiBEg.s:4202   .debug_str:0000000000000645 .LASF167
+     /tmp/cc2PiBEg.s:4064   .debug_str:0000000000000325 .LASF168
+     /tmp/cc2PiBEg.s:4262   .debug_str:00000000000007b0 .LASF169
+     /tmp/cc2PiBEg.s:4218   .debug_str:000000000000069f .LASF170
+     /tmp/cc2PiBEg.s:4422   .debug_str:0000000000000c4f .LASF171
+     /tmp/cc2PiBEg.s:4012   .debug_str:00000000000001f1 .LASF172
+     /tmp/cc2PiBEg.s:4256   .debug_str:0000000000000794 .LASF173
+     /tmp/cc2PiBEg.s:4338   .debug_str:0000000000000990 .LASF174
+     /tmp/cc2PiBEg.s:4242   .debug_str:000000000000071d .LASF175
+     /tmp/cc2PiBEg.s:4100   .debug_str:00000000000003dd .LASF176
+     /tmp/cc2PiBEg.s:3938   .debug_str:0000000000000000 .LASF177
+     /tmp/cc2PiBEg.s:4226   .debug_str:00000000000006cd .LASF178
+     /tmp/cc2PiBEg.s:4364   .debug_str:0000000000000ae5 .LASF179
+     /tmp/cc2PiBEg.s:4392   .debug_str:0000000000000ba7 .LASF180
+     /tmp/cc2PiBEg.s:4232   .debug_str:00000000000006f2 .LASF181
+     /tmp/cc2PiBEg.s:4348   .debug_str:00000000000009df .LASF182
+     /tmp/cc2PiBEg.s:4084   .debug_str:0000000000000394 .LASF183
+     /tmp/cc2PiBEg.s:4082   .debug_str:000000000000037f .LASF184
+     /tmp/cc2PiBEg.s:4070   .debug_str:000000000000033d .LASF185
+     /tmp/cc2PiBEg.s:4354   .debug_str:00000000000009fd .LASF186
+     /tmp/cc2PiBEg.s:3984   .debug_str:0000000000000159 .LASF187
+     /tmp/cc2PiBEg.s:3992   .debug_str:0000000000000183 .LASF188
+     /tmp/cc2PiBEg.s:4060   .debug_str:0000000000000312 .LASF189
+     /tmp/cc2PiBEg.s:4136   .debug_str:00000000000004dc .LASF190
+     /tmp/cc2PiBEg.s:4214   .debug_str:000000000000068c .LASF191
+     /tmp/cc2PiBEg.s:4428   .debug_str:0000000000000c6d .LASF192
+     /tmp/cc2PiBEg.s:4016   .debug_str:0000000000000213 .LASF193
+     /tmp/cc2PiBEg.s:4170   .debug_str:0000000000000587 .LASF194
+     /tmp/cc2PiBEg.s:4076   .debug_str:000000000000035a .LASF195
+     /tmp/cc2PiBEg.s:3950   .debug_str:000000000000006a .LASF196
+     /tmp/cc2PiBEg.s:4034   .debug_str:0000000000000280 .LASF197
+     /tmp/cc2PiBEg.s:4166   .debug_str:0000000000000574 .LASF198
+     /tmp/cc2PiBEg.s:3948   .debug_str:000000000000005c .LASF199
+     /tmp/cc2PiBEg.s:4260   .debug_str:00000000000007a4 .LASF200
+     /tmp/cc2PiBEg.s:4204   .debug_str:0000000000000652 .LASF201
+     /tmp/cc2PiBEg.s:4186   .debug_str:00000000000005ec .LASF202
+     /tmp/cc2PiBEg.s:4196   .debug_str:0000000000000627 .LASF203
+     /tmp/cc2PiBEg.s:4224   .debug_str:00000000000006c2 .LASF204
+     /tmp/cc2PiBEg.s:3942   .debug_str:000000000000002e .LASF205
+     /tmp/cc2PiBEg.s:4030   .debug_str:000000000000026a .LASF206
+     /tmp/cc2PiBEg.s:4342   .debug_str:00000000000009a7 .LASF207
+     /tmp/cc2PiBEg.s:4426   .debug_str:0000000000000c5a .LASF208
+     /tmp/cc2PiBEg.s:4160   .debug_str:0000000000000555 .LASF209
+     /tmp/cc2PiBEg.s:4154   .debug_str:000000000000053b .LASF210
+     /tmp/cc2PiBEg.s:4042   .debug_str:00000000000002a1 .LASF211
+     /tmp/cc2PiBEg.s:4098   .debug_str:00000000000003d1 .LASF212
+     /tmp/cc2PiBEg.s:4310   .debug_str:00000000000008dc .LASF215
+     /tmp/cc2PiBEg.s:4352   .debug_str:00000000000009f1 .LASF213
+     /tmp/cc2PiBEg.s:3970   .debug_str:00000000000000fa .LASF214
+     /tmp/cc2PiBEg.s:3966   .debug_str:00000000000000d9 .LASF216
+     /tmp/cc2PiBEg.s:4312   .debug_str:00000000000008ea .LASF217
+     /tmp/cc2PiBEg.s:3956   .debug_str:000000000000008d .LASF224
+     /tmp/cc2PiBEg.s:58     .text.Focus_Fault_Timer_Expiration:0000000000000000 .LFB12
+     /tmp/cc2PiBEg.s:87     .text.Focus_Fault_Timer_Expiration:0000000000000028 .LFE12
+     /tmp/cc2PiBEg.s:4120   .debug_str:0000000000000484 .LASF221
+     /tmp/cc2PiBEg.s:3748   .debug_loc:0000000000000000 .LLST1
+     /tmp/cc2PiBEg.s:4036   .debug_str:0000000000000286 .LASF218
+     /tmp/cc2PiBEg.s:79     .text.Focus_Fault_Timer_Expiration:000000000000001c .LVL5
+     /tmp/cc2PiBEg.s:4250   .debug_str:0000000000000764 .LASF219
+     /tmp/cc2PiBEg.s:412    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .LFB11
+     /tmp/cc2PiBEg.s:426    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .LFE11
+     /tmp/cc2PiBEg.s:4328   .debug_str:000000000000094b .LASF223
+     /tmp/cc2PiBEg.s:424    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .LVL36
+     /tmp/cc2PiBEg.s:4246   .debug_str:0000000000000742 .LASF220
+     /tmp/cc2PiBEg.s:354    .text.v_Start_Focus_Fault_Timer:0000000000000000 .LFB10
+     /tmp/cc2PiBEg.s:405    .text.v_Start_Focus_Fault_Timer:000000000000006c .LFE10
+     /tmp/cc2PiBEg.s:4128   .debug_str:00000000000004af .LASF222
+     /tmp/cc2PiBEg.s:3762   .debug_loc:0000000000000021 .LLST7
+     /tmp/cc2PiBEg.s:378    .text.v_Start_Focus_Fault_Timer:0000000000000030 .LVL33
+     /tmp/cc2PiBEg.s:384    .text.v_Start_Focus_Fault_Timer:0000000000000044 .LVL34
+     /tmp/cc2PiBEg.s:403    .text.v_Start_Focus_Fault_Timer:000000000000006c .LVL35
+     /tmp/cc2PiBEg.s:4048   .debug_str:00000000000002c0 .LASF225
+     /tmp/cc2PiBEg.s:93     .text.Focus_Timer_Expiration:0000000000000000 .LFB9
+     /tmp/cc2PiBEg.s:122    .text.Focus_Timer_Expiration:0000000000000028 .LFE9
+     /tmp/cc2PiBEg.s:3780   .debug_loc:000000000000004d .LLST2
+     /tmp/cc2PiBEg.s:114    .text.Focus_Timer_Expiration:000000000000001c .LVL8
+     /tmp/cc2PiBEg.s:3982   .debug_str:0000000000000146 .LASF226
+     /tmp/cc2PiBEg.s:208    .text.v_Stop_Focus_Timer:0000000000000000 .LFB8
+     /tmp/cc2PiBEg.s:222    .text.v_Stop_Focus_Timer:0000000000000024 .LFE8
+     /tmp/cc2PiBEg.s:220    .text.v_Stop_Focus_Timer:0000000000000024 .LVL17
+     /tmp/cc2PiBEg.s:4386   .debug_str:0000000000000b6a .LASF227
+     /tmp/cc2PiBEg.s:152    .text.v_Start_Focus_Timer:0000000000000000 .LFB7
+     /tmp/cc2PiBEg.s:201    .text.v_Start_Focus_Timer:0000000000000064 .LFE7
+     /tmp/cc2PiBEg.s:3794   .debug_loc:000000000000006e .LLST4
+     /tmp/cc2PiBEg.s:175    .text.v_Start_Focus_Timer:0000000000000030 .LVL14
+     /tmp/cc2PiBEg.s:180    .text.v_Start_Focus_Timer:000000000000003c .LVL15
+     /tmp/cc2PiBEg.s:199    .text.v_Start_Focus_Timer:0000000000000064 .LVL16
+     /tmp/cc2PiBEg.s:4126   .debug_str:0000000000000498 .LASF228
+     /tmp/cc2PiBEg.s:129    .text.v_Post_Focus_Event_ISR:0000000000000000 .LFB6
+     /tmp/cc2PiBEg.s:145    .text.v_Post_Focus_Event_ISR:0000000000000020 .LFE6
+     /tmp/cc2PiBEg.s:3812   .debug_loc:000000000000009a .LLST3
+     /tmp/cc2PiBEg.s:4072   .debug_str:0000000000000347 .LASF229
+     /tmp/cc2PiBEg.s:143    .text.v_Post_Focus_Event_ISR:0000000000000020 .LVL11
+     /tmp/cc2PiBEg.s:4276   .debug_str:00000000000007e7 .LASF230
+     /tmp/cc2PiBEg.s:36     .text.v_Post_Focus_Event:0000000000000000 .LFB5
+     /tmp/cc2PiBEg.s:52     .text.v_Post_Focus_Event:0000000000000020 .LFE5
+     /tmp/cc2PiBEg.s:3830   .debug_loc:00000000000000c6 .LLST0
+     /tmp/cc2PiBEg.s:50     .text.v_Post_Focus_Event:0000000000000020 .LVL2
+     /tmp/cc2PiBEg.s:4366   .debug_str:0000000000000af6 .LASF251
+     /tmp/cc2PiBEg.s:14     .text.b_Is_Idle:0000000000000000 .LFB4
+     /tmp/cc2PiBEg.s:29     .text.b_Is_Idle:0000000000000020 .LFE4
+     /tmp/cc2PiBEg.s:4358   .debug_str:0000000000000acb .LASF231
+     /tmp/cc2PiBEg.s:229    .text.v_Focus_Task:0000000000000000 .LFB3
+     /tmp/cc2PiBEg.s:347    .text.v_Focus_Task:0000000000000134 .LFE3
+     /tmp/cc2PiBEg.s:4254   .debug_str:0000000000000787 .LASF232
+     /tmp/cc2PiBEg.s:3848   .debug_loc:00000000000000f2 .LLST5
+     /tmp/cc2PiBEg.s:4088   .debug_str:00000000000003a8 .LASF233
+     /tmp/cc2PiBEg.s:4440   .debug_str:0000000000000ca8 .LASF234
+     /tmp/cc2PiBEg.s:4330   .debug_str:0000000000000953 .LASF235
+     /tmp/cc2PiBEg.s:3862   .debug_loc:0000000000000113 .LLST6
+     /tmp/cc2PiBEg.s:4296   .debug_str:000000000000087d .LASF236
+     /tmp/cc2PiBEg.s:326    .text.v_Focus_Task:0000000000000108 .LVL27
+     /tmp/cc2PiBEg.s:335    .text.v_Focus_Task:000000000000011c .LVL29
+     /tmp/cc2PiBEg.s:255    .text.v_Focus_Task:0000000000000028 .LVL20
+     /tmp/cc2PiBEg.s:266    .text.v_Focus_Task:0000000000000054 .LVL21
+     /tmp/cc2PiBEg.s:278    .text.v_Focus_Task:0000000000000080 .LVL22
+     /tmp/cc2PiBEg.s:292    .text.v_Focus_Task:00000000000000a8 .LVL23
+     /tmp/cc2PiBEg.s:300    .text.v_Focus_Task:00000000000000c4 .LVL24
+     /tmp/cc2PiBEg.s:303    .text.v_Focus_Task:00000000000000cc .LVL25
+     /tmp/cc2PiBEg.s:308    .text.v_Focus_Task:00000000000000e4 .LVL26
+     /tmp/cc2PiBEg.s:4388   .debug_str:0000000000000b7e .LASF237
+     /tmp/cc2PiBEg.s:4172   .debug_str:0000000000000592 .LASF238
+     /tmp/cc2PiBEg.s:4108   .debug_str:0000000000000412 .LASF239
+     /tmp/cc2PiBEg.s:4118   .debug_str:0000000000000472 .LASF240
+     /tmp/cc2PiBEg.s:3960   .debug_str:00000000000000af .LASF241
+     /tmp/cc2PiBEg.s:4322   .debug_str:0000000000000923 .LASF242
+     /tmp/cc2PiBEg.s:4174   .debug_str:00000000000005a4 .LASF243
+     /tmp/cc2PiBEg.s:4148   .debug_str:0000000000000516 .LASF244
+     /tmp/cc2PiBEg.s:4110   .debug_str:000000000000042b .LASF245
+     /tmp/cc2PiBEg.s:4192   .debug_str:0000000000000604 .LASF246
+     /tmp/cc2PiBEg.s:4346   .debug_str:00000000000009c4 .LASF247
+     /tmp/cc2PiBEg.s:61     .text.Focus_Fault_Timer_Expiration:0000000000000000 .LVL3
+     /tmp/cc2PiBEg.s:71     .text.Focus_Fault_Timer_Expiration:000000000000000c .LVL4
+     /tmp/cc2PiBEg.s:357    .text.v_Start_Focus_Fault_Timer:0000000000000000 .LVL31
+     /tmp/cc2PiBEg.s:363    .text.v_Start_Focus_Fault_Timer:0000000000000010 .LVL32
+     /tmp/cc2PiBEg.s:96     .text.Focus_Timer_Expiration:0000000000000000 .LVL6
+     /tmp/cc2PiBEg.s:106    .text.Focus_Timer_Expiration:000000000000000c .LVL7
+     /tmp/cc2PiBEg.s:155    .text.v_Start_Focus_Timer:0000000000000000 .LVL12
+     /tmp/cc2PiBEg.s:166    .text.v_Start_Focus_Timer:0000000000000018 .LVL13
+     /tmp/cc2PiBEg.s:132    .text.v_Post_Focus_Event_ISR:0000000000000000 .LVL9
+     /tmp/cc2PiBEg.s:139    .text.v_Post_Focus_Event_ISR:0000000000000010 .LVL10
+     /tmp/cc2PiBEg.s:39     .text.v_Post_Focus_Event:0000000000000000 .LVL0
+     /tmp/cc2PiBEg.s:46     .text.v_Post_Focus_Event:0000000000000010 .LVL1
+     /tmp/cc2PiBEg.s:232    .text.v_Focus_Task:0000000000000000 .LVL18
+     /tmp/cc2PiBEg.s:243    .text.v_Focus_Task:0000000000000010 .LVL19
+     /tmp/cc2PiBEg.s:333    .text.v_Focus_Task:0000000000000114 .LVL28
+     /tmp/cc2PiBEg.s:337    .text.v_Focus_Task:0000000000000120 .LVL30
+     /tmp/cc2PiBEg.s:474    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cc2PiBEg.s:286    .text.v_Focus_Task:0000000000000098 .LBB2
+     /tmp/cc2PiBEg.s:289    .text.v_Focus_Task:00000000000000a0 .LBE2
+     /tmp/cc2PiBEg.s:309    .text.v_Focus_Task:00000000000000e4 .LBB3
+     /tmp/cc2PiBEg.s:315    .text.v_Focus_Task:00000000000000f4 .LBE3
+     /tmp/cc2PiBEg.s:317    .text.v_Focus_Task:00000000000000f4 .LBB4
+     /tmp/cc2PiBEg.s:343    .text.v_Focus_Task:0000000000000130 .LBE4
+=======
+     /tmp/ccekvLJD.s:13     .text.b_Is_Idle:0000000000000000 b_Is_Idle
+     /tmp/ccekvLJD.s:17     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:18     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:19     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:20     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:22     .text.b_Is_Idle:0000000000000008 .L0 
+     /tmp/ccekvLJD.s:26     .text.b_Is_Idle:0000000000000018 .L0 
+     /tmp/ccekvLJD.s:28     .text.b_Is_Idle:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:35     .text.v_Post_Focus_Event:0000000000000000 v_Post_Focus_Event
+     /tmp/ccekvLJD.s:38     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:40     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:41     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:42     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:43     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:51     .text.v_Post_Focus_Event:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:57     .text.Focus_Fault_Timer_Expiration:0000000000000000 Focus_Fault_Timer_Expiration
+     /tmp/ccekvLJD.s:60     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:62     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:63     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:64     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:65     .text.Focus_Fault_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:66     .text.Focus_Fault_Timer_Expiration:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:68     .text.Focus_Fault_Timer_Expiration:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:70     .text.Focus_Fault_Timer_Expiration:0000000000000008 .L0 
+     /tmp/ccekvLJD.s:73     .text.Focus_Fault_Timer_Expiration:000000000000000c .L0 
+     /tmp/ccekvLJD.s:74     .text.Focus_Fault_Timer_Expiration:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:76     .text.Focus_Fault_Timer_Expiration:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:78     .text.Focus_Fault_Timer_Expiration:0000000000000014 .L0 
+     /tmp/ccekvLJD.s:81     .text.Focus_Fault_Timer_Expiration:000000000000001c .L0 
+     /tmp/ccekvLJD.s:82     .text.Focus_Fault_Timer_Expiration:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:84     .text.Focus_Fault_Timer_Expiration:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:86     .text.Focus_Fault_Timer_Expiration:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:92     .text.Focus_Timer_Expiration:0000000000000000 Focus_Timer_Expiration
+     /tmp/ccekvLJD.s:95     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:97     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:98     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:99     .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:100    .text.Focus_Timer_Expiration:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:101    .text.Focus_Timer_Expiration:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:103    .text.Focus_Timer_Expiration:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:105    .text.Focus_Timer_Expiration:0000000000000008 .L0 
+     /tmp/ccekvLJD.s:108    .text.Focus_Timer_Expiration:000000000000000c .L0 
+     /tmp/ccekvLJD.s:109    .text.Focus_Timer_Expiration:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:111    .text.Focus_Timer_Expiration:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:113    .text.Focus_Timer_Expiration:0000000000000014 .L0 
+     /tmp/ccekvLJD.s:116    .text.Focus_Timer_Expiration:000000000000001c .L0 
+     /tmp/ccekvLJD.s:117    .text.Focus_Timer_Expiration:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:119    .text.Focus_Timer_Expiration:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:121    .text.Focus_Timer_Expiration:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:128    .text.v_Post_Focus_Event_ISR:0000000000000000 v_Post_Focus_Event_ISR
+     /tmp/ccekvLJD.s:131    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:133    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:134    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:135    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:136    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:144    .text.v_Post_Focus_Event_ISR:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:151    .text.v_Start_Focus_Timer:0000000000000000 v_Start_Focus_Timer
+     /tmp/ccekvLJD.s:154    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:156    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:157    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:158    .text.v_Start_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:159    .text.v_Start_Focus_Timer:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:161    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+                            *COM*:0000000000000004 Focus_Timer
+     /tmp/ccekvLJD.s:163    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+     /tmp/ccekvLJD.s:171    .text.v_Start_Focus_Timer:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:172    .text.v_Start_Focus_Timer:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:174    .text.v_Start_Focus_Timer:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:177    .text.v_Start_Focus_Timer:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:178    .text.v_Start_Focus_Timer:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:184    .text.v_Start_Focus_Timer:0000000000000044 .L0 
+     /tmp/ccekvLJD.s:185    .text.v_Start_Focus_Timer:0000000000000048 .L0 
+     /tmp/ccekvLJD.s:187    .text.v_Start_Focus_Timer:000000000000004c .L0 
+     /tmp/ccekvLJD.s:189    .text.v_Start_Focus_Timer:000000000000004c .L0 
+     /tmp/ccekvLJD.s:191    .text.v_Start_Focus_Timer:0000000000000050 .L0 
+     /tmp/ccekvLJD.s:192    .text.v_Start_Focus_Timer:0000000000000050 .L0 
+     /tmp/ccekvLJD.s:195    .text.v_Start_Focus_Timer:0000000000000058 .L0 
+     /tmp/ccekvLJD.s:196    .text.v_Start_Focus_Timer:000000000000005c .L0 
+     /tmp/ccekvLJD.s:198    .text.v_Start_Focus_Timer:000000000000005c .L0 
+     /tmp/ccekvLJD.s:200    .text.v_Start_Focus_Timer:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:207    .text.v_Stop_Focus_Timer:0000000000000000 v_Stop_Focus_Timer
+     /tmp/ccekvLJD.s:210    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:211    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:212    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:213    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:221    .text.v_Stop_Focus_Timer:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:228    .text.v_Focus_Task:0000000000000000 v_Focus_Task
+     /tmp/ccekvLJD.s:231    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:233    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:234    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:235    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:236    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:237    .text.v_Focus_Task:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:238    .text.v_Focus_Task:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:240    .text.v_Focus_Task:0000000000000004 .L0 
+     /tmp/ccekvLJD.s:245    .text.v_Focus_Task:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:249    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:250    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:251    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:252    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:254    .text.v_Focus_Task:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:257    .text.v_Focus_Task:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:259    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:260    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:268    .text.v_Focus_Task:0000000000000054 .L0 
+     /tmp/ccekvLJD.s:272    .text.v_Focus_Task:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:274    .text.v_Focus_Task:000000000000006c .L0 
+     /tmp/ccekvLJD.s:275    .text.v_Focus_Task:000000000000006c .L0 
+     /tmp/ccekvLJD.s:280    .text.v_Focus_Task:0000000000000080 .L0 
+                            *COM*:0000000000000004 Focus_Fault_Timer
+     /tmp/ccekvLJD.s:282    .text.v_Focus_Task:0000000000000088 .L0 
+     /tmp/ccekvLJD.s:284    .text.v_Focus_Task:0000000000000090 .L0 
+     /tmp/ccekvLJD.s:288    .text.v_Focus_Task:0000000000000098 .L0 
+     /tmp/ccekvLJD.s:291    .text.v_Focus_Task:00000000000000a0 .L0 
+     /tmp/ccekvLJD.s:294    .text.v_Focus_Task:00000000000000a8 .L0 
+     /tmp/ccekvLJD.s:302    .text.v_Focus_Task:00000000000000c4 .L0 
+     /tmp/ccekvLJD.s:305    .text.v_Focus_Task:00000000000000cc .L0 
+     /tmp/ccekvLJD.s:311    .text.v_Focus_Task:00000000000000e4 .L0 
+     /tmp/ccekvLJD.s:313    .text.v_Focus_Task:00000000000000ec .L0 
+     /tmp/ccekvLJD.s:318    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/ccekvLJD.s:319    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/ccekvLJD.s:320    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/ccekvLJD.s:321    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/ccekvLJD.s:322    .text.v_Focus_Task:00000000000000f4 .L0 
+     /tmp/ccekvLJD.s:328    .text.v_Focus_Task:0000000000000108 .L0 
+     /tmp/ccekvLJD.s:329    .text.v_Focus_Task:0000000000000108 .L0 
+     /tmp/ccekvLJD.s:331    .text.v_Focus_Task:000000000000010c .L0 
+     /tmp/ccekvLJD.s:340    .text.v_Focus_Task:0000000000000120 .L0 
+     /tmp/ccekvLJD.s:345    .text.v_Focus_Task:0000000000000130 .L0 
+     /tmp/ccekvLJD.s:346    .text.v_Focus_Task:0000000000000134 .L0 
+     /tmp/ccekvLJD.s:353    .text.v_Start_Focus_Fault_Timer:0000000000000000 v_Start_Focus_Fault_Timer
+     /tmp/ccekvLJD.s:356    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:358    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:359    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:360    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:365    .text.v_Start_Focus_Fault_Timer:0000000000000010 .L0 
+     /tmp/ccekvLJD.s:366    .text.v_Start_Focus_Fault_Timer:0000000000000014 .L0 
+     /tmp/ccekvLJD.s:368    .text.v_Start_Focus_Fault_Timer:0000000000000014 .L0 
+     /tmp/ccekvLJD.s:372    .text.v_Start_Focus_Fault_Timer:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:374    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:375    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:377    .text.v_Start_Focus_Fault_Timer:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:380    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:381    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:388    .text.v_Start_Focus_Fault_Timer:000000000000004c .L0 
+     /tmp/ccekvLJD.s:389    .text.v_Start_Focus_Fault_Timer:0000000000000050 .L0 
+     /tmp/ccekvLJD.s:391    .text.v_Start_Focus_Fault_Timer:0000000000000054 .L0 
+     /tmp/ccekvLJD.s:393    .text.v_Start_Focus_Fault_Timer:0000000000000054 .L0 
+     /tmp/ccekvLJD.s:395    .text.v_Start_Focus_Fault_Timer:0000000000000058 .L0 
+     /tmp/ccekvLJD.s:396    .text.v_Start_Focus_Fault_Timer:0000000000000058 .L0 
+     /tmp/ccekvLJD.s:399    .text.v_Start_Focus_Fault_Timer:0000000000000060 .L0 
+     /tmp/ccekvLJD.s:400    .text.v_Start_Focus_Fault_Timer:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:402    .text.v_Start_Focus_Fault_Timer:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:404    .text.v_Start_Focus_Fault_Timer:000000000000006c .L0 
+     /tmp/ccekvLJD.s:411    .text.v_Stop_Focus_Fault_Timer:0000000000000000 v_Stop_Focus_Fault_Timer
+     /tmp/ccekvLJD.s:414    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:415    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:416    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:417    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:425    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:432    .bss.focus_context:0000000000000000 .LANCHOR0
+     /tmp/ccekvLJD.s:435    .bss.focus_context:0000000000000000 focus_context
+     /tmp/ccekvLJD.s:445    .sbss.Control_Queue:0000000000000000 .LANCHOR1
+     /tmp/ccekvLJD.s:448    .sbss.Control_Queue:0000000000000000 Control_Queue
+     /tmp/ccekvLJD.s:452    .sbss.u32_Timeout_Counter:0000000000000000 .LANCHOR2
+     /tmp/ccekvLJD.s:455    .sbss.u32_Timeout_Counter:0000000000000000 u32_Timeout_Counter
+     /tmp/ccekvLJD.s:31     .text.b_Is_Idle:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:54     .text.v_Post_Focus_Event:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:89     .text.Focus_Fault_Timer_Expiration:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:124    .text.Focus_Timer_Expiration:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:147    .text.v_Post_Focus_Event_ISR:0000000000000020 .L0 
+     /tmp/ccekvLJD.s:203    .text.v_Start_Focus_Timer:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:224    .text.v_Stop_Focus_Timer:0000000000000024 .L0 
+     /tmp/ccekvLJD.s:349    .text.v_Focus_Task:0000000000000134 .L0 
+     /tmp/ccekvLJD.s:407    .text.v_Start_Focus_Fault_Timer:000000000000006c .L0 
+     /tmp/ccekvLJD.s:430    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:20     .text.b_Is_Idle:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:23     .text.b_Is_Idle:000000000000000c .L0 
+     /tmp/ccekvLJD.s:43     .text.v_Post_Focus_Event:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:136    .text.v_Post_Focus_Event_ISR:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:163    .text.v_Start_Focus_Timer:0000000000000008 .L0 
+     /tmp/ccekvLJD.s:213    .text.v_Stop_Focus_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:257    .text.v_Focus_Task:0000000000000028 .L0 
+     /tmp/ccekvLJD.s:260    .text.v_Focus_Task:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:439    .rodata.v_Focus_Task.str1.4:0000000000000000 .LC0
+     /tmp/ccekvLJD.s:264    .text.v_Focus_Task:0000000000000044 .L0 
+     /tmp/ccekvLJD.s:268    .text.v_Focus_Task:0000000000000054 .L0 
+     /tmp/ccekvLJD.s:272    .text.v_Focus_Task:0000000000000064 .L0 
+     /tmp/ccekvLJD.s:441    .rodata.v_Focus_Task.str1.4:000000000000000c .LC1
+     /tmp/ccekvLJD.s:276    .text.v_Focus_Task:0000000000000070 .L0 
+     /tmp/ccekvLJD.s:280    .text.v_Focus_Task:0000000000000080 .L0 
+     /tmp/ccekvLJD.s:282    .text.v_Focus_Task:0000000000000088 .L0 
+     /tmp/ccekvLJD.s:288    .text.v_Focus_Task:0000000000000098 .L0 
+     /tmp/ccekvLJD.s:305    .text.v_Focus_Task:00000000000000cc .L0 
+     /tmp/ccekvLJD.s:306    .text.v_Focus_Task:00000000000000d4 .L0 
+     /tmp/ccekvLJD.s:311    .text.v_Focus_Task:00000000000000e4 .L0 
+     /tmp/ccekvLJD.s:313    .text.v_Focus_Task:00000000000000ec .L0 
+     /tmp/ccekvLJD.s:342    .text.v_Focus_Task:0000000000000128 .L0 
+     /tmp/ccekvLJD.s:338    .text.v_Focus_Task:0000000000000120 .L12
+     /tmp/ccekvLJD.s:314    .text.v_Focus_Task:00000000000000f4 .L14
+     /tmp/ccekvLJD.s:360    .text.v_Start_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:381    .text.v_Start_Focus_Fault_Timer:0000000000000030 .L0 
+     /tmp/ccekvLJD.s:417    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .L0 
+     /tmp/ccekvLJD.s:3003   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccekvLJD.s:4356   .debug_str:0000000000000a05 .LASF248
+     /tmp/ccekvLJD.s:4004   .debug_str:00000000000001bf .LASF249
+     /tmp/ccekvLJD.s:4280   .debug_str:0000000000000809 .LASF250
+     /tmp/ccekvLJD.s:3904   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccekvLJD.s:3936   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccekvLJD.s:4380   .debug_str:0000000000000b44 .LASF0
+     /tmp/ccekvLJD.s:4284   .debug_str:0000000000000848 .LASF3
+     /tmp/ccekvLJD.s:4336   .debug_str:0000000000000982 .LASF1
+     /tmp/ccekvLJD.s:4252   .debug_str:000000000000077d .LASF2
+     /tmp/ccekvLJD.s:4062   .debug_str:000000000000031a .LASF4
+     /tmp/ccekvLJD.s:4384   .debug_str:0000000000000b57 .LASF5
+     /tmp/ccekvLJD.s:3976   .debug_str:000000000000011c .LASF6
+     /tmp/ccekvLJD.s:4258   .debug_str:000000000000079b .LASF7
+     /tmp/ccekvLJD.s:4340   .debug_str:000000000000099c .LASF8
+     /tmp/ccekvLJD.s:4308   .debug_str:00000000000008ca .LASF9
+     /tmp/ccekvLJD.s:4180   .debug_str:00000000000005ce .LASF10
+     /tmp/ccekvLJD.s:4106   .debug_str:0000000000000407 .LASF11
+     /tmp/ccekvLJD.s:4052   .debug_str:00000000000002e1 .LASF12
+     /tmp/ccekvLJD.s:3968   .debug_str:00000000000000ed .LASF13
+     /tmp/ccekvLJD.s:4162   .debug_str:0000000000000565 .LASF14
+     /tmp/ccekvLJD.s:4238   .debug_str:000000000000070d .LASF15
+     /tmp/ccekvLJD.s:4320   .debug_str:000000000000091b .LASF16
+     /tmp/ccekvLJD.s:4020   .debug_str:0000000000000226 .LASF17
+     /tmp/ccekvLJD.s:4272   .debug_str:00000000000007d4 .LASF18
+     /tmp/ccekvLJD.s:4086   .debug_str:00000000000003a1 .LASF19
+     /tmp/ccekvLJD.s:4234   .debug_str:00000000000006f9 .LASF20
+     /tmp/ccekvLJD.s:4316   .debug_str:00000000000008ff .LASF21
+     /tmp/ccekvLJD.s:4404   .debug_str:0000000000000bf0 .LASF22
+     /tmp/ccekvLJD.s:4000   .debug_str:00000000000001b2 .LASF23
+     /tmp/ccekvLJD.s:4378   .debug_str:0000000000000b3b .LASF24
+     /tmp/ccekvLJD.s:4156   .debug_str:0000000000000549 .LASF25
+     /tmp/ccekvLJD.s:4270   .debug_str:00000000000007cd .LASF26
+     /tmp/ccekvLJD.s:4032   .debug_str:0000000000000278 .LASF27
+     /tmp/ccekvLJD.s:4122   .debug_str:000000000000048b .LASF28
+     /tmp/ccekvLJD.s:4210   .debug_str:0000000000000679 .LASF29
+     /tmp/ccekvLJD.s:4190   .debug_str:00000000000005fc .LASF30
+     /tmp/ccekvLJD.s:4236   .debug_str:0000000000000705 .LASF31
+     /tmp/ccekvLJD.s:4326   .debug_str:0000000000000944 .LASF129
+     /tmp/ccekvLJD.s:4152   .debug_str:0000000000000532 .LASF32
+     /tmp/ccekvLJD.s:4010   .debug_str:00000000000001e9 .LASF37
+     /tmp/ccekvLJD.s:4102   .debug_str:00000000000003f0 .LASF33
+     /tmp/ccekvLJD.s:4292   .debug_str:000000000000086b .LASF34
+     /tmp/ccekvLJD.s:4266   .debug_str:00000000000007c1 .LASF35
+     /tmp/ccekvLJD.s:4058   .debug_str:000000000000030d .LASF36
+     /tmp/ccekvLJD.s:4304   .debug_str:00000000000008bf .LASF38
+     /tmp/ccekvLJD.s:4090   .debug_str:00000000000003b4 .LASF39
+     /tmp/ccekvLJD.s:4038   .debug_str:000000000000028c .LASF40
+     /tmp/ccekvLJD.s:4024   .debug_str:0000000000000243 .LASF41
+     /tmp/ccekvLJD.s:4140   .debug_str:00000000000004ea .LASF42
+     /tmp/ccekvLJD.s:4230   .debug_str:00000000000006e9 .LASF43
+     /tmp/ccekvLJD.s:4274   .debug_str:00000000000007dd .LASF44
+     /tmp/ccekvLJD.s:4014   .debug_str:0000000000000209 .LASF45
+     /tmp/ccekvLJD.s:4092   .debug_str:00000000000003bd .LASF46
+     /tmp/ccekvLJD.s:4216   .debug_str:0000000000000694 .LASF47
+     /tmp/ccekvLJD.s:3946   .debug_str:000000000000004e .LASF48
+     /tmp/ccekvLJD.s:4212   .debug_str:0000000000000684 .LASF49
+     /tmp/ccekvLJD.s:4324   .debug_str:0000000000000938 .LASF50
+     /tmp/ccekvLJD.s:4394   .debug_str:0000000000000bb3 .LASF51
+     /tmp/ccekvLJD.s:4414   .debug_str:0000000000000c2b .LASF52
+     /tmp/ccekvLJD.s:4248   .debug_str:000000000000075c .LASF53
+     /tmp/ccekvLJD.s:4096   .debug_str:00000000000003cc .LASF54
+     /tmp/ccekvLJD.s:4002   .debug_str:00000000000001ba .LASF55
+     /tmp/ccekvLJD.s:4360   .debug_str:0000000000000ad8 .LASF56
+     /tmp/ccekvLJD.s:4182   .debug_str:00000000000005dc .LASF57
+     /tmp/ccekvLJD.s:4396   .debug_str:0000000000000bbc .LASF58
+     /tmp/ccekvLJD.s:4056   .debug_str:0000000000000305 .LASF59
+     /tmp/ccekvLJD.s:3974   .debug_str:0000000000000115 .LASF60
+     /tmp/ccekvLJD.s:4198   .debug_str:0000000000000632 .LASF61
+     /tmp/ccekvLJD.s:3972   .debug_str:000000000000010c .LASF62
+     /tmp/ccekvLJD.s:4006   .debug_str:00000000000001ce .LASF63
+     /tmp/ccekvLJD.s:3990   .debug_str:000000000000017d .LASF64
+     /tmp/ccekvLJD.s:4240   .debug_str:0000000000000716 .LASF65
+     /tmp/ccekvLJD.s:4424   .debug_str:0000000000000c54 .LASF66
+     /tmp/ccekvLJD.s:4164   .debug_str:000000000000056d .LASF67
+     /tmp/ccekvLJD.s:4434   .debug_str:0000000000000c87 .LASF68
+     /tmp/ccekvLJD.s:4406   .debug_str:0000000000000bf7 .LASF69
+     /tmp/ccekvLJD.s:4302   .debug_str:00000000000008b6 .LASF70
+     /tmp/ccekvLJD.s:4068   .debug_str:0000000000000335 .LASF71
+     /tmp/ccekvLJD.s:4268   .debug_str:00000000000007c7 .LASF72
+     /tmp/ccekvLJD.s:4306   .debug_str:00000000000008c4 .LASF73
+     /tmp/ccekvLJD.s:3986   .debug_str:0000000000000166 .LASF74
+     /tmp/ccekvLJD.s:4412   .debug_str:0000000000000c23 .LASF75
+     /tmp/ccekvLJD.s:4382   .debug_str:0000000000000b50 .LASF76
+     /tmp/ccekvLJD.s:3980   .debug_str:000000000000013f .LASF77
+     /tmp/ccekvLJD.s:4176   .debug_str:00000000000005b8 .LASF78
+     /tmp/ccekvLJD.s:3998   .debug_str:00000000000001aa .LASF79
+     /tmp/ccekvLJD.s:4430   .debug_str:0000000000000c76 .LASF80
+     /tmp/ccekvLJD.s:4094   .debug_str:00000000000003c7 .LASF81
+     /tmp/ccekvLJD.s:4080   .debug_str:0000000000000374 .LASF82
+     /tmp/ccekvLJD.s:4410   .debug_str:0000000000000c0a .LASF83
+     /tmp/ccekvLJD.s:4376   .debug_str:0000000000000b33 .LASF84
+     /tmp/ccekvLJD.s:4168   .debug_str:000000000000057c .LASF85
+     /tmp/ccekvLJD.s:4206   .debug_str:0000000000000658 .LASF86
+     /tmp/ccekvLJD.s:4018   .debug_str:000000000000021e .LASF87
+     /tmp/ccekvLJD.s:4050   .debug_str:00000000000002d7 .LASF88
+     /tmp/ccekvLJD.s:4124   .debug_str:0000000000000493 .LASF89
+     /tmp/ccekvLJD.s:4184   .debug_str:00000000000005e2 .LASF90
+     /tmp/ccekvLJD.s:4290   .debug_str:0000000000000863 .LASF91
+     /tmp/ccekvLJD.s:4332   .debug_str:0000000000000964 .LASF92
+     /tmp/ccekvLJD.s:4286   .debug_str:0000000000000852 .LASF93
+     /tmp/ccekvLJD.s:4146   .debug_str:000000000000050d .LASF94
+     /tmp/ccekvLJD.s:4142   .debug_str:00000000000004f4 .LASF95
+     /tmp/ccekvLJD.s:4368   .debug_str:0000000000000b00 .LASF96
+     /tmp/ccekvLJD.s:4264   .debug_str:00000000000007bc .LASF97
+     /tmp/ccekvLJD.s:4138   .debug_str:00000000000004e5 .LASF98
+     /tmp/ccekvLJD.s:4066   .debug_str:000000000000032e .LASF99
+     /tmp/ccekvLJD.s:4362   .debug_str:0000000000000adf .LASF100
+     /tmp/ccekvLJD.s:4314   .debug_str:00000000000008f8 .LASF101
+     /tmp/ccekvLJD.s:4158   .debug_str:000000000000054f .LASF102
+     /tmp/ccekvLJD.s:4046   .debug_str:00000000000002b8 .LASF103
+     /tmp/ccekvLJD.s:4416   .debug_str:0000000000000c33 .LASF104
+     /tmp/ccekvLJD.s:4188   .debug_str:00000000000005f6 .LASF105
+     /tmp/ccekvLJD.s:4350   .debug_str:00000000000009ec .LASF106
+     /tmp/ccekvLJD.s:4408   .debug_str:0000000000000bfd .LASF107
+     /tmp/ccekvLJD.s:4370   .debug_str:0000000000000b08 .LASF108
+     /tmp/ccekvLJD.s:4054   .debug_str:00000000000002f8 .LASF109
+     /tmp/ccekvLJD.s:4278   .debug_str:00000000000007fa .LASF110
+     /tmp/ccekvLJD.s:4178   .debug_str:00000000000005bf .LASF111
+     /tmp/ccekvLJD.s:4418   .debug_str:0000000000000c39 .LASF112
+     /tmp/ccekvLJD.s:3958   .debug_str:00000000000000aa .LASF113
+     /tmp/ccekvLJD.s:4132   .debug_str:00000000000004c6 .LASF114
+     /tmp/ccekvLJD.s:4372   .debug_str:0000000000000b15 .LASF115
+     /tmp/ccekvLJD.s:3952   .debug_str:0000000000000072 .LASF116
+     /tmp/ccekvLJD.s:4294   .debug_str:0000000000000873 .LASF117
+     /tmp/ccekvLJD.s:3964   .debug_str:00000000000000cd .LASF118
+     /tmp/ccekvLJD.s:4344   .debug_str:00000000000009b7 .LASF119
+     /tmp/ccekvLJD.s:3994   .debug_str:0000000000000197 .LASF120
+     /tmp/ccekvLJD.s:4144   .debug_str:00000000000004fe .LASF121
+     /tmp/ccekvLJD.s:4104   .debug_str:00000000000003f6 .LASF122
+     /tmp/ccekvLJD.s:4194   .debug_str:0000000000000618 .LASF123
+     /tmp/ccekvLJD.s:4130   .debug_str:00000000000004b5 .LASF124
+     /tmp/ccekvLJD.s:4220   .debug_str:00000000000006a6 .LASF125
+     /tmp/ccekvLJD.s:4044   .debug_str:00000000000002b1 .LASF126
+     /tmp/ccekvLJD.s:4432   .debug_str:0000000000000c7e .LASF127
+     /tmp/ccekvLJD.s:4282   .debug_str:0000000000000840 .LASF128
+     /tmp/ccekvLJD.s:4420   .debug_str:0000000000000c44 .LASF130
+     /tmp/ccekvLJD.s:4040   .debug_str:0000000000000295 .LASF131
+     /tmp/ccekvLJD.s:4008   .debug_str:00000000000001d6 .LASF132
+     /tmp/ccekvLJD.s:4398   .debug_str:0000000000000bc2 .LASF133
+     /tmp/ccekvLJD.s:4436   .debug_str:0000000000000c8d .LASF134
+     /tmp/ccekvLJD.s:4288   .debug_str:0000000000000857 .LASF135
+     /tmp/ccekvLJD.s:4402   .debug_str:0000000000000be1 .LASF136
+     /tmp/ccekvLJD.s:4390   .debug_str:0000000000000b9b .LASF137
+     /tmp/ccekvLJD.s:4028   .debug_str:0000000000000256 .LASF138
+     /tmp/ccekvLJD.s:4026   .debug_str:000000000000024d .LASF139
+     /tmp/ccekvLJD.s:3996   .debug_str:00000000000001a5 .LASF140
+     /tmp/ccekvLJD.s:4298   .debug_str:0000000000000888 .LASF141
+     /tmp/ccekvLJD.s:4022   .debug_str:000000000000022f .LASF142
+     /tmp/ccekvLJD.s:3940   .debug_str:0000000000000014 .LASF143
+     /tmp/ccekvLJD.s:4400   .debug_str:0000000000000bcc .LASF144
+     /tmp/ccekvLJD.s:3944   .debug_str:000000000000003f .LASF145
+     /tmp/ccekvLJD.s:3954   .debug_str:0000000000000080 .LASF146
+     /tmp/ccekvLJD.s:4078   .debug_str:0000000000000366 .LASF147
+     /tmp/ccekvLJD.s:4374   .debug_str:0000000000000b23 .LASF148
+     /tmp/ccekvLJD.s:4112   .debug_str:000000000000043e .LASF149
+     /tmp/ccekvLJD.s:4074   .debug_str:000000000000034f .LASF150
+     /tmp/ccekvLJD.s:4114   .debug_str:0000000000000450 .LASF151
+     /tmp/ccekvLJD.s:4244   .debug_str:000000000000072e .LASF152
+     /tmp/ccekvLJD.s:3962   .debug_str:00000000000000bd .LASF153
+     /tmp/ccekvLJD.s:4222   .debug_str:00000000000006af .LASF154
+     /tmp/ccekvLJD.s:4228   .debug_str:00000000000006d5 .LASF155
+     /tmp/ccekvLJD.s:4134   .debug_str:00000000000004d3 .LASF156
+     /tmp/ccekvLJD.s:3978   .debug_str:0000000000000126 .LASF157
+     /tmp/ccekvLJD.s:4208   .debug_str:0000000000000662 .LASF158
+     /tmp/ccekvLJD.s:4334   .debug_str:000000000000096c .LASF159
+     /tmp/ccekvLJD.s:4116   .debug_str:000000000000045c .LASF160
+     /tmp/ccekvLJD.s:4438   .debug_str:0000000000000c9b .LASF161
+     /tmp/ccekvLJD.s:4300   .debug_str:00000000000008a0 .LASF162
+     /tmp/ccekvLJD.s:4318   .debug_str:0000000000000906 .LASF163
+     /tmp/ccekvLJD.s:3988   .debug_str:000000000000016f .LASF164
+     /tmp/ccekvLJD.s:4150   .debug_str:0000000000000523 .LASF165
+     /tmp/ccekvLJD.s:4200   .debug_str:0000000000000638 .LASF166
+     /tmp/ccekvLJD.s:4202   .debug_str:0000000000000645 .LASF167
+     /tmp/ccekvLJD.s:4064   .debug_str:0000000000000325 .LASF168
+     /tmp/ccekvLJD.s:4262   .debug_str:00000000000007b0 .LASF169
+     /tmp/ccekvLJD.s:4218   .debug_str:000000000000069f .LASF170
+     /tmp/ccekvLJD.s:4422   .debug_str:0000000000000c4f .LASF171
+     /tmp/ccekvLJD.s:4012   .debug_str:00000000000001f1 .LASF172
+     /tmp/ccekvLJD.s:4256   .debug_str:0000000000000794 .LASF173
+     /tmp/ccekvLJD.s:4338   .debug_str:0000000000000990 .LASF174
+     /tmp/ccekvLJD.s:4242   .debug_str:000000000000071d .LASF175
+     /tmp/ccekvLJD.s:4100   .debug_str:00000000000003dd .LASF176
+     /tmp/ccekvLJD.s:3938   .debug_str:0000000000000000 .LASF177
+     /tmp/ccekvLJD.s:4226   .debug_str:00000000000006cd .LASF178
+     /tmp/ccekvLJD.s:4364   .debug_str:0000000000000ae5 .LASF179
+     /tmp/ccekvLJD.s:4392   .debug_str:0000000000000ba7 .LASF180
+     /tmp/ccekvLJD.s:4232   .debug_str:00000000000006f2 .LASF181
+     /tmp/ccekvLJD.s:4348   .debug_str:00000000000009df .LASF182
+     /tmp/ccekvLJD.s:4084   .debug_str:0000000000000394 .LASF183
+     /tmp/ccekvLJD.s:4082   .debug_str:000000000000037f .LASF184
+     /tmp/ccekvLJD.s:4070   .debug_str:000000000000033d .LASF185
+     /tmp/ccekvLJD.s:4354   .debug_str:00000000000009fd .LASF186
+     /tmp/ccekvLJD.s:3984   .debug_str:0000000000000159 .LASF187
+     /tmp/ccekvLJD.s:3992   .debug_str:0000000000000183 .LASF188
+     /tmp/ccekvLJD.s:4060   .debug_str:0000000000000312 .LASF189
+     /tmp/ccekvLJD.s:4136   .debug_str:00000000000004dc .LASF190
+     /tmp/ccekvLJD.s:4214   .debug_str:000000000000068c .LASF191
+     /tmp/ccekvLJD.s:4428   .debug_str:0000000000000c6d .LASF192
+     /tmp/ccekvLJD.s:4016   .debug_str:0000000000000213 .LASF193
+     /tmp/ccekvLJD.s:4170   .debug_str:0000000000000587 .LASF194
+     /tmp/ccekvLJD.s:4076   .debug_str:000000000000035a .LASF195
+     /tmp/ccekvLJD.s:3950   .debug_str:000000000000006a .LASF196
+     /tmp/ccekvLJD.s:4034   .debug_str:0000000000000280 .LASF197
+     /tmp/ccekvLJD.s:4166   .debug_str:0000000000000574 .LASF198
+     /tmp/ccekvLJD.s:3948   .debug_str:000000000000005c .LASF199
+     /tmp/ccekvLJD.s:4260   .debug_str:00000000000007a4 .LASF200
+     /tmp/ccekvLJD.s:4204   .debug_str:0000000000000652 .LASF201
+     /tmp/ccekvLJD.s:4186   .debug_str:00000000000005ec .LASF202
+     /tmp/ccekvLJD.s:4196   .debug_str:0000000000000627 .LASF203
+     /tmp/ccekvLJD.s:4224   .debug_str:00000000000006c2 .LASF204
+     /tmp/ccekvLJD.s:3942   .debug_str:000000000000002e .LASF205
+     /tmp/ccekvLJD.s:4030   .debug_str:000000000000026a .LASF206
+     /tmp/ccekvLJD.s:4342   .debug_str:00000000000009a7 .LASF207
+     /tmp/ccekvLJD.s:4426   .debug_str:0000000000000c5a .LASF208
+     /tmp/ccekvLJD.s:4160   .debug_str:0000000000000555 .LASF209
+     /tmp/ccekvLJD.s:4154   .debug_str:000000000000053b .LASF210
+     /tmp/ccekvLJD.s:4042   .debug_str:00000000000002a1 .LASF211
+     /tmp/ccekvLJD.s:4098   .debug_str:00000000000003d1 .LASF212
+     /tmp/ccekvLJD.s:4310   .debug_str:00000000000008dc .LASF215
+     /tmp/ccekvLJD.s:4352   .debug_str:00000000000009f1 .LASF213
+     /tmp/ccekvLJD.s:3970   .debug_str:00000000000000fa .LASF214
+     /tmp/ccekvLJD.s:3966   .debug_str:00000000000000d9 .LASF216
+     /tmp/ccekvLJD.s:4312   .debug_str:00000000000008ea .LASF217
+     /tmp/ccekvLJD.s:3956   .debug_str:000000000000008d .LASF224
+     /tmp/ccekvLJD.s:58     .text.Focus_Fault_Timer_Expiration:0000000000000000 .LFB12
+     /tmp/ccekvLJD.s:87     .text.Focus_Fault_Timer_Expiration:0000000000000028 .LFE12
+     /tmp/ccekvLJD.s:4120   .debug_str:0000000000000484 .LASF221
+     /tmp/ccekvLJD.s:3748   .debug_loc:0000000000000000 .LLST1
+     /tmp/ccekvLJD.s:4036   .debug_str:0000000000000286 .LASF218
+     /tmp/ccekvLJD.s:79     .text.Focus_Fault_Timer_Expiration:000000000000001c .LVL5
+     /tmp/ccekvLJD.s:4250   .debug_str:0000000000000764 .LASF219
+     /tmp/ccekvLJD.s:412    .text.v_Stop_Focus_Fault_Timer:0000000000000000 .LFB11
+     /tmp/ccekvLJD.s:426    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .LFE11
+     /tmp/ccekvLJD.s:4328   .debug_str:000000000000094b .LASF223
+     /tmp/ccekvLJD.s:424    .text.v_Stop_Focus_Fault_Timer:0000000000000024 .LVL36
+     /tmp/ccekvLJD.s:4246   .debug_str:0000000000000742 .LASF220
+     /tmp/ccekvLJD.s:354    .text.v_Start_Focus_Fault_Timer:0000000000000000 .LFB10
+     /tmp/ccekvLJD.s:405    .text.v_Start_Focus_Fault_Timer:000000000000006c .LFE10
+     /tmp/ccekvLJD.s:4128   .debug_str:00000000000004af .LASF222
+     /tmp/ccekvLJD.s:3762   .debug_loc:0000000000000021 .LLST7
+     /tmp/ccekvLJD.s:378    .text.v_Start_Focus_Fault_Timer:0000000000000030 .LVL33
+     /tmp/ccekvLJD.s:384    .text.v_Start_Focus_Fault_Timer:0000000000000044 .LVL34
+     /tmp/ccekvLJD.s:403    .text.v_Start_Focus_Fault_Timer:000000000000006c .LVL35
+     /tmp/ccekvLJD.s:4048   .debug_str:00000000000002c0 .LASF225
+     /tmp/ccekvLJD.s:93     .text.Focus_Timer_Expiration:0000000000000000 .LFB9
+     /tmp/ccekvLJD.s:122    .text.Focus_Timer_Expiration:0000000000000028 .LFE9
+     /tmp/ccekvLJD.s:3780   .debug_loc:000000000000004d .LLST2
+     /tmp/ccekvLJD.s:114    .text.Focus_Timer_Expiration:000000000000001c .LVL8
+     /tmp/ccekvLJD.s:3982   .debug_str:0000000000000146 .LASF226
+     /tmp/ccekvLJD.s:208    .text.v_Stop_Focus_Timer:0000000000000000 .LFB8
+     /tmp/ccekvLJD.s:222    .text.v_Stop_Focus_Timer:0000000000000024 .LFE8
+     /tmp/ccekvLJD.s:220    .text.v_Stop_Focus_Timer:0000000000000024 .LVL17
+     /tmp/ccekvLJD.s:4386   .debug_str:0000000000000b6a .LASF227
+     /tmp/ccekvLJD.s:152    .text.v_Start_Focus_Timer:0000000000000000 .LFB7
+     /tmp/ccekvLJD.s:201    .text.v_Start_Focus_Timer:0000000000000064 .LFE7
+     /tmp/ccekvLJD.s:3794   .debug_loc:000000000000006e .LLST4
+     /tmp/ccekvLJD.s:175    .text.v_Start_Focus_Timer:0000000000000030 .LVL14
+     /tmp/ccekvLJD.s:180    .text.v_Start_Focus_Timer:000000000000003c .LVL15
+     /tmp/ccekvLJD.s:199    .text.v_Start_Focus_Timer:0000000000000064 .LVL16
+     /tmp/ccekvLJD.s:4126   .debug_str:0000000000000498 .LASF228
+     /tmp/ccekvLJD.s:129    .text.v_Post_Focus_Event_ISR:0000000000000000 .LFB6
+     /tmp/ccekvLJD.s:145    .text.v_Post_Focus_Event_ISR:0000000000000020 .LFE6
+     /tmp/ccekvLJD.s:3812   .debug_loc:000000000000009a .LLST3
+     /tmp/ccekvLJD.s:4072   .debug_str:0000000000000347 .LASF229
+     /tmp/ccekvLJD.s:143    .text.v_Post_Focus_Event_ISR:0000000000000020 .LVL11
+     /tmp/ccekvLJD.s:4276   .debug_str:00000000000007e7 .LASF230
+     /tmp/ccekvLJD.s:36     .text.v_Post_Focus_Event:0000000000000000 .LFB5
+     /tmp/ccekvLJD.s:52     .text.v_Post_Focus_Event:0000000000000020 .LFE5
+     /tmp/ccekvLJD.s:3830   .debug_loc:00000000000000c6 .LLST0
+     /tmp/ccekvLJD.s:50     .text.v_Post_Focus_Event:0000000000000020 .LVL2
+     /tmp/ccekvLJD.s:4366   .debug_str:0000000000000af6 .LASF251
+     /tmp/ccekvLJD.s:14     .text.b_Is_Idle:0000000000000000 .LFB4
+     /tmp/ccekvLJD.s:29     .text.b_Is_Idle:0000000000000020 .LFE4
+     /tmp/ccekvLJD.s:4358   .debug_str:0000000000000acb .LASF231
+     /tmp/ccekvLJD.s:229    .text.v_Focus_Task:0000000000000000 .LFB3
+     /tmp/ccekvLJD.s:347    .text.v_Focus_Task:0000000000000134 .LFE3
+     /tmp/ccekvLJD.s:4254   .debug_str:0000000000000787 .LASF232
+     /tmp/ccekvLJD.s:3848   .debug_loc:00000000000000f2 .LLST5
+     /tmp/ccekvLJD.s:4088   .debug_str:00000000000003a8 .LASF233
+     /tmp/ccekvLJD.s:4440   .debug_str:0000000000000ca8 .LASF234
+     /tmp/ccekvLJD.s:4330   .debug_str:0000000000000953 .LASF235
+     /tmp/ccekvLJD.s:3862   .debug_loc:0000000000000113 .LLST6
+     /tmp/ccekvLJD.s:4296   .debug_str:000000000000087d .LASF236
+     /tmp/ccekvLJD.s:326    .text.v_Focus_Task:0000000000000108 .LVL27
+     /tmp/ccekvLJD.s:335    .text.v_Focus_Task:000000000000011c .LVL29
+     /tmp/ccekvLJD.s:255    .text.v_Focus_Task:0000000000000028 .LVL20
+     /tmp/ccekvLJD.s:266    .text.v_Focus_Task:0000000000000054 .LVL21
+     /tmp/ccekvLJD.s:278    .text.v_Focus_Task:0000000000000080 .LVL22
+     /tmp/ccekvLJD.s:292    .text.v_Focus_Task:00000000000000a8 .LVL23
+     /tmp/ccekvLJD.s:300    .text.v_Focus_Task:00000000000000c4 .LVL24
+     /tmp/ccekvLJD.s:303    .text.v_Focus_Task:00000000000000cc .LVL25
+     /tmp/ccekvLJD.s:308    .text.v_Focus_Task:00000000000000e4 .LVL26
+     /tmp/ccekvLJD.s:4388   .debug_str:0000000000000b7e .LASF237
+     /tmp/ccekvLJD.s:4172   .debug_str:0000000000000592 .LASF238
+     /tmp/ccekvLJD.s:4108   .debug_str:0000000000000412 .LASF239
+     /tmp/ccekvLJD.s:4118   .debug_str:0000000000000472 .LASF240
+     /tmp/ccekvLJD.s:3960   .debug_str:00000000000000af .LASF241
+     /tmp/ccekvLJD.s:4322   .debug_str:0000000000000923 .LASF242
+     /tmp/ccekvLJD.s:4174   .debug_str:00000000000005a4 .LASF243
+     /tmp/ccekvLJD.s:4148   .debug_str:0000000000000516 .LASF244
+     /tmp/ccekvLJD.s:4110   .debug_str:000000000000042b .LASF245
+     /tmp/ccekvLJD.s:4192   .debug_str:0000000000000604 .LASF246
+     /tmp/ccekvLJD.s:4346   .debug_str:00000000000009c4 .LASF247
+     /tmp/ccekvLJD.s:61     .text.Focus_Fault_Timer_Expiration:0000000000000000 .LVL3
+     /tmp/ccekvLJD.s:71     .text.Focus_Fault_Timer_Expiration:000000000000000c .LVL4
+     /tmp/ccekvLJD.s:357    .text.v_Start_Focus_Fault_Timer:0000000000000000 .LVL31
+     /tmp/ccekvLJD.s:363    .text.v_Start_Focus_Fault_Timer:0000000000000010 .LVL32
+     /tmp/ccekvLJD.s:96     .text.Focus_Timer_Expiration:0000000000000000 .LVL6
+     /tmp/ccekvLJD.s:106    .text.Focus_Timer_Expiration:000000000000000c .LVL7
+     /tmp/ccekvLJD.s:155    .text.v_Start_Focus_Timer:0000000000000000 .LVL12
+     /tmp/ccekvLJD.s:166    .text.v_Start_Focus_Timer:0000000000000018 .LVL13
+     /tmp/ccekvLJD.s:132    .text.v_Post_Focus_Event_ISR:0000000000000000 .LVL9
+     /tmp/ccekvLJD.s:139    .text.v_Post_Focus_Event_ISR:0000000000000010 .LVL10
+     /tmp/ccekvLJD.s:39     .text.v_Post_Focus_Event:0000000000000000 .LVL0
+     /tmp/ccekvLJD.s:46     .text.v_Post_Focus_Event:0000000000000010 .LVL1
+     /tmp/ccekvLJD.s:232    .text.v_Focus_Task:0000000000000000 .LVL18
+     /tmp/ccekvLJD.s:243    .text.v_Focus_Task:0000000000000010 .LVL19
+     /tmp/ccekvLJD.s:333    .text.v_Focus_Task:0000000000000114 .LVL28
+     /tmp/ccekvLJD.s:337    .text.v_Focus_Task:0000000000000120 .LVL30
+     /tmp/ccekvLJD.s:474    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccekvLJD.s:286    .text.v_Focus_Task:0000000000000098 .LBB2
+     /tmp/ccekvLJD.s:289    .text.v_Focus_Task:00000000000000a0 .LBE2
+     /tmp/ccekvLJD.s:309    .text.v_Focus_Task:00000000000000e4 .LBB3
+     /tmp/ccekvLJD.s:315    .text.v_Focus_Task:00000000000000f4 .LBE3
+     /tmp/ccekvLJD.s:317    .text.v_Focus_Task:00000000000000f4 .LBB4
+     /tmp/ccekvLJD.s:343    .text.v_Focus_Task:0000000000000130 .LBE4
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+Idle_State
+xQueueGenericSend
+xQueueGenericSendFromISR
+xTimerGenericCommandFromTask
+xTaskGetTickCount
+xQueueGenericCreate
+xTimerCreate
+initialized
+xEventGroupSetBits
+xEventGroupWaitBits
+Initial_State
+v_Init_Focus_State_Machine
+xQueueReceive
+v_Update_Focus_State

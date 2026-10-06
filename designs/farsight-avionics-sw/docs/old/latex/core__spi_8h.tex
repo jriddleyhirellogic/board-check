@@ -1,0 +1,650 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.h File Reference}
+\hypertarget{core__spi_8h}{}\label{core__spi_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/core\_spi.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/core\_spi.h}}
+
+
+Core\+SPI prototypes.  
+
+
+{\ttfamily \+\#include "{}hal/\+hal.\+h"{}}\newline
+Include dependency graph for core\+\_\+spi.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structspi__instance}{spi\+\_\+instance}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{core__spi_8h_abc1b3ccb7cb9102af6c5df7c197767bd}{SPI\+\_\+\+MAX\+\_\+\+FIFO\+\_\+\+DEPTH}}~32u
+\item 
+\+\#define \doxymbox{\hyperlink{core__spi_8h_aaab3b502bbd60f73291ab57f590e453a}{SPI\+\_\+\+MIN\+\_\+\+FIFO\+\_\+\+DEPTH}}~1u
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \doxymbox{\hyperlink{structspi__instance}{spi\+\_\+instance}} \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}}
+\item 
+typedef void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t}}) (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\item 
+typedef void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t}}) (uint32\+\_\+t rx\+\_\+frame)
+\item 
+typedef void(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}}) (uint8\+\_\+t \texorpdfstring{$\ast$}{*}rx\+\_\+buff, uint32\+\_\+t rx\+\_\+size)
+\item 
+typedef enum \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{\+\_\+\+\_\+spi\+\_\+slave\+\_\+t}} \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}}
+\item 
+typedef enum \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{\+\_\+\+\_\+spi\+\_\+sxfer\+\_\+mode\+\_\+t}} \doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\+\_\+sxfer\+\_\+mode\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{\+\_\+\+\_\+spi\+\_\+slave\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a6d1155159f8b6394a781469f034e113e}{SPI\+\_\+\+SLAVE\+\_\+0}} = 0
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09ab9ab11c2ae8429affa6053379ef986b2}{SPI\+\_\+\+SLAVE\+\_\+1}} = 1
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a5352951da7fb8ef5ec6b8c58d9c64624}{SPI\+\_\+\+SLAVE\+\_\+2}} = 2
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09afffd9146efbf5fecbe750c3da28109d6}{SPI\+\_\+\+SLAVE\+\_\+3}} = 3
+, \newline
+\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4ca73f3d71460ae2abc64f83ff9cc54c}{SPI\+\_\+\+SLAVE\+\_\+4}} = 4
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a9ec1efd88a189d88499d17077dc1a79d}{SPI\+\_\+\+SLAVE\+\_\+5}} = 5
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a2057d7d59e046913894dbb4d0e02988a}{SPI\+\_\+\+SLAVE\+\_\+6}} = 6
+, \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4bdd7ea27c3d6ec7beabe3a534e0b590}{SPI\+\_\+\+SLAVE\+\_\+7}} = 7
+, \newline
+\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a3161c4749250e1919ecc9b63f36a48aa}{SPI\+\_\+\+MAX\+\_\+\+NB\+\_\+\+OF\+\_\+\+SLAVES}} = 8
+ \}
+\item 
+enum \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{\+\_\+\+\_\+spi\+\_\+sxfer\+\_\+mode\+\_\+t}} \{ \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aab965fbea22efaf013a3ea1cfcbe470ea}{SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+NONE}} = 0
+, \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aaaf9fe437e10e551d7bcaef8a0688b84f}{SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+BLOCK}} = 1
+, \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aada1558336b865138d8ac006717c55e6c}{SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+FRAME}} = 2
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a604018a460cbb77c22a486df479792a0}{SPI\+\_\+init}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}} base\+\_\+addr, uint16\+\_\+t fifo\+\_\+depth)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_abc3e6f6f96378c2abc99fadb445b2204}{SPI\+\_\+configure\+\_\+slave\+\_\+mode}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\+\_\+configure\+\_\+master\+\_\+mode}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_ac34277acc45e1508cee79386c9020b5c}{SPI\+\_\+set\+\_\+slave\+\_\+select}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}} slave)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_af1540b293135df9f59d600c24e78bbbe}{SPI\+\_\+clear\+\_\+slave\+\_\+select}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}} slave)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{core__spi_8h_aada490d481831ee9af76ac1a61048401}{SPI\+\_\+transfer\+\_\+frame}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, uint32\+\_\+t tx\+\_\+bits)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0}{SPI\+\_\+transfer\+\_\+block}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}cmd\+\_\+buffer, uint16\+\_\+t cmd\+\_\+byte\+\_\+size, uint8\+\_\+t \texorpdfstring{$\ast$}{*}rx\+\_\+buffer, uint16\+\_\+t rx\+\_\+byte\+\_\+size)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a60b046e1e2098c6dbd4b63b1c715719f}{SPI\+\_\+transfer\+\_\+block\+\_\+store\+\_\+all\+\_\+resp}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}cmd\+\_\+buffer, uint16\+\_\+t cmd\+\_\+byte\+\_\+size, uint8\+\_\+t \texorpdfstring{$\ast$}{*}rx\+\_\+data\+\_\+buffer, uint16\+\_\+t rx\+\_\+byte\+\_\+size, uint8\+\_\+t \texorpdfstring{$\ast$}{*}cmd\+\_\+response\+\_\+buffer)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_ab79ccb9f614954fd8ede68b54e7aad03}{SPI\+\_\+set\+\_\+frame\+\_\+rx\+\_\+handler}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, \doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t}} rx\+\_\+handler)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a3d446e09e4913a252b264a053217a0b3}{SPI\+\_\+set\+\_\+slave\+\_\+tx\+\_\+frame}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, uint32\+\_\+t frame\+\_\+value, \doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t}} slave\+\_\+tx\+\_\+frame\+\_\+handler)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_ab4c158ab3adaf61acce9387fc58edb2a}{SPI\+\_\+set\+\_\+slave\+\_\+block\+\_\+buffers}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}tx\+\_\+buffer, uint32\+\_\+t tx\+\_\+buff\+\_\+size, uint8\+\_\+t \texorpdfstring{$\ast$}{*}rx\+\_\+buffer, uint32\+\_\+t rx\+\_\+buff\+\_\+size, \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} block\+\_\+rx\+\_\+handler)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a8b2a4d4497afa3979f39f4efe2628457}{SPI\+\_\+isr}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_ad0e11781bd879dc717ade03f8f3c574b}{SPI\+\_\+set\+\_\+cmd\+\_\+handler}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} cmd\+\_\+handler, uint32\+\_\+t cmd\+\_\+size)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_ad6f3a7085d86813556ac25dbf5f4edc6}{SPI\+\_\+set\+\_\+cmd\+\_\+response}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}resp\+\_\+tx\+\_\+buffer, uint32\+\_\+t resp\+\_\+buff\+\_\+size)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_a8fd3623e840de50b34051240fa25fd47}{SPI\+\_\+enable}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\item 
+void \doxymbox{\hyperlink{core__spi_8h_aceeaea6ead7d51a23926feeca30b899e}{SPI\+\_\+disable}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Core\+SPI prototypes. 
+
+Copyright 2013-\/2023 Microchip FPGA Embedded Systems Solutions.
+
+SPDX-\/\+License-\/\+Identifier:\+ MIT
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "{}\+Software"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/\+or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\+
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "{}\+AS IS"{}, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Core SPI bare metal software driver public API.
+
+This Core SPI driver provides functions for implementing SPI master or SPI slave operations with the Core\+SPI version 4.\+2.\+xxx It is not compatible with Core\+SPI version 3.\+0.\+xxx.
+
+The Core SPI driver supports two classes of data transfer operation:\+ SPI frame operation or SPI block transfer operations.
+
+Frame operations allow transferring individual SPI frames from 4 to 32-\/bits in length. Block operations allow transferring blocks of data organized as 8-\/bit frames.
+
+\begin{DoxyAuthor}{Author}
+Microchip FPGA Embedded Systems Solutions  
+\end{DoxyAuthor}
+
+
+Definition in file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+
+
+\label{doc-define-members}
+\Hypertarget{core__spi_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{core__spi_8h_abc1b3ccb7cb9102af6c5df7c197767bd}\index{core\_spi.h@{core\_spi.h}!SPI\_MAX\_FIFO\_DEPTH@{SPI\_MAX\_FIFO\_DEPTH}}
+\index{SPI\_MAX\_FIFO\_DEPTH@{SPI\_MAX\_FIFO\_DEPTH}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_MAX\_FIFO\_DEPTH}{SPI\_MAX\_FIFO\_DEPTH}}
+{\footnotesize\ttfamily \label{core__spi_8h_abc1b3ccb7cb9102af6c5df7c197767bd} 
+\+\#define SPI\+\_\+\+MAX\+\_\+\+FIFO\+\_\+\+DEPTH~32u}
+
+\hypertarget{core__spi_8h_autotoc_md100}{}\doxysubsection{\texorpdfstring{SPI FIFO Depth}{SPI FIFO Depth}}\label{core__spi_8h_autotoc_md100}
+SPI\+\_\+\+MAX\+\_\+\+FIFO\+\_\+\+DEPTH \& SPI\+\_\+\+MIN\+\_\+\+FIFO\+\_\+\+DEPTH constants define the maximum and minimum FIFO depths allowed for the Core\+SPI instance. User need to inform the driver of the FIFO depth for each Core\+SPI instance to ensure that the FIFOs are managed correctly.
+
+
+\begin{DoxyTable}{2}{}{}{1}
+\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Constant  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Description  \\
+SPI\+\_\+\+MAX\+\_\+\+FIFO\+\_\+\+DEPTH  &Maximum FIFO depth allowed for the Core\+SPI instance  \\
+SPI\+\_\+\+MIN\+\_\+\+FIFO\+\_\+\+DEPTH  &Minimum FIFO depth allowed for the Core\+SPI instance  \\
+\end{DoxyTable}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00295}{295}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_aaab3b502bbd60f73291ab57f590e453a}\index{core\_spi.h@{core\_spi.h}!SPI\_MIN\_FIFO\_DEPTH@{SPI\_MIN\_FIFO\_DEPTH}}
+\index{SPI\_MIN\_FIFO\_DEPTH@{SPI\_MIN\_FIFO\_DEPTH}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_MIN\_FIFO\_DEPTH}{SPI\_MIN\_FIFO\_DEPTH}}
+{\footnotesize\ttfamily \label{core__spi_8h_aaab3b502bbd60f73291ab57f590e453a} 
+\+\#define SPI\+\_\+\+MIN\+\_\+\+FIFO\+\_\+\+DEPTH~1u}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00296}{296}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+
+
+\label{doc-typedef-members}
+\Hypertarget{core__spi_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}\index{core\_spi.h@{core\_spi.h}!spi\_block\_rx\_handler\_t@{spi\_block\_rx\_handler\_t}}
+\index{spi\_block\_rx\_handler\_t@{spi\_block\_rx\_handler\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_block\_rx\_handler\_t}{spi\_block\_rx\_handler\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26} 
+typedef void(\texorpdfstring{$\ast$}{*} spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t) (uint8\+\_\+t \texorpdfstring{$\ast$}{*}rx\+\_\+buff, uint32\+\_\+t rx\+\_\+size)}
+
+This defines the function prototype that must be followed by SPI slave block receive handler functions. These functions are registered with the SPI driver through the \doxylink{core__spi_8h_ab4c158ab3adaf61acce9387fc58edb2a}{SPI\+\_\+set\+\_\+slave\+\_\+block\+\_\+buffers()} function.
+
+Declaring and Implementing Slave Block Receive Handler Functions:\+ Slave block receive handler functions should follow the following prototype:\+ void spi\+\_\+block\+\_\+rx\+\_\+handler ( uint8\+\_\+t \texorpdfstring{$\ast$}{*} rx\+\_\+buff, uint16\+\_\+t rx\+\_\+size ); ~\newline
+ The actual name of the receive handler is unimportant. You can use any name of your choice for the receive frame handler. The rx\+\_\+buff parameter contains a pointer to the start of the received block. The rx\+\_\+size parameter contains the number of bytes of the received block.
+
+Separate handler functions are required for each slave instance as there is no indication of the slave requiring service passed to the handler. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00359}{359}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_a5a796548387621848b1da8a6386259e6}\index{core\_spi.h@{core\_spi.h}!spi\_frame\_rx\_handler\_t@{spi\_frame\_rx\_handler\_t}}
+\index{spi\_frame\_rx\_handler\_t@{spi\_frame\_rx\_handler\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_frame\_rx\_handler\_t}{spi\_frame\_rx\_handler\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_a5a796548387621848b1da8a6386259e6} 
+typedef void(\texorpdfstring{$\ast$}{*} spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t) (uint32\+\_\+t rx\+\_\+frame)}
+
+This defines the function prototype that must be followed by the SPI slave frame receive handler functions. These functions are registered with the SPI driver through the \doxylink{core__spi_8h_ab79ccb9f614954fd8ede68b54e7aad03}{SPI\+\_\+set\+\_\+frame\+\_\+rx\+\_\+handler()} function.
+
+Declaring and Implementing the Slave Frame Receive Handler Functions:\+ The Slave frame receive handler functions should follow the following prototype:\+ void slave\+\_\+frame\+\_\+receive\+\_\+handler(uint32\+\_\+t rx\+\_\+frame); ~\newline
+ The actual name of the receive handler is unimportant. You can use any name of your choice for the receive frame handler. The rx\+\_\+frame parameter contains the value of the received frame.
+
+Separate handler functions are required for each slave instance as there is no indication of the slave requiring service passed to the handler. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00340}{340}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}\index{core\_spi.h@{core\_spi.h}!spi\_instance\_t@{spi\_instance\_t}}
+\index{spi\_instance\_t@{spi\_instance\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_instance\_t}{spi\_instance\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681} 
+typedef struct \doxymbox{\hyperlink{structspi__instance}{spi\+\_\+instance}} \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}}}
+
+Instances of this structure are used to identify the specific Core\+SPI hardware instances. A pointer to an instance of the \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} structure is passed as the first parameter to the Core\+SPI driver functions to identify which SPI performs the requested operation. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00304}{304}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_a072ad301d1096921aa9192840986d66b}\index{core\_spi.h@{core\_spi.h}!spi\_slave\_frame\_tx\_handler\_t@{spi\_slave\_frame\_tx\_handler\_t}}
+\index{spi\_slave\_frame\_tx\_handler\_t@{spi\_slave\_frame\_tx\_handler\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_slave\_frame\_tx\_handler\_t}{spi\_slave\_frame\_tx\_handler\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_a072ad301d1096921aa9192840986d66b} 
+typedef void(\texorpdfstring{$\ast$}{*} spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t) (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+spi)}
+
+This function pointer type is to assign a callback function for TX interrupt when slave wants to send the next updated frame.
+
+Declaring and Implementing Slave Frame Transmit Handler Functions:\+ Slave transmit frame update handler functions should follow the following prototype:\+ void slave\+\_\+tx\+\_\+frame\+\_\+update\+\_\+handler ( \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} \texorpdfstring{$\ast$}{*} this\+\_\+spi ); ~\newline
+ The actual name of the transmit handler is unimportant. You can use any name of your choice for the frame update handler.
+
+A common handler function may be used when multiple Core\+SPI instances are configured as slave, as the particular slave device currently requiring service is indicated by the function parameter. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00321}{321}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}\index{core\_spi.h@{core\_spi.h}!spi\_slave\_t@{spi\_slave\_t}}
+\index{spi\_slave\_t@{spi\_slave\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_slave\_t}{spi\_slave\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2} 
+typedef enum \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{\+\_\+\+\_\+spi\+\_\+slave\+\_\+t}} \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}}}
+
+This enumeration is used to select a specific SPI slave device (0 to 7). It is used as a parameter to the \doxylink{core__spi_8c_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\+\_\+configure\+\_\+master\+\_\+mode()}, \doxylink{core__spi_8c_ac34277acc45e1508cee79386c9020b5c}{SPI\+\_\+set\+\_\+slave\+\_\+select()}, and \doxylink{core__spi_8c_af1540b293135df9f59d600c24e78bbbe}{SPI\+\_\+clear\+\_\+slave\+\_\+select()} functions. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+\Hypertarget{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}\index{core\_spi.h@{core\_spi.h}!spi\_sxfer\_mode\_t@{spi\_sxfer\_mode\_t}}
+\index{spi\_sxfer\_mode\_t@{spi\_sxfer\_mode\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{spi\_sxfer\_mode\_t}{spi\_sxfer\_mode\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c} 
+typedef enum \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{\+\_\+\+\_\+spi\+\_\+sxfer\+\_\+mode\+\_\+t}} \doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\+\_\+sxfer\+\_\+mode\+\_\+t}}}
+
+This enumeration is used to indicate the current slave mode transfer type so that we are not relying on buffer comparisons to dictate the logic of the driver. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+\label{doc-enum-members}
+\Hypertarget{core__spi_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}\index{core\_spi.h@{core\_spi.h}!\_\_spi\_slave\_t@{\_\_spi\_slave\_t}}
+\index{\_\_spi\_slave\_t@{\_\_spi\_slave\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{\_\_spi\_slave\_t}{\_\_spi\_slave\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09} 
+enum \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{\+\_\+\+\_\+spi\+\_\+slave\+\_\+t}}}
+
+This enumeration is used to select a specific SPI slave device (0 to 7). It is used as a parameter to the \doxylink{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\+\_\+configure\+\_\+master\+\_\+mode()}, \doxylink{core__spi_8h_ac34277acc45e1508cee79386c9020b5c}{SPI\+\_\+set\+\_\+slave\+\_\+select()}, and \doxylink{core__spi_8h_af1540b293135df9f59d600c24e78bbbe}{SPI\+\_\+clear\+\_\+slave\+\_\+select()} functions. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_0@{SPI\_SLAVE\_0}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_0@{SPI\_SLAVE\_0}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a6d1155159f8b6394a781469f034e113e}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a6d1155159f8b6394a781469f034e113e} 
+SPI\+\_\+\+SLAVE\+\_\+0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_1@{SPI\_SLAVE\_1}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_1@{SPI\_SLAVE\_1}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09ab9ab11c2ae8429affa6053379ef986b2}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09ab9ab11c2ae8429affa6053379ef986b2} 
+SPI\+\_\+\+SLAVE\+\_\+1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_2@{SPI\_SLAVE\_2}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_2@{SPI\_SLAVE\_2}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a5352951da7fb8ef5ec6b8c58d9c64624}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a5352951da7fb8ef5ec6b8c58d9c64624} 
+SPI\+\_\+\+SLAVE\+\_\+2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_3@{SPI\_SLAVE\_3}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_3@{SPI\_SLAVE\_3}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09afffd9146efbf5fecbe750c3da28109d6}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09afffd9146efbf5fecbe750c3da28109d6} 
+SPI\+\_\+\+SLAVE\+\_\+3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_4@{SPI\_SLAVE\_4}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_4@{SPI\_SLAVE\_4}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4ca73f3d71460ae2abc64f83ff9cc54c}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4ca73f3d71460ae2abc64f83ff9cc54c} 
+SPI\+\_\+\+SLAVE\+\_\+4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_5@{SPI\_SLAVE\_5}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_5@{SPI\_SLAVE\_5}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a9ec1efd88a189d88499d17077dc1a79d}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a9ec1efd88a189d88499d17077dc1a79d} 
+SPI\+\_\+\+SLAVE\+\_\+5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_6@{SPI\_SLAVE\_6}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_6@{SPI\_SLAVE\_6}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a2057d7d59e046913894dbb4d0e02988a}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a2057d7d59e046913894dbb4d0e02988a} 
+SPI\+\_\+\+SLAVE\+\_\+6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_7@{SPI\_SLAVE\_7}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_7@{SPI\_SLAVE\_7}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4bdd7ea27c3d6ec7beabe3a534e0b590}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4bdd7ea27c3d6ec7beabe3a534e0b590} 
+SPI\+\_\+\+SLAVE\+\_\+7&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_MAX\_NB\_OF\_SLAVES@{SPI\_MAX\_NB\_OF\_SLAVES}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_MAX\_NB\_OF\_SLAVES@{SPI\_MAX\_NB\_OF\_SLAVES}}
+}\Hypertarget{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a3161c4749250e1919ecc9b63f36a48aa}\label{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a3161c4749250e1919ecc9b63f36a48aa} 
+SPI\+\_\+\+MAX\+\_\+\+NB\+\_\+\+OF\+\_\+\+SLAVES&\\
+\hline
+
+\end{DoxyEnumFields}
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00366}{366}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}\index{core\_spi.h@{core\_spi.h}!\_\_spi\_sxfer\_mode\_t@{\_\_spi\_sxfer\_mode\_t}}
+\index{\_\_spi\_sxfer\_mode\_t@{\_\_spi\_sxfer\_mode\_t}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{\_\_spi\_sxfer\_mode\_t}{\_\_spi\_sxfer\_mode\_t}}
+{\footnotesize\ttfamily \label{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a} 
+enum \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{\+\_\+\+\_\+spi\+\_\+sxfer\+\_\+mode\+\_\+t}}}
+
+This enumeration is used to indicate the current slave mode transfer type so that we are not relying on buffer comparisons to dictate the logic of the driver. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_XFER\_NONE@{SPI\_SLAVE\_XFER\_NONE}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_XFER\_NONE@{SPI\_SLAVE\_XFER\_NONE}}
+}\Hypertarget{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aab965fbea22efaf013a3ea1cfcbe470ea}\label{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aab965fbea22efaf013a3ea1cfcbe470ea} 
+SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+NONE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_XFER\_BLOCK@{SPI\_SLAVE\_XFER\_BLOCK}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_XFER\_BLOCK@{SPI\_SLAVE\_XFER\_BLOCK}}
+}\Hypertarget{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aaaf9fe437e10e551d7bcaef8a0688b84f}\label{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aaaf9fe437e10e551d7bcaef8a0688b84f} 
+SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+BLOCK&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SPI\_SLAVE\_XFER\_FRAME@{SPI\_SLAVE\_XFER\_FRAME}!core\_spi.h@{core\_spi.h}}
+\index{core\_spi.h@{core\_spi.h}!SPI\_SLAVE\_XFER\_FRAME@{SPI\_SLAVE\_XFER\_FRAME}}
+}\Hypertarget{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aada1558336b865138d8ac006717c55e6c}\label{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aada1558336b865138d8ac006717c55e6c} 
+SPI\+\_\+\+SLAVE\+\_\+\+XFER\+\_\+\+FRAME&\\
+\hline
+
+\end{DoxyEnumFields}
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00383}{383}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{core__spi_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{core__spi_8h_af1540b293135df9f59d600c24e78bbbe}\index{core\_spi.h@{core\_spi.h}!SPI\_clear\_slave\_select@{SPI\_clear\_slave\_select}}
+\index{SPI\_clear\_slave\_select@{SPI\_clear\_slave\_select}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_clear\_slave\_select()}{SPI\_clear\_slave\_select()}}
+{\footnotesize\ttfamily \label{core__spi_8h_af1540b293135df9f59d600c24e78bbbe} 
+void SPI\+\_\+clear\+\_\+slave\+\_\+select (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}}}]{slave}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_af1540b293135df9f59d600c24e78bbbe}{SPI\+\_\+clear\+\_\+slave\+\_\+select()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00226}{226}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_af1540b293135df9f59d600c24e78bbbe_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_af1540b293135df9f59d600c24e78bbbe_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72}\index{core\_spi.h@{core\_spi.h}!SPI\_configure\_master\_mode@{SPI\_configure\_master\_mode}}
+\index{SPI\_configure\_master\_mode@{SPI\_configure\_master\_mode}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_configure\_master\_mode()}{SPI\_configure\_master\_mode()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72} 
+void SPI\+\_\+configure\+\_\+master\+\_\+mode (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\+\_\+configure\+\_\+master\+\_\+mode()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00161}{161}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_abc3e6f6f96378c2abc99fadb445b2204}\index{core\_spi.h@{core\_spi.h}!SPI\_configure\_slave\_mode@{SPI\_configure\_slave\_mode}}
+\index{SPI\_configure\_slave\_mode@{SPI\_configure\_slave\_mode}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_configure\_slave\_mode()}{SPI\_configure\_slave\_mode()}}
+{\footnotesize\ttfamily \label{core__spi_8h_abc3e6f6f96378c2abc99fadb445b2204} 
+void SPI\+\_\+configure\+\_\+slave\+\_\+mode (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_abc3e6f6f96378c2abc99fadb445b2204}{SPI\+\_\+configure\+\_\+slave\+\_\+mode()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00125}{125}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_aceeaea6ead7d51a23926feeca30b899e}\index{core\_spi.h@{core\_spi.h}!SPI\_disable@{SPI\_disable}}
+\index{SPI\_disable@{SPI\_disable}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_disable()}{SPI\_disable()}}
+{\footnotesize\ttfamily \label{core__spi_8h_aceeaea6ead7d51a23926feeca30b899e} 
+void SPI\+\_\+disable (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__spi_8c_aceeaea6ead7d51a23926feeca30b899e}{SPI\+\_\+disable()} function disables the Core\+SPI and stops responding to the external signals.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+spi} & The this\+\_\+spi parameter is a pointer to a \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} structure that identifies the Core\+SPI hardware block to operate on. This parameter must point to the g\+\_\+core\+\_\+spi global data structure defined within the application code.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This function does not return any value.
+\end{DoxyReturn}
+\doxylink{core__spi_8c_aceeaea6ead7d51a23926feeca30b899e}{SPI\+\_\+disable()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l01007}{1007}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_a8fd3623e840de50b34051240fa25fd47}\index{core\_spi.h@{core\_spi.h}!SPI\_enable@{SPI\_enable}}
+\index{SPI\_enable@{SPI\_enable}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_enable()}{SPI\_enable()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a8fd3623e840de50b34051240fa25fd47} 
+void SPI\+\_\+enable (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__spi_8c_a8fd3623e840de50b34051240fa25fd47}{SPI\+\_\+enable()} function enables the Core\+SPI and allows it to respond to the external signals. It is usually called to re-\/enable a Core\+SPI instance which has been disabled previously via by calling the \doxylink{core__spi_8c_aceeaea6ead7d51a23926feeca30b899e}{SPI\+\_\+disable()} as the normal state of a Core\+SPI after enabling the initialization.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+spi} & The this\+\_\+spi parameter is a pointer to a \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} structure that identifies the Core\+SPI hardware block to operate on. This parameter must point to the g\+\_\+core\+\_\+spi global data structure defined within the application code.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This function does not return any value.
+\end{DoxyReturn}
+\doxylink{core__spi_8c_a8fd3623e840de50b34051240fa25fd47}{SPI\+\_\+enable()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00988}{988}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_a604018a460cbb77c22a486df479792a0}\index{core\_spi.h@{core\_spi.h}!SPI\_init@{SPI\_init}}
+\index{SPI\_init@{SPI\_init}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_init()}{SPI\_init()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a604018a460cbb77c22a486df479792a0} 
+void SPI\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}}}]{base\+\_\+addr}{, }\item[{uint16\+\_\+t}]{fifo\+\_\+depth}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00062}{62}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{core__spi_8h_a604018a460cbb77c22a486df479792a0_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_a604018a460cbb77c22a486df479792a0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_a8b2a4d4497afa3979f39f4efe2628457}\index{core\_spi.h@{core\_spi.h}!SPI\_isr@{SPI\_isr}}
+\index{SPI\_isr@{SPI\_isr}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_isr()}{SPI\_isr()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a8b2a4d4497afa3979f39f4efe2628457} 
+void SPI\+\_\+isr (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{}\end{DoxyParamCaption})}
+
+SPI interrupt service routine. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l01025}{1025}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=271pt]{core__spi_8h_a8b2a4d4497afa3979f39f4efe2628457_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_ad0e11781bd879dc717ade03f8f3c574b}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_cmd\_handler@{SPI\_set\_cmd\_handler}}
+\index{SPI\_set\_cmd\_handler@{SPI\_set\_cmd\_handler}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_cmd\_handler()}{SPI\_set\_cmd\_handler()}}
+{\footnotesize\ttfamily \label{core__spi_8h_ad0e11781bd879dc717ade03f8f3c574b} 
+void SPI\+\_\+set\+\_\+cmd\+\_\+handler (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}}}]{cmd\+\_\+handler}{, }\item[{uint32\+\_\+t}]{cmd\+\_\+size}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_ad0e11781bd879dc717ade03f8f3c574b}{SPI\+\_\+set\+\_\+cmd\+\_\+handler()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00914}{914}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_ad6f3a7085d86813556ac25dbf5f4edc6}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_cmd\_response@{SPI\_set\_cmd\_response}}
+\index{SPI\_set\_cmd\_response@{SPI\_set\_cmd\_response}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_cmd\_response()}{SPI\_set\_cmd\_response()}}
+{\footnotesize\ttfamily \label{core__spi_8h_ad6f3a7085d86813556ac25dbf5f4edc6} 
+void SPI\+\_\+set\+\_\+cmd\+\_\+response (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{resp\+\_\+tx\+\_\+buffer}{, }\item[{uint32\+\_\+t}]{resp\+\_\+buff\+\_\+size}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__spi_8c_ad6f3a7085d86813556ac25dbf5f4edc6}{SPI\+\_\+set\+\_\+cmd\+\_\+response()} function specifies the data that will be returned to the master. See the description of \doxylink{core__spi_8c_ad0e11781bd879dc717ade03f8f3c574b}{SPI\+\_\+set\+\_\+cmd\+\_\+handler()} for details.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+spi} & The this\+\_\+spi parameter is a pointer to a \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} structure that identifies the Core\+SPI hardware block to operate on. This parameter must point to a g\+\_\+core\+\_\+spi global data structure defined within the application code.\\
+\hline
+{\em resp\+\_\+tx\+\_\+buffer} & The resp\+\_\+tx\+\_\+buffer parameter is a pointer to the buffer containing the data that must be returned to the host in the data phase of an SPI transaction.\\
+\hline
+{\em resp\+\_\+buff\+\_\+size} & The resp\+\_\+buff\+\_\+size parameter specifies the size of the buffer pointed by the resp\+\_\+tx\+\_\+buffer parameter.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This function does not return any value.
+\end{DoxyReturn}
+\doxylink{core__spi_8c_ad6f3a7085d86813556ac25dbf5f4edc6}{SPI\+\_\+set\+\_\+cmd\+\_\+response()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00961}{961}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{core__spi_8h_ad6f3a7085d86813556ac25dbf5f4edc6_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_ab79ccb9f614954fd8ede68b54e7aad03}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_frame\_rx\_handler@{SPI\_set\_frame\_rx\_handler}}
+\index{SPI\_set\_frame\_rx\_handler@{SPI\_set\_frame\_rx\_handler}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_frame\_rx\_handler()}{SPI\_set\_frame\_rx\_handler()}}
+{\footnotesize\ttfamily \label{core__spi_8h_ab79ccb9f614954fd8ede68b54e7aad03} 
+void SPI\+\_\+set\+\_\+frame\+\_\+rx\+\_\+handler (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t}}}]{rx\+\_\+handler}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_ab79ccb9f614954fd8ede68b54e7aad03}{SPI\+\_\+set\+\_\+frame\+\_\+rx\+\_\+handler()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00700}{700}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_ab4c158ab3adaf61acce9387fc58edb2a}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_slave\_block\_buffers@{SPI\_set\_slave\_block\_buffers}}
+\index{SPI\_set\_slave\_block\_buffers@{SPI\_set\_slave\_block\_buffers}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_slave\_block\_buffers()}{SPI\_set\_slave\_block\_buffers()}}
+{\footnotesize\ttfamily \label{core__spi_8h_ab4c158ab3adaf61acce9387fc58edb2a} 
+void SPI\+\_\+set\+\_\+slave\+\_\+block\+\_\+buffers (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{tx\+\_\+buffer}{, }\item[{uint32\+\_\+t}]{tx\+\_\+buff\+\_\+size}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{rx\+\_\+buffer}{, }\item[{uint32\+\_\+t}]{rx\+\_\+buff\+\_\+size}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}}}]{block\+\_\+rx\+\_\+handler}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_ab4c158ab3adaf61acce9387fc58edb2a}{SPI\+\_\+set\+\_\+slave\+\_\+block\+\_\+buffers()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00831}{831}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_ac34277acc45e1508cee79386c9020b5c}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_slave\_select@{SPI\_set\_slave\_select}}
+\index{SPI\_set\_slave\_select@{SPI\_set\_slave\_select}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_slave\_select()}{SPI\_set\_slave\_select()}}
+{\footnotesize\ttfamily \label{core__spi_8h_ac34277acc45e1508cee79386c9020b5c} 
+void SPI\+\_\+set\+\_\+slave\+\_\+select (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\+\_\+slave\+\_\+t}}}]{slave}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_ac34277acc45e1508cee79386c9020b5c}{SPI\+\_\+set\+\_\+slave\+\_\+select()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00194}{194}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_ac34277acc45e1508cee79386c9020b5c_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_ac34277acc45e1508cee79386c9020b5c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_a3d446e09e4913a252b264a053217a0b3}\index{core\_spi.h@{core\_spi.h}!SPI\_set\_slave\_tx\_frame@{SPI\_set\_slave\_tx\_frame}}
+\index{SPI\_set\_slave\_tx\_frame@{SPI\_set\_slave\_tx\_frame}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_set\_slave\_tx\_frame()}{SPI\_set\_slave\_tx\_frame()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a3d446e09e4913a252b264a053217a0b3} 
+void SPI\+\_\+set\+\_\+slave\+\_\+tx\+\_\+frame (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{uint32\+\_\+t}]{frame\+\_\+value}{, }\item[{\doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t}}}]{slave\+\_\+tx\+\_\+frame\+\_\+handler}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_a3d446e09e4913a252b264a053217a0b3}{SPI\+\_\+set\+\_\+slave\+\_\+tx\+\_\+frame()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00761}{761}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+\Hypertarget{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0}\index{core\_spi.h@{core\_spi.h}!SPI\_transfer\_block@{SPI\_transfer\_block}}
+\index{SPI\_transfer\_block@{SPI\_transfer\_block}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_transfer\_block()}{SPI\_transfer\_block()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0} 
+void SPI\+\_\+transfer\+\_\+block (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{cmd\+\_\+buffer}{, }\item[{uint16\+\_\+t}]{cmd\+\_\+byte\+\_\+size}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{rx\+\_\+buffer}{, }\item[{uint16\+\_\+t}]{rx\+\_\+byte\+\_\+size}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_a2e99d2ecf2d50cb56ef2656f4a65bfd0}{SPI\+\_\+transfer\+\_\+block()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00299}{299}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_a60b046e1e2098c6dbd4b63b1c715719f}\index{core\_spi.h@{core\_spi.h}!SPI\_transfer\_block\_store\_all\_resp@{SPI\_transfer\_block\_store\_all\_resp}}
+\index{SPI\_transfer\_block\_store\_all\_resp@{SPI\_transfer\_block\_store\_all\_resp}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_transfer\_block\_store\_all\_resp()}{SPI\_transfer\_block\_store\_all\_resp()}}
+{\footnotesize\ttfamily \label{core__spi_8h_a60b046e1e2098c6dbd4b63b1c715719f} 
+void SPI\+\_\+transfer\+\_\+block\+\_\+store\+\_\+all\+\_\+resp (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{cmd\+\_\+buffer}{, }\item[{uint16\+\_\+t}]{cmd\+\_\+byte\+\_\+size}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{rx\+\_\+data\+\_\+buffer}{, }\item[{uint16\+\_\+t}]{rx\+\_\+byte\+\_\+size}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{cmd\+\_\+response\+\_\+buffer}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_a60b046e1e2098c6dbd4b63b1c715719f}{SPI\+\_\+transfer\+\_\+block\+\_\+store\+\_\+all\+\_\+resp()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00500}{500}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__spi_8h_a60b046e1e2098c6dbd4b63b1c715719f_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__spi_8h_aada490d481831ee9af76ac1a61048401}\index{core\_spi.h@{core\_spi.h}!SPI\_transfer\_frame@{SPI\_transfer\_frame}}
+\index{SPI\_transfer\_frame@{SPI\_transfer\_frame}!core\_spi.h@{core\_spi.h}}
+\doxysubsubsection{\texorpdfstring{SPI\_transfer\_frame()}{SPI\_transfer\_frame()}}
+{\footnotesize\ttfamily \label{core__spi_8h_aada490d481831ee9af76ac1a61048401} 
+uint32\+\_\+t SPI\+\_\+transfer\+\_\+frame (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+spi}{, }\item[{uint32\+\_\+t}]{tx\+\_\+bits}{}\end{DoxyParamCaption})}
+
+\doxylink{core__spi_8c_aada490d481831ee9af76ac1a61048401}{SPI\+\_\+transfer\+\_\+frame()} See "{}core\+\_\+spi.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__spi_8c_source_l00258}{258}} of file \doxymbox{\hyperlink{core__spi_8c_source}{core\+\_\+spi.\+c}}.
+

@@ -1,0 +1,218 @@
+   1              		.file	"status.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Get_Status,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Get_Status
+  13              	v_Get_Status:
+  14              	.LFB0:
+  15              		.file 1 "../src/status.c"
+   1:../src/status.c **** /*
+   2:../src/status.c ****  * status.c
+   3:../src/status.c ****  *
+   4:../src/status.c ****  *  Created on: Oct 20, 2025
+   5:../src/status.c ****  *      Author: iboard
+   6:../src/status.c ****  */
+   7:../src/status.c **** #include <stdint.h>
+   8:../src/status.c **** #include "status.h"
+   9:../src/status.c **** #include "lvdt.h"
+  10:../src/status.c **** #include "hal_stepper.h"
+  11:../src/status.c **** 
+  12:../src/status.c **** void v_Get_Status( Status_t *p_Status )
+  13:../src/status.c **** {
+  16              		.loc 1 13 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  14:../src/status.c ****     p_Status->i32_Velocity = i32_Get_Stepper_Out();
+  19              		.loc 1 14 5
+  13:../src/status.c ****     p_Status->i32_Velocity = i32_Get_Stepper_Out();
+  20              		.loc 1 13 1 is_stmt 0
+  21 0000 130101FF 		addi	sp,sp,-16
+  22              		.cfi_def_cfa_offset 16
+  23 0004 23261100 		sw	ra,12(sp)
+  24 0008 23248100 		sw	s0,8(sp)
+  25              		.cfi_offset 1, -4
+  26              		.cfi_offset 8, -8
+  13:../src/status.c ****     p_Status->i32_Velocity = i32_Get_Stepper_Out();
+  27              		.loc 1 13 1
+  28 000c 13040500 		mv	s0,a0
+  29              		.loc 1 14 30
+  30 0010 97000000 		call	i32_Get_Stepper_Out
+  30      E7800000 
+  31              	.LVL1:
+  32              		.loc 1 14 28
+  33 0018 2320A400 		sw	a0,0(s0)
+  15:../src/status.c ****     p_Status->i32_Position_Microns = i32_Get_Position();
+  34              		.loc 1 15 5 is_stmt 1
+  35              		.loc 1 15 38 is_stmt 0
+  36 001c 97000000 		call	i32_Get_Position
+  36      E7800000 
+  37              	.LVL2:
+  38              		.loc 1 15 36
+  39 0024 2322A400 		sw	a0,4(s0)
+  16:../src/status.c ****     p_Status->u8_LVDT_Gain = (uint8_t)e_Get_LVDT_Gain();
+  40              		.loc 1 16 5 is_stmt 1
+  41              		.loc 1 16 39 is_stmt 0
+  42 0028 97000000 		call	e_Get_LVDT_Gain
+  42      E7800000 
+  43              	.LVL3:
+  44              		.loc 1 16 30
+  45 0030 2304A400 		sb	a0,8(s0)
+  17:../src/status.c **** }
+  46              		.loc 1 17 1
+  47 0034 8320C100 		lw	ra,12(sp)
+  48              		.cfi_restore 1
+  49 0038 03248100 		lw	s0,8(sp)
+  50              		.cfi_restore 8
+  51              	.LVL4:
+  52 003c 13010101 		addi	sp,sp,16
+  53              		.cfi_def_cfa_offset 0
+  54 0040 67800000 		jr	ra
+  55              		.cfi_endproc
+  56              	.LFE0:
+  58              		.text
+  59              	.Letext0:
+  60              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+  61              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+  62              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/status.h"
+  63              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+  64              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/lvdt.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 status.c
+<<<<<<< HEAD
+     /tmp/ccrmcORO.s:13     .text.v_Get_Status:0000000000000000 v_Get_Status
+     /tmp/ccrmcORO.s:17     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccrmcORO.s:19     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccrmcORO.s:20     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccrmcORO.s:21     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccrmcORO.s:22     .text.v_Get_Status:0000000000000004 .L0 
+     /tmp/ccrmcORO.s:25     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccrmcORO.s:26     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccrmcORO.s:28     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccrmcORO.s:30     .text.v_Get_Status:0000000000000010 .L0 
+     /tmp/ccrmcORO.s:33     .text.v_Get_Status:0000000000000018 .L0 
+     /tmp/ccrmcORO.s:35     .text.v_Get_Status:000000000000001c .L0 
+     /tmp/ccrmcORO.s:36     .text.v_Get_Status:000000000000001c .L0 
+     /tmp/ccrmcORO.s:39     .text.v_Get_Status:0000000000000024 .L0 
+     /tmp/ccrmcORO.s:41     .text.v_Get_Status:0000000000000028 .L0 
+     /tmp/ccrmcORO.s:42     .text.v_Get_Status:0000000000000028 .L0 
+     /tmp/ccrmcORO.s:45     .text.v_Get_Status:0000000000000030 .L0 
+     /tmp/ccrmcORO.s:47     .text.v_Get_Status:0000000000000034 .L0 
+     /tmp/ccrmcORO.s:48     .text.v_Get_Status:0000000000000038 .L0 
+     /tmp/ccrmcORO.s:50     .text.v_Get_Status:000000000000003c .L0 
+     /tmp/ccrmcORO.s:53     .text.v_Get_Status:0000000000000040 .L0 
+     /tmp/ccrmcORO.s:55     .text.v_Get_Status:0000000000000044 .L0 
+     /tmp/ccrmcORO.s:58     .text.v_Get_Status:0000000000000044 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccrmcORO.s:231    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccrmcORO.s:475    .debug_str:000000000000010b .LASF21
+     /tmp/ccrmcORO.s:483    .debug_str:00000000000001f9 .LASF22
+     /tmp/ccrmcORO.s:467    .debug_str:00000000000000b5 .LASF23
+     /tmp/ccrmcORO.s:435    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccrmcORO.s:441    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccrmcORO.s:481    .debug_str:00000000000001ed .LASF0
+     /tmp/ccrmcORO.s:457    .debug_str:0000000000000077 .LASF4
+     /tmp/ccrmcORO.s:449    .debug_str:000000000000002f .LASF1
+     /tmp/ccrmcORO.s:491    .debug_str:000000000000022c .LASF2
+     /tmp/ccrmcORO.s:479    .debug_str:00000000000001da .LASF3
+     /tmp/ccrmcORO.s:461    .debug_str:0000000000000096 .LASF5
+     /tmp/ccrmcORO.s:471    .debug_str:00000000000000f5 .LASF6
+     /tmp/ccrmcORO.s:453    .debug_str:000000000000004e .LASF7
+     /tmp/ccrmcORO.s:443    .debug_str:0000000000000000 .LASF8
+     /tmp/ccrmcORO.s:455    .debug_str:0000000000000060 .LASF9
+     /tmp/ccrmcORO.s:445    .debug_str:000000000000000e .LASF10
+     /tmp/ccrmcORO.s:465    .debug_str:00000000000000ad .LASF11
+     /tmp/ccrmcORO.s:493    .debug_str:0000000000000236 .LASF12
+     /tmp/ccrmcORO.s:463    .debug_str:00000000000000a0 .LASF13
+     /tmp/ccrmcORO.s:459    .debug_str:0000000000000081 .LASF14
+     /tmp/ccrmcORO.s:485    .debug_str:0000000000000209 .LASF15
+     /tmp/ccrmcORO.s:477    .debug_str:00000000000001d1 .LASF16
+     /tmp/ccrmcORO.s:489    .debug_str:0000000000000226 .LASF17
+     /tmp/ccrmcORO.s:473    .debug_str:00000000000000fe .LASF24
+     /tmp/ccrmcORO.s:14     .text.v_Get_Status:0000000000000000 .LFB0
+     /tmp/ccrmcORO.s:56     .text.v_Get_Status:0000000000000044 .LFE0
+     /tmp/ccrmcORO.s:469    .debug_str:00000000000000ec .LASF25
+     /tmp/ccrmcORO.s:404    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccrmcORO.s:31     .text.v_Get_Status:0000000000000018 .LVL1
+     /tmp/ccrmcORO.s:37     .text.v_Get_Status:0000000000000024 .LVL2
+     /tmp/ccrmcORO.s:43     .text.v_Get_Status:0000000000000030 .LVL3
+     /tmp/ccrmcORO.s:447    .debug_str:000000000000001b .LASF18
+     /tmp/ccrmcORO.s:451    .debug_str:000000000000003d .LASF19
+     /tmp/ccrmcORO.s:487    .debug_str:0000000000000216 .LASF20
+     /tmp/ccrmcORO.s:18     .text.v_Get_Status:0000000000000000 .LVL0
+     /tmp/ccrmcORO.s:51     .text.v_Get_Status:000000000000003c .LVL4
+     /tmp/ccrmcORO.s:66     .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccyOOLEL.s:13     .text.v_Get_Status:0000000000000000 v_Get_Status
+     /tmp/ccyOOLEL.s:17     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccyOOLEL.s:19     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccyOOLEL.s:20     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccyOOLEL.s:21     .text.v_Get_Status:0000000000000000 .L0 
+     /tmp/ccyOOLEL.s:22     .text.v_Get_Status:0000000000000004 .L0 
+     /tmp/ccyOOLEL.s:25     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccyOOLEL.s:26     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccyOOLEL.s:28     .text.v_Get_Status:000000000000000c .L0 
+     /tmp/ccyOOLEL.s:30     .text.v_Get_Status:0000000000000010 .L0 
+     /tmp/ccyOOLEL.s:33     .text.v_Get_Status:0000000000000018 .L0 
+     /tmp/ccyOOLEL.s:35     .text.v_Get_Status:000000000000001c .L0 
+     /tmp/ccyOOLEL.s:36     .text.v_Get_Status:000000000000001c .L0 
+     /tmp/ccyOOLEL.s:39     .text.v_Get_Status:0000000000000024 .L0 
+     /tmp/ccyOOLEL.s:41     .text.v_Get_Status:0000000000000028 .L0 
+     /tmp/ccyOOLEL.s:42     .text.v_Get_Status:0000000000000028 .L0 
+     /tmp/ccyOOLEL.s:45     .text.v_Get_Status:0000000000000030 .L0 
+     /tmp/ccyOOLEL.s:47     .text.v_Get_Status:0000000000000034 .L0 
+     /tmp/ccyOOLEL.s:48     .text.v_Get_Status:0000000000000038 .L0 
+     /tmp/ccyOOLEL.s:50     .text.v_Get_Status:000000000000003c .L0 
+     /tmp/ccyOOLEL.s:53     .text.v_Get_Status:0000000000000040 .L0 
+     /tmp/ccyOOLEL.s:55     .text.v_Get_Status:0000000000000044 .L0 
+     /tmp/ccyOOLEL.s:58     .text.v_Get_Status:0000000000000044 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccyOOLEL.s:231    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccyOOLEL.s:475    .debug_str:000000000000010b .LASF21
+     /tmp/ccyOOLEL.s:483    .debug_str:00000000000001f9 .LASF22
+     /tmp/ccyOOLEL.s:467    .debug_str:00000000000000b5 .LASF23
+     /tmp/ccyOOLEL.s:435    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccyOOLEL.s:441    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccyOOLEL.s:481    .debug_str:00000000000001ed .LASF0
+     /tmp/ccyOOLEL.s:457    .debug_str:0000000000000077 .LASF4
+     /tmp/ccyOOLEL.s:449    .debug_str:000000000000002f .LASF1
+     /tmp/ccyOOLEL.s:491    .debug_str:000000000000022c .LASF2
+     /tmp/ccyOOLEL.s:479    .debug_str:00000000000001da .LASF3
+     /tmp/ccyOOLEL.s:461    .debug_str:0000000000000096 .LASF5
+     /tmp/ccyOOLEL.s:471    .debug_str:00000000000000f5 .LASF6
+     /tmp/ccyOOLEL.s:453    .debug_str:000000000000004e .LASF7
+     /tmp/ccyOOLEL.s:443    .debug_str:0000000000000000 .LASF8
+     /tmp/ccyOOLEL.s:455    .debug_str:0000000000000060 .LASF9
+     /tmp/ccyOOLEL.s:445    .debug_str:000000000000000e .LASF10
+     /tmp/ccyOOLEL.s:465    .debug_str:00000000000000ad .LASF11
+     /tmp/ccyOOLEL.s:493    .debug_str:0000000000000236 .LASF12
+     /tmp/ccyOOLEL.s:463    .debug_str:00000000000000a0 .LASF13
+     /tmp/ccyOOLEL.s:459    .debug_str:0000000000000081 .LASF14
+     /tmp/ccyOOLEL.s:485    .debug_str:0000000000000209 .LASF15
+     /tmp/ccyOOLEL.s:477    .debug_str:00000000000001d1 .LASF16
+     /tmp/ccyOOLEL.s:489    .debug_str:0000000000000226 .LASF17
+     /tmp/ccyOOLEL.s:473    .debug_str:00000000000000fe .LASF24
+     /tmp/ccyOOLEL.s:14     .text.v_Get_Status:0000000000000000 .LFB0
+     /tmp/ccyOOLEL.s:56     .text.v_Get_Status:0000000000000044 .LFE0
+     /tmp/ccyOOLEL.s:469    .debug_str:00000000000000ec .LASF25
+     /tmp/ccyOOLEL.s:404    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccyOOLEL.s:31     .text.v_Get_Status:0000000000000018 .LVL1
+     /tmp/ccyOOLEL.s:37     .text.v_Get_Status:0000000000000024 .LVL2
+     /tmp/ccyOOLEL.s:43     .text.v_Get_Status:0000000000000030 .LVL3
+     /tmp/ccyOOLEL.s:447    .debug_str:000000000000001b .LASF18
+     /tmp/ccyOOLEL.s:451    .debug_str:000000000000003d .LASF19
+     /tmp/ccyOOLEL.s:487    .debug_str:0000000000000216 .LASF20
+     /tmp/ccyOOLEL.s:18     .text.v_Get_Status:0000000000000000 .LVL0
+     /tmp/ccyOOLEL.s:51     .text.v_Get_Status:000000000000003c .LVL4
+     /tmp/ccyOOLEL.s:66     .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+i32_Get_Stepper_Out
+i32_Get_Position
+e_Get_LVDT_Gain

@@ -1,0 +1,458 @@
+\doxysection{src/\+miv\+\_\+rv32\+\_\+hal/\+miv\+\_\+rv32\+\_\+syscall.c File Reference}
+\hypertarget{miv__rv32__syscall_8c}{}\label{miv__rv32__syscall_8c}\index{src/miv\_rv32\_hal/miv\_rv32\_syscall.c@{src/miv\_rv32\_hal/miv\_rv32\_syscall.c}}
+{\ttfamily \+\#include $<$unistd.\+h$>$}\newline
+{\ttfamily \+\#include $<$errno.\+h$>$}\newline
+{\ttfamily \+\#include $<$sys/\+stat.\+h$>$}\newline
+{\ttfamily \+\#include $<$sys/\+times.\+h$>$}\newline
+{\ttfamily \+\#include "{}miv\+\_\+rv32\+\_\+hal.\+h"{}}\newline
+Include dependency graph for miv\+\_\+rv32\+\_\+syscall.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__syscall_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{miv__rv32__syscall_8c_a2824cec5cfb5c34ee46afac3b434e581}{write\+\_\+hex}} (int fd, uint32\+\_\+t hex)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe}{\+\_\+exit}} (int code)
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{miv__rv32__syscall_8c_a68125648bcce70b6bb3aa0be50e99700}{\+\_\+sbrk}} (ptrdiff\+\_\+t incr)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a4284676ccba12d7f2061d338001f71fb}{\+\_\+isatty}} (int fd)
+\item 
+static int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a636892392dd38d597266081329eb3ab8}{stub}} (int err)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a7a287cf7e6fbdcbba731965aecf2dd8c}{\+\_\+open}} (const char \texorpdfstring{$\ast$}{*}name, int flags, int mode)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a9e8e03d47c8728100f536cfa55e15d68}{\+\_\+openat}} (int dirfd, const char \texorpdfstring{$\ast$}{*}name, int flags, int mode)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a58a559c63748012aab165d5f82af766d}{\+\_\+close}} (int fd)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a987df051efd2a4a52fe02963376bed75}{\+\_\+execve}} (const char \texorpdfstring{$\ast$}{*}name, char \texorpdfstring{$\ast$}{*}const argv\+[$\,$]\+, char \texorpdfstring{$\ast$}{*}const env\+[$\,$]\+)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a6cb6331c9d166180903d5fb78b9c9dd7}{\+\_\+fork}} (void)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a6e8d95db883bc4efe10c487d74e96b06}{\+\_\+fstat}} (int fd, struct stat \texorpdfstring{$\ast$}{*}st)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a945e539df8e0f66d3c73c533fe1968ee}{\+\_\+getpid}} (void)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a062a5101199c3128edd5170f2575bb10}{\+\_\+kill}} (int pid, int sig)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a07b4112e56d115914acf12d3349390d5}{\+\_\+link}} (const char \texorpdfstring{$\ast$}{*}old\+\_\+name, const char \texorpdfstring{$\ast$}{*}new\+\_\+name)
+\item 
+off\+\_\+t \doxymbox{\hyperlink{miv__rv32__syscall_8c_aafa2544ceccf0b499d5c456d7bad68c6}{\+\_\+lseek}} (int fd, off\+\_\+t ptr, int dir)
+\item 
+ssize\+\_\+t \doxymbox{\hyperlink{miv__rv32__syscall_8c_a858ae291d016ed0910d87e55beee5e84}{\+\_\+read}} (int fd, void \texorpdfstring{$\ast$}{*}ptr, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} len)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_a446970a86ae97e9633cb8f41e6f735be}{\+\_\+stat}} (const char \texorpdfstring{$\ast$}{*}file, struct stat \texorpdfstring{$\ast$}{*}st)
+\item 
+clock\+\_\+t \doxymbox{\hyperlink{miv__rv32__syscall_8c_a246d70ca40ab8628b6ad4fa9337fc726}{\+\_\+times}} (struct tms \texorpdfstring{$\ast$}{*}buf)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_ad599bf257f9250292653296049317388}{\+\_\+unlink}} (const char \texorpdfstring{$\ast$}{*}name)
+\item 
+int \doxymbox{\hyperlink{miv__rv32__syscall_8c_aeef0c3372d04caa1bcc99fed2ab6ec72}{\+\_\+wait}} (int \texorpdfstring{$\ast$}{*}status)
+\item 
+ssize\+\_\+t \doxymbox{\hyperlink{miv__rv32__syscall_8c_a8b12b3dea83ea95b57b38fc08919d759}{\+\_\+write}} (int fd, const void \texorpdfstring{$\ast$}{*}ptr, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} len)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static int \doxymbox{\hyperlink{miv__rv32__syscall_8c_ad65a8842cc674e3ddf69355898c0ecbf}{errno}}
+\item 
+static char \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{miv__rv32__syscall_8c_a5428d66981cb84e60b899495874618b2}{\+\_\+\+\_\+env}} \+[1]\+ = \{ 0 \}
+\item 
+char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{miv__rv32__syscall_8c_aa006daaf11f1e2e45a6ababaf463212b}{environ}} = \doxymbox{\hyperlink{miv__rv32__syscall_8c_a5428d66981cb84e60b899495874618b2}{\+\_\+\+\_\+env}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{miv__rv32__syscall_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{miv__rv32__syscall_8c_a58a559c63748012aab165d5f82af766d}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_close@{\_close}}
+\index{\_close@{\_close}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_close()}{\_close()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a58a559c63748012aab165d5f82af766d} 
+int \+\_\+close (\begin{DoxyParamCaption}\item[{int}]{fd}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00223}{223}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=201pt]{miv__rv32__syscall_8c_a58a559c63748012aab165d5f82af766d_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a987df051efd2a4a52fe02963376bed75}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_execve@{\_execve}}
+\index{\_execve@{\_execve}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_execve()}{\_execve()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a987df051efd2a4a52fe02963376bed75} 
+int \+\_\+execve (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name}{, }\item[{char \texorpdfstring{$\ast$}{*}const}]{argv}{\+[$\,$]\+, }\item[{char \texorpdfstring{$\ast$}{*}const}]{env}{\+[$\,$]\+}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00228}{228}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{miv__rv32__syscall_8c_a987df051efd2a4a52fe02963376bed75_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_exit@{\_exit}}
+\index{\_exit@{\_exit}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_exit()}{\_exit()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe} 
+void \+\_\+exit (\begin{DoxyParamCaption}\item[{int}]{code}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00140}{140}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=222pt]{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=237pt]{miv__rv32__syscall_8c_a2115a5a512e89dc34ce23bec2a9551fe_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a6cb6331c9d166180903d5fb78b9c9dd7}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_fork@{\_fork}}
+\index{\_fork@{\_fork}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_fork()}{\_fork()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a6cb6331c9d166180903d5fb78b9c9dd7} 
+int \+\_\+fork (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00233}{233}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{miv__rv32__syscall_8c_a6cb6331c9d166180903d5fb78b9c9dd7_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a6e8d95db883bc4efe10c487d74e96b06}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_fstat@{\_fstat}}
+\index{\_fstat@{\_fstat}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_fstat()}{\_fstat()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a6e8d95db883bc4efe10c487d74e96b06} 
+int \+\_\+fstat (\begin{DoxyParamCaption}\item[{int}]{fd}{, }\item[{struct stat \texorpdfstring{$\ast$}{*}}]{st}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00238}{238}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=198pt]{miv__rv32__syscall_8c_a6e8d95db883bc4efe10c487d74e96b06_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a945e539df8e0f66d3c73c533fe1968ee}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_getpid@{\_getpid}}
+\index{\_getpid@{\_getpid}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_getpid()}{\_getpid()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a945e539df8e0f66d3c73c533fe1968ee} 
+int \+\_\+getpid (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00255}{255}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+\Hypertarget{miv__rv32__syscall_8c_a4284676ccba12d7f2061d338001f71fb}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_isatty@{\_isatty}}
+\index{\_isatty@{\_isatty}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_isatty()}{\_isatty()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a4284676ccba12d7f2061d338001f71fb} 
+int \+\_\+isatty (\begin{DoxyParamCaption}\item[{int}]{fd}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00190}{190}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{miv__rv32__syscall_8c_a4284676ccba12d7f2061d338001f71fb_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a062a5101199c3128edd5170f2575bb10}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_kill@{\_kill}}
+\index{\_kill@{\_kill}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_kill()}{\_kill()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a062a5101199c3128edd5170f2575bb10} 
+int \+\_\+kill (\begin{DoxyParamCaption}\item[{int}]{pid}{, }\item[{int}]{sig}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00260}{260}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=191pt]{miv__rv32__syscall_8c_a062a5101199c3128edd5170f2575bb10_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a07b4112e56d115914acf12d3349390d5}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_link@{\_link}}
+\index{\_link@{\_link}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_link()}{\_link()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a07b4112e56d115914acf12d3349390d5} 
+int \+\_\+link (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{old\+\_\+name}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{new\+\_\+name}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00265}{265}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{miv__rv32__syscall_8c_a07b4112e56d115914acf12d3349390d5_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_aafa2544ceccf0b499d5c456d7bad68c6}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_lseek@{\_lseek}}
+\index{\_lseek@{\_lseek}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_lseek()}{\_lseek()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_aafa2544ceccf0b499d5c456d7bad68c6} 
+off\+\_\+t \+\_\+lseek (\begin{DoxyParamCaption}\item[{int}]{fd}{, }\item[{off\+\_\+t}]{ptr}{, }\item[{int}]{dir}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00270}{270}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{miv__rv32__syscall_8c_aafa2544ceccf0b499d5c456d7bad68c6_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a7a287cf7e6fbdcbba731965aecf2dd8c}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_open@{\_open}}
+\index{\_open@{\_open}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_open()}{\_open()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a7a287cf7e6fbdcbba731965aecf2dd8c} 
+int \+\_\+open (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name}{, }\item[{int}]{flags}{, }\item[{int}]{mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00213}{213}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{miv__rv32__syscall_8c_a7a287cf7e6fbdcbba731965aecf2dd8c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a9e8e03d47c8728100f536cfa55e15d68}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_openat@{\_openat}}
+\index{\_openat@{\_openat}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_openat()}{\_openat()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a9e8e03d47c8728100f536cfa55e15d68} 
+int \+\_\+openat (\begin{DoxyParamCaption}\item[{int}]{dirfd}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{name}{, }\item[{int}]{flags}{, }\item[{int}]{mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00218}{218}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{miv__rv32__syscall_8c_a9e8e03d47c8728100f536cfa55e15d68_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a858ae291d016ed0910d87e55beee5e84}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_read@{\_read}}
+\index{\_read@{\_read}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_read()}{\_read()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a858ae291d016ed0910d87e55beee5e84} 
+ssize\+\_\+t \+\_\+read (\begin{DoxyParamCaption}\item[{int}]{fd}{, }\item[{void \texorpdfstring{$\ast$}{*}}]{ptr}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}}}]{len}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00285}{285}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{miv__rv32__syscall_8c_a858ae291d016ed0910d87e55beee5e84_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a68125648bcce70b6bb3aa0be50e99700}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_sbrk@{\_sbrk}}
+\index{\_sbrk@{\_sbrk}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_sbrk()}{\_sbrk()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a68125648bcce70b6bb3aa0be50e99700} 
+void \texorpdfstring{$\ast$}{*} \+\_\+sbrk (\begin{DoxyParamCaption}\item[{ptrdiff\+\_\+t}]{incr}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00153}{153}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+\Hypertarget{miv__rv32__syscall_8c_a446970a86ae97e9633cb8f41e6f735be}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_stat@{\_stat}}
+\index{\_stat@{\_stat}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_stat()}{\_stat()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a446970a86ae97e9633cb8f41e6f735be} 
+int \+\_\+stat (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{file}{, }\item[{struct stat \texorpdfstring{$\ast$}{*}}]{st}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00315}{315}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{miv__rv32__syscall_8c_a446970a86ae97e9633cb8f41e6f735be_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a246d70ca40ab8628b6ad4fa9337fc726}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_times@{\_times}}
+\index{\_times@{\_times}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_times()}{\_times()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a246d70ca40ab8628b6ad4fa9337fc726} 
+clock\+\_\+t \+\_\+times (\begin{DoxyParamCaption}\item[{struct tms \texorpdfstring{$\ast$}{*}}]{buf}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00320}{320}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=204pt]{miv__rv32__syscall_8c_a246d70ca40ab8628b6ad4fa9337fc726_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_ad599bf257f9250292653296049317388}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_unlink@{\_unlink}}
+\index{\_unlink@{\_unlink}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_unlink()}{\_unlink()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_ad599bf257f9250292653296049317388} 
+int \+\_\+unlink (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{name}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00325}{325}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=206pt]{miv__rv32__syscall_8c_ad599bf257f9250292653296049317388_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_aeef0c3372d04caa1bcc99fed2ab6ec72}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_wait@{\_wait}}
+\index{\_wait@{\_wait}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_wait()}{\_wait()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_aeef0c3372d04caa1bcc99fed2ab6ec72} 
+int \+\_\+wait (\begin{DoxyParamCaption}\item[{int \texorpdfstring{$\ast$}{*}}]{status}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00330}{330}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=197pt]{miv__rv32__syscall_8c_aeef0c3372d04caa1bcc99fed2ab6ec72_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a8b12b3dea83ea95b57b38fc08919d759}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_write@{\_write}}
+\index{\_write@{\_write}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_write()}{\_write()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a8b12b3dea83ea95b57b38fc08919d759} 
+ssize\+\_\+t \+\_\+write (\begin{DoxyParamCaption}\item[{int}]{fd}{, }\item[{const void \texorpdfstring{$\ast$}{*}}]{ptr}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}}}]{len}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00335}{335}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=201pt]{miv__rv32__syscall_8c_a8b12b3dea83ea95b57b38fc08919d759_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a636892392dd38d597266081329eb3ab8}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!stub@{stub}}
+\index{stub@{stub}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{stub()}{stub()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a636892392dd38d597266081329eb3ab8} 
+int stub (\begin{DoxyParamCaption}\item[{int}]{err}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00207}{207}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{miv__rv32__syscall_8c_a636892392dd38d597266081329eb3ab8_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__syscall_8c_a2824cec5cfb5c34ee46afac3b434e581}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!write\_hex@{write\_hex}}
+\index{write\_hex@{write\_hex}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{write\_hex()}{write\_hex()}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a2824cec5cfb5c34ee46afac3b434e581} 
+void write\+\_\+hex (\begin{DoxyParamCaption}\item[{int}]{fd}{, }\item[{uint32\+\_\+t}]{hex}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00121}{121}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=338pt]{miv__rv32__syscall_8c_a2824cec5cfb5c34ee46afac3b434e581_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{miv__rv32__syscall_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{miv__rv32__syscall_8c_a5428d66981cb84e60b899495874618b2}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!\_\_env@{\_\_env}}
+\index{\_\_env@{\_\_env}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{\_\_env}{\_\_env}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_a5428d66981cb84e60b899495874618b2} 
+char\texorpdfstring{$\ast$}{*} \+\_\+\+\_\+env\+[1]\+ = \{ 0 \}\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00118}{118}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+\Hypertarget{miv__rv32__syscall_8c_aa006daaf11f1e2e45a6ababaf463212b}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!environ@{environ}}
+\index{environ@{environ}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{environ}{environ}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_aa006daaf11f1e2e45a6ababaf463212b} 
+char\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} environ = \doxymbox{\hyperlink{miv__rv32__syscall_8c_a5428d66981cb84e60b899495874618b2}{\+\_\+\+\_\+env}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00119}{119}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+
+\Hypertarget{miv__rv32__syscall_8c_ad65a8842cc674e3ddf69355898c0ecbf}\index{miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}!errno@{errno}}
+\index{errno@{errno}!miv\_rv32\_syscall.c@{miv\_rv32\_syscall.c}}
+\doxysubsubsection{\texorpdfstring{errno}{errno}}
+{\footnotesize\ttfamily \label{miv__rv32__syscall_8c_ad65a8842cc674e3ddf69355898c0ecbf} 
+int errno\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__syscall_8c_source_l00116}{116}} of file \doxymbox{\hyperlink{miv__rv32__syscall_8c_source}{miv\+\_\+rv32\+\_\+syscall.\+c}}.
+

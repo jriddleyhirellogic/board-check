@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['xeventgroupwaitbitsparams_0',['xEventGroupWaitBitsParams',['../structxEventGroupWaitBitsParams.html',1,'']]],
+  ['xheapstats_1',['xHeapStats',['../structxHeapStats.html',1,'']]],
+  ['xlist_2',['xLIST',['../structxLIST.html',1,'']]],
+  ['xlist_5fitem_3',['xLIST_ITEM',['../structxLIST__ITEM.html',1,'']]],
+  ['xmemory_5fregion_4',['xMEMORY_REGION',['../structxMEMORY__REGION.html',1,'']]],
+  ['xstatic_5fevent_5fgroup_5',['xSTATIC_EVENT_GROUP',['../structxSTATIC__EVENT__GROUP.html',1,'']]],
+  ['xstatic_5flist_6',['xSTATIC_LIST',['../structxSTATIC__LIST.html',1,'']]],
+  ['xstatic_5flist_5fitem_7',['xSTATIC_LIST_ITEM',['../structxSTATIC__LIST__ITEM.html',1,'']]],
+  ['xstatic_5fmini_5flist_5fitem_8',['xSTATIC_MINI_LIST_ITEM',['../structxSTATIC__MINI__LIST__ITEM.html',1,'']]],
+  ['xstatic_5fqueue_9',['xSTATIC_QUEUE',['../structxSTATIC__QUEUE.html',1,'']]],
+  ['xstatic_5fstream_5fbuffer_10',['xSTATIC_STREAM_BUFFER',['../structxSTATIC__STREAM__BUFFER.html',1,'']]],
+  ['xstatic_5ftcb_11',['xSTATIC_TCB',['../structxSTATIC__TCB.html',1,'']]],
+  ['xstatic_5ftimer_12',['xSTATIC_TIMER',['../structxSTATIC__TIMER.html',1,'']]],
+  ['xtask_5fparameters_13',['xTASK_PARAMETERS',['../structxTASK__PARAMETERS.html',1,'']]],
+  ['xtask_5fstatus_14',['xTASK_STATUS',['../structxTASK__STATUS.html',1,'']]],
+  ['xtaskgenericnotifyparams_15',['xTaskGenericNotifyParams',['../structxTaskGenericNotifyParams.html',1,'']]],
+  ['xtaskgenericnotifywaitparams_16',['xTaskGenericNotifyWaitParams',['../structxTaskGenericNotifyWaitParams.html',1,'']]],
+  ['xtime_5fout_17',['xTIME_OUT',['../structxTIME__OUT.html',1,'']]],
+  ['xtimergenericcommandfromtaskparams_18',['xTimerGenericCommandFromTaskParams',['../structxTimerGenericCommandFromTaskParams.html',1,'']]]
+];

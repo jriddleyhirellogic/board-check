@@ -1,0 +1,244 @@
+\doxysection{serial\+\_\+sm.\+c}
+\hypertarget{serial__sm_8c_source}{}\label{serial__sm_8c_source}\index{src/serial\_sm.c@{src/serial\_sm.c}}
+\doxymbox{\hyperlink{serial__sm_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00002}00002\ \textcolor{comment}{\ *\ serial\_sm.c}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 6,\ 2025}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal__uart16550_8h}{hal\_uart16550.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__comm_8h}{serial\_comm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__sm_8h}{serial\_sm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{command_8h}{command.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{crc_8h}{crc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00026}00026\ \textcolor{comment}{/*\ Serial\ Message\ States}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00027}00027\ \textcolor{comment}{typedef\ enum}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00028}00028\ \textcolor{comment}{\{}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00029}00029\ \textcolor{comment}{\ \ \ \ SYNC\_WAIT,}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00030}00030\ \textcolor{comment}{\ \ \ \ SYNC,}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00031}00031\ \textcolor{comment}{\ \ \ \ FUNCTION,}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00032}00032\ \textcolor{comment}{\ \ \ \ DATA\_COUNT,}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00033}00033\ \textcolor{comment}{\ \ \ \ DATA}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00034}00034\ \textcolor{comment}{\}Serial\_Msg\_State\_t;}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00035}00035\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00038}\doxymbox{\hyperlink{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}{00038}}\ \textcolor{preprocessor}{\#define\ RX\_BUFSIZE\ 64}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00040}\doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{00040}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\_Msg\_State\_t}}\ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}},\ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00041}\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{00041}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00042}\doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{00042}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}{RX\_BUFSIZE}}];}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00044}00044\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}{Received\_Message\_Notification}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00045}\doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{00045}}\ \textcolor{keyword}{static}\ uint32\_t\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}},\ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00046}00046\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00047}00047\ \textcolor{comment}{\ *\ |\ Packet\ Structure\ (latest)\ from\ ICD\ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00048}00048\ \textcolor{comment}{\ *\ |\ SYNC\ FRAME\ (0x1ACFFC1D)\ -\/\ 4\ bytes\ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00049}00049\ \textcolor{comment}{\ *\ |\ OPCODE\ \ (Function)\ \ \ \ \ \ -\/\ 1\ byte\ \ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00050}00050\ \textcolor{comment}{\ *\ |\ Error\ (in\ reply)\ \ \ \ \ \ \ \ -\/\ 1\ byte\ \ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00051}00051\ \textcolor{comment}{\ *\ |\ Seq\ Number\ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ 1\ byte\ \ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00052}00052\ \textcolor{comment}{\ *\ |\ Data\ Length\ (bytes)\ \ \ \ \ \ \ 1\ byte\ \ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00053}00053\ \textcolor{comment}{\ *\ |\ Reserved\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ 8\ bytes\ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00054}00054\ \textcolor{comment}{\ *\ |\ Data\ Payload\ \ \ \ \ \ \ \ \ \ \ \ -\/\ variable\ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00055}00055\ \textcolor{comment}{\ *\ |\ CRC\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/\ 4\ bytes\ \ |}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00056}00056\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00057}00057\ \textcolor{comment}{\ *\ Notes:\ CRC\ is\ calculated\ over\ all\ bytes\ except\ sync\ frame}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00058}00058\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Transmission\ order\ eg,\ header:\ 0x1A,\ 0xCF,\ 0xFC,\ 0x1D}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00059}00059\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00060}00060\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00064}\doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{00064}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\_Msg\_Header\_t}}\ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00065}\doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{00065}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{u8\_Cnt}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00068}\doxymbox{\hyperlink{serial__sm_8c_a318ca21f6a277906e99215773de6db53}{00068}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__sm_8c_a318ca21f6a277906e99215773de6db53}{v\_Update\_Serial\_SM}}(uint8\_t\ u8\_Received\_Char)}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00069}00069\ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00070}00070\ \ \ \ \ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ event;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00071}00071\ \ \ \ \ \textcolor{comment}{//u8\_Rx\_Buf[u8\_Bytes\_Received++]\ =\ u8\_Received\_Char;}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{switch}(\ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00074}00074\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00075}00075\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c}{SYNC\_WAIT}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Idle\ state\ waiting\ for\ msg\ start}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00076}00076\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u8\_Received\_Char\ ==\ \doxymbox{\hyperlink{serial__sm_8h_a2f5ce3983045dcf19897b1337643565b}{SYNC1\_CODE}}\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00078}00078\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7}{SYNC1}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ \doxymbox{\hyperlink{serial__sm_8h_a2f5ce3983045dcf19897b1337643565b}{SYNC1\_CODE}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00081}00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00086}00086\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7}{SYNC1}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Received\ SYNC1}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u8\_Received\_Char\ ==\ \doxymbox{\hyperlink{serial__sm_8h_adf4c7b1c63e624f452dbc8423bc9a73b}{SYNC2\_CODE}}\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00088}00088\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8}{SYNC2}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ \doxymbox{\hyperlink{serial__sm_8h_adf4c7b1c63e624f452dbc8423bc9a73b}{SYNC2\_CODE}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00091}00091\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00096}00096\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8}{SYNC2}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Received\ SYNC2}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u8\_Received\_Char\ ==\ \doxymbox{\hyperlink{serial__sm_8h_a70a8f18b872e7392d66cfe2748d617ed}{SYNC3\_CODE}}\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00098}00098\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75}{SYNC3}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00101}00101\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00106}00106\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75}{SYNC3}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Received\ SYNC3}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00107}00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (u8\_Received\_Char\ ==\ \doxymbox{\hyperlink{serial__sm_8h_a264257ef3a67b018dd37e426218e40c8}{SYNC4\_CODE}}\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00108}00108\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479}{SYNC4}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{memset}}(\&\doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}},\ 0,\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\_Msg\_Header\_t}}));}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00112}00112\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00117}00117\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479}{SYNC4}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Received\ last\ SYNC\_CHAR}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00118}00118\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Opcode\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00119}00119\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Opcode;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00120}00120\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ 0\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00121}00121\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6}{FUNCTION}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00124}00124\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6}{FUNCTION}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Received\ function\ code}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00125}00125\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Error\_Code\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00126}00126\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00127}00127\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00128}00128\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664}{ERROR\_CODE}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00131}00131\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664}{ERROR\_CODE}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00132}00132\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Sequence\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00133}00133\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00134}00134\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00135}00135\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313}{SEQUENCE}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00138}00138\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313}{SEQUENCE}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00139}00139\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Data\_Length\ =\ u8\_Received\_Char;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Size\ of\ data\ payload}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00140}00140\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00141}00141\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00142}00142\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{u8\_Cnt}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00143}00143\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b}{RESERVED}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00146}00146\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b}{RESERVED}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00147}00147\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Reserved[\doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{u8\_Cnt}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00148}00148\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00149}00149\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{u8\_Cnt}}\ ==\ 8\ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00151}00151\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Data\_Length\ ==\ 0\ )\ \textcolor{comment}{//\ Command\ with\ no\ data\ payload}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57}{CRC1}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2}{DATA}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00160}00160\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00161}00161\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00163}00163\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2}{DATA}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00164}00164\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00165}00165\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{crc32_8c_adf94510471a0cd9c7ab4a85118f92561}{crc}}(\ \&u8\_Received\_Char,\ 1,\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00166}00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}\ ==\ (\ \doxymbox{\hyperlink{serial__sm_8h_a07ab47e2ed266cd713cdd5fc34b91b5c}{SYNC\_LENGTH}}\ +\ \doxymbox{\hyperlink{serial__sm_8h_a49999be01380f41cc0d0f1f1406fb277}{HEADER\_SIZE}}\ +\ \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}.u8\_Data\_Length))}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00167}00167\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57}{CRC1}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00169}00169\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00170}00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00172}00172\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57}{CRC1}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00173}00173\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00174}00174\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00175}00175\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7}{CRC2}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00178}00178\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7}{CRC2}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00179}00179\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00180}00180\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ =\ (\doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ <<\ 8)\ |\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00181}00181\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825}{CRC3}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00184}00184\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825}{CRC3}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00185}00185\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00186}00186\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ =\ (\doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ <<\ 8)\ |\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00187}00187\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22}{CRC4}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00189}00189\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00190}00190\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22}{CRC4}}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00191}00191\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\_Bytes\_Received}}++]\ =\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00192}00192\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ =\ (\doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ <<\ 8)\ |\ u8\_Received\_Char;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00195}00195\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}}:\ \ \ \textcolor{comment}{//\ absorbing\ state\ until\ reset\ by\ timeout}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00197}00197\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00198}00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00199}00199\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00201}00201\ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00202}00202\ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00204}00204\ \textcolor{comment}{//\ The\ timer\ is\ reloaded\ with\ every\ received\ character.\ The\ expiration\ is\ set\ to\ 3\ character\ times.\ When\ the\ timer\ expires,\ the\ crc}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00205}00205\ \textcolor{comment}{//\ is\ checked\ and\ if\ good,\ the\ serial\ comm\ task\ is\ notified.\ The\ state\ machines\ and\ crcs\ are\ reset\ as\ well.}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00206}\doxymbox{\hyperlink{serial__comm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}{00206}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}{v\_Framing\_Timeout}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00207}00207\ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00208}00208\ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ ==\ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ \&\&}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00209}00209\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ ==\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22}{CRC4}}\ \ )}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00210}00210\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00211}00211\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}{Received\_Message\_Notification}}();}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00212}00212\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00214}00214\ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_add62247398443f8539532c99b386c595}{Reset\_Serial\_SM}}();}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00215}00215\ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c}{SYNC\_WAIT}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00216}00216\ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00217}00217\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00218}\doxymbox{\hyperlink{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}{00218}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}{Received\_Message\_Notification}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00219}00219\ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00220}00220\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ event;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00221}00221\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00222}00222\ \ \ \ \ \textcolor{keyword}{event}.\doxymbox{\hyperlink{unionEvent__t_a4306ba444726f2e614dd9222c2638adc}{serial\_msg}}.\doxymbox{\hyperlink{structEvent__Serial__Msg__Test__t_a4df35076881d8d9a55c56ba5a26857ae}{sig}}\ =\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a07fc1f8c6ddddad58d7eb01c5502bf63}{RECEIVED\_SERIAL\_MESSAGE}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00223}00223\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{memcpy}}(\ \&event.\doxymbox{\hyperlink{unionEvent__t_a4306ba444726f2e614dd9222c2638adc}{serial\_msg}}.\doxymbox{\hyperlink{structEvent__Serial__Msg__Test__t_abbae33d685213af9af33a91cec9ee703}{header}},\ \&\doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}},\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\_Msg\_Header\_t}}));}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00224}00224\ \ \ \ \ \textcolor{keyword}{event}.serial\_msg.Data\ =\ \&\doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\_Rx\_Buf}}[\doxymbox{\hyperlink{serial__sm_8h_a07ab47e2ed266cd713cdd5fc34b91b5c}{SYNC\_LENGTH}}\ +\ \doxymbox{\hyperlink{serial__sm_8h_a49999be01380f41cc0d0f1f1406fb277}{HEADER\_SIZE}}];}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00225}00225\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a57e9130a700d7c3ad9ff0a6609d01b13}{v\_Post\_Serial\_Event\_ISR}}(\ \&event\ );}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00226}00226\ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00228}\doxymbox{\hyperlink{serial__comm_8c_add62247398443f8539532c99b386c595}{00228}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__sm_8c_add62247398443f8539532c99b386c595}{Reset\_Serial\_SM}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00229}00229\ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00230}00230\ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\_State}}\ =\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c}{SYNC\_WAIT}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00231}00231\ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\_Calculated\_CRC}}\ =\ \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\_Received\_CRC}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00232}00232\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{memset}}(\&\doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}},\ 0,\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\_Msg\_Header\_t}}));}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00233}00233\ \}}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00234}00234\ }
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00235}\doxymbox{\hyperlink{serial__sm_8c_ac865dd6b603e7cb7a3aeb7c815ae753b}{00235}}\ uint8\_t\ \doxymbox{\hyperlink{serial__sm_8c_ac865dd6b603e7cb7a3aeb7c815ae753b}{b\_In\_Error\_State}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00236}00236\ \{}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00237}00237\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\_State}}\ ==\ \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{serial__sm_8c_source_l00238}00238\ \}}
+
+\end{DoxyCode}

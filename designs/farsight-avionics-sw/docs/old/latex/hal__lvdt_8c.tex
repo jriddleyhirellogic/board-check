@@ -1,0 +1,397 @@
+\doxysection{src/\+hal/\+hal\+\_\+lvdt.c File Reference}
+\hypertarget{hal__lvdt_8c}{}\label{hal__lvdt_8c}\index{src/hal/hal\_lvdt.c@{src/hal/hal\_lvdt.c}}
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt\+\_\+cal.\+h"{}}\newline
+Include dependency graph for hal\+\_\+lvdt.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static float \doxymbox{\hyperlink{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}{f\+\_\+\+Interpolate\+\_\+2D}} (float f\+\_\+x, float f\+\_\+x0, float f\+\_\+x1, float f\+\_\+y0, float f\+\_\+y1)
+\begin{DoxyCompactList}\small\item\em 2 Dimensional Lagrangian interpolation \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40}{v\+\_\+\+Init\+\_\+\+LVDT}} (void)
+\begin{DoxyCompactList}\small\item\em Initializes lvdt (position) sensor hardware. This initializes the hardware used to read the LVDT sensor:\+ the voltage on both the primary and secondary coils are complex valued (I and Q), plus a GPIO register used to set the gain to either 1 or 8. Two calibration tables are initialized. One is for use when the LVDT gain setting is 1, the other for when it is 8. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42}{v\+\_\+\+Set\+\_\+\+LVDT\+\_\+\+Gain}} (LVDT\+\_\+\+Gain\+\_\+\+Sel\+\_\+t e\+Gain)
+\begin{DoxyCompactList}\small\item\em Selects whether x1 or x8 gain is used with LVDT sensor. \end{DoxyCompactList}\item 
+LVDT\+\_\+\+Gain\+\_\+\+Sel\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}{e\+\_\+\+Get\+\_\+\+LVDT\+\_\+\+Gain}} (void)
+\begin{DoxyCompactList}\small\item\em Retrieves current gain setting for LVDT sensor. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25}{v\+\_\+\+Set\+\_\+\+Displacement\+\_\+\+Offset}} (int32\+\_\+t i32\+\_\+\+Offset)
+\begin{DoxyCompactList}\small\item\em Sets the LVDT offset in microns applied to position readings following table lookup and interpolation. This is used because the mechanical zero of the focus mechanism will not coincide perfecty with the electrical zero of the LVDT. Measured and true position are related as:\+ True Position = Measured Position + Offset. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__lvdt_8c_a6420473a781772383359e21b383ebd97}{V\+\_\+\+Get\+\_\+\+LVDT\+\_\+\+Snapshot}} (LVDT\+\_\+\+Sample\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+LVDT\+\_\+\+Sample)
+\begin{DoxyCompactList}\small\item\em Takes a complex valued sample of the primary and secondary voltages on the LVDT sensor. \end{DoxyCompactList}\item 
+int32\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50}{i32\+\_\+\+Get\+\_\+\+Projection}} (LVDT\+\_\+\+Sample\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+LVDT\+\_\+\+Sample)
+\begin{DoxyCompactList}\small\item\em Calculates the projection of the secondary response onto the primary excitation If the primary and secondary complex valued voltages are represented as vectors, this is the projection of the secondary onto the primary, normalized by the amplitude of the primary. This can be seen as a complex valued loss between the primary and secondary. Mathematically, this is:\+ Projection = (S dot P)/\+ norm(\+P)\texorpdfstring{$^\wedge$}{\string^}2 where P = primary (I,Q) pair S = secondary (I,Q) pair dot -\/ vector dot product norm -\/ vector norm (length). \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9}{f\+\_\+\+Get\+\_\+\+Displacement}} (int32\+\_\+t i32\+\_\+\+Projection)
+\begin{DoxyCompactList}\small\item\em Uses the projection of secondary response onto primary to calculate a displacement in microns. \end{DoxyCompactList}\item 
+int32\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434}{i32\+\_\+\+Get\+\_\+\+Position}} (void)
+\begin{DoxyCompactList}\small\item\em Higher level function to take snapshot of LVDT response and derive a position in microns. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static LVDT\+\_\+\+Instance\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d}{LVDT\+\_\+\+Instance}}
+\item 
+static LVDT\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}{i32\+\_\+\+Low\+\_\+\+Gain\+\_\+\+Limit}} \+[2]\+
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}{i32\+\_\+\+High\+\_\+\+Gain\+\_\+\+Limit}} \+[2]\+
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f}{i32\+\_\+\+Displacement\+\_\+\+Offset}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{hal__lvdt_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}\index{hal\_lvdt.c@{hal\_lvdt.c}!e\_Get\_LVDT\_Gain@{e\_Get\_LVDT\_Gain}}
+\index{e\_Get\_LVDT\_Gain@{e\_Get\_LVDT\_Gain}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{e\_Get\_LVDT\_Gain()}{e\_Get\_LVDT\_Gain()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034} 
+LVDT\+\_\+\+Gain\+\_\+\+Sel\+\_\+t e\+\_\+\+Get\+\_\+\+LVDT\+\_\+\+Gain (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Retrieves current gain setting for LVDT sensor. 
+
+\begin{DoxyReturn}{Returns}
+Current gain setting -\/ 0 (x1), 1 (x8) 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00086}{86}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9}\index{hal\_lvdt.c@{hal\_lvdt.c}!f\_Get\_Displacement@{f\_Get\_Displacement}}
+\index{f\_Get\_Displacement@{f\_Get\_Displacement}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{f\_Get\_Displacement()}{f\_Get\_Displacement()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9} 
+float f\+\_\+\+Get\+\_\+\+Displacement (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{i32\+\_\+\+Projection}{}\end{DoxyParamCaption})}
+
+
+
+Uses the projection of secondary response onto primary to calculate a displacement in microns. 
+
+\begin{DoxyNote}{Note}
+The appropriate interpolation table is selected based on the gain setting in use.
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em i32\+\_\+\+Projection} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Displacement in microns. 
+\end{DoxyReturn}
+choose table based on minimums for range
+
+Check first to see if it is out of range wrt to table limits
+
+Find the two points bracketing the projection value, will be in interval (u8\+\_\+n, u8\+\_\+n+1)
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00165}{165}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}\index{hal\_lvdt.c@{hal\_lvdt.c}!f\_Interpolate\_2D@{f\_Interpolate\_2D}}
+\index{f\_Interpolate\_2D@{f\_Interpolate\_2D}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{f\_Interpolate\_2D()}{f\_Interpolate\_2D()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051} 
+float f\+\_\+\+Interpolate\+\_\+2D (\begin{DoxyParamCaption}\item[{float}]{f\+\_\+x}{, }\item[{float}]{f\+\_\+x0}{, }\item[{float}]{f\+\_\+x1}{, }\item[{float}]{f\+\_\+y0}{, }\item[{float}]{f\+\_\+y1}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+2 Dimensional Lagrangian interpolation 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Value of x between x0 and x1 where y is to be evaluated \\
+\hline
+{\em x0} & Lower bound of interval containing x \\
+\hline
+{\em \doxylink{portContext_8h_a647803975572334a4388665c70ddd3f8}{x1}} & Upper bound of interval containing x \\
+\hline
+{\em y0} & Value of y at lower bound \\
+\hline
+{\em y1} & Value of y at upper bound \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00229}{229}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434}\index{hal\_lvdt.c@{hal\_lvdt.c}!i32\_Get\_Position@{i32\_Get\_Position}}
+\index{i32\_Get\_Position@{i32\_Get\_Position}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Get\_Position()}{i32\_Get\_Position()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434} 
+int32\+\_\+t i32\+\_\+\+Get\+\_\+\+Position (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Higher level function to take snapshot of LVDT response and derive a position in microns. 
+
+\begin{DoxyReturn}{Returns}
+Position in microns of LVDT. 
+\end{DoxyReturn}
+Applying rounding
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00242}{242}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50}\index{hal\_lvdt.c@{hal\_lvdt.c}!i32\_Get\_Projection@{i32\_Get\_Projection}}
+\index{i32\_Get\_Projection@{i32\_Get\_Projection}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Get\_Projection()}{i32\_Get\_Projection()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50} 
+int32\+\_\+t i32\+\_\+\+Get\+\_\+\+Projection (\begin{DoxyParamCaption}\item[{LVDT\+\_\+\+Sample\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+LVDT\+\_\+\+Sample}{}\end{DoxyParamCaption})}
+
+
+
+Calculates the projection of the secondary response onto the primary excitation If the primary and secondary complex valued voltages are represented as vectors, this is the projection of the secondary onto the primary, normalized by the amplitude of the primary. This can be seen as a complex valued loss between the primary and secondary. Mathematically, this is:\+ Projection = (S dot P)/\+ norm(\+P)\texorpdfstring{$^\wedge$}{\string^}2 where P = primary (I,Q) pair S = secondary (I,Q) pair dot -\/ vector dot product norm -\/ vector norm (length). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+LVDT\+\_\+\+Sample} & The (I,Q) values for both the primary and the secondary coils of the LVDT \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The normalized projection of the secondary response onto the primary excitation 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00137}{137}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_a6420473a781772383359e21b383ebd97}\index{hal\_lvdt.c@{hal\_lvdt.c}!V\_Get\_LVDT\_Snapshot@{V\_Get\_LVDT\_Snapshot}}
+\index{V\_Get\_LVDT\_Snapshot@{V\_Get\_LVDT\_Snapshot}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{V\_Get\_LVDT\_Snapshot()}{V\_Get\_LVDT\_Snapshot()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a6420473a781772383359e21b383ebd97} 
+void V\+\_\+\+Get\+\_\+\+LVDT\+\_\+\+Snapshot (\begin{DoxyParamCaption}\item[{LVDT\+\_\+\+Sample\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+LVDT\+\_\+\+Sample}{}\end{DoxyParamCaption})}
+
+
+
+Takes a complex valued sample of the primary and secondary voltages on the LVDT sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+LVDT\+\_\+\+Sample} & Pointer to LVDT sample struct to fill in. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00111}{111}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{hal__lvdt_8c_a6420473a781772383359e21b383ebd97_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a6420473a781772383359e21b383ebd97_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40}\index{hal\_lvdt.c@{hal\_lvdt.c}!v\_Init\_LVDT@{v\_Init\_LVDT}}
+\index{v\_Init\_LVDT@{v\_Init\_LVDT}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_LVDT()}{v\_Init\_LVDT()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40} 
+void v\+\_\+\+Init\+\_\+\+LVDT (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Initializes lvdt (position) sensor hardware. This initializes the hardware used to read the LVDT sensor:\+ the voltage on both the primary and secondary coils are complex valued (I and Q), plus a GPIO register used to set the gain to either 1 or 8. Two calibration tables are initialized. One is for use when the LVDT gain setting is 1, the other for when it is 8. 
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00037}{37}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25}\index{hal\_lvdt.c@{hal\_lvdt.c}!v\_Set\_Displacement\_Offset@{v\_Set\_Displacement\_Offset}}
+\index{v\_Set\_Displacement\_Offset@{v\_Set\_Displacement\_Offset}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Displacement\_Offset()}{v\_Set\_Displacement\_Offset()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25} 
+void v\+\_\+\+Set\+\_\+\+Displacement\+\_\+\+Offset (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{i32\+\_\+\+Offset}{}\end{DoxyParamCaption})}
+
+
+
+Sets the LVDT offset in microns applied to position readings following table lookup and interpolation. This is used because the mechanical zero of the focus mechanism will not coincide perfecty with the electrical zero of the LVDT. Measured and true position are related as:\+ True Position = Measured Position + Offset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i32\+\_\+\+Offset} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00100}{100}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42}\index{hal\_lvdt.c@{hal\_lvdt.c}!v\_Set\_LVDT\_Gain@{v\_Set\_LVDT\_Gain}}
+\index{v\_Set\_LVDT\_Gain@{v\_Set\_LVDT\_Gain}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_LVDT\_Gain()}{v\_Set\_LVDT\_Gain()}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42} 
+void v\+\_\+\+Set\+\_\+\+LVDT\+\_\+\+Gain (\begin{DoxyParamCaption}\item[{LVDT\+\_\+\+Gain\+\_\+\+Sel\+\_\+t}]{e\+Gain}{}\end{DoxyParamCaption})}
+
+
+
+Selects whether x1 or x8 gain is used with LVDT sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e\+Gain} & 0 -\/ x1, 1 -\/ x8 \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00075}{75}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{hal__lvdt_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f}\index{hal\_lvdt.c@{hal\_lvdt.c}!i32\_Displacement\_Offset@{i32\_Displacement\_Offset}}
+\index{i32\_Displacement\_Offset@{i32\_Displacement\_Offset}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Displacement\_Offset}{i32\_Displacement\_Offset}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f} 
+int32\+\_\+t i32\+\_\+\+Displacement\+\_\+\+Offset\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+\Hypertarget{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}\index{hal\_lvdt.c@{hal\_lvdt.c}!i32\_High\_Gain\_Limit@{i32\_High\_Gain\_Limit}}
+\index{i32\_High\_Gain\_Limit@{i32\_High\_Gain\_Limit}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{i32\_High\_Gain\_Limit}{i32\_High\_Gain\_Limit}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5} 
+int32\+\_\+t i32\+\_\+\+High\+\_\+\+Gain\+\_\+\+Limit\+[2]\+\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00022}{22}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+\Hypertarget{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}\index{hal\_lvdt.c@{hal\_lvdt.c}!i32\_Low\_Gain\_Limit@{i32\_Low\_Gain\_Limit}}
+\index{i32\_Low\_Gain\_Limit@{i32\_Low\_Gain\_Limit}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Low\_Gain\_Limit}{i32\_Low\_Gain\_Limit}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac} 
+int32\+\_\+t i32\+\_\+\+Low\+\_\+\+Gain\+\_\+\+Limit\+[2]\+\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00021}{21}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+\Hypertarget{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}\index{hal\_lvdt.c@{hal\_lvdt.c}!instance@{instance}}
+\index{instance@{instance}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{instance}{instance}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99} 
+LVDT\+\_\+\+Instance\+\_\+t\texorpdfstring{$\ast$}{*} instance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00019}{19}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+
+\Hypertarget{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d}\index{hal\_lvdt.c@{hal\_lvdt.c}!LVDT\_Instance@{LVDT\_Instance}}
+\index{LVDT\_Instance@{LVDT\_Instance}!hal\_lvdt.c@{hal\_lvdt.c}}
+\doxysubsubsection{\texorpdfstring{LVDT\_Instance}{LVDT\_Instance}}
+{\footnotesize\ttfamily \label{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d} 
+LVDT\+\_\+\+Instance\+\_\+t LVDT\+\_\+\+Instance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__lvdt_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{hal__lvdt_8c_source}{hal\+\_\+lvdt.\+c}}.
+

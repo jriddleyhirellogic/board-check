@@ -1,0 +1,90 @@
+\doxysection{sample\+\_\+fpga\+\_\+design\+\_\+config.\+h}
+\hypertarget{sample__fpga__design__config_8h_source}{}\label{sample__fpga__design__config_8h_source}\index{src/miv\_rv32\_hal/sample\_fpga\_design\_config.h@{src/miv\_rv32\_hal/sample\_fpga\_design\_config.h}}
+\doxymbox{\hyperlink{sample__fpga__design__config_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00002}00002\ \textcolor{comment}{\ *\ Copyright\ 2022\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00006}00006\ \textcolor{comment}{\ *\ @file\ sample\_fpga\_design\_config.h}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00007}00007\ \textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ Sample\ design\ configuration\ settings}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00009}00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00010}00010\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00011}00011\ \ \textcolor{comment}{/*========================================================================*/}\textcolor{comment}{/*=========================================================================*/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00046}00046\ \textcolor{preprocessor}{\#ifndef\ FPGA\_DESIGN\_CONFIG\_H\_}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00047}00047\ \textcolor{preprocessor}{\#define\ FPGA\_DESIGN\_CONFIG\_H\_}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00049}00049\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00053}00053\ \textcolor{preprocessor}{\#ifndef\ SYS\_CLK\_FREQ}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00054}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{00054}}\ \textcolor{preprocessor}{\#define\ SYS\_CLK\_FREQ\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 50000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00055}00055\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00057}00057\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00068}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a79a0ee01063d2d74cf4ee390ce018e00}{00068}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_PLIC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ 0x70000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00069}00069\ \textcolor{comment}{//\#define\ COREUARTAPB0\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ 0x71000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00070}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ab8f1e5edc35efb58a754cb88f70fa34f}{00070}}\ \textcolor{preprocessor}{\#define\ MIV\_MTIMER\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ 0x72000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00071}\doxymbox{\hyperlink{sample__fpga__design__config_8h_abf80e4c6aa411744fda212192e9efd4e}{00071}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOT3\_BASE\_ADDR\ \ \ \ \ \ 0x73000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00072}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ae8ced020fa677ca86dbdf00ea1e525a5}{00072}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOT4\_BASE\_ADDR\ \ \ \ \ \ 0x74000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00073}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ada469d9f55d459c0f30e7b58b170527d}{00073}}\ \textcolor{preprocessor}{\#define\ COREGPIO\_OUT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ 0x75000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00074}00074\ \textcolor{comment}{//\#define\ CORESPI\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x76000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00075}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a99df8ba6cf7befbad9341646a086adde}{00075}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_uDMA\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ 0x78000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00076}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a5217fbff6ce94ebb6f8de64941606484}{00076}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_WDOG\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ 0x79000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00077}00077\ \textcolor{comment}{//\#define\ MIV\_ESS\_I2C\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ 0x7A000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00078}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ae95ffd93359fe43576dcdd28bca84122}{00078}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOTB\_BASE\_ADDR\ \ \ \ \ \ 0x7B000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00079}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a601c99a8ce00808c6031b691adc7e1e0}{00079}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOTC\_BASE\_ADDR\ \ \ \ \ \ 0x7C000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00080}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ab2ef9473d88acd55a9d3337389443814}{00080}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOTD\_BASE\_ADDR\ \ \ \ \ \ 0x7D000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00081}\doxymbox{\hyperlink{sample__fpga__design__config_8h_ae989be49976af3dd40a56287728e32bc}{00081}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOTE\_BASE\_ADDR\ \ \ \ \ \ 0x7E000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00082}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a524d11181b837334010a4b6df9b1430b}{00082}}\ \textcolor{preprocessor}{\#define\ MIV\_ESS\_APBSLOTF\_BASE\_ADDR\ \ \ \ \ \ 0x7F000000UL}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00084}00084\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00120}00120\ \textcolor{comment}{/****************************************************************************}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00121}00121\ \textcolor{comment}{\ *\ Baud\ value\ to\ achieve\ a\ 115200\ baud\ rate\ with\ system\ clock\ defined\ by}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00122}00122\ \textcolor{comment}{\ *\ SYS\_CLK\_FREQ.}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00123}00123\ \textcolor{comment}{\ *\ This\ value\ is\ calculated\ using\ the\ following\ equation:}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00124}00124\ \textcolor{comment}{\ *\ \ \ \ \ \ BAUD\_VALUE\ =\ (CLOCK\ /\ (16\ *\ BAUD\_RATE))\ -\/\ 1}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00125}00125\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00126}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a00043b259b5302c4ac2fc39cb5e45506}{00126}}\ \textcolor{preprocessor}{\#define\ BAUD\_VALUE\_115200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((SYS\_CLK\_FREQ\ /\ (16\ *\ 115200))\ -\/\ 1)}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00128}00128\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00129}00129\ \textcolor{comment}{\ *\ Baud\ value\ to\ achieve\ a\ 57600\ baud\ rate\ with\ system\ clock\ defined\ by}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00130}00130\ \textcolor{comment}{\ *\ SYS\_CLK\_FREQ.}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00131}00131\ \textcolor{comment}{\ *\ This\ value\ is\ calculated\ using\ the\ following\ equation:}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00132}00132\ \textcolor{comment}{\ *\ \ \ \ \ \ BAUD\_VALUE\ =\ (CLOCK\ /\ (16\ *\ BAUD\_RATE))\ -\/\ 1}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00133}00133\ \textcolor{comment}{\ *****************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00134}\doxymbox{\hyperlink{sample__fpga__design__config_8h_a2e6cb37eca54d45c739458bebe8cf979}{00134}}\ \textcolor{preprocessor}{\ \#define\ BAUD\_VALUE\_57600\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((SYS\_CLK\_FREQ\ /\ (16\ *\ 57600))\ -\/\ 1)}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00136}00136\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00140}00140\ \textcolor{preprocessor}{\#ifdef\ MSCC\_STDIO\_THRU\_CORE\_UART\_APB}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00141}00141\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00142}00142\ \textcolor{comment}{\ *\ A\ base\ address\ mapping\ for\ the\ STDIO\ printf/scanf\ mapping\ to\ CortUARTapb}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00143}00143\ \textcolor{comment}{\ *\ must\ be\ provided\ if\ it\ is\ being\ used}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00144}00144\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00145}00145\ \textcolor{comment}{\ *\ e.g.\ \#define\ MSCC\_STDIO\_UART\_BASE\_ADDR\ COREUARTAPB1\_BASE\_ADDR}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00146}00146\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00147}00147\ \textcolor{preprocessor}{\#define\ MSCC\_STDIO\_UART\_BASE\_ADDR\ COREUARTAPB0\_BASE\_ADDR}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00149}00149\ \textcolor{preprocessor}{\#ifndef\ MSCC\_STDIO\_UART\_BASE\_ADDR}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00150}00150\ \textcolor{preprocessor}{\#error\ MSCC\_STDIO\_UART\_BASE\_ADDR\ not\ defined-\/\ e.g.\ \#define\ MSCC\_STDIO\_UART\_BASE\_ADDR\ COREUARTAPB1\_BASE\_ADDR}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00151}00151\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00152}00152\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00153}00153\ \textcolor{preprocessor}{\#ifndef\ MSCC\_STDIO\_BAUD\_VALUE}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00154}00154\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00155}00155\ \textcolor{comment}{\ *\ The\ MSCC\_STDIO\_BAUD\_VALUE\ define\ should\ be\ set\ in\ your\ project's\ settings\ to}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00156}00156\ \textcolor{comment}{\ *\ specify\ the\ baud\ value\ used\ by\ the\ standard\ output\ CoreUARTapb\ instance\ for}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00157}00157\ \textcolor{comment}{\ *\ generating\ the\ UART's\ baud\ rate\ if\ you\ want\ a\ different\ baud\ rate\ from\ the}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00158}00158\ \textcolor{comment}{\ *\ default\ of\ 115200\ baud}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00159}00159\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00160}00160\ \textcolor{preprocessor}{\#define\ MSCC\_STDIO\_BAUD\_VALUE\ \ \ \ \ \ \ \ \ \ \ 115200}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00161}00161\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*MSCC\_STDIO\_BAUD\_VALUE*/}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00163}00163\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ end\ of\ MSCC\_STDIO\_THRU\_CORE\_UART\_APB\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00164}00164\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00165}00165\ \textcolor{comment}{\ *\ End\ of\ user\ edit\ section}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00166}00166\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{sample__fpga__design__config_8h_source_l00167}00167\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ FPGA\_DESIGN\_CONFIG\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

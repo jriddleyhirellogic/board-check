@@ -1,0 +1,194 @@
+\doxysection{src/\+\+Free\+RTOS/\+heap\+\_\+1.c File Reference}
+\hypertarget{heap__1_8c}{}\label{heap__1_8c}\index{src/FreeRTOS/heap\_1.c@{src/FreeRTOS/heap\_1.c}}
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+Include dependency graph for heap\+\_\+1.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{heap__1_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{heap__1_8c_ab622d8c674f2a417a666a7ed89109e79}{MPU\+\_\+\+WRAPPERS\+\_\+\+INCLUDED\+\_\+\+FROM\+\_\+\+API\+\_\+\+FILE}}
+\item 
+\+\#define \doxymbox{\hyperlink{heap__1_8c_a3e68bebe7509a99550e1358cbca8e23f}{config\+ADJUSTED\+\_\+\+HEAP\+\_\+\+SIZE}}~( \doxymbox{\hyperlink{FreeRTOSConfig_8h_a9f213227674effff0122a75d94d87938}{config\+TOTAL\+\_\+\+HEAP\+\_\+\+SIZE}} -\/ \doxymbox{\hyperlink{portmacro_8h_ab9091ce3940d8bd93ec850122a2c6a1c}{port\+BYTE\+\_\+\+ALIGNMENT}} )
+\item 
+\+\#define \doxymbox{\hyperlink{heap__1_8c_a44190865b2e28c843cfe20e23e946219}{heap\+SIZE\+\_\+\+MAX}}~( \texorpdfstring{$\sim$}{\string~}( ( \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} ) 0 ) )
+\item 
+\+\#define \doxymbox{\hyperlink{heap__1_8c_a427b4999e850bf9bc628d6c48183baff}{heap\+ADD\+\_\+\+WILL\+\_\+\+OVERFLOW}}(a,  b)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{heap__1_8c_ac56bcb7515f081a5b3df83935499fa4a}{pv\+Port\+Malloc}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} x\+Wanted\+Size)
+\item 
+void \doxymbox{\hyperlink{heap__1_8c_a1e7cea2fd1bc894ea3b5f5e8179d259b}{v\+Port\+Free}} (void \texorpdfstring{$\ast$}{*}pv)
+\item 
+void \doxymbox{\hyperlink{heap__1_8c_a8bf103ce32ce8473574e9920af8b4eec}{v\+Port\+Initialise\+Blocks}} (void)
+\item 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} \doxymbox{\hyperlink{heap__1_8c_a0c28a12b313bc248be0cb7a37ed81bb7}{x\+Port\+Get\+Free\+Heap\+Size}} (void)
+\item 
+void \doxymbox{\hyperlink{heap__1_8c_af44030217c31ad748406a5a72c2e7be0}{v\+Port\+Heap\+Reset\+State}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{heap__1_8c_a286aa29b13471f0d9f5a7ce688682694}{uc\+Heap}} \+[\doxymbox{\hyperlink{FreeRTOSConfig_8h_a9f213227674effff0122a75d94d87938}{config\+TOTAL\+\_\+\+HEAP\+\_\+\+SIZE}}]\+
+\item 
+static \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} \doxymbox{\hyperlink{heap__1_8c_a9f84d71523e492ed69679829b2d827c4}{x\+Next\+Free\+Byte}} = ( \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} ) 0U
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{heap__1_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{heap__1_8c_a3e68bebe7509a99550e1358cbca8e23f}\index{heap\_1.c@{heap\_1.c}!configADJUSTED\_HEAP\_SIZE@{configADJUSTED\_HEAP\_SIZE}}
+\index{configADJUSTED\_HEAP\_SIZE@{configADJUSTED\_HEAP\_SIZE}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{configADJUSTED\_HEAP\_SIZE}{configADJUSTED\_HEAP\_SIZE}}
+{\footnotesize\ttfamily \label{heap__1_8c_a3e68bebe7509a99550e1358cbca8e23f} 
+\+\#define config\+ADJUSTED\+\_\+\+HEAP\+\_\+\+SIZE~( \doxymbox{\hyperlink{FreeRTOSConfig_8h_a9f213227674effff0122a75d94d87938}{config\+TOTAL\+\_\+\+HEAP\+\_\+\+SIZE}} -\/ \doxymbox{\hyperlink{portmacro_8h_ab9091ce3940d8bd93ec850122a2c6a1c}{port\+BYTE\+\_\+\+ALIGNMENT}} )}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00054}{54}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_a427b4999e850bf9bc628d6c48183baff}\index{heap\_1.c@{heap\_1.c}!heapADD\_WILL\_OVERFLOW@{heapADD\_WILL\_OVERFLOW}}
+\index{heapADD\_WILL\_OVERFLOW@{heapADD\_WILL\_OVERFLOW}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{heapADD\_WILL\_OVERFLOW}{heapADD\_WILL\_OVERFLOW}}
+{\footnotesize\ttfamily \label{heap__1_8c_a427b4999e850bf9bc628d6c48183baff} 
+\+\#define heap\+ADD\+\_\+\+WILL\+\_\+\+OVERFLOW(\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\ (\ a\ )\ >\ (\ \doxymbox{\hyperlink{heap__1_8c_a44190865b2e28c843cfe20e23e946219}{heapSIZE\_MAX}}\ -\/\ (\ b\ )\ )\ )}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00060}{60}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_a44190865b2e28c843cfe20e23e946219}\index{heap\_1.c@{heap\_1.c}!heapSIZE\_MAX@{heapSIZE\_MAX}}
+\index{heapSIZE\_MAX@{heapSIZE\_MAX}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{heapSIZE\_MAX}{heapSIZE\_MAX}}
+{\footnotesize\ttfamily \label{heap__1_8c_a44190865b2e28c843cfe20e23e946219} 
+\+\#define heap\+SIZE\+\_\+\+MAX~( \texorpdfstring{$\sim$}{\string~}( ( \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} ) 0 ) )}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00057}{57}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_ab622d8c674f2a417a666a7ed89109e79}\index{heap\_1.c@{heap\_1.c}!MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE@{MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE}}
+\index{MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE@{MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE}{MPU\_WRAPPERS\_INCLUDED\_FROM\_API\_FILE}}
+{\footnotesize\ttfamily \label{heap__1_8c_ab622d8c674f2a417a666a7ed89109e79} 
+\+\#define MPU\+\_\+\+WRAPPERS\+\_\+\+INCLUDED\+\_\+\+FROM\+\_\+\+API\+\_\+\+FILE}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00042}{42}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{heap__1_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{heap__1_8c_ac56bcb7515f081a5b3df83935499fa4a}\index{heap\_1.c@{heap\_1.c}!pvPortMalloc@{pvPortMalloc}}
+\index{pvPortMalloc@{pvPortMalloc}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{pvPortMalloc()}{pvPortMalloc()}}
+{\footnotesize\ttfamily \label{heap__1_8c_ac56bcb7515f081a5b3df83935499fa4a} 
+void \texorpdfstring{$\ast$}{*} pv\+Port\+Malloc (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}}}]{x\+Wanted\+Size}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00079}{79}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{heap__1_8c_ac56bcb7515f081a5b3df83935499fa4a_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{heap__1_8c_a1e7cea2fd1bc894ea3b5f5e8179d259b}\index{heap\_1.c@{heap\_1.c}!vPortFree@{vPortFree}}
+\index{vPortFree@{vPortFree}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{vPortFree()}{vPortFree()}}
+{\footnotesize\ttfamily \label{heap__1_8c_a1e7cea2fd1bc894ea3b5f5e8179d259b} 
+void v\+Port\+Free (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00143}{143}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=265pt]{heap__1_8c_a1e7cea2fd1bc894ea3b5f5e8179d259b_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{heap__1_8c_af44030217c31ad748406a5a72c2e7be0}\index{heap\_1.c@{heap\_1.c}!vPortHeapResetState@{vPortHeapResetState}}
+\index{vPortHeapResetState@{vPortHeapResetState}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{vPortHeapResetState()}{vPortHeapResetState()}}
+{\footnotesize\ttfamily \label{heap__1_8c_af44030217c31ad748406a5a72c2e7be0} 
+void v\+Port\+Heap\+Reset\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00174}{174}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_a8bf103ce32ce8473574e9920af8b4eec}\index{heap\_1.c@{heap\_1.c}!vPortInitialiseBlocks@{vPortInitialiseBlocks}}
+\index{vPortInitialiseBlocks@{vPortInitialiseBlocks}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{vPortInitialiseBlocks()}{vPortInitialiseBlocks()}}
+{\footnotesize\ttfamily \label{heap__1_8c_a8bf103ce32ce8473574e9920af8b4eec} 
+void v\+Port\+Initialise\+Blocks (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00155}{155}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_a0c28a12b313bc248be0cb7a37ed81bb7}\index{heap\_1.c@{heap\_1.c}!xPortGetFreeHeapSize@{xPortGetFreeHeapSize}}
+\index{xPortGetFreeHeapSize@{xPortGetFreeHeapSize}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{xPortGetFreeHeapSize()}{xPortGetFreeHeapSize()}}
+{\footnotesize\ttfamily \label{heap__1_8c_a0c28a12b313bc248be0cb7a37ed81bb7} 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} x\+Port\+Get\+Free\+Heap\+Size (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00162}{162}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{heap__1_8c_a0c28a12b313bc248be0cb7a37ed81bb7_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{heap__1_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{heap__1_8c_a286aa29b13471f0d9f5a7ce688682694}\index{heap\_1.c@{heap\_1.c}!ucHeap@{ucHeap}}
+\index{ucHeap@{ucHeap}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{ucHeap}{ucHeap}}
+{\footnotesize\ttfamily \label{heap__1_8c_a286aa29b13471f0d9f5a7ce688682694} 
+uint8\+\_\+t uc\+Heap\+[\doxymbox{\hyperlink{FreeRTOSConfig_8h_a9f213227674effff0122a75d94d87938}{config\+TOTAL\+\_\+\+HEAP\+\_\+\+SIZE}}]\+\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00071}{71}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+
+\Hypertarget{heap__1_8c_a9f84d71523e492ed69679829b2d827c4}\index{heap\_1.c@{heap\_1.c}!xNextFreeByte@{xNextFreeByte}}
+\index{xNextFreeByte@{xNextFreeByte}!heap\_1.c@{heap\_1.c}}
+\doxysubsubsection{\texorpdfstring{xNextFreeByte}{xNextFreeByte}}
+{\footnotesize\ttfamily \label{heap__1_8c_a9f84d71523e492ed69679829b2d827c4} 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} x\+Next\+Free\+Byte = ( \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} ) 0U\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{heap__1_8c_source_l00075}{75}} of file \doxymbox{\hyperlink{heap__1_8c_source}{heap\+\_\+1.\+c}}.
+

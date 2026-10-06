@@ -1,0 +1,65 @@
+\doxysection{src/\+\+Camera\+States/\+camera\+\_\+busy\+\_\+state.c File Reference}
+\hypertarget{camera__busy__state_8c}{}\label{camera__busy__state_8c}\index{src/CameraStates/camera\_busy\_state.c@{src/CameraStates/camera\_busy\_state.c}}
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+Include dependency graph for camera\+\_\+busy\+\_\+state.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__busy__state_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d}{Camera\+\_\+\+Busy\+\_\+\+State}} (Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Camera has taken a picture and is busy transferring data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__busy__state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d}\index{camera\_busy\_state.c@{camera\_busy\_state.c}!Camera\_Busy\_State@{Camera\_Busy\_State}}
+\index{Camera\_Busy\_State@{Camera\_Busy\_State}!camera\_busy\_state.c@{camera\_busy\_state.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Busy\_State()}{Camera\_Busy\_State()}}
+{\footnotesize\ttfamily \label{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Camera\+\_\+\+Busy\+\_\+\+State (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Camera has taken a picture and is busy transferring data. 
+
+\begin{DoxyRefDesc}{Todo}
+\item[\doxymbox{\hyperlink{todo__todo000001}{Todo}}]can poll with timer to see when it is done \end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & \\
+\hline
+{\em event} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Next state 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{camera__busy__state_8c_source_l00021}{21}} of file \doxymbox{\hyperlink{camera__busy__state_8c_source}{camera\+\_\+busy\+\_\+state.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d_icgraph}
+\end{center}
+\end{figure}

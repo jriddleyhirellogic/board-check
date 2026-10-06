@@ -1,0 +1,131 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Company: <Name>
+//
+// File: IQ_MIXER_TEST.v
+// File history:
+//      <Revision number>: <Date>: <Comments>
+//      <Revision number>: <Date>: <Comments>
+//      <Revision number>: <Date>: <Comments>
+//
+// Description: 
+//
+// <Description here>
+//
+// Targeted device: <Family::PolarFireSoC> <Die::MPFS095T> <Package::FCSG325>
+// Author: <Name>
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+`timescale 100ns/100ns
+
+module IQ_MIXER_TEST;
+
+parameter SYSCLK_PERIOD = 8;// 100MHZ
+
+reg SYSCLK;
+reg NSYSRESET;
+
+real amplitude;
+
+reg signed [16:0] i_sin;
+reg signed [16:0] i_cos;
+
+reg unsigned [63:0] last_time;
+
+reg signed [12:0] i_data;
+reg i_data_valid;
+
+wire unsigned [7:0] sin_out;
+
+wire signed [31:0] o_i_data;
+wire signed [31:0] o_q_data;
+wire o_data_valid;
+reg i_data_ready;
+
+initial
+begin
+    SYSCLK = 1'b0;
+    NSYSRESET = 1'b0;
+
+    i_sin = 0;
+    i_cos = 0;
+
+    i_data = 0;
+    i_data_valid = 0;
+
+    i_data_ready = 0;
+
+    amplitude = -2047;
+//Test error gen
+
+    last_time = 0;
+
+end
+
+//////////////////////////////////////////////////////////////////////
+// Reset Pulse
+//////////////////////////////////////////////////////////////////////
+initial
+begin
+    #(SYSCLK_PERIOD * 10 )
+        NSYSRESET = 1'b1;
+
+    i_data_ready = 1;
+
+    while(1)
+    begin
+        
+        i_data = integer'(1815+amplitude*$sin(2 * 3.14159 * 3051.7578125 / (10**7) * $time));
+        i_data_valid = 1;
+        #8;
+        i_data_valid = 0;
+        #100.8;
+    end
+
+end
+
+always @(SYSCLK)
+begin
+    if ($time - last_time > 500000)
+    begin
+        $display("%f , %d , %d", amplitude, o_i_data, o_q_data);
+        amplitude = amplitude * -1;
+        last_time = $time;
+    end
+end
+//////////////////////////////////////////////////////////////////////
+// Clock Driver
+//////////////////////////////////////////////////////////////////////
+always @(SYSCLK)
+begin
+    #(SYSCLK_PERIOD / 2.0) SYSCLK <= !SYSCLK;
+    i_sin = integer'(32768*$sin(2 * 3.14159 * 3051.7578125 / (10**7) * $time));
+    i_cos = integer'(32768*$cos(2 * 3.14159 * 3051.7578125 / (10**7) * $time));
+end
+
+
+//////////////////////////////////////////////////////////////////////
+// Instantiate Unit Under Test:  top
+//////////////////////////////////////////////////////////////////////
+LOCK_IN_CHAIN top_0 (
+    // Inputs
+    .i_clk(SYSCLK),
+    .i_res(NSYSRESET),
+
+    .i_data(i_data),
+    .i_data_valid(i_data_valid),
+
+    .i_sin(i_sin),
+    .i_cos(i_cos),
+    .i_osc_data_valid(1'b1),
+
+    // Outputs
+    .o_data_i(),
+
+    .o_data_q()
+
+    // Inouts
+
+);
+
+endmodule

@@ -1,0 +1,654 @@
+/*
+ * command.c
+ *
+ *  Created on: Oct 8, 2025
+ *      Author: iboard
+ */
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+#include <focus.h>
+
+#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "queue.h"
+#include "hal_uart16550.h"
+#include "serial_comm.h"
+#include "lvdt.h"
+#include "mem_map.h"
+#include "config.h"
+#include "serial_sm.h"
+#include "events.h"
+#include "states.h"
+#include "command.h"
+#include "status.h"
+#include "system.h"
+#include "crc.h"
+#include "register.h"
+#include "camera.h"
+#include "camera_task.h"
+#include "camera_states.h"
+#include "udp_dmactrl_reg.h"
+#include "tlm_adc.h"
+#include "version.h"
+#include "hw_version.h"
+#include "flash.h"
+#include "pps.h"
+
+static void v_Init_Response( Serial_Msg_Header_t *p_Header, uint8_t *p_Response_Buffer );
+static void v_Add_Response_Data( void *p_Data, uint8_t u8_Data_Size, uint8_t *p_Response_Buffer );
+static void v_Finalize_Msg( uint8_t *p_Response_Buffer, uint8_t *p_u8_Response_Length );
+static void v_Set_Error_Code(uint8_t u8_Error, uint8_t *p_Response_Buffer );
+static void v_Set_Sequence(uint8_t u8_Sequence, uint8_t *p_Response_Buffer );
+void v_Post_System_Event( Event_t *event );
+static uint8_t u8_Check_Frame_Bounds(uint16_t u16_Starting_Index, uint16_t u16_N_Frames );
+uint8_t u8_Calculate_Focus_Distance_microns( uint32_t u32_Raw_Pos , int32_t *i32_Focus_Distance_microns );
+
+static uint8_t u8_Response_Length;
+
+/**
+ * @fn uint8_t b_Is_Imaging_Register(uint8_t)
+ * @brief Tells whether a register feeds the camera trigger configuration.
+ * A write to one of these while armed requires the trigger to be reprogrammed.
+ * @param u8_Reg_ID Register identifier
+ * @return 1 if the register affects the trigger configuration, 0 otherwise
+ */
+static uint8_t b_Is_Imaging_Register( uint8_t u8_Reg_ID )
+{
+    switch( u8_Reg_ID )
+    {
+    case SENSOR_EXPO_USEC_SYS_REG:
+    case IMG_PER_TRIGGER_SYS_REG:
+    case SENSOR_GAIN_SYS_REG:
+    case SENSOR_BLO_SYS_REG:
+    case EN_PATTERN_GEN_REG:
+    case FRAME_CAPTURE_TIME_SYS_REG:
+    case TRIG_MODE_SYS_REG:
+    case CAPTURE_TIME_SEC_SYS_REG:
+    case CAPTURE_TIME_MSEC_SYS_REG:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+/**
+ * @fn uint8_t b_Is_Sensor_Register(uint8_t)
+ * @brief Tells whether a register configures the sensor itself over SPI.
+ * A write to one of these while idle requires the sensor to be reprogrammed.
+ * @param u8_Reg_ID Register identifier
+ * @return 1 if the register affects the sensor configuration, 0 otherwise
+ */
+static uint8_t b_Is_Sensor_Register( uint8_t u8_Reg_ID )
+{
+    switch( u8_Reg_ID )
+    {
+    case SENSOR_FRM_MOD_SYS_REG:
+    case SENSOR_BIT_DEPTH_SYS_REG:
+    case SENSOR_GAIN_SYS_REG:
+    case SENSOR_BLO_SYS_REG:
+    case EN_PATTERN_GEN_REG:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+/**
+ * @fn uint8_t Execute_Command(Serial_Msg_Header_t*, uint8_t*, uint8_t*, uint8_t*)
+ * @brief Executes a TMTC command
+ * This executes the command and constructs a response packet to be sent through the serial port.
+ * The opcode is extracted from the header information and is used to signal a task through the message queue.
+ * The response packet header defaults to that of the request packet. Errors in the response packet only
+ * indicate the correctness of the request, as some take a long time to execute.
+ * @param p_Header Pointer to header structure. This contains the opcode, error code and sequence number
+ * @param p_u8_Data  Pointer to the data portion of the received TMTC request packet
+ * @param p_Response_Buffer Pointer to buffer where response packet is constructed.
+ * @param p_u8_Response_Length Pointer to length of response packet
+ * @return
+ */
+uint8_t Execute_Command( Serial_Msg_Header_t *p_Header,
+                         uint8_t *p_u8_Data,
+                         uint8_t *p_Response_Buffer,
+                         uint8_t *p_u8_Response_Length )
+{
+    uint8_t u8_Arg;
+    uint32_t u32_Arg;
+    uint32_t u32_Arg2;
+    uint32_t u32_Address;
+    uint32_t u32_Test_Val;
+    uint8_t u8_Ret_Val = OK;
+    uint8_t u8_Register_Error_Code = NO_ERROR;
+    uint8_t u8_Error_Code = NO_ERROR;
+    LVDT_Sample_t LVDT_Sample;
+    int32_t i32_Projection,
+            i32_Displacement;
+    Event_t event;
+    Status_t Status;
+    uint8_t u8_Reg_ID;
+    uint8_t b_Mode_Switch_Legal = 0;
+    uint8_t u8_Current_Camera_State;
+    uint32_t u32_Time_Sec;
+
+    v_Init_Response( p_Header, p_Response_Buffer );
+    v_Set_Error_Code( NO_ERROR, p_Response_Buffer );  // start assuming no error
+    Get_Camera_State( &u8_Current_Camera_State );
+
+    switch( p_Header->u8_Opcode )
+    {
+    case GET_VERSION_SYS_CMD:
+    {
+        Version_t *p_Version = Get_Version_Info();
+//        u32_Arg = u32_Get_PF_FPGA_Version();
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = u32_Get_PF_FPGA_Git_Hash();
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = u32_Get_PF_FPGA_Build_Time();
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = PA3_FPGA_VERSION;
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = PF_FW_VERSION;
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = FAV_DEVICE_ID;
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+//        u32_Arg = SENSOR_ID;
+//        v_Add_Response_Data( &u32_Arg, sizeof(uint32_t), p_Response_Buffer );
+        v_Add_Response_Data( p_Version, sizeof( Version_t), p_Response_Buffer );
+    }
+        break;
+
+    case SET_MODE_SYS_CMD:    // Forces changes to camera mode
+        // ICD only allows certain mode changes
+        u32_Arg = *p_u8_Data;
+          // Can check if commanded mode change is legal
+        switch(u32_Arg)    // Requested state
+        {
+        case CAMERA_LP_STATE:                          // can transition from any state
+            b_Mode_Switch_Legal = (u8_Current_Camera_State & ALL_CAMERA_STATES);
+          break;
+
+        case CAMERA_IDLE_STATE:
+            b_Mode_Switch_Legal = (u8_Current_Camera_State & (CAMERA_LP_STATE    |
+                                                              CAMERA_IDLE_STATE  |
+                                                              CAMERA_ARMED_STATE));
+            break;
+        case CAMERA_ARMED_STATE:
+            b_Mode_Switch_Legal = (u8_Current_Camera_State & (CAMERA_IDLE_STATE));
+            break;
+        case CAMERA_BUSY_STATE:    // fallthrough intentional, can't be directly requested
+        case CAMERA_TRANSFER_STATE:    // fallthrough intentional, can't be directly requested
+        case CAMERA_FAULT_STATE:
+          break;
+        default:
+            break;
+        }
+        if(b_Mode_Switch_Legal != 0 )
+        {
+
+            event.mode_set.sig = CAMERA_MODE_SET;
+            event.mode_set.u8_Mode = u32_Arg;
+            v_Post_Camera_Event( &event );
+        }
+        else
+        {
+            v_Set_Error_Code( ERR_CMD_INVALID_MODE, p_Response_Buffer );
+        }
+        break;
+
+    case RESET_SYS_CMD:
+        u8_Arg = *p_u8_Data;
+        if( (u8_Arg & ~RESET_TARGET_MASK) != 0 )
+        {
+            v_Set_Error_Code( ERR_PKT_INVALID_HDR_PARAM, p_Response_Buffer );
+            break;
+        }
+
+        if( u8_Arg & RESET_CAM_SENSOR )
+        {
+            event.no_data.sig = RESET_RECEIVED;
+            v_Post_Camera_Event( &event );
+        }
+
+        if( u8_Arg & RESET_FOCUS_MECH )
+        {
+            event.no_data.sig = RESET_RECEIVED;
+            v_Post_Focus_Event( &event );
+        }
+
+        if( u8_Arg & RESET_REG_SPACE )
+        {
+            v_Init_Registers();
+            v_Sync_Registers_To_Hardware(); // push the defaults back out so hardware matches the table
+        }
+
+        if( u8_Arg & RESET_MEM_BUFF )
+        {
+            event.no_data.sig = CAMERA_RESET_FRAME_INDEX;
+            v_Post_Camera_Event( &event );
+        }
+        break;
+
+    case REG_READ_SYS_CMD:
+        u8_Reg_ID = *p_u8_Data;
+        u32_Test_Val = 0;   // value returned when the register does not exist or is not populated
+        u8_Register_Error_Code = Read_Register( u8_Reg_ID, &u32_Test_Val );
+        v_Set_Error_Code( u8_Register_Error_Code, p_Response_Buffer );
+        v_Add_Response_Data( &u32_Test_Val, sizeof(uint32_t), p_Response_Buffer );
+        break;
+
+    case REG_WRITE_SYS_CMD:
+        u8_Reg_ID = *p_u8_Data;
+        memcpy(&u32_Arg, p_u8_Data+1, sizeof(u32_Arg)); // Argument may be incorrectly aligned
+        u8_Register_Error_Code = Write_Register( u8_Reg_ID, u32_Arg );
+
+        if( u8_Register_Error_Code == NO_ERROR &&
+            ( ( b_Is_Imaging_Register( u8_Reg_ID ) &&
+                u8_Current_Camera_State == CAMERA_ARMED_STATE ) ||
+              ( b_Is_Sensor_Register( u8_Reg_ID ) &&
+                u8_Current_Camera_State == CAMERA_IDLE_STATE ) ) )
+        {
+            // Reprogram the trigger while armed, or the sensor while idle
+            event.no_data.sig = CAMERA_CONFIG_CHANGED;
+            v_Post_Camera_Event( &event );
+        }
+		u8_Register_Error_Code = ERR_CMD_INVALID_MODE;
+		v_Set_Error_Code( u8_Register_Error_Code, p_Response_Buffer );
+        break;
+
+    case SET_TIME_SYS_CMD:
+       {
+            Sys_Time_t utc_time;
+            // The command carries a single argument: whole seconds since the epoch
+            memcpy(&utc_time.u32_Time_Sec, p_u8_Data, sizeof(uint32_t));
+            utc_time.u32_Time_msec = 0;
+            v_PPS_Load_Seconds(&utc_time);
+            v_PPS_Start();
+       }
+       break;
+
+    case GET_SYSTEM_TIME:
+    {
+        Sys_Time_t current_time;
+        v_Get_PPS_Time( &current_time );
+        v_Add_Response_Data( &current_time.u32_Time_Sec, sizeof(uint32_t), p_Response_Buffer );
+        v_Add_Response_Data( &current_time.u32_Time_msec, sizeof(uint32_t), p_Response_Buffer );
+    }
+    break;
+
+    case SET_PPS_DELAY:
+    {
+        uint32_t u32_Delay;
+        memcpy( &u32_Delay, p_u8_Data, sizeof(uint32_t));
+        v_PPS_Set_Rx_Delay(u32_Delay);
+    }
+    break;
+
+    case START_ACQ_SYS_CMD:
+        if( u8_Current_Camera_State != CAMERA_ARMED_STATE )
+        {
+            v_Set_Error_Code( ERR_CMD_INVALID_MODE, p_Response_Buffer );
+        }
+        else if( !b_Trigger_Is_Ready() )
+        {
+            // Arming accepted the mode change, but the trigger could not be programmed for the
+            // current settings - most often because the burst no longer fits in what is left of
+            // the frame buffer. Firing would capture at the settings of an earlier burst, so the
+            // camera task drops the event. Report it here rather than acknowledging a capture
+            // that will never happen.
+            v_Set_Error_Code( ERR_REG_INVALID_LIMIT, p_Response_Buffer );
+        }
+        else
+        {
+            event.no_data.sig = CAMERA_TAKE_PICTURE;
+            v_Post_Camera_Event( &event );
+        }
+        break;
+
+    case STOP_ACQ_SYS_CMD: // @todo - is this going to be implemented?
+        break;
+
+
+    case FOCUS_SYS_CMD:
+        u8_Error_Code = u8_Calculate_Focus_Distance_microns( u32_Arg, &event.position.i32_Position );
+        memcpy(&u32_Arg, p_u8_Data, sizeof(uint32_t ));
+        event.position.sig = GOTO_POSITION;
+        v_Post_Focus_Event( &event );
+        v_Set_Error_Code( u8_Error_Code, p_Response_Buffer );
+        break;
+
+    case HALT_FOCUS_SYS_CMD:
+        break;
+
+    case XFER_BUFF_SYS_CMD:
+    {
+        uint16_t u16_Starting_Index, u16_N_Frames;
+        memcpy(&u16_Starting_Index, p_u8_Data, sizeof(uint16_t));
+        memcpy(&u16_N_Frames, p_u8_Data + sizeof(uint16_t), sizeof(uint16_t));
+
+        u8_Error_Code = u8_Check_Frame_Bounds(u16_Starting_Index, u16_N_Frames );
+        if( (u8_Current_Camera_State & (CAMERA_LP_STATE|CAMERA_IDLE_STATE|CAMERA_ARMED_STATE)) == 0)
+            u8_Error_Code = ERR_CMD_INVALID_MODE;
+
+        if( u8_Error_Code != NO_ERROR )
+        {
+            v_Set_Error_Code( u8_Error_Code, p_Response_Buffer );
+            break;
+        }
+        else
+        {
+            event.xfer_frames.sig = CAMERA_SEND_FRAMES;
+            event.xfer_frames.u16_index = u16_Starting_Index;
+            event.xfer_frames.u16_num = u16_N_Frames;
+            event.xfer_frames.u8_xfer_type = XFER_TYPE_FRAMES;
+            v_Post_Camera_Event( &event );
+         }
+    }
+        break;
+
+    case GET_METADATA:  //retrieves metadata for single image
+    {
+        uint16_t u32_Frame_Index;
+        memcpy(&u32_Frame_Index, p_u8_Data, sizeof(uint32_t));
+
+        u8_Error_Code = u8_Check_Frame_Bounds(u32_Frame_Index, 1 );
+        if( (u8_Current_Camera_State & (CAMERA_LP_STATE|CAMERA_IDLE_STATE|CAMERA_ARMED_STATE)) == 0)
+            u8_Error_Code = ERR_CMD_INVALID_MODE;
+
+        if( u8_Error_Code != NO_ERROR )
+        {
+            v_Set_Error_Code( u8_Error_Code, p_Response_Buffer );
+            break;
+        }
+        else
+        {
+            uint32_t *p_Meta_Data_Response = (uint32_t *)(p_Response_Buffer + u8_Response_Length);
+            v_Fetch_Metadata( u32_Frame_Index, p_Meta_Data_Response );
+            u8_Response_Length += 80;
+        }
+       }
+        break;
+
+    case GET_INFO_SYS_CMD:
+        break;
+
+    case CONF_EVENT_LOG_SYS_CMD:
+        break;
+
+    case EN_TL_CHAN_LOG_SYS_CMD:
+       break;
+
+    case XFER_LOG_SYS_CMD:
+       break;
+
+    // User defined are below for test and integration
+    case ECHO_FUNCTION:
+        // This should simply reflect back the received packet for testing
+        v_Add_Response_Data( p_u8_Data, p_Header->u8_Data_Length, p_Response_Buffer );
+        break;
+
+    case SET_POSITION:                                        // Target position in microns
+         memcpy(&u32_Arg, p_u8_Data, sizeof(uint32_t ));
+         event.position.sig = GOTO_POSITION;
+         event.position.i32_Position = (int32_t)u32_Arg;
+         v_Post_Focus_Event( &event );
+         v_Set_Error_Code(0, p_Response_Buffer );
+        break;
+
+    case ZERO_FUNCTION:
+        event.no_data.sig = GOTO_POSITION;
+        event.position.i32_Position = 0;
+        v_Post_Focus_Event( &event );
+        break;
+
+    case SET_LVDT_OFFSET_FUNCTION:                            // sets offset in microns
+          memcpy(&u32_Arg, p_u8_Data, sizeof(uint32_t ));
+          v_Set_Displacement_Offset( (int32_t) u32_Arg );
+          v_Set_Error_Code(0, p_Response_Buffer );
+        break;
+
+    case GET_POSITION_FUNCTION:
+          i32_Displacement = i32_Get_Position();
+          v_Add_Response_Data( &i32_Displacement, sizeof(i32_Displacement), p_Response_Buffer );
+        break;
+
+    case GET_STATUS_FUNCTION:
+          v_Get_Status( &Status );
+          v_Add_Response_Data( &Status.i32_Position_Microns, sizeof( Status.i32_Position_Microns), p_Response_Buffer );
+          v_Add_Response_Data( &Status.i32_Velocity, sizeof( Status.i32_Velocity ), p_Response_Buffer );
+          v_Add_Response_Data( &Status.u8_Fault_Status, sizeof( Status.u8_Fault_Status ), p_Response_Buffer );
+<<<<<<< HEAD
+        break;
+
+    case RESET_FUNCTION:
+        event.no_data.sig = RESET_RECEIVED;
+        v_Post_Focus_Event( &event );
+=======
+>>>>>>> merge_steven_latest
+        break;
+
+    case GET_PROJECTION:                      // Mainly for debugging
+        V_Get_LVDT_Snapshot( &LVDT_Sample );
+        i32_Projection = i32_Get_Projection( &LVDT_Sample );
+        v_Add_Response_Data( &i32_Projection, sizeof( i32_Projection ), p_Response_Buffer );
+        break;
+
+
+    case UPDATE_NET_ADDRESS:
+        update_network_addresses();
+        break;
+
+    case GET_TLM_READING:
+        memcpy(&u32_Arg, p_u8_Data, sizeof(uint32_t ));
+        u32_Test_Val = u32_Read_TLM( (TLM_Signal_t)u32_Arg );
+        v_Add_Response_Data( &u32_Test_Val, sizeof( u32_Test_Val ), p_Response_Buffer );
+        break;
+
+    // Flash erases are done by system thread since they are relatively slow operations
+    case FLASH_ERASE_SECTOR:
+        memcpy( &u32_Address, p_u8_Data, sizeof(uint32_t ));
+        if( u32_Address & 0xFFF )   // Sector must be multiple of 4K
+        {
+            v_Set_Error_Code(ERR_REG_INVALID_ADDR, p_Response_Buffer );
+        }
+        else
+        {
+            event.no_data.sig = DO_FLASH_SECTOR_ERASE;
+            event.flash_data.p_Data = (uint8_t *)0;
+            v_Post_System_Event( &event );
+        }
+        break;
+
+    case FLASH_ERASE_BLOCK:
+        memcpy( &u32_Address, p_u8_Data, sizeof(uint32_t ));
+        if( u32_Address & 0x1FFF ) // block must be on 64K boundary
+        {
+            v_Set_Error_Code(ERR_REG_INVALID_ADDR, p_Response_Buffer );
+            break;
+        }
+        event.no_data.sig = DO_FLASH_BLOCK_ERASE;
+        event.flash_data.u32_Address = u32_Address;
+        event.flash_data.p_Data = (uint8_t *)0;
+        v_Post_System_Event( &event );
+        break;
+
+    case WRITE_FLASH_PAGE:
+        memcpy( &u32_Address, p_u8_Data, sizeof(uint32_t ));
+        if( u32_Address & 0x7F )
+        {
+            v_Set_Error_Code(ERR_REG_INVALID_ADDR, p_Response_Buffer );
+            break;
+        }
+        u8_Flash_Page_Program( u32_Address, p_u8_Data + 4, 128 );
+        break;
+
+    case READ_FLASH:
+        memcpy( &u32_Address, p_u8_Data, sizeof(uint32_t ));
+        u8_Flash_Read(u32_Address, 128, p_Response_Buffer + u8_Response_Length );
+        u8_Response_Length += 128;
+        break;
+
+    case RESET_FLASH :    // Resets the counters and status regs in the flash
+        v_Flash_Reset();
+        break;
+
+    case GET_CAMERA_TEMP:
+        Get_Camera_State( &u8_Current_Camera_State );
+        if( u8_Current_Camera_State == CAMERA_LP_STATE )
+        {
+            uint32_t  u32_Camera_Temp = 0xFF;
+            v_Add_Response_Data( &u32_Camera_Temp, sizeof( u32_Camera_Temp ), p_Response_Buffer );
+        }
+        else
+        {
+            uint32_t  u32_Camera_Temp = (uint32_t)read_cam_temp();
+            v_Add_Response_Data( &u32_Camera_Temp, sizeof( u32_Camera_Temp ), p_Response_Buffer );
+        }
+        break;
+
+    case GET_FPGA_TEMP:
+    {
+        uint32_t u32_Fpga_Temp = read_fpga_temp();
+        v_Add_Response_Data( &u32_Fpga_Temp, sizeof( u32_Fpga_Temp ), p_Response_Buffer );
+    }
+    break;
+
+    case GET_CAMERA_STATE:
+    {
+        uint32_t u32_Response;
+        u32_Response = (uint32_t)u8_Current_Camera_State;
+        v_Add_Response_Data( &u32_Response, sizeof( u32_Response ), p_Response_Buffer );
+    }
+    break;
+
+    case GET_PPS_ERRORS:
+    {
+        uint32_t u32_Freq_Error = u32_Get_PPS_Freq_Error();
+        uint32_t u32_Phase_Error = u32_Get_PPS_Phase_Error();
+        v_Add_Response_Data( &u32_Freq_Error, sizeof(uint32_t), p_Response_Buffer );
+        v_Add_Response_Data( &u32_Phase_Error, sizeof(uint32_t), p_Response_Buffer );
+    }
+    break;
+
+    case GET_ALL_TLM:
+        v_Get_Copy_TLM_Data( p_Response_Buffer + u8_Response_Length );
+        u8_Response_Length += 96;
+        break;
+
+
+    case SET_VREF_FUNCTION:
+    case SET_CONTROL_OUTPUTS_FUNCTION:
+    default: // well formed but not recognized
+        v_Set_Error_Code( ERR_CMD_INVALID_OPCODE, p_Response_Buffer );
+        break;
+    }
+
+    v_Finalize_Msg( p_Response_Buffer, p_u8_Response_Length );
+    return u8_Ret_Val;
+
+
+
+}
+
+/**
+ * @fn void v_Init_Response(Serial_Msg_Header_t*, uint8_t*)
+ * @brief Initializes the response to a TMTC packet
+ * The sync code is prepended and the header information is copied from the request as a default. Finally,
+ * the response length in the header is initialized - this may increase as data is added.
+ *
+ * @param p_Header Pointer to header information
+ * @param p_Response_Buffer Pointer to data buffer to be used for the response.
+ */
+static void v_Init_Response( Serial_Msg_Header_t *p_Header, uint8_t *p_Response_Buffer )
+{
+    u8_Response_Length = 0;
+    // Sync field
+    p_Response_Buffer[u8_Response_Length++] = SYNC1_CODE;
+    p_Response_Buffer[u8_Response_Length++] = SYNC2_CODE;
+    p_Response_Buffer[u8_Response_Length++] = SYNC3_CODE;
+    p_Response_Buffer[u8_Response_Length++] = SYNC4_CODE;
+
+    // Header
+    p_Response_Buffer[u8_Response_Length++] = p_Header->u8_Opcode;
+    p_Response_Buffer[u8_Response_Length++] = p_Header->u8_Error_Code;
+    p_Response_Buffer[u8_Response_Length++] = p_Header->u8_Sequence;
+    p_Response_Buffer[u8_Response_Length++] = 0;              // Data length before anything is added
+
+    memset( p_Response_Buffer + u8_Response_Length, 0, RESERVED_SIZE );  // Rserved field
+    u8_Response_Length += RESERVED_SIZE;
+
+    // Note that data portion has quad alignment, response buffer is align(4)
+}
+
+// These functions are for overriding the defaults set by v_Init_Response()
+// based on the received packet. They must be called before v_Finalize_Msg()
+static void v_Set_Error_Code(uint8_t u8_Error, uint8_t *p_Response_Buffer )
+{
+    p_Response_Buffer[ERROR_OFFSET] = u8_Error;
+}
+
+
+__attribute__((unused)) static void v_Set_Sequence(uint8_t u8_Sequence, uint8_t *p_Response_Buffer )
+{
+    p_Response_Buffer[SEQUENCE_OFFSET] = u8_Sequence;
+}
+
+
+static void v_Add_Response_Data( void *p_Data, uint8_t u8_Data_Size, uint8_t *p_Response_Buffer )
+{
+    memcpy( p_Response_Buffer + u8_Response_Length, p_Data, u8_Data_Size );
+    u8_Response_Length += u8_Data_Size;
+}
+
+/**
+ * @fn void v_Finalize_Msg(uint8_t*, uint8_t*)
+ * @brief Finalize the response packet by adding data count and CRC check.
+ * @param p_Response_Buffer Buffer used to send response
+ * @param p_u8_Response_Length Total length of packet - used by serial driver.
+ */
+static void v_Finalize_Msg( uint8_t *p_Response_Buffer, uint8_t *p_u8_Response_Length )
+{
+    // Set real data size
+    p_Response_Buffer[DATA_LENGTH_OFFSET] = u8_Response_Length - (SYNC_LENGTH + HEADER_SIZE);
+    // Calculate over all fields except for sync
+    uint32_t u32_CRC = crc( p_Response_Buffer + 4, u8_Response_Length - 4, 0 );
+    p_Response_Buffer[u8_Response_Length++]= (u32_CRC >> 24) & 0xFF;
+    p_Response_Buffer[u8_Response_Length++]= (u32_CRC >> 16) & 0xFF;
+    p_Response_Buffer[u8_Response_Length++]= (u32_CRC >> 8) & 0xFF;
+    p_Response_Buffer[u8_Response_Length++]= u32_CRC & 0xFF;
+
+    *p_u8_Response_Length = u8_Response_Length;
+}
+
+/**
+ * @fn void v_Send_Metadata_Response(uint32_t*, uint8_t)
+ * @brief Builds and transmits a GET_METADATA response packet over the serial link.
+ * This is called asynchronously from the camera task once the metadata for a frame
+ * has been read, so the metadata arrives on the UART some time after the command.
+ * @param p_Metadata Pointer to metadata words to send
+ * @param u8_Word_Count Number of 32-bit metadata words
+ */
+
+
+uint8_t u8_Check_Frame_Bounds( uint16_t u16_Starting_Index, uint16_t u16_N_Frames )
+{
+uint8_t u8_Retval = NO_ERROR;
+
+    if ( u16_Starting_Index >= TOTAL_FRAME_CAPTURE_AMOUNT )
+        u8_Retval = ERR_XFER_INVALID_INDEX;
+
+    else if ( u16_Starting_Index > TOTAL_FRAME_CAPTURE_AMOUNT )
+        u8_Retval = ERR_XFER_INVALID_NUM;
+
+    else if ( ((uint32_t)u16_Starting_Index + u16_N_Frames) > TOTAL_FRAME_CAPTURE_AMOUNT )
+        u8_Retval = ERR_XFER_OUT_OF_BOUNDS;
+
+    return u8_Retval;
+}
+
+
+
+
+
+

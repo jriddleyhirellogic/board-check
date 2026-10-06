@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:CoreGPIO:3.2.102",
+  "definition_digest": "5c3652b5f3155763875f84a2d472808059529361ef5a372e891ded0fed4cc9bf",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "LVDT_Gain",
+  "sources_digest": "26dcb03e8bc09ac32c309f4690323152817d6dc41b5cf1f4079df6aba6f7f299"
+}

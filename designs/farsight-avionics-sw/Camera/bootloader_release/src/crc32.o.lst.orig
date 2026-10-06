@@ -1,0 +1,346 @@
+   1              		.file	"crc32.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.crc,"ax",@progbits
+  10              		.align	2
+  11              		.globl	crc
+  13              	crc:
+  14              	.LFB0:
+  15              		.file 1 "../src/crc32.c"
+   1:../src/crc32.c **** /*
+   2:../src/crc32.c ****  * crc32.c
+   3:../src/crc32.c ****  *
+   4:../src/crc32.c ****  *  Created on: Nov 5, 2025
+   5:../src/crc32.c ****  *      Author: iboard
+   6:../src/crc32.c ****  */
+   7:../src/crc32.c **** #include <stdint.h>
+   8:../src/crc32.c **** 
+   9:../src/crc32.c **** // Polynomial 0x04C11DB7 No reflections or final complement
+  10:../src/crc32.c **** #define POLYNOMIAL 0x04C11DB7
+  11:../src/crc32.c **** 
+  12:../src/crc32.c **** #ifndef CRC_SLOW
+  13:../src/crc32.c **** static const uint32_t crc32_table[256] =
+  14:../src/crc32.c **** {
+  15:../src/crc32.c ****     0x00000000,0x04c11db7,0x09823b6e,0x0d4326d9,0x130476dc,0x17c56b6b,0x1a864db2,0x1e475005,
+  16:../src/crc32.c ****     0x2608edb8,0x22c9f00f,0x2f8ad6d6,0x2b4bcb61,0x350c9b64,0x31cd86d3,0x3c8ea00a,0x384fbdbd,
+  17:../src/crc32.c ****     0x4c11db70,0x48d0c6c7,0x4593e01e,0x4152fda9,0x5f15adac,0x5bd4b01b,0x569796c2,0x52568b75,
+  18:../src/crc32.c ****     0x6a1936c8,0x6ed82b7f,0x639b0da6,0x675a1011,0x791d4014,0x7ddc5da3,0x709f7b7a,0x745e66cd,
+  19:../src/crc32.c ****     0x9823b6e0,0x9ce2ab57,0x91a18d8e,0x95609039,0x8b27c03c,0x8fe6dd8b,0x82a5fb52,0x8664e6e5,
+  20:../src/crc32.c ****     0xbe2b5b58,0xbaea46ef,0xb7a96036,0xb3687d81,0xad2f2d84,0xa9ee3033,0xa4ad16ea,0xa06c0b5d,
+  21:../src/crc32.c ****     0xd4326d90,0xd0f37027,0xddb056fe,0xd9714b49,0xc7361b4c,0xc3f706fb,0xceb42022,0xca753d95,
+  22:../src/crc32.c ****     0xf23a8028,0xf6fb9d9f,0xfbb8bb46,0xff79a6f1,0xe13ef6f4,0xe5ffeb43,0xe8bccd9a,0xec7dd02d,
+  23:../src/crc32.c ****     0x34867077,0x30476dc0,0x3d044b19,0x39c556ae,0x278206ab,0x23431b1c,0x2e003dc5,0x2ac12072,
+  24:../src/crc32.c ****     0x128e9dcf,0x164f8078,0x1b0ca6a1,0x1fcdbb16,0x018aeb13,0x054bf6a4,0x0808d07d,0x0cc9cdca,
+  25:../src/crc32.c ****     0x7897ab07,0x7c56b6b0,0x71159069,0x75d48dde,0x6b93dddb,0x6f52c06c,0x6211e6b5,0x66d0fb02,
+  26:../src/crc32.c ****     0x5e9f46bf,0x5a5e5b08,0x571d7dd1,0x53dc6066,0x4d9b3063,0x495a2dd4,0x44190b0d,0x40d816ba,
+  27:../src/crc32.c ****     0xaca5c697,0xa864db20,0xa527fdf9,0xa1e6e04e,0xbfa1b04b,0xbb60adfc,0xb6238b25,0xb2e29692,
+  28:../src/crc32.c ****     0x8aad2b2f,0x8e6c3698,0x832f1041,0x87ee0df6,0x99a95df3,0x9d684044,0x902b669d,0x94ea7b2a,
+  29:../src/crc32.c ****     0xe0b41de7,0xe4750050,0xe9362689,0xedf73b3e,0xf3b06b3b,0xf771768c,0xfa325055,0xfef34de2,
+  30:../src/crc32.c ****     0xc6bcf05f,0xc27dede8,0xcf3ecb31,0xcbffd686,0xd5b88683,0xd1799b34,0xdc3abded,0xd8fba05a,
+  31:../src/crc32.c ****     0x690ce0ee,0x6dcdfd59,0x608edb80,0x644fc637,0x7a089632,0x7ec98b85,0x738aad5c,0x774bb0eb,
+  32:../src/crc32.c ****     0x4f040d56,0x4bc510e1,0x46863638,0x42472b8f,0x5c007b8a,0x58c1663d,0x558240e4,0x51435d53,
+  33:../src/crc32.c ****     0x251d3b9e,0x21dc2629,0x2c9f00f0,0x285e1d47,0x36194d42,0x32d850f5,0x3f9b762c,0x3b5a6b9b,
+  34:../src/crc32.c ****     0x0315d626,0x07d4cb91,0x0a97ed48,0x0e56f0ff,0x1011a0fa,0x14d0bd4d,0x19939b94,0x1d528623,
+  35:../src/crc32.c ****     0xf12f560e,0xf5ee4bb9,0xf8ad6d60,0xfc6c70d7,0xe22b20d2,0xe6ea3d65,0xeba91bbc,0xef68060b,
+  36:../src/crc32.c ****     0xd727bbb6,0xd3e6a601,0xdea580d8,0xda649d6f,0xc423cd6a,0xc0e2d0dd,0xcda1f604,0xc960ebb3,
+  37:../src/crc32.c ****     0xbd3e8d7e,0xb9ff90c9,0xb4bcb610,0xb07daba7,0xae3afba2,0xaafbe615,0xa7b8c0cc,0xa379dd7b,
+  38:../src/crc32.c ****     0x9b3660c6,0x9ff77d71,0x92b45ba8,0x9675461f,0x8832161a,0x8cf30bad,0x81b02d74,0x857130c3,
+  39:../src/crc32.c ****     0x5d8a9099,0x594b8d2e,0x5408abf7,0x50c9b640,0x4e8ee645,0x4a4ffbf2,0x470cdd2b,0x43cdc09c,
+  40:../src/crc32.c ****     0x7b827d21,0x7f436096,0x7200464f,0x76c15bf8,0x68860bfd,0x6c47164a,0x61043093,0x65c52d24,
+  41:../src/crc32.c ****     0x119b4be9,0x155a565e,0x18197087,0x1cd86d30,0x029f3d35,0x065e2082,0x0b1d065b,0x0fdc1bec,
+  42:../src/crc32.c ****     0x3793a651,0x3352bbe6,0x3e119d3f,0x3ad08088,0x2497d08d,0x2056cd3a,0x2d15ebe3,0x29d4f654,
+  43:../src/crc32.c ****     0xc5a92679,0xc1683bce,0xcc2b1d17,0xc8ea00a0,0xd6ad50a5,0xd26c4d12,0xdf2f6bcb,0xdbee767c,
+  44:../src/crc32.c ****     0xe3a1cbc1,0xe760d676,0xea23f0af,0xeee2ed18,0xf0a5bd1d,0xf464a0aa,0xf9278673,0xfde69bc4,
+  45:../src/crc32.c ****     0x89b8fd09,0x8d79e0be,0x803ac667,0x84fbdbd0,0x9abc8bd5,0x9e7d9662,0x933eb0bb,0x97ffad0c,
+  46:../src/crc32.c ****     0xafb010b1,0xab710d06,0xa6322bdf,0xa2f33668,0xbcb4666d,0xb8757bda,0xb5365d03,0xb1f740b4
+  47:../src/crc32.c **** };
+  48:../src/crc32.c **** #endif
+  49:../src/crc32.c **** 
+  50:../src/crc32.c **** #define CRC_CHECK_VALUE  0xCBF43926 // @todo need to check this
+  51:../src/crc32.c **** 
+  52:../src/crc32.c **** /**
+  53:../src/crc32.c ****  * @fn uint32_t crc(const uint8_t[], uint16_t, uint32_t)
+  54:../src/crc32.c ****  * @brief Updates the CRC-32 calculation using lookup table
+  55:../src/crc32.c ****  * This updates the crc calculation using the polynomial 0x04C11DB7 with
+  56:../src/crc32.c ****  * no initial or final complement and no reversals. The initial value is passed in
+  57:../src/crc32.c ****  * to allow this function to be called iteratively.
+  58:../src/crc32.c ****  * @param u8_Msg  Message bytes.
+  59:../src/crc32.c ****  * @param u16_Len Number of message bytes
+  60:../src/crc32.c ****  * @param u32_Rem Initial value of crc remainder
+  61:../src/crc32.c ****  * @return
+  62:../src/crc32.c ****  */
+  63:../src/crc32.c **** #ifndef CRC_SLOW
+  64:../src/crc32.c **** uint32_t crc(uint8_t const u8_Msg[], uint16_t u16_Len, uint32_t  u32_Rem)
+  65:../src/crc32.c **** {
+  66:../src/crc32.c ****     uint8_t   u8_Data;
+  67:../src/crc32.c ****     uint16_t  u16_n;
+  68:../src/crc32.c **** 
+  69:../src/crc32.c ****     for (u16_n = 0; u16_n < u16_Len; ++u16_n)
+  70:../src/crc32.c ****     {
+  71:../src/crc32.c ****         u8_Data = u8_Msg[u16_n] ^ (u32_Rem >> 24);
+  72:../src/crc32.c ****         u32_Rem = crc32_table[u8_Data] ^ (u32_Rem << 8);
+  73:../src/crc32.c ****     }
+  74:../src/crc32.c ****     return u32_Rem;
+  75:../src/crc32.c **** }
+  76:../src/crc32.c **** #else // This is the bit serial, slower version of the crc. May be sufficient.
+  77:../src/crc32.c **** uint32_t crc(uint8_t const u8_Msg[], uint32_t u32_Len, uint32_t u32_Rem)
+  78:../src/crc32.c **** {
+  16              		.loc 1 78 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  79:../src/crc32.c ****     uint32_t u32_N;
+  19              		.loc 1 79 5
+  80:../src/crc32.c ****     uint8_t  u8_N_Bit;
+  20              		.loc 1 80 5
+  81:../src/crc32.c ****     uint8_t *p_Msg = (uint8_t *)u8_Msg;
+  21              		.loc 1 81 5
+  82:../src/crc32.c **** 
+  83:../src/crc32.c ****     for (u32_N = 0; u32_N < u32_Len; u32_N++)
+  22              		.loc 1 83 5
+  84:../src/crc32.c ****     {
+  85:../src/crc32.c ****         u32_Rem ^= *p_Msg++ << 24;
+  86:../src/crc32.c **** 
+  87:../src/crc32.c ****         for (u8_N_Bit = 8; u8_N_Bit > 0; --u8_N_Bit)
+  88:../src/crc32.c ****         {
+  89:../src/crc32.c ****             if (u32_Rem & (1 << 31))
+  90:../src/crc32.c ****             {
+  91:../src/crc32.c ****                 u32_Rem = (u32_Rem << 1) ^ POLYNOMIAL;
+  23              		.loc 1 91 25 is_stmt 0
+  24 0000 3727C104 		li	a4,79765504
+  25 0004 B305B500 		add	a1,a0,a1
+  26              	.LVL1:
+  27 0008 130777DB 		addi	a4,a4,-585
+  28              	.LVL2:
+  29              	.L2:
+  83:../src/crc32.c ****     {
+  30              		.loc 1 83 5 discriminator 1
+  31 000c 6396A500 		bne	a1,a0,.L5
+  92:../src/crc32.c ****             }
+  93:../src/crc32.c ****             else
+  94:../src/crc32.c ****             {
+  95:../src/crc32.c ****                 u32_Rem = (u32_Rem << 1);
+  96:../src/crc32.c ****             }
+  97:../src/crc32.c ****         }
+  98:../src/crc32.c ****     }
+  99:../src/crc32.c ****     return u32_Rem;
+  32              		.loc 1 99 5 is_stmt 1
+ 100:../src/crc32.c **** }
+  33              		.loc 1 100 1 is_stmt 0
+  34 0010 13050600 		mv	a0,a2
+  35              	.LVL3:
+  36 0014 67800000 		ret
+  37              	.LVL4:
+  38              	.L5:
+  85:../src/crc32.c **** 
+  39              		.loc 1 85 9 is_stmt 1
+  85:../src/crc32.c **** 
+  40              		.loc 1 85 26 is_stmt 0
+  41 0018 13051500 		addi	a0,a0,1
+  42              	.LVL5:
+  85:../src/crc32.c **** 
+  43              		.loc 1 85 20
+  44 001c 8347F5FF 		lbu	a5,-1(a0)
+  85:../src/crc32.c **** 
+  45              		.loc 1 85 29
+  46 0020 93978701 		slli	a5,a5,24
+  85:../src/crc32.c **** 
+  47              		.loc 1 85 17
+  48 0024 3346F600 		xor	a2,a2,a5
+  49              	.LVL6:
+  87:../src/crc32.c ****         {
+  50              		.loc 1 87 9 is_stmt 1
+  85:../src/crc32.c **** 
+  51              		.loc 1 85 17 is_stmt 0
+  52 0028 93078000 		li	a5,8
+  53              	.LVL7:
+  54              	.L4:
+  89:../src/crc32.c ****             {
+  55              		.loc 1 89 13 is_stmt 1
+  89:../src/crc32.c ****             {
+  56              		.loc 1 89 17 is_stmt 0
+  57 002c 93060600 		mv	a3,a2
+  58 0030 13161600 		slli	a2,a2,1
+  59              	.LVL8:
+  89:../src/crc32.c ****             {
+  60              		.loc 1 89 16
+  61 0034 63D40600 		bge	a3,zero,.L3
+  91:../src/crc32.c ****             }
+  62              		.loc 1 91 17 is_stmt 1
+  91:../src/crc32.c ****             }
+  63              		.loc 1 91 25 is_stmt 0
+  64 0038 3346E600 		xor	a2,a2,a4
+  65              	.LVL9:
+  66              	.L3:
+  67 003c 9387F7FF 		addi	a5,a5,-1
+  68              	.LVL10:
+  69 0040 93F7F70F 		andi	a5,a5,0xff
+  87:../src/crc32.c ****         {
+  70              		.loc 1 87 9 discriminator 2
+  71 0044 E39407FE 		bne	a5,zero,.L4
+  72 0048 6FF05FFC 		j	.L2
+  73              		.cfi_endproc
+  74              	.LFE0:
+  76              		.text
+  77              	.Letext0:
+  78              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+  79              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 crc32.c
+<<<<<<< HEAD
+     /tmp/ccSDti9Y.s:13     .text.crc:0000000000000000 crc
+     /tmp/ccSDti9Y.s:17     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:19     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:20     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:21     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:22     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:23     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:24     .text.crc:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:31     .text.crc:000000000000000c .L0 
+     /tmp/ccSDti9Y.s:33     .text.crc:0000000000000010 .L0 
+     /tmp/ccSDti9Y.s:34     .text.crc:0000000000000010 .L0 
+     /tmp/ccSDti9Y.s:40     .text.crc:0000000000000018 .L0 
+     /tmp/ccSDti9Y.s:41     .text.crc:0000000000000018 .L0 
+     /tmp/ccSDti9Y.s:44     .text.crc:000000000000001c .L0 
+     /tmp/ccSDti9Y.s:46     .text.crc:0000000000000020 .L0 
+     /tmp/ccSDti9Y.s:48     .text.crc:0000000000000024 .L0 
+     /tmp/ccSDti9Y.s:51     .text.crc:0000000000000028 .L0 
+     /tmp/ccSDti9Y.s:52     .text.crc:0000000000000028 .L0 
+     /tmp/ccSDti9Y.s:56     .text.crc:000000000000002c .L0 
+     /tmp/ccSDti9Y.s:57     .text.crc:000000000000002c .L0 
+     /tmp/ccSDti9Y.s:61     .text.crc:0000000000000034 .L0 
+     /tmp/ccSDti9Y.s:63     .text.crc:0000000000000038 .L0 
+     /tmp/ccSDti9Y.s:64     .text.crc:0000000000000038 .L0 
+     /tmp/ccSDti9Y.s:71     .text.crc:0000000000000044 .L0 
+     /tmp/ccSDti9Y.s:73     .text.crc:000000000000004c .L0 
+     /tmp/ccSDti9Y.s:76     .text.crc:000000000000004c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccSDti9Y.s:38     .text.crc:0000000000000018 .L5
+     /tmp/ccSDti9Y.s:66     .text.crc:000000000000003c .L3
+     /tmp/ccSDti9Y.s:54     .text.crc:000000000000002c .L4
+     /tmp/ccSDti9Y.s:29     .text.crc:000000000000000c .L2
+     /tmp/ccSDti9Y.s:222    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccSDti9Y.s:475    .debug_str:0000000000000000 .LASF19
+     /tmp/ccSDti9Y.s:505    .debug_str:000000000000016b .LASF20
+     /tmp/ccSDti9Y.s:515    .debug_str:000000000000019f .LASF21
+     /tmp/ccSDti9Y.s:467    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccSDti9Y.s:473    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccSDti9Y.s:517    .debug_str:00000000000001d6 .LASF0
+     /tmp/ccSDti9Y.s:477    .debug_str:00000000000000c6 .LASF5
+     /tmp/ccSDti9Y.s:483    .debug_str:00000000000000dd .LASF1
+     /tmp/ccSDti9Y.s:507    .debug_str:000000000000017a .LASF2
+     /tmp/ccSDti9Y.s:487    .debug_str:00000000000000fd .LASF3
+     /tmp/ccSDti9Y.s:513    .debug_str:0000000000000196 .LASF4
+     /tmp/ccSDti9Y.s:489    .debug_str:0000000000000110 .LASF6
+     /tmp/ccSDti9Y.s:485    .debug_str:00000000000000eb .LASF7
+     /tmp/ccSDti9Y.s:503    .debug_str:000000000000015d .LASF8
+     /tmp/ccSDti9Y.s:497    .debug_str:0000000000000136 .LASF9
+     /tmp/ccSDti9Y.s:495    .debug_str:0000000000000129 .LASF10
+     /tmp/ccSDti9Y.s:499    .debug_str:000000000000014d .LASF11
+     /tmp/ccSDti9Y.s:511    .debug_str:000000000000018d .LASF12
+     /tmp/ccSDti9Y.s:14     .text.crc:0000000000000000 .LFB0
+     /tmp/ccSDti9Y.s:74     .text.crc:000000000000004c .LFE0
+     /tmp/ccSDti9Y.s:479    .debug_str:00000000000000d0 .LASF13
+     /tmp/ccSDti9Y.s:378    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccSDti9Y.s:491    .debug_str:000000000000011b .LASF14
+     /tmp/ccSDti9Y.s:392    .debug_loc:0000000000000021 .LLST1
+     /tmp/ccSDti9Y.s:501    .debug_str:0000000000000155 .LASF15
+     /tmp/ccSDti9Y.s:406    .debug_loc:0000000000000042 .LLST2
+     /tmp/ccSDti9Y.s:481    .debug_str:00000000000000d7 .LASF16
+     /tmp/ccSDti9Y.s:509    .debug_str:0000000000000184 .LASF17
+     /tmp/ccSDti9Y.s:425    .debug_loc:0000000000000076 .LLST3
+     /tmp/ccSDti9Y.s:493    .debug_str:0000000000000123 .LASF18
+     /tmp/ccSDti9Y.s:443    .debug_loc:00000000000000a2 .LLST4
+     /tmp/ccSDti9Y.s:18     .text.crc:0000000000000000 .LVL0
+     /tmp/ccSDti9Y.s:28     .text.crc:000000000000000c .LVL2
+     /tmp/ccSDti9Y.s:26     .text.crc:0000000000000008 .LVL1
+     /tmp/ccSDti9Y.s:49     .text.crc:0000000000000028 .LVL6
+     /tmp/ccSDti9Y.s:59     .text.crc:0000000000000034 .LVL8
+     /tmp/ccSDti9Y.s:65     .text.crc:000000000000003c .LVL9
+     /tmp/ccSDti9Y.s:53     .text.crc:000000000000002c .LVL7
+     /tmp/ccSDti9Y.s:68     .text.crc:0000000000000040 .LVL10
+     /tmp/ccSDti9Y.s:35     .text.crc:0000000000000014 .LVL3
+     /tmp/ccSDti9Y.s:37     .text.crc:0000000000000018 .LVL4
+     /tmp/ccSDti9Y.s:81     .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccLLgEWg.s:13     .text.crc:0000000000000000 crc
+     /tmp/ccLLgEWg.s:17     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:19     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:20     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:21     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:22     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:23     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:24     .text.crc:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:31     .text.crc:000000000000000c .L0 
+     /tmp/ccLLgEWg.s:33     .text.crc:0000000000000010 .L0 
+     /tmp/ccLLgEWg.s:34     .text.crc:0000000000000010 .L0 
+     /tmp/ccLLgEWg.s:40     .text.crc:0000000000000018 .L0 
+     /tmp/ccLLgEWg.s:41     .text.crc:0000000000000018 .L0 
+     /tmp/ccLLgEWg.s:44     .text.crc:000000000000001c .L0 
+     /tmp/ccLLgEWg.s:46     .text.crc:0000000000000020 .L0 
+     /tmp/ccLLgEWg.s:48     .text.crc:0000000000000024 .L0 
+     /tmp/ccLLgEWg.s:51     .text.crc:0000000000000028 .L0 
+     /tmp/ccLLgEWg.s:52     .text.crc:0000000000000028 .L0 
+     /tmp/ccLLgEWg.s:56     .text.crc:000000000000002c .L0 
+     /tmp/ccLLgEWg.s:57     .text.crc:000000000000002c .L0 
+     /tmp/ccLLgEWg.s:61     .text.crc:0000000000000034 .L0 
+     /tmp/ccLLgEWg.s:63     .text.crc:0000000000000038 .L0 
+     /tmp/ccLLgEWg.s:64     .text.crc:0000000000000038 .L0 
+     /tmp/ccLLgEWg.s:71     .text.crc:0000000000000044 .L0 
+     /tmp/ccLLgEWg.s:73     .text.crc:000000000000004c .L0 
+     /tmp/ccLLgEWg.s:76     .text.crc:000000000000004c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccLLgEWg.s:38     .text.crc:0000000000000018 .L5
+     /tmp/ccLLgEWg.s:66     .text.crc:000000000000003c .L3
+     /tmp/ccLLgEWg.s:54     .text.crc:000000000000002c .L4
+     /tmp/ccLLgEWg.s:29     .text.crc:000000000000000c .L2
+     /tmp/ccLLgEWg.s:222    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccLLgEWg.s:475    .debug_str:0000000000000000 .LASF19
+     /tmp/ccLLgEWg.s:505    .debug_str:000000000000016b .LASF20
+     /tmp/ccLLgEWg.s:515    .debug_str:000000000000019f .LASF21
+     /tmp/ccLLgEWg.s:467    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccLLgEWg.s:473    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccLLgEWg.s:517    .debug_str:00000000000001d6 .LASF0
+     /tmp/ccLLgEWg.s:477    .debug_str:00000000000000c6 .LASF5
+     /tmp/ccLLgEWg.s:483    .debug_str:00000000000000dd .LASF1
+     /tmp/ccLLgEWg.s:507    .debug_str:000000000000017a .LASF2
+     /tmp/ccLLgEWg.s:487    .debug_str:00000000000000fd .LASF3
+     /tmp/ccLLgEWg.s:513    .debug_str:0000000000000196 .LASF4
+     /tmp/ccLLgEWg.s:489    .debug_str:0000000000000110 .LASF6
+     /tmp/ccLLgEWg.s:485    .debug_str:00000000000000eb .LASF7
+     /tmp/ccLLgEWg.s:503    .debug_str:000000000000015d .LASF8
+     /tmp/ccLLgEWg.s:497    .debug_str:0000000000000136 .LASF9
+     /tmp/ccLLgEWg.s:495    .debug_str:0000000000000129 .LASF10
+     /tmp/ccLLgEWg.s:499    .debug_str:000000000000014d .LASF11
+     /tmp/ccLLgEWg.s:511    .debug_str:000000000000018d .LASF12
+     /tmp/ccLLgEWg.s:14     .text.crc:0000000000000000 .LFB0
+     /tmp/ccLLgEWg.s:74     .text.crc:000000000000004c .LFE0
+     /tmp/ccLLgEWg.s:479    .debug_str:00000000000000d0 .LASF13
+     /tmp/ccLLgEWg.s:378    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccLLgEWg.s:491    .debug_str:000000000000011b .LASF14
+     /tmp/ccLLgEWg.s:392    .debug_loc:0000000000000021 .LLST1
+     /tmp/ccLLgEWg.s:501    .debug_str:0000000000000155 .LASF15
+     /tmp/ccLLgEWg.s:406    .debug_loc:0000000000000042 .LLST2
+     /tmp/ccLLgEWg.s:481    .debug_str:00000000000000d7 .LASF16
+     /tmp/ccLLgEWg.s:509    .debug_str:0000000000000184 .LASF17
+     /tmp/ccLLgEWg.s:425    .debug_loc:0000000000000076 .LLST3
+     /tmp/ccLLgEWg.s:493    .debug_str:0000000000000123 .LASF18
+     /tmp/ccLLgEWg.s:443    .debug_loc:00000000000000a2 .LLST4
+     /tmp/ccLLgEWg.s:18     .text.crc:0000000000000000 .LVL0
+     /tmp/ccLLgEWg.s:28     .text.crc:000000000000000c .LVL2
+     /tmp/ccLLgEWg.s:26     .text.crc:0000000000000008 .LVL1
+     /tmp/ccLLgEWg.s:49     .text.crc:0000000000000028 .LVL6
+     /tmp/ccLLgEWg.s:59     .text.crc:0000000000000034 .LVL8
+     /tmp/ccLLgEWg.s:65     .text.crc:000000000000003c .LVL9
+     /tmp/ccLLgEWg.s:53     .text.crc:000000000000002c .LVL7
+     /tmp/ccLLgEWg.s:68     .text.crc:0000000000000040 .LVL10
+     /tmp/ccLLgEWg.s:35     .text.crc:0000000000000014 .LVL3
+     /tmp/ccLLgEWg.s:37     .text.crc:0000000000000018 .LVL4
+     /tmp/ccLLgEWg.s:81     .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

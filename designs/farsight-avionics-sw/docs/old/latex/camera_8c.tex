@@ -1,0 +1,385 @@
+\doxysection{src/\+camera.c File Reference}
+\hypertarget{camera_8c}{}\label{camera_8c}\index{src/camera.c@{src/camera.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}timer.\+h"{}}\newline
+{\ttfamily \+\#include "{}core\+\_\+spi.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}eth.\+h"{}}\newline
+{\ttfamily \+\#include "{}register.\+h"{}}\newline
+{\ttfamily \+\#include "{}udp\+\_\+core\+\_\+reg.\+h"{}}\newline
+{\ttfamily \+\#include "{}dma\+\_\+write\+\_\+reg.\+h"{}}\newline
+{\ttfamily \+\#include "{}udp\+\_\+dmactrl\+\_\+reg.\+h"{}}\newline
+{\ttfamily \+\#include "{}util.\+h"{}}\newline
+{\ttfamily \+\#include "{}cam\+\_\+trig.\+h"{}}\newline
+{\ttfamily \+\#include "{}cam\+\_\+mux.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}gpio\+\_\+pin\+\_\+def.\+h"{}}\newline
+{\ttfamily \+\#include "{}reg\+\_\+address.\+h"{}}\newline
+Include dependency graph for camera.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{camera_8c_a75e7721e73d856e867305eb81dc784d9}{v\+\_\+\+Init\+\_\+\+Camera}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}})
+\item 
+void \doxymbox{\hyperlink{camera_8c_af34b6de374c8caa3634b10f2ba3efab5}{v\+\_\+\+Enable\+\_\+\+Camera\+\_\+\+Power}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint8\+\_\+t b\+\_\+\+Enable)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989}{init\+\_\+eth1}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+eth\+\_\+core\+\_\+1\+\_\+regs)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a873d789e69465192c00c3f0f48533924}{configure\+\_\+udp1}} (void)
+\item 
+void \doxymbox{\hyperlink{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5}{configure\+\_\+udp}} (uint32\+\_\+t base\+\_\+addr, uint16\+\_\+t dst\+\_\+port, uint16\+\_\+t src\+\_\+port, uint32\+\_\+t dst\+\_\+ip, uint32\+\_\+t src\+\_\+ip, uint16\+\_\+t dst\+\_\+mac\+\_\+msb, uint32\+\_\+t dst\+\_\+mac\+\_\+lsb, uint16\+\_\+t src\+\_\+mac\+\_\+msb, uint32\+\_\+t src\+\_\+mac\+\_\+lsb)
+\item 
+void \doxymbox{\hyperlink{camera_8c_acd250119412bbdf137e91a9f93d4c57c}{configure\+\_\+dma\+\_\+write}} (uint32\+\_\+t base\+\_\+addr, uint32\+\_\+t h\+\_\+size\+\_\+byte)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a0e86868cef208ecab6ca015584592182}{configure\+\_\+udp\+\_\+dmactrl}} (uint32\+\_\+t base\+\_\+addr, uint32\+\_\+t v\+\_\+size\+\_\+line, uint32\+\_\+t h\+\_\+size\+\_\+byte, uint32\+\_\+t h\+\_\+size\+\_\+beat)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad}{cam\+\_\+reset}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}})
+\item 
+void \doxymbox{\hyperlink{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c}{init\+\_\+slvsec}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{camera__task_8c_a1419de7a1596d40d3056bf064b1b48d5}{camera\+\_\+instance}})
+\item 
+void \doxymbox{\hyperlink{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb}{configure\+\_\+trig}} (uint32\+\_\+t base\+\_\+addr, uint16\+\_\+t xtrig\+\_\+low\+\_\+time, uint32\+\_\+t frame\+\_\+capture\+\_\+time, uint16\+\_\+t frame\+\_\+capture\+\_\+amount)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a0306e142bfbce0a6616dbcee9441da87}{trig\+\_\+capture}} (void)
+\item 
+void \doxymbox{\hyperlink{camera_8c_af522c6f246e2a9cc76fd33c7cbbe5fb9}{configure\+\_\+trig1}} (void)
+\item 
+void \doxymbox{\hyperlink{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284}{set\+\_\+read\+\_\+mux}} (uint32\+\_\+t base\+\_\+addr, uint32\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a102e73f9401d42db6fab31f949e631ba}{enable\+\_\+capture\+\_\+to\+\_\+ddr}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint8\+\_\+t target\+\_\+mem\+\_\+space)
+\item 
+void \doxymbox{\hyperlink{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b}{disable\+\_\+capture\+\_\+to\+\_\+ddr}} (Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint32\+\_\+t base\+\_\+addr, uint8\+\_\+t target\+\_\+mem\+\_\+space)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{camera_8c_a935c0986319ad5e2a18b69782d7ebda2}{u8\+\_\+\+Calculate\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns}} (uint32\+\_\+t u32\+\_\+\+Raw\+\_\+\+Pos, int32\+\_\+t \texorpdfstring{$\ast$}{*}i32\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad}\index{camera.c@{camera.c}!cam\_reset@{cam\_reset}}
+\index{cam\_reset@{cam\_reset}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{cam\_reset()}{cam\_reset()}}
+{\footnotesize\ttfamily \label{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad} 
+void cam\+\_\+reset (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00221}{221}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_acd250119412bbdf137e91a9f93d4c57c}\index{camera.c@{camera.c}!configure\_dma\_write@{configure\_dma\_write}}
+\index{configure\_dma\_write@{configure\_dma\_write}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_dma\_write()}{configure\_dma\_write()}}
+{\footnotesize\ttfamily \label{camera_8c_acd250119412bbdf137e91a9f93d4c57c} 
+void configure\+\_\+dma\+\_\+write (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint32\+\_\+t}]{h\+\_\+size\+\_\+byte}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00201}{201}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_acd250119412bbdf137e91a9f93d4c57c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb}\index{camera.c@{camera.c}!configure\_trig@{configure\_trig}}
+\index{configure\_trig@{configure\_trig}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_trig()}{configure\_trig()}}
+{\footnotesize\ttfamily \label{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb} 
+void configure\+\_\+trig (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint16\+\_\+t}]{xtrig\+\_\+low\+\_\+time}{, }\item[{uint32\+\_\+t}]{frame\+\_\+capture\+\_\+time}{, }\item[{uint16\+\_\+t}]{frame\+\_\+capture\+\_\+amount}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00270}{270}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_af522c6f246e2a9cc76fd33c7cbbe5fb9}\index{camera.c@{camera.c}!configure\_trig1@{configure\_trig1}}
+\index{configure\_trig1@{configure\_trig1}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_trig1()}{configure\_trig1()}}
+{\footnotesize\ttfamily \label{camera_8c_af522c6f246e2a9cc76fd33c7cbbe5fb9} 
+void configure\+\_\+trig1 (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00299}{299}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+\Hypertarget{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5}\index{camera.c@{camera.c}!configure\_udp@{configure\_udp}}
+\index{configure\_udp@{configure\_udp}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_udp()}{configure\_udp()}}
+{\footnotesize\ttfamily \label{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5} 
+void configure\+\_\+udp (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint16\+\_\+t}]{dst\+\_\+port}{, }\item[{uint16\+\_\+t}]{src\+\_\+port}{, }\item[{uint32\+\_\+t}]{dst\+\_\+ip}{, }\item[{uint32\+\_\+t}]{src\+\_\+ip}{, }\item[{uint16\+\_\+t}]{dst\+\_\+mac\+\_\+msb}{, }\item[{uint32\+\_\+t}]{dst\+\_\+mac\+\_\+lsb}{, }\item[{uint16\+\_\+t}]{src\+\_\+mac\+\_\+msb}{, }\item[{uint32\+\_\+t}]{src\+\_\+mac\+\_\+lsb}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00158}{158}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a873d789e69465192c00c3f0f48533924}\index{camera.c@{camera.c}!configure\_udp1@{configure\_udp1}}
+\index{configure\_udp1@{configure\_udp1}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_udp1()}{configure\_udp1()}}
+{\footnotesize\ttfamily \label{camera_8c_a873d789e69465192c00c3f0f48533924} 
+void configure\+\_\+udp1 (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00145}{145}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=292pt]{camera_8c_a873d789e69465192c00c3f0f48533924_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a873d789e69465192c00c3f0f48533924_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a0e86868cef208ecab6ca015584592182}\index{camera.c@{camera.c}!configure\_udp\_dmactrl@{configure\_udp\_dmactrl}}
+\index{configure\_udp\_dmactrl@{configure\_udp\_dmactrl}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{configure\_udp\_dmactrl()}{configure\_udp\_dmactrl()}}
+{\footnotesize\ttfamily \label{camera_8c_a0e86868cef208ecab6ca015584592182} 
+void configure\+\_\+udp\+\_\+dmactrl (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint32\+\_\+t}]{v\+\_\+size\+\_\+line}{, }\item[{uint32\+\_\+t}]{h\+\_\+size\+\_\+byte}{, }\item[{uint32\+\_\+t}]{h\+\_\+size\+\_\+beat}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00211}{211}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a0e86868cef208ecab6ca015584592182_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b}\index{camera.c@{camera.c}!disable\_capture\_to\_ddr@{disable\_capture\_to\_ddr}}
+\index{disable\_capture\_to\_ddr@{disable\_capture\_to\_ddr}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{disable\_capture\_to\_ddr()}{disable\_capture\_to\_ddr()}}
+{\footnotesize\ttfamily \label{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b} 
+void disable\+\_\+capture\+\_\+to\+\_\+ddr (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint8\+\_\+t}]{target\+\_\+mem\+\_\+space}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00317}{317}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a102e73f9401d42db6fab31f949e631ba}\index{camera.c@{camera.c}!enable\_capture\_to\_ddr@{enable\_capture\_to\_ddr}}
+\index{enable\_capture\_to\_ddr@{enable\_capture\_to\_ddr}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{enable\_capture\_to\_ddr()}{enable\_capture\_to\_ddr()}}
+{\footnotesize\ttfamily \label{camera_8c_a102e73f9401d42db6fab31f949e631ba} 
+void enable\+\_\+capture\+\_\+to\+\_\+ddr (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint8\+\_\+t}]{target\+\_\+mem\+\_\+space}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00311}{311}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a102e73f9401d42db6fab31f949e631ba_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a102e73f9401d42db6fab31f949e631ba_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989}\index{camera.c@{camera.c}!init\_eth1@{init\_eth1}}
+\index{init\_eth1@{init\_eth1}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{init\_eth1()}{init\_eth1()}}
+{\footnotesize\ttfamily \label{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989} 
+void init\+\_\+eth1 (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+eth\+\_\+core\+\_\+1\+\_\+regs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00133}{133}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=292pt]{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c}\index{camera.c@{camera.c}!init\_slvsec@{init\_slvsec}}
+\index{init\_slvsec@{init\_slvsec}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{init\_slvsec()}{init\_slvsec()}}
+{\footnotesize\ttfamily \label{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c} 
+void init\+\_\+slvsec (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{camera\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00230}{230}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284}\index{camera.c@{camera.c}!set\_read\_mux@{set\_read\_mux}}
+\index{set\_read\_mux@{set\_read\_mux}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{set\_read\_mux()}{set\_read\_mux()}}
+{\footnotesize\ttfamily \label{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284} 
+void set\+\_\+read\+\_\+mux (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{base\+\_\+addr}{, }\item[{uint32\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00306}{306}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a0306e142bfbce0a6616dbcee9441da87}\index{camera.c@{camera.c}!trig\_capture@{trig\_capture}}
+\index{trig\_capture@{trig\_capture}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{trig\_capture()}{trig\_capture()}}
+{\footnotesize\ttfamily \label{camera_8c_a0306e142bfbce0a6616dbcee9441da87} 
+void trig\+\_\+capture (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00289}{289}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a0306e142bfbce0a6616dbcee9441da87_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a935c0986319ad5e2a18b69782d7ebda2}\index{camera.c@{camera.c}!u8\_Calculate\_Focus\_Distance\_microns@{u8\_Calculate\_Focus\_Distance\_microns}}
+\index{u8\_Calculate\_Focus\_Distance\_microns@{u8\_Calculate\_Focus\_Distance\_microns}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Calculate\_Focus\_Distance\_microns()}{u8\_Calculate\_Focus\_Distance\_microns()}}
+{\footnotesize\ttfamily \label{camera_8c_a935c0986319ad5e2a18b69782d7ebda2} 
+uint8\+\_\+t u8\+\_\+\+Calculate\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Raw\+\_\+\+Pos}{, }\item[{int32\+\_\+t \texorpdfstring{$\ast$}{*}}]{i32\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00323}{323}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a935c0986319ad5e2a18b69782d7ebda2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_af34b6de374c8caa3634b10f2ba3efab5}\index{camera.c@{camera.c}!v\_Enable\_Camera\_Power@{v\_Enable\_Camera\_Power}}
+\index{v\_Enable\_Camera\_Power@{v\_Enable\_Camera\_Power}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Camera\_Power()}{v\_Enable\_Camera\_Power()}}
+{\footnotesize\ttfamily \label{camera_8c_af34b6de374c8caa3634b10f2ba3efab5} 
+void v\+\_\+\+Enable\+\_\+\+Camera\+\_\+\+Power (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint8\+\_\+t}]{b\+\_\+\+Enable}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00122}{122}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_af34b6de374c8caa3634b10f2ba3efab5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_af34b6de374c8caa3634b10f2ba3efab5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera_8c_a75e7721e73d856e867305eb81dc784d9}\index{camera.c@{camera.c}!v\_Init\_Camera@{v\_Init\_Camera}}
+\index{v\_Init\_Camera@{v\_Init\_Camera}!camera.c@{camera.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Camera()}{v\_Init\_Camera()}}
+{\footnotesize\ttfamily \label{camera_8c_a75e7721e73d856e867305eb81dc784d9} 
+void v\+\_\+\+Init\+\_\+\+Camera (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a75e7721e73d856e867305eb81dc784d9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera_8c_a75e7721e73d856e867305eb81dc784d9_icgraph}
+\end{center}
+\end{figure}

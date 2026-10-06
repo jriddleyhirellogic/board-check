@@ -1,0 +1,301 @@
+\doxysection{src/\+hal/\+hal\+\_\+stepper.c File Reference}
+\hypertarget{hal__stepper_8c}{}\label{hal__stepper_8c}\index{src/hal/hal\_stepper.c@{src/hal/hal\_stepper.c}}
+{\ttfamily \+\#include "{}hal\+\_\+stepper.\+h"{}}\newline
+Include dependency graph for hal\+\_\+stepper.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{hal__stepper_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a}{v\+\_\+\+Init\+\_\+\+Stepper}} (Stepper\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, Stepper\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}init)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d}{v\+\_\+\+Set\+\_\+\+Microstep\+\_\+\+Mode}} (Step\+\_\+\+Mode\+\_\+t e\+\_\+\+Mode)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2}{v\+\_\+\+Enable\+\_\+\+Stepper}} (uint8\+\_\+t b\+\_\+\+Enable)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157}{v\+\_\+\+Set\+\_\+\+Stepper\+\_\+\+Control\+\_\+\+Output}} (uint8\+\_\+t u8\+\_\+\+Output)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6}{v\+\_\+\+Stepper\+\_\+\+Set\+\_\+\+Vref}} (uint16\+\_\+t u16\+\_\+\+V\+\_\+\+Set\+\_\+mV)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac}{v\+\_\+\+Stepper\+\_\+\+Set\+\_\+\+I\+\_\+\+Max\+\_\+mA}} (uint16\+\_\+t u16\+\_\+\+V\+\_\+\+Set\+\_\+\+I\+\_\+\+Max\+\_\+mA)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0}{v\+\_\+\+Stepper\+\_\+\+Control\+\_\+\+Enable\+\_\+\+HiZ}} (uint8\+\_\+t u8\+\_\+\+Set\+\_\+\+HiZ)
+\item 
+void \doxymbox{\hyperlink{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}{v\+\_\+\+Set\+\_\+\+Stepper\+\_\+out}} (uint32\+\_\+t u32\+\_\+\+Output)
+\item 
+int32\+\_\+t \doxymbox{\hyperlink{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634}{i32\+\_\+\+Get\+\_\+\+Stepper\+\_\+\+Out}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b}{u8\+\_\+\+Get\+\_\+\+Stepper\+\_\+\+NFAULT}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static Stepper\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\+\_\+instance}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{hal__stepper_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634}\index{hal\_stepper.c@{hal\_stepper.c}!i32\_Get\_Stepper\_Out@{i32\_Get\_Stepper\_Out}}
+\index{i32\_Get\_Stepper\_Out@{i32\_Get\_Stepper\_Out}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Get\_Stepper\_Out()}{i32\_Get\_Stepper\_Out()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634} 
+int32\+\_\+t i32\+\_\+\+Get\+\_\+\+Stepper\+\_\+\+Out (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00194}{194}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=339pt]{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b}\index{hal\_stepper.c@{hal\_stepper.c}!u8\_Get\_Stepper\_NFAULT@{u8\_Get\_Stepper\_NFAULT}}
+\index{u8\_Get\_Stepper\_NFAULT@{u8\_Get\_Stepper\_NFAULT}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Stepper\_NFAULT()}{u8\_Get\_Stepper\_NFAULT()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Stepper\+\_\+\+NFAULT (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00201}{201}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=349pt]{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Enable\_Stepper@{v\_Enable\_Stepper}}
+\index{v\_Enable\_Stepper@{v\_Enable\_Stepper}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Stepper()}{v\_Enable\_Stepper()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2} 
+void v\+\_\+\+Enable\+\_\+\+Stepper (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{b\+\_\+\+Enable}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00122}{122}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Init\_Stepper@{v\_Init\_Stepper}}
+\index{v\_Init\_Stepper@{v\_Init\_Stepper}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Stepper()}{v\_Init\_Stepper()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a} 
+void v\+\_\+\+Init\+\_\+\+Stepper (\begin{DoxyParamCaption}\item[{Stepper\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{Stepper\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}}]{init}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00037}{37}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Set\_Microstep\_Mode@{v\_Set\_Microstep\_Mode}}
+\index{v\_Set\_Microstep\_Mode@{v\_Set\_Microstep\_Mode}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Microstep\_Mode()}{v\_Set\_Microstep\_Mode()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d} 
+void v\+\_\+\+Set\+\_\+\+Microstep\+\_\+\+Mode (\begin{DoxyParamCaption}\item[{Step\+\_\+\+Mode\+\_\+t}]{e\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00067}{67}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Set\_Stepper\_Control\_Output@{v\_Set\_Stepper\_Control\_Output}}
+\index{v\_Set\_Stepper\_Control\_Output@{v\_Set\_Stepper\_Control\_Output}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Stepper\_Control\_Output()}{v\_Set\_Stepper\_Control\_Output()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157} 
+void v\+\_\+\+Set\+\_\+\+Stepper\+\_\+\+Control\+\_\+\+Output (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Output}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00136}{136}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Set\_Stepper\_out@{v\_Set\_Stepper\_out}}
+\index{v\_Set\_Stepper\_out@{v\_Set\_Stepper\_out}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Stepper\_out()}{v\_Set\_Stepper\_out()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19} 
+void v\+\_\+\+Set\+\_\+\+Stepper\+\_\+out (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Output}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00188}{188}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Stepper\_Control\_Enable\_HiZ@{v\_Stepper\_Control\_Enable\_HiZ}}
+\index{v\_Stepper\_Control\_Enable\_HiZ@{v\_Stepper\_Control\_Enable\_HiZ}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stepper\_Control\_Enable\_HiZ()}{v\_Stepper\_Control\_Enable\_HiZ()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0} 
+void v\+\_\+\+Stepper\+\_\+\+Control\+\_\+\+Enable\+\_\+\+HiZ (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Set\+\_\+\+HiZ}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00153}{153}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Stepper\_Set\_I\_Max\_mA@{v\_Stepper\_Set\_I\_Max\_mA}}
+\index{v\_Stepper\_Set\_I\_Max\_mA@{v\_Stepper\_Set\_I\_Max\_mA}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stepper\_Set\_I\_Max\_mA()}{v\_Stepper\_Set\_I\_Max\_mA()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac} 
+void v\+\_\+\+Stepper\+\_\+\+Set\+\_\+\+I\+\_\+\+Max\+\_\+mA (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{u16\+\_\+\+V\+\_\+\+Set\+\_\+\+I\+\_\+\+Max\+\_\+mA}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00147}{147}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6}\index{hal\_stepper.c@{hal\_stepper.c}!v\_Stepper\_Set\_Vref@{v\_Stepper\_Set\_Vref}}
+\index{v\_Stepper\_Set\_Vref@{v\_Stepper\_Set\_Vref}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stepper\_Set\_Vref()}{v\_Stepper\_Set\_Vref()}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6} 
+void v\+\_\+\+Stepper\+\_\+\+Set\+\_\+\+Vref (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{u16\+\_\+\+V\+\_\+\+Set\+\_\+mV}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00142}{142}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{hal__stepper_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{hal__stepper_8c_a45867361302a83d15518fc302c970d79}\index{hal\_stepper.c@{hal\_stepper.c}!p\_instance@{p\_instance}}
+\index{p\_instance@{p\_instance}!hal\_stepper.c@{hal\_stepper.c}}
+\doxysubsubsection{\texorpdfstring{p\_instance}{p\_instance}}
+{\footnotesize\ttfamily \label{hal__stepper_8c_a45867361302a83d15518fc302c970d79} 
+Stepper\+\_\+\+Instance\+\_\+t\texorpdfstring{$\ast$}{*} p\+\_\+instance\hspace{0.3cm}{\ttfamily [static]}}
+
+Stepper calculations:\+
+
+lead screw displacement \+[microns/\+step pulse]\+ = lead screw pitch/\+(fraction of input rev/\+pulse \texorpdfstring{$\ast$}{*} microstep ratio \texorpdfstring{$\ast$}{*} gear reduction ratio) = 500.\+0 \+[microns]\+ /\+ ( 20 \texorpdfstring{$\ast$}{*} MS \texorpdfstring{$\ast$}{*} 256) = 97.\+65625e-\/3/\+\+MS where MS = microstep ratio
+
+step pulse base frequency = f\+\_\+clk/\+counter overflow = 50.\+0e6 /\+ 190735 = 262.\+1438 \+[steps/\+sec]\+
+
+pulse frequency = counter increment \texorpdfstring{$\ast$}{*} base frequency
+
+For f\+\_\+clk = 50 MHz, the base rates of travel \+[microns/\+sec]\+, to be multiplied by counter increment, are:\+
+
+MS = 1 =\texorpdfstring{$>$}{>} 2.\+56e1 \+[microns/\+sec]\+ MS = 2 =\texorpdfstring{$>$}{>} 1.\+28e1 \+[microns/\+sec]\+ MS = 4 =\texorpdfstring{$>$}{>} 6.\+4e0 \+[microns/\+sec]\+ MS = 8 =\texorpdfstring{$>$}{>} 3.\+2e0 \+[microns/\+sec]\+ MS = 16 =\texorpdfstring{$>$}{>} 1.\+6e0 \+[microns/\+sec]\+ MS = 32 =\texorpdfstring{$>$}{>} 8.\+0e-\/1 \+[microns/\+sec]\+ MS = 128 =\texorpdfstring{$>$}{>} 2.\+0e-\/1 \+[microns/\+sec]\+ MS = 256 =\texorpdfstring{$>$}{>} 1.\+0e-\/1 \+[microns/\+sec]\+ 
+
+Definition at line \doxymbox{\hyperlink{hal__stepper_8c_source_l00035}{35}} of file \doxymbox{\hyperlink{hal__stepper_8c_source}{hal\+\_\+stepper.\+c}}.
+

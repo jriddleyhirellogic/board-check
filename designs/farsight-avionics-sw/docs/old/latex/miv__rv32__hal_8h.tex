@@ -1,0 +1,888 @@
+\doxysection{src/\+miv\+\_\+rv32\+\_\+hal/\+miv\+\_\+rv32\+\_\+hal.h File Reference}
+\hypertarget{miv__rv32__hal_8h}{}\label{miv__rv32__hal_8h}\index{src/miv\_rv32\_hal/miv\_rv32\_hal.h@{src/miv\_rv32\_hal/miv\_rv32\_hal.h}}
+{\ttfamily \+\#include "{}miv\+\_\+rv32\+\_\+regs.\+h"{}}\newline
+{\ttfamily \+\#include "{}miv\+\_\+rv32\+\_\+plic.\+h"{}}\newline
+{\ttfamily \+\#include "{}miv\+\_\+rv32\+\_\+assert.\+h"{}}\newline
+{\ttfamily \+\#include "{}fpga\+\_\+design\+\_\+config/\+fpga\+\_\+design\+\_\+config.\+h"{}}\newline
+Include dependency graph for miv\+\_\+rv32\+\_\+hal.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{miv__rv32__hal_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structOPSRV__Type}{OPSRV\+\_\+\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_adf5c4a234e09fa4cbf520083a5c7ff28}{EXT\+\_\+\+IRQ\+\_\+\+KEEP\+\_\+\+ENABLED}}~0U
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a49c689d61884b201c5390a22ccb26404}{EXT\+\_\+\+IRQ\+\_\+\+DISABLE}}~1U
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_ab22f6207ae51de029d25f078740a6bca}{MTIME\+\_\+\+DELTA}}~5
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a463536dc1cdfcf15948739dabf8fecf3}{PRCI\+\_\+\+BASE}}~0x02000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_aa97387293501587f642bad3e457fa7b6}{OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+CE\+\_\+\+IRQ}}~0x01u
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_aaf0fce47f746a76d17b106dcbaaa58ed}{OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+UCE\+\_\+\+IRQ}}~0x02u
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a1cd51e40c9ea5fcc40293e1e93721e7b}{OPSRV\+\_\+\+AXI\+\_\+\+WR\+\_\+\+RESP\+\_\+\+IRQ}}~0x10u
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a1fd41436f010a8b61272f20403aec0d2}{OPSRV\+\_\+\+BASE\+\_\+\+ADDR}}~0x00006000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a8e8ae929a8790aa6d8e00b40a9755735}{OPSRV}}~((\doxymbox{\hyperlink{structOPSRV__Type}{OPSRV\+\_\+\+Type}} \texorpdfstring{$\ast$}{*})\doxymbox{\hyperlink{miv__rv32__hal_8h_a1fd41436f010a8b61272f20403aec0d2}{OPSRV\+\_\+\+BASE\+\_\+\+ADDR}})
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a4bfc9a5f5652e45370287e73011ad03c}{MTIMECMP}}~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02004000\+UL)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a901d73a76c36463ffad6dd33ca096682}{MTIMECMPH}}~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02004004\+UL)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a001d5897397dcc3ed068517bd47c6437}{MTIME\+\_\+\+PRESCALER}}~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02005000\+UL)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299}{MTIME}}~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x0200\+BFF8\+UL)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a8d3159576f86af88a9587de4da3b4902}{MTIMEH}}~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x0200\+BFFCUL)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_afe312e78c96685d2d2433a3f83fc58f2}{MRV32\+\_\+\+SOFT\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa5c5e444e2ccd13a86f3131654de94ed7}{MIE\+\_\+3\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a361e0fa8c2ab04fe4b35b4d70aab428a}{MRV32\+\_\+\+TIMER\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa867c2af8af0869e2ed33050aabe5282b}{MIE\+\_\+7\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_ac58b1c20765c59bafd6cb01248a12eff}{MRV32\+\_\+\+EXT\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa8f8d34934b89788b6090e1d53822fb21}{MIE\+\_\+11\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_addd3658b7d1de485bb1960313a11ef41}{MRV32\+\_\+\+MGEUIE\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf197a75fd060e3f7f654eb450543b158}{MIE\+\_\+16\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a0d48ca3b69d55bc0a7ed0c805a2a0d9a}{MRV32\+\_\+\+MGECIE\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa9e908da13fdfc75dfec9a849d102952c}{MIE\+\_\+17\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a5b481b1b711fd1306c4f2614ba259ae7}{MRV32\+\_\+\+MSYS\+\_\+\+EIE0\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4735c2f701532a5c8bc67b2eff28ccbe}{MIE\+\_\+24\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a4c967f6a7784ce83d82f15c5150ebd6e}{MRV32\+\_\+\+MSYS\+\_\+\+EIE1\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa7330fd3dacbb538449f614452c640f52}{MIE\+\_\+25\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_ae897053ec0acb76cca3f8eb7a6fe0ebe}{MRV32\+\_\+\+MSYS\+\_\+\+EIE2\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa257c21651c92c9b298c5d4b976df62ff}{MIE\+\_\+26\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_af47b315e473a349b2bc4c8214ad7453d}{MRV32\+\_\+\+MSYS\+\_\+\+EIE3\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4c00eed02f94bd8ee306350e32960455}{MIE\+\_\+27\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_a038aecabffe17c4578e731d02647e098}{MRV32\+\_\+\+MSYS\+\_\+\+EIE4\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf5b2fe2db71144c3b1ad1768a81e00df}{MIE\+\_\+28\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_ad51aa8f5cabd5780bb921abb3cec40df}{MRV32\+\_\+\+MSYS\+\_\+\+EIE5\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa3aa6887a41aafcbec9cee0150365e952}{MIE\+\_\+29\+\_\+\+IRQn}}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8h_ae5bd0bea3226599385f6e3e4039fb6be}{MRV32\+\_\+\+MSYS\+\_\+\+OPSRV\+\_\+\+IRQn}}~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae42052306d9667b007c3afd77727e9b1}{MIE\+\_\+30\+\_\+\+IRQn}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa26effd81d35201ac885e083a1c9d2eec}{MIE\+\_\+0\+\_\+\+IRQn}} = (0x01u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aac2f2dab3a1fe48d809bb1f8c72986f3b}{MIE\+\_\+1\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}1u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae78dee7b591b84ecf8444d316ec2c712}{MIE\+\_\+2\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}2u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa5c5e444e2ccd13a86f3131654de94ed7}{MIE\+\_\+3\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}3u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aacddd6d3a6616c91729214aaae58c2f28}{MIE\+\_\+4\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}4u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa046085674c5683cec2fd85c3a74db21b}{MIE\+\_\+5\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}5u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aafff9ce30fc4a7b24bc380e8e90865a4b}{MIE\+\_\+6\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}6u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa867c2af8af0869e2ed33050aabe5282b}{MIE\+\_\+7\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}7u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa47bd5c06080ce5af80fca7a0781bb12a}{MIE\+\_\+8\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}8u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa0fb395fb3f1784460083d9d202adf3ac}{MIE\+\_\+9\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}9u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa649b3ec0599b1aee74701e31953d9d54}{MIE\+\_\+10\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}10u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa8f8d34934b89788b6090e1d53822fb21}{MIE\+\_\+11\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}11u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf1f72992de21cc7ccd2469715c73b69c}{MIE\+\_\+12\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}12u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa82514469ab6348249e047ec31f99f77d}{MIE\+\_\+13\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}13u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaa46b274653e23ce4b6665efadd46f80a}{MIE\+\_\+14\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}14u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa80d2c18868d894ea24e090de8ecf403d}{MIE\+\_\+15\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}15u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf197a75fd060e3f7f654eb450543b158}{MIE\+\_\+16\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}16u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa9e908da13fdfc75dfec9a849d102952c}{MIE\+\_\+17\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}17u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa018bf6034e7ce8ba3d33ae1238e8a79c}{MIE\+\_\+18\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}18u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae0c58ccbf8ec1b4df0e1fba3bdf8abcd}{MIE\+\_\+19\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}19u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa2619f0580eb0d35f36ada211c1539172}{MIE\+\_\+20\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}20u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa50cba8f8b5e7a9f57859dfd0cdf02c28}{MIE\+\_\+21\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}21u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaef27beb764b4392745c82e19f7628262}{MIE\+\_\+22\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}22u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa215bafc559555b81d6a75b711b7c6836}{MIE\+\_\+23\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}23u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4735c2f701532a5c8bc67b2eff28ccbe}{MIE\+\_\+24\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}24u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa7330fd3dacbb538449f614452c640f52}{MIE\+\_\+25\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}25u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa257c21651c92c9b298c5d4b976df62ff}{MIE\+\_\+26\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}26u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4c00eed02f94bd8ee306350e32960455}{MIE\+\_\+27\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}27u)
+, \newline
+\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf5b2fe2db71144c3b1ad1768a81e00df}{MIE\+\_\+28\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}28u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa3aa6887a41aafcbec9cee0150365e952}{MIE\+\_\+29\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}29u)
+, \doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae42052306d9667b007c3afd77727e9b1}{MIE\+\_\+30\+\_\+\+IRQn}} = (0x01u\texorpdfstring{$<$}{<}\texorpdfstring{$<$}{<}30u)
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e}{Sys\+Tick\+\_\+\+Handler}} (void)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8h_a403d7fe4ec086afc20bb2adb505d6c6c}{MRV\+\_\+systick\+\_\+config}} (uint64\+\_\+t ticks)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a8ea22c9e2df231970005c728c3cf9412}{MRV32\+\_\+opsrv\+\_\+enable\+\_\+irq}} (uint32\+\_\+t irq\+\_\+mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_ac78533360d67a54b59b4ee13b67777e2}{MRV32\+\_\+opsrv\+\_\+disable\+\_\+irq}} (uint32\+\_\+t irq\+\_\+mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a52e42846d0e16843ade0e3bedb2b766b}{MRV32\+\_\+opsrv\+\_\+clear\+\_\+irq}} (uint32\+\_\+t irq\+\_\+mask)
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8h_a1b0d15c4a42d9d1b9d91c4c5155eff93}{MRV32\+\_\+is\+\_\+gpr\+\_\+ded}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a338b9ec16d5daaf2084cb24baef3777a}{MRV32\+\_\+clear\+\_\+gpr\+\_\+ded}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a9bd7c4362d2eac134bc08a615718cd0e}{MRV32\+\_\+clear\+\_\+gpr\+\_\+ecc\+\_\+errors}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a71e91d17e87ffb18f690f3142163a591}{MRV32\+\_\+enable\+\_\+parity\+\_\+check}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a2371d74752a00675b5f25516f8becefc}{MRV32\+\_\+disable\+\_\+parity\+\_\+check}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_af09a449aff91e9b990ccb103a3d8f5b9}{MRV32\+\_\+cpu\+\_\+soft\+\_\+reset}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a3b1dfa582c0961aea78a1566a270d01f}{MRV32\+\_\+mgeui\+\_\+clear\+\_\+irq}} (uint32\+\_\+t irq\+\_\+mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a94687216e3b398d7f6b6128511ab6330}{MRV32\+\_\+mgeci\+\_\+clear\+\_\+irq}} (uint32\+\_\+t irq\+\_\+mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a2e4c36f579736c8b4f8bcd09a3dbdbe0}{MRV\+\_\+enable\+\_\+local\+\_\+irq}} (uint32\+\_\+t mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a53beb6f036d52f71d53f267def112370}{MRV\+\_\+disable\+\_\+local\+\_\+irq}} (uint32\+\_\+t mask)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a445ec1567412bc5014b024f67b4b61e2}{MRV\+\_\+raise\+\_\+soft\+\_\+irq}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7}{MRV\+\_\+clear\+\_\+soft\+\_\+irq}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25}{MRV\+\_\+enable\+\_\+interrupts}} (void)
+\item 
+static void \doxymbox{\hyperlink{miv__rv32__hal_8h_a88d0f8a33221f77e35b0472348b366b7}{MRV\+\_\+disable\+\_\+interrupts}} (void)
+\item 
+static uint64\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8h_a7e74fcd3a58c0549d51ffde793c7b5d0}{MRV\+\_\+read\+\_\+mtime}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+enum  \{ ... \}  \doxymbox{\hyperlink{miv__rv32__hal_8h_aa30854c51f82c77b83e231a8b2d5d4e6}{MRV\+\_\+\+LOCAL\+\_\+\+IRQn\+\_\+\+Type}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{miv__rv32__hal_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{miv__rv32__hal_8h_a49c689d61884b201c5390a22ccb26404}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!EXT\_IRQ\_DISABLE@{EXT\_IRQ\_DISABLE}}
+\index{EXT\_IRQ\_DISABLE@{EXT\_IRQ\_DISABLE}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{EXT\_IRQ\_DISABLE}{EXT\_IRQ\_DISABLE}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a49c689d61884b201c5390a22ccb26404} 
+\+\#define EXT\+\_\+\+IRQ\+\_\+\+DISABLE~1U}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00052}{52}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_adf5c4a234e09fa4cbf520083a5c7ff28}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!EXT\_IRQ\_KEEP\_ENABLED@{EXT\_IRQ\_KEEP\_ENABLED}}
+\index{EXT\_IRQ\_KEEP\_ENABLED@{EXT\_IRQ\_KEEP\_ENABLED}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{EXT\_IRQ\_KEEP\_ENABLED}{EXT\_IRQ\_KEEP\_ENABLED}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_adf5c4a234e09fa4cbf520083a5c7ff28} 
+\+\#define EXT\+\_\+\+IRQ\+\_\+\+KEEP\+\_\+\+ENABLED~0U}
+
+Return value from External IRQ handler. This will be used to disable the External interrupt. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00051}{51}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ac58b1c20765c59bafd6cb01248a12eff}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_EXT\_IRQn@{MRV32\_EXT\_IRQn}}
+\index{MRV32\_EXT\_IRQn@{MRV32\_EXT\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_EXT\_IRQn}{MRV32\_EXT\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ac58b1c20765c59bafd6cb01248a12eff} 
+\+\#define MRV32\+\_\+\+EXT\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa8f8d34934b89788b6090e1d53822fb21}{MIE\+\_\+11\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00154}{154}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a0d48ca3b69d55bc0a7ed0c805a2a0d9a}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MGECIE\_IRQn@{MRV32\_MGECIE\_IRQn}}
+\index{MRV32\_MGECIE\_IRQn@{MRV32\_MGECIE\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MGECIE\_IRQn}{MRV32\_MGECIE\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a0d48ca3b69d55bc0a7ed0c805a2a0d9a} 
+\+\#define MRV32\+\_\+\+MGECIE\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa9e908da13fdfc75dfec9a849d102952c}{MIE\+\_\+17\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00198}{198}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_addd3658b7d1de485bb1960313a11ef41}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MGEUIE\_IRQn@{MRV32\_MGEUIE\_IRQn}}
+\index{MRV32\_MGEUIE\_IRQn@{MRV32\_MGEUIE\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MGEUIE\_IRQn}{MRV32\_MGEUIE\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_addd3658b7d1de485bb1960313a11ef41} 
+\+\#define MRV32\+\_\+\+MGEUIE\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf197a75fd060e3f7f654eb450543b158}{MIE\+\_\+16\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00197}{197}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a5b481b1b711fd1306c4f2614ba259ae7}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE0\_IRQn@{MRV32\_MSYS\_EIE0\_IRQn}}
+\index{MRV32\_MSYS\_EIE0\_IRQn@{MRV32\_MSYS\_EIE0\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE0\_IRQn}{MRV32\_MSYS\_EIE0\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a5b481b1b711fd1306c4f2614ba259ae7} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE0\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4735c2f701532a5c8bc67b2eff28ccbe}{MIE\+\_\+24\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00199}{199}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a4c967f6a7784ce83d82f15c5150ebd6e}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE1\_IRQn@{MRV32\_MSYS\_EIE1\_IRQn}}
+\index{MRV32\_MSYS\_EIE1\_IRQn@{MRV32\_MSYS\_EIE1\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE1\_IRQn}{MRV32\_MSYS\_EIE1\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a4c967f6a7784ce83d82f15c5150ebd6e} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE1\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa7330fd3dacbb538449f614452c640f52}{MIE\+\_\+25\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00200}{200}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ae897053ec0acb76cca3f8eb7a6fe0ebe}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE2\_IRQn@{MRV32\_MSYS\_EIE2\_IRQn}}
+\index{MRV32\_MSYS\_EIE2\_IRQn@{MRV32\_MSYS\_EIE2\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE2\_IRQn}{MRV32\_MSYS\_EIE2\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ae897053ec0acb76cca3f8eb7a6fe0ebe} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE2\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa257c21651c92c9b298c5d4b976df62ff}{MIE\+\_\+26\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00201}{201}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_af47b315e473a349b2bc4c8214ad7453d}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE3\_IRQn@{MRV32\_MSYS\_EIE3\_IRQn}}
+\index{MRV32\_MSYS\_EIE3\_IRQn@{MRV32\_MSYS\_EIE3\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE3\_IRQn}{MRV32\_MSYS\_EIE3\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_af47b315e473a349b2bc4c8214ad7453d} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE3\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4c00eed02f94bd8ee306350e32960455}{MIE\+\_\+27\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00202}{202}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a038aecabffe17c4578e731d02647e098}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE4\_IRQn@{MRV32\_MSYS\_EIE4\_IRQn}}
+\index{MRV32\_MSYS\_EIE4\_IRQn@{MRV32\_MSYS\_EIE4\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE4\_IRQn}{MRV32\_MSYS\_EIE4\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a038aecabffe17c4578e731d02647e098} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE4\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf5b2fe2db71144c3b1ad1768a81e00df}{MIE\+\_\+28\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00203}{203}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ad51aa8f5cabd5780bb921abb3cec40df}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_EIE5\_IRQn@{MRV32\_MSYS\_EIE5\_IRQn}}
+\index{MRV32\_MSYS\_EIE5\_IRQn@{MRV32\_MSYS\_EIE5\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_EIE5\_IRQn}{MRV32\_MSYS\_EIE5\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ad51aa8f5cabd5780bb921abb3cec40df} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+EIE5\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa3aa6887a41aafcbec9cee0150365e952}{MIE\+\_\+29\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00204}{204}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ae5bd0bea3226599385f6e3e4039fb6be}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_MSYS\_OPSRV\_IRQn@{MRV32\_MSYS\_OPSRV\_IRQn}}
+\index{MRV32\_MSYS\_OPSRV\_IRQn@{MRV32\_MSYS\_OPSRV\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_MSYS\_OPSRV\_IRQn}{MRV32\_MSYS\_OPSRV\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ae5bd0bea3226599385f6e3e4039fb6be} 
+\+\#define MRV32\+\_\+\+MSYS\+\_\+\+OPSRV\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae42052306d9667b007c3afd77727e9b1}{MIE\+\_\+30\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00205}{205}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_afe312e78c96685d2d2433a3f83fc58f2}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_SOFT\_IRQn@{MRV32\_SOFT\_IRQn}}
+\index{MRV32\_SOFT\_IRQn@{MRV32\_SOFT\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_SOFT\_IRQn}{MRV32\_SOFT\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_afe312e78c96685d2d2433a3f83fc58f2} 
+\+\#define MRV32\+\_\+\+SOFT\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa5c5e444e2ccd13a86f3131654de94ed7}{MIE\+\_\+3\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00152}{152}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a361e0fa8c2ab04fe4b35b4d70aab428a}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_TIMER\_IRQn@{MRV32\_TIMER\_IRQn}}
+\index{MRV32\_TIMER\_IRQn@{MRV32\_TIMER\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_TIMER\_IRQn}{MRV32\_TIMER\_IRQn}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a361e0fa8c2ab04fe4b35b4d70aab428a} 
+\+\#define MRV32\+\_\+\+TIMER\+\_\+\+IRQn~\doxymbox{\hyperlink{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa867c2af8af0869e2ed33050aabe5282b}{MIE\+\_\+7\+\_\+\+IRQn}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00153}{153}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIME@{MTIME}}
+\index{MTIME@{MTIME}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIME}{MTIME}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299} 
+\+\#define MTIME~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x0200\+BFF8\+UL)}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00139}{139}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ab22f6207ae51de029d25f078740a6bca}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIME\_DELTA@{MTIME\_DELTA}}
+\index{MTIME\_DELTA@{MTIME\_DELTA}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIME\_DELTA}{MTIME\_DELTA}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ab22f6207ae51de029d25f078740a6bca} 
+\+\#define MTIME\+\_\+\+DELTA~5}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00081}{81}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a001d5897397dcc3ed068517bd47c6437}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIME\_PRESCALER@{MTIME\_PRESCALER}}
+\index{MTIME\_PRESCALER@{MTIME\_PRESCALER}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIME\_PRESCALER}{MTIME\_PRESCALER}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a001d5897397dcc3ed068517bd47c6437} 
+\+\#define MTIME\+\_\+\+PRESCALER~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02005000\+UL)}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00136}{136}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a4bfc9a5f5652e45370287e73011ad03c}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIMECMP@{MTIMECMP}}
+\index{MTIMECMP@{MTIMECMP}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIMECMP}{MTIMECMP}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a4bfc9a5f5652e45370287e73011ad03c} 
+\+\#define MTIMECMP~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02004000\+UL)}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00125}{125}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a901d73a76c36463ffad6dd33ca096682}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIMECMPH@{MTIMECMPH}}
+\index{MTIMECMPH@{MTIMECMPH}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIMECMPH}{MTIMECMPH}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a901d73a76c36463ffad6dd33ca096682} 
+\+\#define MTIMECMPH~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x02004004\+UL)}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00126}{126}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a8d3159576f86af88a9587de4da3b4902}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MTIMEH@{MTIMEH}}
+\index{MTIMEH@{MTIMEH}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MTIMEH}{MTIMEH}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a8d3159576f86af88a9587de4da3b4902} 
+\+\#define MTIMEH~(\texorpdfstring{$\ast$}{*}(volatile uint32\+\_\+t\texorpdfstring{$\ast$}{*})0x0200\+BFFCUL)}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00140}{140}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a8e8ae929a8790aa6d8e00b40a9755735}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!OPSRV@{OPSRV}}
+\index{OPSRV@{OPSRV}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{OPSRV}{OPSRV}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a8e8ae929a8790aa6d8e00b40a9755735} 
+\+\#define OPSRV~((\doxymbox{\hyperlink{structOPSRV__Type}{OPSRV\+\_\+\+Type}} \texorpdfstring{$\ast$}{*})\doxymbox{\hyperlink{miv__rv32__hal_8h_a1fd41436f010a8b61272f20403aec0d2}{OPSRV\+\_\+\+BASE\+\_\+\+ADDR}})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00122}{122}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a1cd51e40c9ea5fcc40293e1e93721e7b}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!OPSRV\_AXI\_WR\_RESP\_IRQ@{OPSRV\_AXI\_WR\_RESP\_IRQ}}
+\index{OPSRV\_AXI\_WR\_RESP\_IRQ@{OPSRV\_AXI\_WR\_RESP\_IRQ}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{OPSRV\_AXI\_WR\_RESP\_IRQ}{OPSRV\_AXI\_WR\_RESP\_IRQ}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a1cd51e40c9ea5fcc40293e1e93721e7b} 
+\+\#define OPSRV\+\_\+\+AXI\+\_\+\+WR\+\_\+\+RESP\+\_\+\+IRQ~0x10u}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00108}{108}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a1fd41436f010a8b61272f20403aec0d2}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!OPSRV\_BASE\_ADDR@{OPSRV\_BASE\_ADDR}}
+\index{OPSRV\_BASE\_ADDR@{OPSRV\_BASE\_ADDR}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{OPSRV\_BASE\_ADDR}{OPSRV\_BASE\_ADDR}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a1fd41436f010a8b61272f20403aec0d2} 
+\+\#define OPSRV\+\_\+\+BASE\+\_\+\+ADDR~0x00006000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00110}{110}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_aa97387293501587f642bad3e457fa7b6}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!OPSRV\_TCM\_ECC\_CE\_IRQ@{OPSRV\_TCM\_ECC\_CE\_IRQ}}
+\index{OPSRV\_TCM\_ECC\_CE\_IRQ@{OPSRV\_TCM\_ECC\_CE\_IRQ}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{OPSRV\_TCM\_ECC\_CE\_IRQ}{OPSRV\_TCM\_ECC\_CE\_IRQ}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_aa97387293501587f642bad3e457fa7b6} 
+\+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+CE\+\_\+\+IRQ~0x01u}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00102}{102}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_aaf0fce47f746a76d17b106dcbaaa58ed}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!OPSRV\_TCM\_ECC\_UCE\_IRQ@{OPSRV\_TCM\_ECC\_UCE\_IRQ}}
+\index{OPSRV\_TCM\_ECC\_UCE\_IRQ@{OPSRV\_TCM\_ECC\_UCE\_IRQ}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{OPSRV\_TCM\_ECC\_UCE\_IRQ}{OPSRV\_TCM\_ECC\_UCE\_IRQ}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_aaf0fce47f746a76d17b106dcbaaa58ed} 
+\+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+UCE\+\_\+\+IRQ~0x02u}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00105}{105}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a463536dc1cdfcf15948739dabf8fecf3}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!PRCI\_BASE@{PRCI\_BASE}}
+\index{PRCI\_BASE@{PRCI\_BASE}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{PRCI\_BASE}{PRCI\_BASE}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a463536dc1cdfcf15948739dabf8fecf3} 
+\+\#define PRCI\+\_\+\+BASE~0x02000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00096}{96}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+
+
+\label{doc-enum-members}
+\Hypertarget{miv__rv32__hal_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337a}\doxysubsubsection{\texorpdfstring{anonymous enum}{anonymous enum}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337a} 
+anonymous enum}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_0\_IRQn@{MIE\_0\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_0\_IRQn@{MIE\_0\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa26effd81d35201ac885e083a1c9d2eec}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa26effd81d35201ac885e083a1c9d2eec} 
+MIE\+\_\+0\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_1\_IRQn@{MIE\_1\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_1\_IRQn@{MIE\_1\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aac2f2dab3a1fe48d809bb1f8c72986f3b}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aac2f2dab3a1fe48d809bb1f8c72986f3b} 
+MIE\+\_\+1\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_2\_IRQn@{MIE\_2\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_2\_IRQn@{MIE\_2\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae78dee7b591b84ecf8444d316ec2c712}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae78dee7b591b84ecf8444d316ec2c712} 
+MIE\+\_\+2\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_3\_IRQn@{MIE\_3\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_3\_IRQn@{MIE\_3\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa5c5e444e2ccd13a86f3131654de94ed7}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa5c5e444e2ccd13a86f3131654de94ed7} 
+MIE\+\_\+3\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_4\_IRQn@{MIE\_4\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_4\_IRQn@{MIE\_4\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aacddd6d3a6616c91729214aaae58c2f28}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aacddd6d3a6616c91729214aaae58c2f28} 
+MIE\+\_\+4\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_5\_IRQn@{MIE\_5\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_5\_IRQn@{MIE\_5\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa046085674c5683cec2fd85c3a74db21b}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa046085674c5683cec2fd85c3a74db21b} 
+MIE\+\_\+5\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_6\_IRQn@{MIE\_6\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_6\_IRQn@{MIE\_6\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aafff9ce30fc4a7b24bc380e8e90865a4b}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aafff9ce30fc4a7b24bc380e8e90865a4b} 
+MIE\+\_\+6\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_7\_IRQn@{MIE\_7\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_7\_IRQn@{MIE\_7\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa867c2af8af0869e2ed33050aabe5282b}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa867c2af8af0869e2ed33050aabe5282b} 
+MIE\+\_\+7\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_8\_IRQn@{MIE\_8\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_8\_IRQn@{MIE\_8\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa47bd5c06080ce5af80fca7a0781bb12a}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa47bd5c06080ce5af80fca7a0781bb12a} 
+MIE\+\_\+8\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_9\_IRQn@{MIE\_9\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_9\_IRQn@{MIE\_9\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa0fb395fb3f1784460083d9d202adf3ac}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa0fb395fb3f1784460083d9d202adf3ac} 
+MIE\+\_\+9\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_10\_IRQn@{MIE\_10\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_10\_IRQn@{MIE\_10\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa649b3ec0599b1aee74701e31953d9d54}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa649b3ec0599b1aee74701e31953d9d54} 
+MIE\+\_\+10\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_11\_IRQn@{MIE\_11\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_11\_IRQn@{MIE\_11\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa8f8d34934b89788b6090e1d53822fb21}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa8f8d34934b89788b6090e1d53822fb21} 
+MIE\+\_\+11\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_12\_IRQn@{MIE\_12\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_12\_IRQn@{MIE\_12\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf1f72992de21cc7ccd2469715c73b69c}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf1f72992de21cc7ccd2469715c73b69c} 
+MIE\+\_\+12\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_13\_IRQn@{MIE\_13\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_13\_IRQn@{MIE\_13\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa82514469ab6348249e047ec31f99f77d}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa82514469ab6348249e047ec31f99f77d} 
+MIE\+\_\+13\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_14\_IRQn@{MIE\_14\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_14\_IRQn@{MIE\_14\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaa46b274653e23ce4b6665efadd46f80a}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaa46b274653e23ce4b6665efadd46f80a} 
+MIE\+\_\+14\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_15\_IRQn@{MIE\_15\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_15\_IRQn@{MIE\_15\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa80d2c18868d894ea24e090de8ecf403d}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa80d2c18868d894ea24e090de8ecf403d} 
+MIE\+\_\+15\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_16\_IRQn@{MIE\_16\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_16\_IRQn@{MIE\_16\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf197a75fd060e3f7f654eb450543b158}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf197a75fd060e3f7f654eb450543b158} 
+MIE\+\_\+16\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_17\_IRQn@{MIE\_17\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_17\_IRQn@{MIE\_17\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa9e908da13fdfc75dfec9a849d102952c}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa9e908da13fdfc75dfec9a849d102952c} 
+MIE\+\_\+17\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_18\_IRQn@{MIE\_18\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_18\_IRQn@{MIE\_18\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa018bf6034e7ce8ba3d33ae1238e8a79c}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa018bf6034e7ce8ba3d33ae1238e8a79c} 
+MIE\+\_\+18\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_19\_IRQn@{MIE\_19\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_19\_IRQn@{MIE\_19\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae0c58ccbf8ec1b4df0e1fba3bdf8abcd}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae0c58ccbf8ec1b4df0e1fba3bdf8abcd} 
+MIE\+\_\+19\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_20\_IRQn@{MIE\_20\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_20\_IRQn@{MIE\_20\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa2619f0580eb0d35f36ada211c1539172}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa2619f0580eb0d35f36ada211c1539172} 
+MIE\+\_\+20\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_21\_IRQn@{MIE\_21\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_21\_IRQn@{MIE\_21\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa50cba8f8b5e7a9f57859dfd0cdf02c28}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa50cba8f8b5e7a9f57859dfd0cdf02c28} 
+MIE\+\_\+21\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_22\_IRQn@{MIE\_22\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_22\_IRQn@{MIE\_22\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaef27beb764b4392745c82e19f7628262}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaef27beb764b4392745c82e19f7628262} 
+MIE\+\_\+22\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_23\_IRQn@{MIE\_23\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_23\_IRQn@{MIE\_23\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa215bafc559555b81d6a75b711b7c6836}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa215bafc559555b81d6a75b711b7c6836} 
+MIE\+\_\+23\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_24\_IRQn@{MIE\_24\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_24\_IRQn@{MIE\_24\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4735c2f701532a5c8bc67b2eff28ccbe}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4735c2f701532a5c8bc67b2eff28ccbe} 
+MIE\+\_\+24\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_25\_IRQn@{MIE\_25\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_25\_IRQn@{MIE\_25\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa7330fd3dacbb538449f614452c640f52}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa7330fd3dacbb538449f614452c640f52} 
+MIE\+\_\+25\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_26\_IRQn@{MIE\_26\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_26\_IRQn@{MIE\_26\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa257c21651c92c9b298c5d4b976df62ff}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa257c21651c92c9b298c5d4b976df62ff} 
+MIE\+\_\+26\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_27\_IRQn@{MIE\_27\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_27\_IRQn@{MIE\_27\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4c00eed02f94bd8ee306350e32960455}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa4c00eed02f94bd8ee306350e32960455} 
+MIE\+\_\+27\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_28\_IRQn@{MIE\_28\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_28\_IRQn@{MIE\_28\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf5b2fe2db71144c3b1ad1768a81e00df}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aaf5b2fe2db71144c3b1ad1768a81e00df} 
+MIE\+\_\+28\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_29\_IRQn@{MIE\_29\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_29\_IRQn@{MIE\_29\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa3aa6887a41aafcbec9cee0150365e952}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aa3aa6887a41aafcbec9cee0150365e952} 
+MIE\+\_\+29\+\_\+\+IRQn&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MIE\_30\_IRQn@{MIE\_30\_IRQn}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MIE\_30\_IRQn@{MIE\_30\_IRQn}}
+}\Hypertarget{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae42052306d9667b007c3afd77727e9b1}\label{miv__rv32__hal_8h_a173d93283e3db86649ec93b84ceb337aae42052306d9667b007c3afd77727e9b1} 
+MIE\+\_\+30\+\_\+\+IRQn&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00160}{160}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{miv__rv32__hal_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{miv__rv32__hal_8h_a338b9ec16d5daaf2084cb24baef3777a}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_clear\_gpr\_ded@{MRV32\_clear\_gpr\_ded}}
+\index{MRV32\_clear\_gpr\_ded@{MRV32\_clear\_gpr\_ded}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_clear\_gpr\_ded()}{MRV32\_clear\_gpr\_ded()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a338b9ec16d5daaf2084cb24baef3777a} 
+void MRV32\+\_\+clear\+\_\+gpr\+\_\+ded (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a338b9ec16d5daaf2084cb24baef3777a}{MRV32\+\_\+clear\+\_\+gpr\+\_\+ded()} can be used to clear the core\+\_\+gpr\+\_\+ded\+\_\+reset\+\_\+reg bit. When ECC is enabled, the core\+\_\+gpr\+\_\+ded\+\_\+reset\+\_\+reg is set when the core was previously reset due to GPR DED error. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00255}{255}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a9bd7c4362d2eac134bc08a615718cd0e}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_clear\_gpr\_ecc\_errors@{MRV32\_clear\_gpr\_ecc\_errors}}
+\index{MRV32\_clear\_gpr\_ecc\_errors@{MRV32\_clear\_gpr\_ecc\_errors}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_clear\_gpr\_ecc\_errors()}{MRV32\_clear\_gpr\_ecc\_errors()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a9bd7c4362d2eac134bc08a615718cd0e} 
+void MRV32\+\_\+clear\+\_\+gpr\+\_\+ecc\+\_\+errors (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+When ECC is enabled for the GPRs and if that data has a single bit error then the data coming out of the ECC block will be corrected and will not have the error but the data source will still have the error. The ECC block does not write back corrected data to memory. Therefore, if data has a single bit error, then the corrected data should be written back to prevent the single bit error from becoming a double bit error. The \doxylink{miv__rv32__hal_8h_a9bd7c4362d2eac134bc08a615718cd0e}{MRV32\+\_\+clear\+\_\+gpr\+\_\+ecc\+\_\+errors()} can be used for that.
+
+Clear the pending interrupt bit after this using \doxylink{miv__rv32__hal_8h_a94687216e3b398d7f6b6128511ab6330}{MRV32\+\_\+mgeci\+\_\+clear\+\_\+irq()} function to complete the ECC error handling. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00272}{272}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_af09a449aff91e9b990ccb103a3d8f5b9}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_cpu\_soft\_reset@{MRV32\_cpu\_soft\_reset}}
+\index{MRV32\_cpu\_soft\_reset@{MRV32\_cpu\_soft\_reset}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_cpu\_soft\_reset()}{MRV32\_cpu\_soft\_reset()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_af09a449aff91e9b990ccb103a3d8f5b9} 
+void MRV32\+\_\+cpu\+\_\+soft\+\_\+reset (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_af09a449aff91e9b990ccb103a3d8f5b9}{MRV32\+\_\+cpu\+\_\+soft\+\_\+reset()} is used to cause a soft cpu reset on the MIV\+\_\+\+RV32 soft processor core. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00400}{400}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a2371d74752a00675b5f25516f8becefc}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_disable\_parity\_check@{MRV32\_disable\_parity\_check}}
+\index{MRV32\_disable\_parity\_check@{MRV32\_disable\_parity\_check}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_disable\_parity\_check()}{MRV32\_disable\_parity\_check()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a2371d74752a00675b5f25516f8becefc} 
+void MRV32\+\_\+disable\+\_\+parity\+\_\+check (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a2371d74752a00675b5f25516f8becefc}{MRV32\+\_\+disable\+\_\+parity\+\_\+check()} is used to disable parity check on the TCM and it\textquotesingle{}s interface transactions. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00391}{391}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a71e91d17e87ffb18f690f3142163a591}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_enable\_parity\_check@{MRV32\_enable\_parity\_check}}
+\index{MRV32\_enable\_parity\_check@{MRV32\_enable\_parity\_check}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_enable\_parity\_check()}{MRV32\_enable\_parity\_check()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a71e91d17e87ffb18f690f3142163a591} 
+void MRV32\+\_\+enable\+\_\+parity\+\_\+check (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a71e91d17e87ffb18f690f3142163a591}{MRV32\+\_\+enable\+\_\+parity\+\_\+check()} is used to enable parity check on the TCM and it\textquotesingle{}s interface transactions. This feature is not available on MIV\+\_\+\+RV32 v3.\+0.\+100 soft processor core. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00382}{382}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a1b0d15c4a42d9d1b9d91c4c5155eff93}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_is\_gpr\_ded@{MRV32\_is\_gpr\_ded}}
+\index{MRV32\_is\_gpr\_ded@{MRV32\_is\_gpr\_ded}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_is\_gpr\_ded()}{MRV32\_is\_gpr\_ded()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a1b0d15c4a42d9d1b9d91c4c5155eff93} 
+uint32\+\_\+t MRV32\+\_\+is\+\_\+gpr\+\_\+ded (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a1b0d15c4a42d9d1b9d91c4c5155eff93}{MRV32\+\_\+is\+\_\+gpr\+\_\+ded()} returns the core\+\_\+gpr\+\_\+ded\+\_\+reset\+\_\+reg bit value. When ECC is enabled, the core\+\_\+gpr\+\_\+ded\+\_\+reset\+\_\+reg is set when the core was reset due to GPR DED error. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00245}{245}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a94687216e3b398d7f6b6128511ab6330}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_mgeci\_clear\_irq@{MRV32\_mgeci\_clear\_irq}}
+\index{MRV32\_mgeci\_clear\_irq@{MRV32\_mgeci\_clear\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_mgeci\_clear\_irq()}{MRV32\_mgeci\_clear\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a94687216e3b398d7f6b6128511ab6330} 
+void MRV32\+\_\+mgeci\+\_\+clear\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{irq\+\_\+mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Clear GPR ECC correctable interrupt. MGECI interrupt is available only when ECC is enabled in MIV\+\_\+\+RV32 IP configurator. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00418}{418}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a3b1dfa582c0961aea78a1566a270d01f}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_mgeui\_clear\_irq@{MRV32\_mgeui\_clear\_irq}}
+\index{MRV32\_mgeui\_clear\_irq@{MRV32\_mgeui\_clear\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_mgeui\_clear\_irq()}{MRV32\_mgeui\_clear\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a3b1dfa582c0961aea78a1566a270d01f} 
+void MRV32\+\_\+mgeui\+\_\+clear\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{irq\+\_\+mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Clear GPR ECC Uncorrectable interrupt. MGEUI interrupt is available only when ECC is enabled in MIV\+\_\+\+RV32 IP configurator. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00409}{409}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a52e42846d0e16843ade0e3bedb2b766b}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_opsrv\_clear\_irq@{MRV32\_opsrv\_clear\_irq}}
+\index{MRV32\_opsrv\_clear\_irq@{MRV32\_opsrv\_clear\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_opsrv\_clear\_irq()}{MRV32\_opsrv\_clear\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a52e42846d0e16843ade0e3bedb2b766b} 
+void MRV32\+\_\+opsrv\+\_\+clear\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{irq\+\_\+mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Clear OPSRV interrupt. Parameter takes logical OR of following values \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+CE\+\_\+\+IRQ 0x01u \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+UCE\+\_\+\+IRQ 0x02u \+\#define OPSRV\+\_\+\+AXI\+\_\+\+WR\+\_\+\+RESP\+\_\+\+IRQ 0x10u 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00235}{235}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ac78533360d67a54b59b4ee13b67777e2}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_opsrv\_disable\_irq@{MRV32\_opsrv\_disable\_irq}}
+\index{MRV32\_opsrv\_disable\_irq@{MRV32\_opsrv\_disable\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_opsrv\_disable\_irq()}{MRV32\_opsrv\_disable\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ac78533360d67a54b59b4ee13b67777e2} 
+void MRV32\+\_\+opsrv\+\_\+disable\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{irq\+\_\+mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Disable OPSRV interrupt. Parameter takes logical OR of following values \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+CE\+\_\+\+IRQ 0x01u \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+UCE\+\_\+\+IRQ 0x02u \+\#define OPSRV\+\_\+\+AXI\+\_\+\+WR\+\_\+\+RESP\+\_\+\+IRQ 0x10u 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00224}{224}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a8ea22c9e2df231970005c728c3cf9412}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV32\_opsrv\_enable\_irq@{MRV32\_opsrv\_enable\_irq}}
+\index{MRV32\_opsrv\_enable\_irq@{MRV32\_opsrv\_enable\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV32\_opsrv\_enable\_irq()}{MRV32\_opsrv\_enable\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a8ea22c9e2df231970005c728c3cf9412} 
+void MRV32\+\_\+opsrv\+\_\+enable\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{irq\+\_\+mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Enable OPSRV interrupt. Parameter takes logical OR of following values \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+CE\+\_\+\+IRQ 0x01u \+\#define OPSRV\+\_\+\+TCM\+\_\+\+ECC\+\_\+\+UCE\+\_\+\+IRQ 0x02u \+\#define OPSRV\+\_\+\+AXI\+\_\+\+WR\+\_\+\+RESP\+\_\+\+IRQ 0x10u 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00213}{213}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_clear\_soft\_irq@{MRV\_clear\_soft\_irq}}
+\index{MRV\_clear\_soft\_irq@{MRV\_clear\_soft\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_clear\_soft\_irq()}{MRV\_clear\_soft\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7} 
+void MRV\+\_\+clear\+\_\+soft\+\_\+irq (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7}{MRV\+\_\+clear\+\_\+soft\+\_\+irq()} clears a synchronous software interrupt by clearing the MSIP register. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00478}{478}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8h_a1363cb78e4c8a6ccecefd6f8707516d7_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8h_a88d0f8a33221f77e35b0472348b366b7}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_disable\_interrupts@{MRV\_disable\_interrupts}}
+\index{MRV\_disable\_interrupts@{MRV\_disable\_interrupts}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_disable\_interrupts()}{MRV\_disable\_interrupts()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a88d0f8a33221f77e35b0472348b366b7} 
+void MRV\+\_\+disable\+\_\+interrupts (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a88d0f8a33221f77e35b0472348b366b7}{MRV\+\_\+disable\+\_\+interrupts()} disables all interrupts clearing the machine mode interrupt enable bit in MSTATUS register. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00501}{501}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a53beb6f036d52f71d53f267def112370}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_disable\_local\_irq@{MRV\_disable\_local\_irq}}
+\index{MRV\_disable\_local\_irq@{MRV\_disable\_local\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_disable\_local\_irq()}{MRV\_disable\_local\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a53beb6f036d52f71d53f267def112370} 
+void MRV\+\_\+disable\+\_\+local\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Disable interrupts. This function takes a mask value as input. For each set bit in the mask value, corresponding interrupt bit in the MIE register is disabled.
+
+MRV\+\_\+disable\+\_\+local\+\_\+irq(MRV32\+\_\+\+SOFT\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+TIMER\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+EXT\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+MSYS\+\_\+\+EIE0\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+MSYS\+\_\+\+OPSRV\+\_\+\+IRQn); 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00450}{450}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_enable\_interrupts@{MRV\_enable\_interrupts}}
+\index{MRV\_enable\_interrupts@{MRV\_enable\_interrupts}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_enable\_interrupts()}{MRV\_enable\_interrupts()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25} 
+void MRV\+\_\+enable\+\_\+interrupts (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25}{MRV\+\_\+enable\+\_\+interrupts()} enables all interrupts setting the machine mode interrupt enable bit in MSTATUS register. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00492}{492}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8h_ab142d5cde4f92519367e8591f6adfb25_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8h_a2e4c36f579736c8b4f8bcd09a3dbdbe0}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_enable\_local\_irq@{MRV\_enable\_local\_irq}}
+\index{MRV\_enable\_local\_irq@{MRV\_enable\_local\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_enable\_local\_irq()}{MRV\_enable\_local\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a2e4c36f579736c8b4f8bcd09a3dbdbe0} 
+void MRV\+\_\+enable\+\_\+local\+\_\+irq (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{mask}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+Enable interrupts. This function takes a mask value as input. For each set bit in the mask value, corresponding interrupt bit in the MIE register is enabled.
+
+MRV\+\_\+enable\+\_\+local\+\_\+irq(MRV32\+\_\+\+SOFT\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+TIMER\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+EXT\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+MSYS\+\_\+\+EIE0\+\_\+\+IRQn \texorpdfstring{$\vert$}{|} MRV32\+\_\+\+MSYS\+\_\+\+OPSRV\+\_\+\+IRQn); 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00434}{434}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a445ec1567412bc5014b024f67b4b61e2}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_raise\_soft\_irq@{MRV\_raise\_soft\_irq}}
+\index{MRV\_raise\_soft\_irq@{MRV\_raise\_soft\_irq}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_raise\_soft\_irq()}{MRV\_raise\_soft\_irq()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a445ec1567412bc5014b024f67b4b61e2} 
+void MRV\+\_\+raise\+\_\+soft\+\_\+irq (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a445ec1567412bc5014b024f67b4b61e2}{MRV\+\_\+raise\+\_\+soft\+\_\+irq()} raises a synchronous software interrupt by writing into the MSIP register. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00461}{461}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a7e74fcd3a58c0549d51ffde793c7b5d0}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_read\_mtime@{MRV\_read\_mtime}}
+\index{MRV\_read\_mtime@{MRV\_read\_mtime}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_read\_mtime()}{MRV\_read\_mtime()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a7e74fcd3a58c0549d51ffde793c7b5d0} 
+uint64\+\_\+t MRV\+\_\+read\+\_\+mtime (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+The function \doxylink{miv__rv32__hal_8h_a7e74fcd3a58c0549d51ffde793c7b5d0}{MRV\+\_\+read\+\_\+mtime()} returns the current MTIME register value. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8h_source_l00510}{510}} of file \doxymbox{\hyperlink{miv__rv32__hal_8h_source}{miv\+\_\+rv32\+\_\+hal.\+h}}.
+
+\Hypertarget{miv__rv32__hal_8h_a403d7fe4ec086afc20bb2adb505d6c6c}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_systick\_config@{MRV\_systick\_config}}
+\index{MRV\_systick\_config@{MRV\_systick\_config}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{MRV\_systick\_config()}{MRV\_systick\_config()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_a403d7fe4ec086afc20bb2adb505d6c6c} 
+uint32\+\_\+t MRV\+\_\+systick\+\_\+config (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{ticks}{}\end{DoxyParamCaption})}
+
+System timer tick configuration. Configures the machine timer to generate a system tick interrupt at regular intervals. Takes the number of system clock ticks between interrupts.
+
+Though this function can take any valid ticks value as parameter, we expect that, for all practical purposes, a small tick value (to generate periodic interrupts every few miliseconds) will be passed. If you need to generate periodic events in the range of seconds or more, you may use the \doxylink{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e}{Sys\+Tick\+\_\+\+Handler()} to further count the number of interrupts and hence the larger time intervals.
+
+Returns 0 if successful. Returns 1 if the interrupt interval cannot be achieved. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00155}{155}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8h_a403d7fe4ec086afc20bb2adb505d6c6c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!SysTick\_Handler@{SysTick\_Handler}}
+\index{SysTick\_Handler@{SysTick\_Handler}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{SysTick\_Handler()}{SysTick\_Handler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e} 
+void Sys\+Tick\+\_\+\+Handler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+System tick handler. This handler function gets called when the Machine timer interrupt asserts. An implementation of this function should be provided by the application to implement the application specific machine timer interrupt handling. If application does not provide such implementation the weakly linked handler stub function implemented in riscv\+\_\+hal\+\_\+stubs.\+c gets linked. Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{miv__rv32__hal_8h_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{miv__rv32__hal_8h_aa30854c51f82c77b83e231a8b2d5d4e6}\index{miv\_rv32\_hal.h@{miv\_rv32\_hal.h}!MRV\_LOCAL\_IRQn\_Type@{MRV\_LOCAL\_IRQn\_Type}}
+\index{MRV\_LOCAL\_IRQn\_Type@{MRV\_LOCAL\_IRQn\_Type}!miv\_rv32\_hal.h@{miv\_rv32\_hal.h}}
+\doxysubsubsection{\texorpdfstring{[]}{[]}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8h_aa30854c51f82c77b83e231a8b2d5d4e6} 
+enum  \{ ... \}  MRV\+\_\+\+LOCAL\+\_\+\+IRQn\+\_\+\+Type}
+

@@ -1,0 +1,1206 @@
+\doxysection{src/\+hal/\+core\+\_\+gpio.h File Reference}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h}{}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h}\index{src/hal/core\_gpio.h@{src/hal/core\_gpio.h}}
+{\ttfamily \+\#include "{}hal/\+hal.\+h"{}}\newline
+Include dependency graph for core\+\_\+gpio.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{avtemp_2Camera_2src_2hal_2core__gpio_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=322pt]{avtemp_2Camera_2src_2hal_2core__gpio_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct____gpio__instance__t}{\+\_\+\+\_\+gpio\+\_\+instance\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad5fa15210c3870bf9c0579267e777c10}{GPIO\+\_\+0\+\_\+\+MASK}}~0x00000001\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab52265b7c132156203f309fa77a6d09b}{GPIO\+\_\+1\+\_\+\+MASK}}~0x00000002\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af784f96ccce633b09ba1d1344bb3cbaa}{GPIO\+\_\+2\+\_\+\+MASK}}~0x00000004\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a89fdbb4a740532c1b26691eecc52fc0e}{GPIO\+\_\+3\+\_\+\+MASK}}~0x00000008\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5be176b6a5da345b196c1b4825343226}{GPIO\+\_\+4\+\_\+\+MASK}}~0x00000010\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af1643b7dbcff870f879efcef2b5e0927}{GPIO\+\_\+5\+\_\+\+MASK}}~0x00000020\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aba4cbd93a2cdd99bec4b909b68f0108e}{GPIO\+\_\+6\+\_\+\+MASK}}~0x00000040\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a507ce09371a92a5b7270cdb2961f4d13}{GPIO\+\_\+7\+\_\+\+MASK}}~0x00000080\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a230986b4962e1fd1c726357b9790f03b}{GPIO\+\_\+8\+\_\+\+MASK}}~0x00000100\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae7452012bacda02aea4afdf132895b89}{GPIO\+\_\+9\+\_\+\+MASK}}~0x00000200\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8780e2dc299a01f9fcc051b790a32725}{GPIO\+\_\+10\+\_\+\+MASK}}~0x00000400\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af4edddff52e8703a7b9552806cf9be8d}{GPIO\+\_\+11\+\_\+\+MASK}}~0x00000800\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a1721000ac739c0ce5a91ffa7a1054eb7}{GPIO\+\_\+12\+\_\+\+MASK}}~0x00001000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa9864676aa0bc12abcaeb23135834d05}{GPIO\+\_\+13\+\_\+\+MASK}}~0x00002000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_abdc6d4ad442e1fd16bdb13d3e9838111}{GPIO\+\_\+14\+\_\+\+MASK}}~0x00004000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a974ddbd9dfd61c5eed7475ae7f595a45}{GPIO\+\_\+15\+\_\+\+MASK}}~0x00008000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2fc9a5a6dfdffae417ca8ba6e0fc86ea}{GPIO\+\_\+16\+\_\+\+MASK}}~0x00010000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a537bb9ae2cccd6f1edc3f5ad7a6e6363}{GPIO\+\_\+17\+\_\+\+MASK}}~0x00020000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5ccaa44aa221af1072996cb5d206ce8c}{GPIO\+\_\+18\+\_\+\+MASK}}~0x00040000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5f754d918d59a6d6ef99a2e008712d3f}{GPIO\+\_\+19\+\_\+\+MASK}}~0x00080000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae1fb4034344be7a0403dd9afe63df872}{GPIO\+\_\+20\+\_\+\+MASK}}~0x00100000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af7fdad2dd228b337ca3bd5bf9f3de9d3}{GPIO\+\_\+21\+\_\+\+MASK}}~0x00200000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a741196c462075e7b3711864d5ddffe0b}{GPIO\+\_\+22\+\_\+\+MASK}}~0x00400000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8894bb7d6d0cc4c39a918a1b0c7cd313}{GPIO\+\_\+23\+\_\+\+MASK}}~0x00800000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afc23e611f689cffff5470a5b8815218b}{GPIO\+\_\+24\+\_\+\+MASK}}~0x01000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0cd02f824b9a21c72bfae828a4316953}{GPIO\+\_\+25\+\_\+\+MASK}}~0x02000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af6178393a37b20a0b497d9460aa1c452}{GPIO\+\_\+26\+\_\+\+MASK}}~0x04000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_af2a23734f8df0803e1134d08f86e01fe}{GPIO\+\_\+27\+\_\+\+MASK}}~0x08000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aae46f9ade05bf3c810981c53c54e1fee}{GPIO\+\_\+28\+\_\+\+MASK}}~0x10000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a403b5ba48b691e2af9a3c725b729f11e}{GPIO\+\_\+29\+\_\+\+MASK}}~0x20000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_acf3dea08c7a1a4b708969be8eb4477f3}{GPIO\+\_\+30\+\_\+\+MASK}}~0x40000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a94636b3c9ba9f0249d9bf195df7d0598}{GPIO\+\_\+31\+\_\+\+MASK}}~0x80000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a439b5a8270d47911d6cbe4884511447e}{GPIO\+\_\+\+INPUT\+\_\+\+MODE}}~0x0000000002\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab232cbc80fe303fb9c0253f2ecc27e76}{GPIO\+\_\+\+OUTPUT\+\_\+\+MODE}}~0x0000000005\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a384c99c1599f8bb2874d1b9e6d3356ef}{GPIO\+\_\+\+INOUT\+\_\+\+MODE}}~0x0000000003\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aeb159dd18d3ae9d52cd5602ba1478557}{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+HIGH}}~0x0000000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a70dcf9cd4c91046d79b41c6ddba469d8}{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+LOW}}~0x0000000020\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a15c2101b8cd0f8d5167f8090867450e7}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+POSITIVE}}~0x0000000040\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab02deacc9d116f6b4d53e057486330da}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+NEGATIVE}}~0x0000000060\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2d65fe78ef8f7d9d5b93a5ea327e9bf2}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+BOTH}}~0x0000000080\+UL
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}{\+\_\+\+\_\+gpio\+\_\+id\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}
+\item 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}{\+\_\+\+\_\+gpio\+\_\+apb\+\_\+width\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}}
+\item 
+typedef struct \doxymbox{\hyperlink{struct____gpio__instance__t}{\+\_\+\+\_\+gpio\+\_\+instance\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}}
+\item 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}{gpio\+\_\+inout\+\_\+state}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}{\+\_\+\+\_\+gpio\+\_\+id\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a086256647dcbd93f77f55f1da9bb443e}{GPIO\+\_\+0}} = 0
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8595f8d7a0ae611fb06e4b9c690295f3}{GPIO\+\_\+1}} = 1
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6abbea21b656f1917800d9d279b685f38e}{GPIO\+\_\+2}} = 2
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a426d08ab85ab3aebbb53eed1a32dfb71}{GPIO\+\_\+3}} = 3
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8750fdf2e45e210b73beac29d0583b8d}{GPIO\+\_\+4}} = 4
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a6213ab680cde9fe00f518cfb26a30a6b}{GPIO\+\_\+5}} = 5
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1b3ef28b8ae924f5f3fdfbb0ed7e6f7c}{GPIO\+\_\+6}} = 6
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4bae0816af6049c68cf772f0e01ea0e5}{GPIO\+\_\+7}} = 7
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1633eaf3914293921cf5e102f5026106}{GPIO\+\_\+8}} = 8
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8bdaec9182fb8ab2106d5c67f3eabd2d}{GPIO\+\_\+9}} = 9
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a3943e6071dec78b6bcf9586cf0de6dd3}{GPIO\+\_\+10}} = 10
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af3ddb0db315daeab49b75dbca06ba6e5}{GPIO\+\_\+11}} = 11
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a9c0d0164730f9f641db357f5781643d0}{GPIO\+\_\+12}} = 12
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ad3c7eb7127bc6e6c1ecc8216c518c60b}{GPIO\+\_\+13}} = 13
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ada33ca57455eb7fc3c6af46dd57fea41}{GPIO\+\_\+14}} = 14
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a10d7c4b9b8ab7cf7c5f77d99bf420849}{GPIO\+\_\+15}} = 15
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af5c2b7f44743385580550aa81e4b4f31}{GPIO\+\_\+16}} = 16
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a272b8d60ca888339e5095000b50ba5b1}{GPIO\+\_\+17}} = 17
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a0e8bab7ea873c22eb90aa81116208917}{GPIO\+\_\+18}} = 18
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa2918c94bcf473e7ff31138b6333f847}{GPIO\+\_\+19}} = 19
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a081be372da926e3ca6f612b267854e95}{GPIO\+\_\+20}} = 20
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a32ff7e9a2f00d396ff2b2b62af571d7c}{GPIO\+\_\+21}} = 21
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aca7c5f2acf755d61b35d05ea921c79eb}{GPIO\+\_\+22}} = 22
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4f3bac8a4733f9e96aa952fb1d9b0a7f}{GPIO\+\_\+23}} = 23
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a65ff243eb7227a401a4ef5c74bc110fa}{GPIO\+\_\+24}} = 24
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a2e1f75ee6f35403166cda2ef4e73c61f}{GPIO\+\_\+25}} = 25
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a029e5739680c051c29587d4768f97941}{GPIO\+\_\+26}} = 26
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac1b64481f38457b83d09727eb3c749e2}{GPIO\+\_\+27}} = 27
+, \newline
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac3fd057bf75612b81ae27f229c807cb3}{GPIO\+\_\+28}} = 28
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa99fc25b0ac5169f1f4d7f9b05379ed6}{GPIO\+\_\+29}} = 29
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a06e43288a6277c853986259f7e6e907f}{GPIO\+\_\+30}} = 30
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6afbad7361b3278388bffc4870cff6671d}{GPIO\+\_\+31}} = 31
+ \}
+\item 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}{\+\_\+\+\_\+gpio\+\_\+apb\+\_\+width\+\_\+t}} \{ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\+\_\+\+APB\+\_\+8\+\_\+\+BITS\+\_\+\+BUS}} = 0
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\+\_\+\+APB\+\_\+16\+\_\+\+BITS\+\_\+\+BUS}} = 1
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\+\_\+\+APB\+\_\+32\+\_\+\+BITS\+\_\+\+BUS}} = 2
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebac5f3ea9f35f41561f325717feece2f17}{GPIO\+\_\+\+APB\+\_\+\+UNKNOWN\+\_\+\+BUS\+\_\+\+WIDTH}} = 3
+ \}
+\item 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}{gpio\+\_\+inout\+\_\+state}} \{ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a85959287b781889e2e41b2cff4bf3ae1}{GPIO\+\_\+\+DRIVE\+\_\+\+LOW}} = 0
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a4511dc6a41c1be0f0d138d3256b9aee3}{GPIO\+\_\+\+DRIVE\+\_\+\+HIGH}}
+, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8ab61ab7b9924925f436b922e4473ab0ca}{GPIO\+\_\+\+HIGH\+\_\+Z}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}} base\+\_\+addr, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}} bus\+\_\+width)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, uint32\+\_\+t config)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad785f6e5808a8d13c908db4c11e60528}{GPIO\+\_\+set\+\_\+outputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, uint32\+\_\+t value)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\+\_\+set\+\_\+output}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, uint8\+\_\+t value)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\+\_\+get\+\_\+outputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}} inout\+\_\+state)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\+\_\+enable\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa894fa67daacfce60bdb57284cbef702}{GPIO\+\_\+disable\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\+\_\+clear\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aebfa145ef2e47321768e76b54ba15b80}{GPIO\+\_\+get\+\_\+irq\+\_\+sources}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+void \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad13782fc7894bc78e719503268eaa303}{GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, uint32\+\_\+t bitmask)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad5fa15210c3870bf9c0579267e777c10}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_0\_MASK@{GPIO\_0\_MASK}}
+\index{GPIO\_0\_MASK@{GPIO\_0\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_0\_MASK}{GPIO\_0\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad5fa15210c3870bf9c0579267e777c10} 
+\+\#define GPIO\+\_\+0\+\_\+\+MASK~0x00000001\+UL}
+
+GPIO ports definitions used to identify GPIOs as part of the parameter to function \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_ad785f6e5808a8d13c908db4c11e60528}{GPIO\+\_\+set\+\_\+outputs()}. ~\newline
+ These definitions are also be used to identity GPIO through logical operations on the return value of function \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs()}. ~\newline
+ \hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md0}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+0\+\_\+\+MASK}{GPIO\+\_\+0\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md0}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md1}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+1\+\_\+\+MASK}{GPIO\+\_\+1\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md1}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md2}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+2\+\_\+\+MASK}{GPIO\+\_\+2\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md2}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md3}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+3\+\_\+\+MASK}{GPIO\+\_\+3\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md3}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md4}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+4\+\_\+\+MASK}{GPIO\+\_\+4\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md4}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md5}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+5\+\_\+\+MASK}{GPIO\+\_\+5\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md5}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md6}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+6\+\_\+\+MASK}{GPIO\+\_\+6\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md6}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md7}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+7\+\_\+\+MASK}{GPIO\+\_\+7\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md7}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md8}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+8\+\_\+\+MASK}{GPIO\+\_\+8\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md8}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md9}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+9\+\_\+\+MASK}{GPIO\+\_\+9\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md9}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md10}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+10\+\_\+\+MASK}{GPIO\+\_\+10\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md10}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md11}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+11\+\_\+\+MASK}{GPIO\+\_\+11\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md11}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md12}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+12\+\_\+\+MASK}{GPIO\+\_\+12\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md12}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md13}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+13\+\_\+\+MASK}{GPIO\+\_\+13\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md13}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md14}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+14\+\_\+\+MASK}{GPIO\+\_\+14\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md14}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md15}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+15\+\_\+\+MASK}{GPIO\+\_\+15\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md15}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md16}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+16\+\_\+\+MASK}{GPIO\+\_\+16\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md16}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md17}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+17\+\_\+\+MASK}{GPIO\+\_\+17\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md17}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md18}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+18\+\_\+\+MASK}{GPIO\+\_\+18\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md18}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md19}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+19\+\_\+\+MASK}{GPIO\+\_\+19\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md19}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md20}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+20\+\_\+\+MASK}{GPIO\+\_\+20\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md20}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md21}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+21\+\_\+\+MASK}{GPIO\+\_\+21\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md21}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md22}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+22\+\_\+\+MASK}{GPIO\+\_\+22\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md22}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md23}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+23\+\_\+\+MASK}{GPIO\+\_\+23\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md23}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md24}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+24\+\_\+\+MASK}{GPIO\+\_\+24\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md24}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md25}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+25\+\_\+\+MASK}{GPIO\+\_\+25\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md25}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md26}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+26\+\_\+\+MASK}{GPIO\+\_\+26\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md26}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md27}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+27\+\_\+\+MASK}{GPIO\+\_\+27\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md27}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md28}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+28\+\_\+\+MASK}{GPIO\+\_\+28\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md28}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md29}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+29\+\_\+\+MASK}{GPIO\+\_\+29\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md29}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md30}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+30\+\_\+\+MASK}{GPIO\+\_\+30\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md30}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md31}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+31\+\_\+\+MASK}{GPIO\+\_\+31\+\_\+\+MASK}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md31}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00207}{207}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8780e2dc299a01f9fcc051b790a32725}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_10\_MASK@{GPIO\_10\_MASK}}
+\index{GPIO\_10\_MASK@{GPIO\_10\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_10\_MASK}{GPIO\_10\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8780e2dc299a01f9fcc051b790a32725} 
+\+\#define GPIO\+\_\+10\+\_\+\+MASK~0x00000400\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00217}{217}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af4edddff52e8703a7b9552806cf9be8d}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_11\_MASK@{GPIO\_11\_MASK}}
+\index{GPIO\_11\_MASK@{GPIO\_11\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_11\_MASK}{GPIO\_11\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af4edddff52e8703a7b9552806cf9be8d} 
+\+\#define GPIO\+\_\+11\+\_\+\+MASK~0x00000800\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00218}{218}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a1721000ac739c0ce5a91ffa7a1054eb7}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_12\_MASK@{GPIO\_12\_MASK}}
+\index{GPIO\_12\_MASK@{GPIO\_12\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_12\_MASK}{GPIO\_12\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a1721000ac739c0ce5a91ffa7a1054eb7} 
+\+\#define GPIO\+\_\+12\+\_\+\+MASK~0x00001000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00219}{219}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa9864676aa0bc12abcaeb23135834d05}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_13\_MASK@{GPIO\_13\_MASK}}
+\index{GPIO\_13\_MASK@{GPIO\_13\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_13\_MASK}{GPIO\_13\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa9864676aa0bc12abcaeb23135834d05} 
+\+\#define GPIO\+\_\+13\+\_\+\+MASK~0x00002000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00220}{220}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_abdc6d4ad442e1fd16bdb13d3e9838111}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_14\_MASK@{GPIO\_14\_MASK}}
+\index{GPIO\_14\_MASK@{GPIO\_14\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_14\_MASK}{GPIO\_14\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_abdc6d4ad442e1fd16bdb13d3e9838111} 
+\+\#define GPIO\+\_\+14\+\_\+\+MASK~0x00004000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00221}{221}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a974ddbd9dfd61c5eed7475ae7f595a45}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_15\_MASK@{GPIO\_15\_MASK}}
+\index{GPIO\_15\_MASK@{GPIO\_15\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_15\_MASK}{GPIO\_15\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a974ddbd9dfd61c5eed7475ae7f595a45} 
+\+\#define GPIO\+\_\+15\+\_\+\+MASK~0x00008000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00222}{222}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2fc9a5a6dfdffae417ca8ba6e0fc86ea}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_16\_MASK@{GPIO\_16\_MASK}}
+\index{GPIO\_16\_MASK@{GPIO\_16\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_16\_MASK}{GPIO\_16\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2fc9a5a6dfdffae417ca8ba6e0fc86ea} 
+\+\#define GPIO\+\_\+16\+\_\+\+MASK~0x00010000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00223}{223}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a537bb9ae2cccd6f1edc3f5ad7a6e6363}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_17\_MASK@{GPIO\_17\_MASK}}
+\index{GPIO\_17\_MASK@{GPIO\_17\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_17\_MASK}{GPIO\_17\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a537bb9ae2cccd6f1edc3f5ad7a6e6363} 
+\+\#define GPIO\+\_\+17\+\_\+\+MASK~0x00020000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00224}{224}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5ccaa44aa221af1072996cb5d206ce8c}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_18\_MASK@{GPIO\_18\_MASK}}
+\index{GPIO\_18\_MASK@{GPIO\_18\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_18\_MASK}{GPIO\_18\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5ccaa44aa221af1072996cb5d206ce8c} 
+\+\#define GPIO\+\_\+18\+\_\+\+MASK~0x00040000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00225}{225}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5f754d918d59a6d6ef99a2e008712d3f}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_19\_MASK@{GPIO\_19\_MASK}}
+\index{GPIO\_19\_MASK@{GPIO\_19\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_19\_MASK}{GPIO\_19\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5f754d918d59a6d6ef99a2e008712d3f} 
+\+\#define GPIO\+\_\+19\+\_\+\+MASK~0x00080000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00226}{226}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab52265b7c132156203f309fa77a6d09b}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_1\_MASK@{GPIO\_1\_MASK}}
+\index{GPIO\_1\_MASK@{GPIO\_1\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_1\_MASK}{GPIO\_1\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab52265b7c132156203f309fa77a6d09b} 
+\+\#define GPIO\+\_\+1\+\_\+\+MASK~0x00000002\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00208}{208}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae1fb4034344be7a0403dd9afe63df872}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_20\_MASK@{GPIO\_20\_MASK}}
+\index{GPIO\_20\_MASK@{GPIO\_20\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_20\_MASK}{GPIO\_20\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae1fb4034344be7a0403dd9afe63df872} 
+\+\#define GPIO\+\_\+20\+\_\+\+MASK~0x00100000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00227}{227}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af7fdad2dd228b337ca3bd5bf9f3de9d3}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_21\_MASK@{GPIO\_21\_MASK}}
+\index{GPIO\_21\_MASK@{GPIO\_21\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_21\_MASK}{GPIO\_21\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af7fdad2dd228b337ca3bd5bf9f3de9d3} 
+\+\#define GPIO\+\_\+21\+\_\+\+MASK~0x00200000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00228}{228}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a741196c462075e7b3711864d5ddffe0b}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_22\_MASK@{GPIO\_22\_MASK}}
+\index{GPIO\_22\_MASK@{GPIO\_22\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_22\_MASK}{GPIO\_22\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a741196c462075e7b3711864d5ddffe0b} 
+\+\#define GPIO\+\_\+22\+\_\+\+MASK~0x00400000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00229}{229}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8894bb7d6d0cc4c39a918a1b0c7cd313}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_23\_MASK@{GPIO\_23\_MASK}}
+\index{GPIO\_23\_MASK@{GPIO\_23\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_23\_MASK}{GPIO\_23\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8894bb7d6d0cc4c39a918a1b0c7cd313} 
+\+\#define GPIO\+\_\+23\+\_\+\+MASK~0x00800000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00230}{230}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_afc23e611f689cffff5470a5b8815218b}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_24\_MASK@{GPIO\_24\_MASK}}
+\index{GPIO\_24\_MASK@{GPIO\_24\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_24\_MASK}{GPIO\_24\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_afc23e611f689cffff5470a5b8815218b} 
+\+\#define GPIO\+\_\+24\+\_\+\+MASK~0x01000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00231}{231}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0cd02f824b9a21c72bfae828a4316953}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_25\_MASK@{GPIO\_25\_MASK}}
+\index{GPIO\_25\_MASK@{GPIO\_25\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_25\_MASK}{GPIO\_25\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0cd02f824b9a21c72bfae828a4316953} 
+\+\#define GPIO\+\_\+25\+\_\+\+MASK~0x02000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00232}{232}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af6178393a37b20a0b497d9460aa1c452}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_26\_MASK@{GPIO\_26\_MASK}}
+\index{GPIO\_26\_MASK@{GPIO\_26\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_26\_MASK}{GPIO\_26\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af6178393a37b20a0b497d9460aa1c452} 
+\+\#define GPIO\+\_\+26\+\_\+\+MASK~0x04000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00233}{233}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af2a23734f8df0803e1134d08f86e01fe}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_27\_MASK@{GPIO\_27\_MASK}}
+\index{GPIO\_27\_MASK@{GPIO\_27\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_27\_MASK}{GPIO\_27\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af2a23734f8df0803e1134d08f86e01fe} 
+\+\#define GPIO\+\_\+27\+\_\+\+MASK~0x08000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00234}{234}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aae46f9ade05bf3c810981c53c54e1fee}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_28\_MASK@{GPIO\_28\_MASK}}
+\index{GPIO\_28\_MASK@{GPIO\_28\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_28\_MASK}{GPIO\_28\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aae46f9ade05bf3c810981c53c54e1fee} 
+\+\#define GPIO\+\_\+28\+\_\+\+MASK~0x10000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00235}{235}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a403b5ba48b691e2af9a3c725b729f11e}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_29\_MASK@{GPIO\_29\_MASK}}
+\index{GPIO\_29\_MASK@{GPIO\_29\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_29\_MASK}{GPIO\_29\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a403b5ba48b691e2af9a3c725b729f11e} 
+\+\#define GPIO\+\_\+29\+\_\+\+MASK~0x20000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00236}{236}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af784f96ccce633b09ba1d1344bb3cbaa}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_2\_MASK@{GPIO\_2\_MASK}}
+\index{GPIO\_2\_MASK@{GPIO\_2\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_2\_MASK}{GPIO\_2\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af784f96ccce633b09ba1d1344bb3cbaa} 
+\+\#define GPIO\+\_\+2\+\_\+\+MASK~0x00000004\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00209}{209}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_acf3dea08c7a1a4b708969be8eb4477f3}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_30\_MASK@{GPIO\_30\_MASK}}
+\index{GPIO\_30\_MASK@{GPIO\_30\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_30\_MASK}{GPIO\_30\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_acf3dea08c7a1a4b708969be8eb4477f3} 
+\+\#define GPIO\+\_\+30\+\_\+\+MASK~0x40000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00237}{237}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a94636b3c9ba9f0249d9bf195df7d0598}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_31\_MASK@{GPIO\_31\_MASK}}
+\index{GPIO\_31\_MASK@{GPIO\_31\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_31\_MASK}{GPIO\_31\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a94636b3c9ba9f0249d9bf195df7d0598} 
+\+\#define GPIO\+\_\+31\+\_\+\+MASK~0x80000000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00238}{238}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a89fdbb4a740532c1b26691eecc52fc0e}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_3\_MASK@{GPIO\_3\_MASK}}
+\index{GPIO\_3\_MASK@{GPIO\_3\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_3\_MASK}{GPIO\_3\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a89fdbb4a740532c1b26691eecc52fc0e} 
+\+\#define GPIO\+\_\+3\+\_\+\+MASK~0x00000008\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00210}{210}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5be176b6a5da345b196c1b4825343226}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_4\_MASK@{GPIO\_4\_MASK}}
+\index{GPIO\_4\_MASK@{GPIO\_4\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_4\_MASK}{GPIO\_4\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a5be176b6a5da345b196c1b4825343226} 
+\+\#define GPIO\+\_\+4\+\_\+\+MASK~0x00000010\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00211}{211}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_af1643b7dbcff870f879efcef2b5e0927}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_5\_MASK@{GPIO\_5\_MASK}}
+\index{GPIO\_5\_MASK@{GPIO\_5\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_5\_MASK}{GPIO\_5\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_af1643b7dbcff870f879efcef2b5e0927} 
+\+\#define GPIO\+\_\+5\+\_\+\+MASK~0x00000020\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00212}{212}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aba4cbd93a2cdd99bec4b909b68f0108e}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_6\_MASK@{GPIO\_6\_MASK}}
+\index{GPIO\_6\_MASK@{GPIO\_6\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_6\_MASK}{GPIO\_6\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aba4cbd93a2cdd99bec4b909b68f0108e} 
+\+\#define GPIO\+\_\+6\+\_\+\+MASK~0x00000040\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00213}{213}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a507ce09371a92a5b7270cdb2961f4d13}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_7\_MASK@{GPIO\_7\_MASK}}
+\index{GPIO\_7\_MASK@{GPIO\_7\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_7\_MASK}{GPIO\_7\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a507ce09371a92a5b7270cdb2961f4d13} 
+\+\#define GPIO\+\_\+7\+\_\+\+MASK~0x00000080\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00214}{214}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a230986b4962e1fd1c726357b9790f03b}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_8\_MASK@{GPIO\_8\_MASK}}
+\index{GPIO\_8\_MASK@{GPIO\_8\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_8\_MASK}{GPIO\_8\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a230986b4962e1fd1c726357b9790f03b} 
+\+\#define GPIO\+\_\+8\+\_\+\+MASK~0x00000100\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00215}{215}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae7452012bacda02aea4afdf132895b89}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_9\_MASK@{GPIO\_9\_MASK}}
+\index{GPIO\_9\_MASK@{GPIO\_9\_MASK}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_9\_MASK}{GPIO\_9\_MASK}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae7452012bacda02aea4afdf132895b89} 
+\+\#define GPIO\+\_\+9\+\_\+\+MASK~0x00000200\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00216}{216}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a384c99c1599f8bb2874d1b9e6d3356ef}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_INOUT\_MODE@{GPIO\_INOUT\_MODE}}
+\index{GPIO\_INOUT\_MODE@{GPIO\_INOUT\_MODE}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_INOUT\_MODE}{GPIO\_INOUT\_MODE}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a384c99c1599f8bb2874d1b9e6d3356ef} 
+\+\#define GPIO\+\_\+\+INOUT\+\_\+\+MODE~0x0000000003\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00248}{248}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a439b5a8270d47911d6cbe4884511447e}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_INPUT\_MODE@{GPIO\_INPUT\_MODE}}
+\index{GPIO\_INPUT\_MODE@{GPIO\_INPUT\_MODE}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_INPUT\_MODE}{GPIO\_INPUT\_MODE}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a439b5a8270d47911d6cbe4884511447e} 
+\+\#define GPIO\+\_\+\+INPUT\+\_\+\+MODE~0x0000000002\+UL}
+
+GPIO modes \hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md32}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+INPUT\+\_\+\+MODE}{GPIO\+\_\+\+INPUT\+\_\+\+MODE}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md32}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md33}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+OUTPUT\+\_\+\+MODE}{GPIO\+\_\+\+OUTPUT\+\_\+\+MODE}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md33}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md34}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+INOUT\+\_\+\+MODE}{GPIO\+\_\+\+INOUT\+\_\+\+MODE}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md34}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00246}{246}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2d65fe78ef8f7d9d5b93a5ea327e9bf2}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_IRQ\_EDGE\_BOTH@{GPIO\_IRQ\_EDGE\_BOTH}}
+\index{GPIO\_IRQ\_EDGE\_BOTH@{GPIO\_IRQ\_EDGE\_BOTH}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_IRQ\_EDGE\_BOTH}{GPIO\_IRQ\_EDGE\_BOTH}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a2d65fe78ef8f7d9d5b93a5ea327e9bf2} 
+\+\#define GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+BOTH~0x0000000080\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00262}{262}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab02deacc9d116f6b4d53e057486330da}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_IRQ\_EDGE\_NEGATIVE@{GPIO\_IRQ\_EDGE\_NEGATIVE}}
+\index{GPIO\_IRQ\_EDGE\_NEGATIVE@{GPIO\_IRQ\_EDGE\_NEGATIVE}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_IRQ\_EDGE\_NEGATIVE}{GPIO\_IRQ\_EDGE\_NEGATIVE}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab02deacc9d116f6b4d53e057486330da} 
+\+\#define GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+NEGATIVE~0x0000000060\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00261}{261}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a15c2101b8cd0f8d5167f8090867450e7}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_IRQ\_EDGE\_POSITIVE@{GPIO\_IRQ\_EDGE\_POSITIVE}}
+\index{GPIO\_IRQ\_EDGE\_POSITIVE@{GPIO\_IRQ\_EDGE\_POSITIVE}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_IRQ\_EDGE\_POSITIVE}{GPIO\_IRQ\_EDGE\_POSITIVE}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a15c2101b8cd0f8d5167f8090867450e7} 
+\+\#define GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+POSITIVE~0x0000000040\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00260}{260}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aeb159dd18d3ae9d52cd5602ba1478557}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_IRQ\_LEVEL\_HIGH@{GPIO\_IRQ\_LEVEL\_HIGH}}
+\index{GPIO\_IRQ\_LEVEL\_HIGH@{GPIO\_IRQ\_LEVEL\_HIGH}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_IRQ\_LEVEL\_HIGH}{GPIO\_IRQ\_LEVEL\_HIGH}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aeb159dd18d3ae9d52cd5602ba1478557} 
+\+\#define GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+HIGH~0x0000000000\+UL}
+
+Possible GPIO inputs interrupt configurations. \hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md35}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+HIGH}{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+HIGH}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md35}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md36}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+LOW}{GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+LOW}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md36}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md37}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+POSITIVE}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+POSITIVE}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md37}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md38}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+NEGATIVE}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+NEGATIVE}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md38}
+\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md39}{}\doxysubsection{\texorpdfstring{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+BOTH}{GPIO\+\_\+\+IRQ\+\_\+\+EDGE\+\_\+\+BOTH}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_autotoc_md39}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00258}{258}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a70dcf9cd4c91046d79b41c6ddba469d8}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_IRQ\_LEVEL\_LOW@{GPIO\_IRQ\_LEVEL\_LOW}}
+\index{GPIO\_IRQ\_LEVEL\_LOW@{GPIO\_IRQ\_LEVEL\_LOW}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_IRQ\_LEVEL\_LOW}{GPIO\_IRQ\_LEVEL\_LOW}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a70dcf9cd4c91046d79b41c6ddba469d8} 
+\+\#define GPIO\+\_\+\+IRQ\+\_\+\+LEVEL\+\_\+\+LOW~0x0000000020\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00259}{259}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab232cbc80fe303fb9c0253f2ecc27e76}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_OUTPUT\_MODE@{GPIO\_OUTPUT\_MODE}}
+\index{GPIO\_OUTPUT\_MODE@{GPIO\_OUTPUT\_MODE}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_OUTPUT\_MODE}{GPIO\_OUTPUT\_MODE}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab232cbc80fe303fb9c0253f2ecc27e76} 
+\+\#define GPIO\+\_\+\+OUTPUT\+\_\+\+MODE~0x0000000005\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00247}{247}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+
+
+\label{doc-typedef-members}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}\index{core\_gpio.h@{core\_gpio.h}!gpio\_apb\_width\_t@{gpio\_apb\_width\_t}}
+\index{gpio\_apb\_width\_t@{gpio\_apb\_width\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{gpio\_apb\_width\_t}{gpio\_apb\_width\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff} 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}{\+\_\+\+\_\+gpio\+\_\+apb\+\_\+width\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}}}
+
+Possible width of the APB bus \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}\index{core\_gpio.h@{core\_gpio.h}!gpio\_id\_t@{gpio\_id\_t}}
+\index{gpio\_id\_t@{gpio\_id\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{gpio\_id\_t}{gpio\_id\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0} 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}{\+\_\+\+\_\+gpio\+\_\+id\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}
+
+\hypertarget{index_intro_sec}{}\doxysubsection{\texorpdfstring{Introduction}{Introduction}}\label{index_intro_sec}
+The Core\+GPIO hardware IP includes up to 32 general-\/purpose input/\+output GPIOs. This driver provides a set of functions for controlling the GPIOs as part of a bare-\/metal system where no operating system is available. These drivers can be adapted for use as part of an operating system, but the implementation of the adaptation layer between this driver and the operating system\textquotesingle{}s driver model is outside the scope of this driver.\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_driver_configuration}{}\doxysubsection{\texorpdfstring{Driver Configuration}{Driver Configuration}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_driver_configuration}
+The individual IOs of Core\+GPIO can be configured either in the hardware flow or as part of the software application through calls to the \doxylink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function. GPIOs configured as part of the hardware are fixed and cannot be modified using a call to the GPI\+\_\+config() function.\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_theory_op}{}\doxysubsection{\texorpdfstring{Theory of Operation}{Theory of Operation}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_theory_op}
+The Core\+GPIO driver uses the Actel Hardware Abstraction Layer (HAL) to access hardware registers. You must ensure that the Actel HAL is included as part of your software project. The Actel HAL is available through the Actel Firmware Catalog.
+
+The Core\+GPIO driver functions are logically grouped into the following groups:\+
+\begin{DoxyItemize}
+\item Initialization
+\item Configuration
+\item Reading and writing GPIO state
+\item Interrupt control
+\end{DoxyItemize}
+
+The Core\+GPIO driver is initialized through a call to the \doxylink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} function. The \doxylink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} function must be called before any other GPIO driver functions can be called.
+
+Each GPIO port is individually configured through a call to the \doxylink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function. Configuration includes deciding if a GPIO port is going to be used as input, output, or both. GPIO ports configured as inputs are further configured to generate interrupts based on the state of input. Interrupts is either level-\/ or edge-\/sensitive. ~\newline
+ Note that a Core\+GPIO hardware instance is generated as part of the hardware flow with a fixed configuration for some or all of its IOs. Attempting to modify the configuration of such a hardware-\/configured IO using the \doxylink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function has no effect.
+
+The state of the GPIO ports can be read and written using the following functions:\+
+\begin{DoxyItemize}
+\item \doxylink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs()}
+\item \doxylink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\+\_\+get\+\_\+outputs()}
+\item \doxylink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\+\_\+set\+\_\+outputs()}
+\item \doxylink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout()}
+\end{DoxyItemize}
+
+Interrupts generated by GPIO ports configured as inputs are controlled using the following functions:\+
+\begin{DoxyItemize}
+\item \doxylink{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\+\_\+enable\+\_\+irq()}
+\item \doxylink{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}{GPIO\+\_\+disable\+\_\+irq()}
+\item \doxylink{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\+\_\+clear\+\_\+irq()}
+\item \doxylink{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}{GPIO\+\_\+get\+\_\+irq\+\_\+sources()}
+\item \doxylink{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}{GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources()} The \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t} enumeration is used to identify GPIOs as part of the parameter to functions:\+
+\item \doxylink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()},
+\item \doxylink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout()},
+\item GPIO\+\_\+enable\+\_\+int(),
+\item GPIO\+\_\+disable\+\_\+int(),
+\item GPIO\+\_\+clear\+\_\+int() 
+\end{DoxyItemize}\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}\index{core\_gpio.h@{core\_gpio.h}!gpio\_inout\_state\_t@{gpio\_inout\_state\_t}}
+\index{gpio\_inout\_state\_t@{gpio\_inout\_state\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{gpio\_inout\_state\_t}{gpio\_inout\_state\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773} 
+typedef enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}{gpio\+\_\+inout\+\_\+state}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}}}
+
+Possible states for GPIO configured as INOUT \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}\index{core\_gpio.h@{core\_gpio.h}!gpio\_instance\_t@{gpio\_instance\_t}}
+\index{gpio\_instance\_t@{gpio\_instance\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{gpio\_instance\_t}{gpio\_instance\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2} 
+typedef struct \doxymbox{\hyperlink{struct____gpio__instance__t}{\+\_\+\+\_\+gpio\+\_\+instance\+\_\+t}} \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}}}
+
+Structure instance holding all data regarding the Core\+GPIO \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+\label{doc-enum-members}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}\index{core\_gpio.h@{core\_gpio.h}!\_\_gpio\_apb\_width\_t@{\_\_gpio\_apb\_width\_t}}
+\index{\_\_gpio\_apb\_width\_t@{\_\_gpio\_apb\_width\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{\_\_gpio\_apb\_width\_t}{\_\_gpio\_apb\_width\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb} 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}{\+\_\+\+\_\+gpio\+\_\+apb\+\_\+width\+\_\+t}}}
+
+Possible width of the APB bus \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_APB\_8\_BITS\_BUS@{GPIO\_APB\_8\_BITS\_BUS}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_APB\_8\_BITS\_BUS@{GPIO\_APB\_8\_BITS\_BUS}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e} 
+GPIO\+\_\+\+APB\+\_\+8\+\_\+\+BITS\+\_\+\+BUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_APB\_16\_BITS\_BUS@{GPIO\_APB\_16\_BITS\_BUS}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_APB\_16\_BITS\_BUS@{GPIO\_APB\_16\_BITS\_BUS}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5} 
+GPIO\+\_\+\+APB\+\_\+16\+\_\+\+BITS\+\_\+\+BUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_APB\_32\_BITS\_BUS@{GPIO\_APB\_32\_BITS\_BUS}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_APB\_32\_BITS\_BUS@{GPIO\_APB\_32\_BITS\_BUS}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980} 
+GPIO\+\_\+\+APB\+\_\+32\+\_\+\+BITS\+\_\+\+BUS&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_APB\_UNKNOWN\_BUS\_WIDTH@{GPIO\_APB\_UNKNOWN\_BUS\_WIDTH}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_APB\_UNKNOWN\_BUS\_WIDTH@{GPIO\_APB\_UNKNOWN\_BUS\_WIDTH}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebac5f3ea9f35f41561f325717feece2f17}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebac5f3ea9f35f41561f325717feece2f17} 
+GPIO\+\_\+\+APB\+\_\+\+UNKNOWN\+\_\+\+BUS\+\_\+\+WIDTH&\\
+\hline
+
+\end{DoxyEnumFields}
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00152}{152}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}\index{core\_gpio.h@{core\_gpio.h}!\_\_gpio\_id\_t@{\_\_gpio\_id\_t}}
+\index{\_\_gpio\_id\_t@{\_\_gpio\_id\_t}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{\_\_gpio\_id\_t}{\_\_gpio\_id\_t}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6} 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}{\+\_\+\+\_\+gpio\+\_\+id\+\_\+t}}}
+
+\hypertarget{index_intro_sec}{}\doxysubsection{\texorpdfstring{Introduction}{Introduction}}\label{index_intro_sec}
+The Core\+GPIO hardware IP includes up to 32 general-\/purpose input/\+output GPIOs. This driver provides a set of functions for controlling the GPIOs as part of a bare-\/metal system where no operating system is available. These drivers can be adapted for use as part of an operating system, but the implementation of the adaptation layer between this driver and the operating system\textquotesingle{}s driver model is outside the scope of this driver.\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_driver_configuration}{}\doxysubsection{\texorpdfstring{Driver Configuration}{Driver Configuration}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_driver_configuration}
+The individual IOs of Core\+GPIO can be configured either in the hardware flow or as part of the software application through calls to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function. GPIOs configured as part of the hardware are fixed and cannot be modified using a call to the GPI\+\_\+config() function.\hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_theory_op}{}\doxysubsection{\texorpdfstring{Theory of Operation}{Theory of Operation}}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_theory_op}
+The Core\+GPIO driver uses the Actel Hardware Abstraction Layer (HAL) to access hardware registers. You must ensure that the Actel HAL is included as part of your software project. The Actel HAL is available through the Actel Firmware Catalog.
+
+The Core\+GPIO driver functions are logically grouped into the following groups:\+
+\begin{DoxyItemize}
+\item Initialization
+\item Configuration
+\item Reading and writing GPIO state
+\item Interrupt control
+\end{DoxyItemize}
+
+The Core\+GPIO driver is initialized through a call to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} function. The \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} function must be called before any other GPIO driver functions can be called.
+
+Each GPIO port is individually configured through a call to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function. Configuration includes deciding if a GPIO port is going to be used as input, output, or both. GPIO ports configured as inputs are further configured to generate interrupts based on the state of input. Interrupts is either level-\/ or edge-\/sensitive. ~\newline
+ Note that a Core\+GPIO hardware instance is generated as part of the hardware flow with a fixed configuration for some or all of its IOs. Attempting to modify the configuration of such a hardware-\/configured IO using the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function has no effect.
+
+The state of the GPIO ports can be read and written using the following functions:\+
+\begin{DoxyItemize}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\+\_\+get\+\_\+outputs()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_ad785f6e5808a8d13c908db4c11e60528}{GPIO\+\_\+set\+\_\+outputs()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout()}
+\end{DoxyItemize}
+
+Interrupts generated by GPIO ports configured as inputs are controlled using the following functions:\+
+\begin{DoxyItemize}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\+\_\+enable\+\_\+irq()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_aa894fa67daacfce60bdb57284cbef702}{GPIO\+\_\+disable\+\_\+irq()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\+\_\+clear\+\_\+irq()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_aebfa145ef2e47321768e76b54ba15b80}{GPIO\+\_\+get\+\_\+irq\+\_\+sources()}
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_ad13782fc7894bc78e719503268eaa303}{GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources()} The \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t} enumeration is used to identify GPIOs as part of the parameter to functions:\+
+\item \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()},
+\item \doxylink{av__board__workspace_2Camera_2include_2core__gpio_8h_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout()},
+\item GPIO\+\_\+enable\+\_\+int(),
+\item GPIO\+\_\+disable\+\_\+int(),
+\item GPIO\+\_\+clear\+\_\+int() 
+\end{DoxyItemize}\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_0@{GPIO\_0}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_0@{GPIO\_0}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a086256647dcbd93f77f55f1da9bb443e}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a086256647dcbd93f77f55f1da9bb443e} 
+GPIO\+\_\+0&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_1@{GPIO\_1}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_1@{GPIO\_1}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8595f8d7a0ae611fb06e4b9c690295f3}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8595f8d7a0ae611fb06e4b9c690295f3} 
+GPIO\+\_\+1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_2@{GPIO\_2}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_2@{GPIO\_2}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6abbea21b656f1917800d9d279b685f38e}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6abbea21b656f1917800d9d279b685f38e} 
+GPIO\+\_\+2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_3@{GPIO\_3}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_3@{GPIO\_3}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a426d08ab85ab3aebbb53eed1a32dfb71}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a426d08ab85ab3aebbb53eed1a32dfb71} 
+GPIO\+\_\+3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_4@{GPIO\_4}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_4@{GPIO\_4}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8750fdf2e45e210b73beac29d0583b8d}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8750fdf2e45e210b73beac29d0583b8d} 
+GPIO\+\_\+4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_5@{GPIO\_5}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_5@{GPIO\_5}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a6213ab680cde9fe00f518cfb26a30a6b}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a6213ab680cde9fe00f518cfb26a30a6b} 
+GPIO\+\_\+5&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_6@{GPIO\_6}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_6@{GPIO\_6}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1b3ef28b8ae924f5f3fdfbb0ed7e6f7c}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1b3ef28b8ae924f5f3fdfbb0ed7e6f7c} 
+GPIO\+\_\+6&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_7@{GPIO\_7}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_7@{GPIO\_7}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4bae0816af6049c68cf772f0e01ea0e5}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4bae0816af6049c68cf772f0e01ea0e5} 
+GPIO\+\_\+7&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_8@{GPIO\_8}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_8@{GPIO\_8}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1633eaf3914293921cf5e102f5026106}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1633eaf3914293921cf5e102f5026106} 
+GPIO\+\_\+8&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_9@{GPIO\_9}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_9@{GPIO\_9}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8bdaec9182fb8ab2106d5c67f3eabd2d}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8bdaec9182fb8ab2106d5c67f3eabd2d} 
+GPIO\+\_\+9&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_10@{GPIO\_10}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_10@{GPIO\_10}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a3943e6071dec78b6bcf9586cf0de6dd3}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a3943e6071dec78b6bcf9586cf0de6dd3} 
+GPIO\+\_\+10&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_11@{GPIO\_11}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_11@{GPIO\_11}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af3ddb0db315daeab49b75dbca06ba6e5}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af3ddb0db315daeab49b75dbca06ba6e5} 
+GPIO\+\_\+11&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_12@{GPIO\_12}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_12@{GPIO\_12}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a9c0d0164730f9f641db357f5781643d0}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a9c0d0164730f9f641db357f5781643d0} 
+GPIO\+\_\+12&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_13@{GPIO\_13}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_13@{GPIO\_13}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ad3c7eb7127bc6e6c1ecc8216c518c60b}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ad3c7eb7127bc6e6c1ecc8216c518c60b} 
+GPIO\+\_\+13&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_14@{GPIO\_14}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_14@{GPIO\_14}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ada33ca57455eb7fc3c6af46dd57fea41}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ada33ca57455eb7fc3c6af46dd57fea41} 
+GPIO\+\_\+14&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_15@{GPIO\_15}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_15@{GPIO\_15}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a10d7c4b9b8ab7cf7c5f77d99bf420849}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a10d7c4b9b8ab7cf7c5f77d99bf420849} 
+GPIO\+\_\+15&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_16@{GPIO\_16}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_16@{GPIO\_16}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af5c2b7f44743385580550aa81e4b4f31}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af5c2b7f44743385580550aa81e4b4f31} 
+GPIO\+\_\+16&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_17@{GPIO\_17}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_17@{GPIO\_17}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a272b8d60ca888339e5095000b50ba5b1}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a272b8d60ca888339e5095000b50ba5b1} 
+GPIO\+\_\+17&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_18@{GPIO\_18}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_18@{GPIO\_18}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a0e8bab7ea873c22eb90aa81116208917}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a0e8bab7ea873c22eb90aa81116208917} 
+GPIO\+\_\+18&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_19@{GPIO\_19}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_19@{GPIO\_19}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa2918c94bcf473e7ff31138b6333f847}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa2918c94bcf473e7ff31138b6333f847} 
+GPIO\+\_\+19&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_20@{GPIO\_20}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_20@{GPIO\_20}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a081be372da926e3ca6f612b267854e95}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a081be372da926e3ca6f612b267854e95} 
+GPIO\+\_\+20&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_21@{GPIO\_21}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_21@{GPIO\_21}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a32ff7e9a2f00d396ff2b2b62af571d7c}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a32ff7e9a2f00d396ff2b2b62af571d7c} 
+GPIO\+\_\+21&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_22@{GPIO\_22}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_22@{GPIO\_22}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aca7c5f2acf755d61b35d05ea921c79eb}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aca7c5f2acf755d61b35d05ea921c79eb} 
+GPIO\+\_\+22&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_23@{GPIO\_23}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_23@{GPIO\_23}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4f3bac8a4733f9e96aa952fb1d9b0a7f}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4f3bac8a4733f9e96aa952fb1d9b0a7f} 
+GPIO\+\_\+23&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_24@{GPIO\_24}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_24@{GPIO\_24}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a65ff243eb7227a401a4ef5c74bc110fa}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a65ff243eb7227a401a4ef5c74bc110fa} 
+GPIO\+\_\+24&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_25@{GPIO\_25}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_25@{GPIO\_25}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a2e1f75ee6f35403166cda2ef4e73c61f}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a2e1f75ee6f35403166cda2ef4e73c61f} 
+GPIO\+\_\+25&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_26@{GPIO\_26}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_26@{GPIO\_26}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a029e5739680c051c29587d4768f97941}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a029e5739680c051c29587d4768f97941} 
+GPIO\+\_\+26&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_27@{GPIO\_27}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_27@{GPIO\_27}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac1b64481f38457b83d09727eb3c749e2}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac1b64481f38457b83d09727eb3c749e2} 
+GPIO\+\_\+27&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_28@{GPIO\_28}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_28@{GPIO\_28}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac3fd057bf75612b81ae27f229c807cb3}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac3fd057bf75612b81ae27f229c807cb3} 
+GPIO\+\_\+28&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_29@{GPIO\_29}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_29@{GPIO\_29}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa99fc25b0ac5169f1f4d7f9b05379ed6}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa99fc25b0ac5169f1f4d7f9b05379ed6} 
+GPIO\+\_\+29&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_30@{GPIO\_30}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_30@{GPIO\_30}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a06e43288a6277c853986259f7e6e907f}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a06e43288a6277c853986259f7e6e907f} 
+GPIO\+\_\+30&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_31@{GPIO\_31}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_31@{GPIO\_31}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6afbad7361b3278388bffc4870cff6671d}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6afbad7361b3278388bffc4870cff6671d} 
+GPIO\+\_\+31&\\
+\hline
+
+\end{DoxyEnumFields}
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00113}{113}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}\index{core\_gpio.h@{core\_gpio.h}!gpio\_inout\_state@{gpio\_inout\_state}}
+\index{gpio\_inout\_state@{gpio\_inout\_state}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{gpio\_inout\_state}{gpio\_inout\_state}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8} 
+enum \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}{gpio\+\_\+inout\+\_\+state}}}
+
+Possible states for GPIO configured as INOUT \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_DRIVE\_LOW@{GPIO\_DRIVE\_LOW}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_DRIVE\_LOW@{GPIO\_DRIVE\_LOW}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a85959287b781889e2e41b2cff4bf3ae1}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a85959287b781889e2e41b2cff4bf3ae1} 
+GPIO\+\_\+\+DRIVE\+\_\+\+LOW&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_DRIVE\_HIGH@{GPIO\_DRIVE\_HIGH}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_DRIVE\_HIGH@{GPIO\_DRIVE\_HIGH}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a4511dc6a41c1be0f0d138d3256b9aee3}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a4511dc6a41c1be0f0d138d3256b9aee3} 
+GPIO\+\_\+\+DRIVE\+\_\+\+HIGH&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GPIO\_HIGH\_Z@{GPIO\_HIGH\_Z}!core\_gpio.h@{core\_gpio.h}}
+\index{core\_gpio.h@{core\_gpio.h}!GPIO\_HIGH\_Z@{GPIO\_HIGH\_Z}}
+}\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8ab61ab7b9924925f436b922e4473ab0ca}\label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8ab61ab7b9924925f436b922e4473ab0ca} 
+GPIO\+\_\+\+HIGH\+\_\+Z&\\
+\hline
+
+\end{DoxyEnumFields}
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source_l00267}{267}} of file \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_source}{core\+\_\+gpio.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad13782fc7894bc78e719503268eaa303}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_clear\_all\_irq\_sources@{GPIO\_clear\_all\_irq\_sources}}
+\index{GPIO\_clear\_all\_irq\_sources@{GPIO\_clear\_all\_irq\_sources}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_clear\_all\_irq\_sources()}{GPIO\_clear\_all\_irq\_sources()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad13782fc7894bc78e719503268eaa303} 
+void GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{uint32\+\_\+t}]{bitmask}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00507}{507}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8d0e216d1111e88f0be93404d8e4d5e9}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_clear\_irq@{GPIO\_clear\_irq}}
+\index{GPIO\_clear\_irq@{GPIO\_clear\_irq}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_clear\_irq()}{GPIO\_clear\_irq()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a8d0e216d1111e88f0be93404d8e4d5e9} 
+void GPIO\+\_\+clear\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+clear\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00434}{434}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_config@{GPIO\_config}}
+\index{GPIO\_config@{GPIO\_config}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_config()}{GPIO\_config()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6} 
+void GPIO\+\_\+config (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{uint32\+\_\+t}]{config}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+config See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00079}{79}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa894fa67daacfce60bdb57284cbef702}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_disable\_irq@{GPIO\_disable\_irq}}
+\index{GPIO\_disable\_irq@{GPIO\_disable\_irq}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_disable\_irq()}{GPIO\_disable\_irq()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa894fa67daacfce60bdb57284cbef702} 
+void GPIO\+\_\+disable\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+disable\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00410}{410}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_adcfcd396c011a447ada0c2c4d9f53d75}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_drive\_inout@{GPIO\_drive\_inout}}
+\index{GPIO\_drive\_inout@{GPIO\_drive\_inout}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_drive\_inout()}{GPIO\_drive\_inout()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_adcfcd396c011a447ada0c2c4d9f53d75} 
+void GPIO\+\_\+drive\+\_\+inout (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}}}]{inout\+\_\+state}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+drive\+\_\+inout See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00332}{332}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad02a89beac2b9887deeae0ab68c89a0e}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_enable\_irq@{GPIO\_enable\_irq}}
+\index{GPIO\_enable\_irq@{GPIO\_enable\_irq}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_enable\_irq()}{GPIO\_enable\_irq()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad02a89beac2b9887deeae0ab68c89a0e} 
+void GPIO\+\_\+enable\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+enable\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00386}{386}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0a3a6a5849eef64eb395bf3a71ca8019}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_get\_inputs@{GPIO\_get\_inputs}}
+\index{GPIO\_get\_inputs@{GPIO\_get\_inputs}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_inputs()}{GPIO\_get\_inputs()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a0a3a6a5849eef64eb395bf3a71ca8019} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+inputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs()} function is used to read the state of all GPIOs configured as inputs.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+gpio} & The this\+\_\+gpio parameter is a pointer to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t} structure holding all the data regarding the Core\+GPIO instance controlled through this function call.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This function returns a 32-\/bit unsigned integer, where each bit represents the state of an input. The least significant bit represents the state of GPIO 0, and the most significant bit represents the state of GPIO 31.
+\end{DoxyReturn}
+GPIO\+\_\+get\+\_\+inputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00156}{156}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_aebfa145ef2e47321768e76b54ba15b80}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_get\_irq\_sources@{GPIO\_get\_irq\_sources}}
+\index{GPIO\_get\_irq\_sources@{GPIO\_get\_irq\_sources}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_irq\_sources()}{GPIO\_get\_irq\_sources()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_aebfa145ef2e47321768e76b54ba15b80} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+irq\+\_\+sources (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+get\+\_\+irq\+\_\+sources See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00470}{470}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a16ce70d482ca3d368702e6195f0f2beb}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_get\_outputs@{GPIO\_get\_outputs}}
+\index{GPIO\_get\_outputs@{GPIO\_get\_outputs}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_outputs()}{GPIO\_get\_outputs()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a16ce70d482ca3d368702e6195f0f2beb} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+outputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\+\_\+get\+\_\+outputs()} function is used to read the current state of all GPIO outputs.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+gpio} & The this\+\_\+gpio parameter is a pointer to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t} structure holding all the data regarding the Core\+GPIO instance controlled through this function call.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This function returns a 32-\/bit unsigned integer where each bit represents the state of an output. The least significant bit represents the state of GPIO 0, and the most significant bit represents the state of GPIO 31.
+\end{DoxyReturn}
+GPIO\+\_\+get\+\_\+outputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00193}{193}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_init@{GPIO\_init}}
+\index{GPIO\_init@{GPIO\_init}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_init()}{GPIO\_init()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31} 
+void GPIO\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}}}]{base\+\_\+addr}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}}}]{bus\+\_\+width}{}\end{DoxyParamCaption})}
+
+\doxylink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae86e11a536ee6df1a333f41da27ff9db}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_set\_output@{GPIO\_set\_output}}
+\index{GPIO\_set\_output@{GPIO\_set\_output}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_set\_output()}{GPIO\_set\_output()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ae86e11a536ee6df1a333f41da27ff9db} 
+void GPIO\+\_\+set\+\_\+output (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{uint8\+\_\+t}]{value}{}\end{DoxyParamCaption})}
+
+The \doxylink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\+\_\+set\+\_\+output()} function is used to set the state of a single GPIO port configured as an output.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+gpio} & The this\+\_\+gpio parameter is a pointer to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t} structure holding all the data regarding the Core\+GPIO instance controlled through this function call.\\
+\hline
+{\em port\+\_\+id} & The port\+\_\+id parameter specifies the GPIO port that has its output set by a call to this function.\\
+\hline
+{\em value} & The value parameter specifies the desired state for the GPIO output. A value of 0 sets the output low, and a value of 1 sets the port high.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none.
+\end{DoxyReturn}
+GPIO\+\_\+set\+\_\+output See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00230}{230}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad785f6e5808a8d13c908db4c11e60528}\index{core\_gpio.h@{core\_gpio.h}!GPIO\_set\_outputs@{GPIO\_set\_outputs}}
+\index{GPIO\_set\_outputs@{GPIO\_set\_outputs}!core\_gpio.h@{core\_gpio.h}}
+\doxysubsubsection{\texorpdfstring{GPIO\_set\_outputs()}{GPIO\_set\_outputs()}}
+{\footnotesize\ttfamily \label{avtemp_2Camera_2src_2hal_2core__gpio_8h_ad785f6e5808a8d13c908db4c11e60528} 
+void GPIO\+\_\+set\+\_\+outputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{uint32\+\_\+t}]{value}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+set\+\_\+outputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. 
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00109}{109}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+

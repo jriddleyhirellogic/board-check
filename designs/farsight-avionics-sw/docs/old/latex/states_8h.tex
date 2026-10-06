@@ -1,0 +1,79 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+states.h File Reference}
+\hypertarget{states_8h}{}\label{states_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/states.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/states.h}}
+{\ttfamily \+\#include "{}events.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+Include dependency graph for states.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=263pt]{states_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{states_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}}
+\item 
+typedef void \texorpdfstring{$\ast$}{*}(\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{states_8h_aa9fe31985019935397a5a2407bd796a2}{State\+\_\+\+Handler\+\_\+t}}) (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{states_8h_afaab48f145f4e6fbce5f2577365756b7}{v\+\_\+\+Update\+\_\+\+Control\+\_\+\+State}} (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*})
+\item 
+void \doxymbox{\hyperlink{states_8h_a651d0f3159642470f9e96b86d8297161}{v\+\_\+\+Init\+\_\+\+Control\+\_\+\+State\+\_\+\+Machine}} (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} initial\+\_\+state)
+\end{DoxyCompactItemize}
+
+
+\label{doc-typedef-members}
+\Hypertarget{states_8h_doc-typedef-members}
+\doxysubsection{Typedef Documentation}
+\Hypertarget{states_8h_aa9fe31985019935397a5a2407bd796a2}\index{states.h@{states.h}!State\_Handler\_t@{State\_Handler\_t}}
+\index{State\_Handler\_t@{State\_Handler\_t}!states.h@{states.h}}
+\doxysubsubsection{\texorpdfstring{State\_Handler\_t}{State\_Handler\_t}}
+{\footnotesize\ttfamily \label{states_8h_aa9fe31985019935397a5a2407bd796a2} 
+typedef void \texorpdfstring{$\ast$}{*}(\texorpdfstring{$\ast$}{*} State\+\_\+\+Handler\+\_\+t) (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*})}
+
+
+
+Definition at line \doxymbox{\hyperlink{states_8h_source_l00023}{23}} of file \doxymbox{\hyperlink{states_8h_source}{states.\+h}}.
+
+\Hypertarget{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}\index{states.h@{states.h}!State\_t@{State\_t}}
+\index{State\_t@{State\_t}!states.h@{states.h}}
+\doxysubsubsection{\texorpdfstring{State\_t}{State\_t}}
+{\footnotesize\ttfamily \label{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd} 
+typedef void\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{states_8h_source_l00013}{13}} of file \doxymbox{\hyperlink{states_8h_source}{states.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{states_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{states_8h_a651d0f3159642470f9e96b86d8297161}\index{states.h@{states.h}!v\_Init\_Control\_State\_Machine@{v\_Init\_Control\_State\_Machine}}
+\index{v\_Init\_Control\_State\_Machine@{v\_Init\_Control\_State\_Machine}!states.h@{states.h}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Control\_State\_Machine()}{v\_Init\_Control\_State\_Machine()}}
+{\footnotesize\ttfamily \label{states_8h_a651d0f3159642470f9e96b86d8297161} 
+void v\+\_\+\+Init\+\_\+\+Control\+\_\+\+State\+\_\+\+Machine (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}}}]{initial\+\_\+state}{}\end{DoxyParamCaption})}
+
+\Hypertarget{states_8h_afaab48f145f4e6fbce5f2577365756b7}\index{states.h@{states.h}!v\_Update\_Control\_State@{v\_Update\_Control\_State}}
+\index{v\_Update\_Control\_State@{v\_Update\_Control\_State}!states.h@{states.h}}
+\doxysubsubsection{\texorpdfstring{v\_Update\_Control\_State()}{v\_Update\_Control\_State()}}
+{\footnotesize\ttfamily \label{states_8h_afaab48f145f4e6fbce5f2577365756b7} 
+void v\+\_\+\+Update\+\_\+\+Control\+\_\+\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{}{}\end{DoxyParamCaption})}
+

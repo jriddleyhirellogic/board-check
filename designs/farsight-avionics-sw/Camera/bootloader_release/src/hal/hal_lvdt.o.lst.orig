@@ -1,0 +1,1864 @@
+   1              		.file	"hal_lvdt.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_LVDT,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_LVDT
+  13              	v_Init_LVDT:
+  14              	.LFB0:
+  15              		.file 1 "../src/hal/hal_lvdt.c"
+   1:../src/hal/hal_lvdt.c **** /*
+   2:../src/hal/hal_lvdt.c ****  * lvdt.c
+   3:../src/hal/hal_lvdt.c ****  *
+   4:../src/hal/hal_lvdt.c ****  *  Created on: Sep 28, 2025
+   5:../src/hal/hal_lvdt.c ****  *      Author: iboard
+   6:../src/hal/hal_lvdt.c ****  */
+   7:../src/hal/hal_lvdt.c **** #include "FreeRTOSConfig.h"
+   8:../src/hal/hal_lvdt.c **** #include "FreeRTOS.h"
+   9:../src/hal/hal_lvdt.c **** #include "task.h"
+  10:../src/hal/hal_lvdt.c **** #include "event_groups.h"
+  11:../src/hal/hal_lvdt.c **** #include "mem_map.h"
+  12:../src/hal/hal_lvdt.c **** #include "config.h"
+  13:../src/hal/hal_lvdt.c **** #include "misc.h"
+  14:../src/hal/hal_lvdt.c **** #include "debug_gpio.h"
+  15:../src/hal/hal_lvdt.c **** #include "lvdt.h"
+  16:../src/hal/hal_lvdt.c **** #include "lvdt_cal.h"
+  17:../src/hal/hal_lvdt.c **** 
+  18:../src/hal/hal_lvdt.c **** static LVDT_Instance_t LVDT_Instance;
+  19:../src/hal/hal_lvdt.c **** static LVDT_Instance_t *instance;
+  20:../src/hal/hal_lvdt.c **** 
+  21:../src/hal/hal_lvdt.c **** static int32_t i32_Low_Gain_Limit[2];
+  22:../src/hal/hal_lvdt.c **** static int32_t i32_High_Gain_Limit[2];
+  23:../src/hal/hal_lvdt.c **** static int32_t i32_Displacement_Offset;
+  24:../src/hal/hal_lvdt.c **** 
+  25:../src/hal/hal_lvdt.c **** static float f_Interpolate_2D( float f_x, float f_x0, float f_x1, float f_y0, float f_y1 );
+  26:../src/hal/hal_lvdt.c **** 
+  27:../src/hal/hal_lvdt.c **** /**
+  28:../src/hal/hal_lvdt.c ****  * @fn void v_Init_LVDT(void)
+  29:../src/hal/hal_lvdt.c ****  * @brief  Initializes lvdt (position) sensor hardware.
+  30:../src/hal/hal_lvdt.c ****  * This initializes the hardware used to read the LVDT sensor: the voltage on both the primary
+  31:../src/hal/hal_lvdt.c ****  * and secondary coils are complex valued (I and Q), plus a GPIO register used to set the gain to
+  32:../src/hal/hal_lvdt.c ****  * either 1 or 8.
+  33:../src/hal/hal_lvdt.c ****  * Two calibration tables are initialized. One is for use when the LVDT gain setting is 1, the othe
+  34:../src/hal/hal_lvdt.c ****  * for when it is 8.
+  35:../src/hal/hal_lvdt.c ****  *
+  36:../src/hal/hal_lvdt.c ****  */
+  37:../src/hal/hal_lvdt.c **** void v_Init_LVDT(void)
+  38:../src/hal/hal_lvdt.c **** {
+  16              		.loc 1 38 1
+  17              		.cfi_startproc
+  39:../src/hal/hal_lvdt.c ****     uint8_t n_table_entries;
+  18              		.loc 1 39 5
+  40:../src/hal/hal_lvdt.c **** 
+  41:../src/hal/hal_lvdt.c ****     instance = &LVDT_Instance;
+  19              		.loc 1 41 5
+  20              		.loc 1 41 14 is_stmt 0
+  21 0000 97070000 		lla	a5,.LANCHOR1
+  21      93870700 
+  42:../src/hal/hal_lvdt.c **** 
+  43:../src/hal/hal_lvdt.c ****     instance->Primary_I.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  44:../src/hal/hal_lvdt.c ****     instance->Primary_I.base_addr = LVDT_RO_PRI_I_BASE_ADDR;
+  22              		.loc 1 44 35
+  23 0008 B7860370 		li	a3,1879277568
+  41:../src/hal/hal_lvdt.c **** 
+  24              		.loc 1 41 14
+  25 000c 17070000 		sw	a5,.LANCHOR0,a4
+  25      2320F700 
+  43:../src/hal/hal_lvdt.c ****     instance->Primary_I.base_addr = LVDT_RO_PRI_I_BASE_ADDR;
+  26              		.loc 1 43 5 is_stmt 1
+  27              		.loc 1 44 35 is_stmt 0
+  28 0014 23A0D700 		sw	a3,0(a5)
+  45:../src/hal/hal_lvdt.c **** 
+  46:../src/hal/hal_lvdt.c ****     instance->Primary_Q.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  47:../src/hal/hal_lvdt.c ****     instance->Primary_Q.base_addr = LVDT_RO_PRI_Q_BASE_ADDR;
+  29              		.loc 1 47 35
+  30 0018 B7A60370 		li	a3,1879285760
+  43:../src/hal/hal_lvdt.c ****     instance->Primary_I.base_addr = LVDT_RO_PRI_I_BASE_ADDR;
+  31              		.loc 1 43 39
+  32 001c 13072000 		li	a4,2
+  33              		.loc 1 47 35
+  34 0020 23A4D700 		sw	a3,8(a5)
+  48:../src/hal/hal_lvdt.c **** 
+  49:../src/hal/hal_lvdt.c ****     instance->Secondary_I.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  50:../src/hal/hal_lvdt.c ****     instance->Secondary_I.base_addr = LVDT_RO_SEC_I_BASE_ADDR;
+  35              		.loc 1 50 37
+  36 0024 B7960370 		li	a3,1879281664
+  43:../src/hal/hal_lvdt.c ****     instance->Primary_I.base_addr = LVDT_RO_PRI_I_BASE_ADDR;
+  37              		.loc 1 43 39
+  38 0028 23A2E700 		sw	a4,4(a5)
+  44:../src/hal/hal_lvdt.c **** 
+  39              		.loc 1 44 5 is_stmt 1
+  46:../src/hal/hal_lvdt.c ****     instance->Primary_Q.base_addr = LVDT_RO_PRI_Q_BASE_ADDR;
+  40              		.loc 1 46 5
+  46:../src/hal/hal_lvdt.c ****     instance->Primary_Q.base_addr = LVDT_RO_PRI_Q_BASE_ADDR;
+  41              		.loc 1 46 39 is_stmt 0
+  42 002c 23A6E700 		sw	a4,12(a5)
+  47:../src/hal/hal_lvdt.c **** 
+  43              		.loc 1 47 5 is_stmt 1
+  49:../src/hal/hal_lvdt.c ****     instance->Secondary_I.base_addr = LVDT_RO_SEC_I_BASE_ADDR;
+  44              		.loc 1 49 5
+  49:../src/hal/hal_lvdt.c ****     instance->Secondary_I.base_addr = LVDT_RO_SEC_I_BASE_ADDR;
+  45              		.loc 1 49 41 is_stmt 0
+  46 0030 23AAE700 		sw	a4,20(a5)
+  47              		.loc 1 50 5 is_stmt 1
+  48              		.loc 1 50 37 is_stmt 0
+  49 0034 23A8D700 		sw	a3,16(a5)
+  51:../src/hal/hal_lvdt.c **** 
+  52:../src/hal/hal_lvdt.c ****     instance->Secondary_Q.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  50              		.loc 1 52 5 is_stmt 1
+  51              		.loc 1 52 41 is_stmt 0
+  52 0038 23AEE700 		sw	a4,28(a5)
+  53:../src/hal/hal_lvdt.c ****     instance->Secondary_Q.base_addr = LVDT_RO_SEC_Q_BASE_ADDR;
+  53              		.loc 1 53 5 is_stmt 1
+  54              		.loc 1 53 37 is_stmt 0
+  55 003c B7760370 		li	a3,1879273472
+  54:../src/hal/hal_lvdt.c **** 
+  55:../src/hal/hal_lvdt.c ****     instance->Gain.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  56              		.loc 1 55 34
+  57 0040 23A2E702 		sw	a4,36(a5)
+  56:../src/hal/hal_lvdt.c ****     instance->Gain.base_addr = LVDT_GAIN_BASE_ADDR;
+  58              		.loc 1 56 30
+  59 0044 37670370 		li	a4,1879269376
+  53:../src/hal/hal_lvdt.c ****     instance->Secondary_Q.base_addr = LVDT_RO_SEC_Q_BASE_ADDR;
+  60              		.loc 1 53 37
+  61 0048 23ACD700 		sw	a3,24(a5)
+  55:../src/hal/hal_lvdt.c ****     instance->Gain.base_addr = LVDT_GAIN_BASE_ADDR;
+  62              		.loc 1 55 5 is_stmt 1
+  63              		.loc 1 56 5
+  64              		.loc 1 56 30 is_stmt 0
+  65 004c 23A0E702 		sw	a4,32(a5)
+  57:../src/hal/hal_lvdt.c **** 
+  58:../src/hal/hal_lvdt.c ****     // Establish limits of cal tables to determine which one to use
+  59:../src/hal/hal_lvdt.c ****     n_table_entries = sizeof(Cal_G1)/sizeof(Cal_Value_t);
+  66              		.loc 1 59 5 is_stmt 1
+  67              	.LVL0:
+  60:../src/hal/hal_lvdt.c ****     i32_Low_Gain_Limit[0] = Cal_G1[n_table_entries-1].i32_Projection;      // Smallest value of pro
+  68              		.loc 1 60 5
+  61:../src/hal/hal_lvdt.c ****     i32_Low_Gain_Limit[1] = Cal_G1[0].i32_Projection;
+  69              		.loc 1 61 5
+  62:../src/hal/hal_lvdt.c **** 
+  63:../src/hal/hal_lvdt.c ****     n_table_entries = sizeof(Cal_G8)/sizeof(Cal_Value_t);
+  70              		.loc 1 63 5
+  64:../src/hal/hal_lvdt.c ****     i32_High_Gain_Limit[0] = Cal_G8[n_table_entries-1].i32_Projection;     // Smallest value of pro
+  71              		.loc 1 64 5
+  65:../src/hal/hal_lvdt.c ****     i32_High_Gain_Limit[1] = Cal_G8[0].i32_Projection;
+  72              		.loc 1 65 5
+  66:../src/hal/hal_lvdt.c **** 
+  67:../src/hal/hal_lvdt.c **** }
+  73              		.loc 1 67 1 is_stmt 0
+  74 0050 67800000 		ret
+  75              		.cfi_endproc
+  76              	.LFE0:
+  78              		.section	.text.v_Set_LVDT_Gain,"ax",@progbits
+  79              		.align	2
+  80              		.globl	v_Set_LVDT_Gain
+  82              	v_Set_LVDT_Gain:
+  83              	.LFB1:
+  68:../src/hal/hal_lvdt.c **** 
+  69:../src/hal/hal_lvdt.c **** /**
+  70:../src/hal/hal_lvdt.c ****  * @fn void v_Set_LVDT_Gain(LVDT_Gain_Sel_t)
+  71:../src/hal/hal_lvdt.c ****  * @brief Selects whether x1 or x8 gain is used with LVDT sensor
+  72:../src/hal/hal_lvdt.c ****  *
+  73:../src/hal/hal_lvdt.c ****  * @param eGain 0 - x1,  1 - x8
+  74:../src/hal/hal_lvdt.c ****  */
+  75:../src/hal/hal_lvdt.c **** void v_Set_LVDT_Gain(LVDT_Gain_Sel_t eGain)
+  76:../src/hal/hal_lvdt.c **** {
+  84              		.loc 1 76 1 is_stmt 1
+  85              		.cfi_startproc
+  86              	.LVL1:
+  77:../src/hal/hal_lvdt.c ****     GPIO_set_output( &instance->Gain, 0, (uint8_t)eGain );
+  87              		.loc 1 77 5
+  88              		.loc 1 77 31 is_stmt 0
+  89 0000 97070000 		lla	a5,.LANCHOR0
+  89      93870700 
+  90              		.loc 1 77 5
+  91 0008 83A70700 		lw	a5,0(a5)
+  92 000c 1376F50F 		andi	a2,a0,0xff
+  93 0010 93050000 		li	a1,0
+  94 0014 13850702 		addi	a0,a5,32
+  95              	.LVL2:
+  96 0018 17030000 		tail	GPIO_set_output
+  96      67000300 
+  97              	.LVL3:
+  98              		.cfi_endproc
+  99              	.LFE1:
+ 101              		.section	.text.e_Get_LVDT_Gain,"ax",@progbits
+ 102              		.align	2
+ 103              		.globl	e_Get_LVDT_Gain
+ 105              	e_Get_LVDT_Gain:
+ 106              	.LFB2:
+  78:../src/hal/hal_lvdt.c **** }
+  79:../src/hal/hal_lvdt.c **** 
+  80:../src/hal/hal_lvdt.c **** /**
+  81:../src/hal/hal_lvdt.c ****  * @fn LVDT_Gain_Sel_t e_Get_LVDT_Gain(void)
+  82:../src/hal/hal_lvdt.c ****  * @brief Retrieves current gain setting for LVDT sensor
+  83:../src/hal/hal_lvdt.c ****  *
+  84:../src/hal/hal_lvdt.c ****  * @return Current gain setting - 0 (x1), 1 (x8)
+  85:../src/hal/hal_lvdt.c ****  */
+  86:../src/hal/hal_lvdt.c **** LVDT_Gain_Sel_t e_Get_LVDT_Gain( void )
+  87:../src/hal/hal_lvdt.c **** {
+ 107              		.loc 1 87 1 is_stmt 1
+ 108              		.cfi_startproc
+  88:../src/hal/hal_lvdt.c ****     return (GPIO_get_outputs( &instance->Gain ) & 1) ? LVDT_GAIN_8 : LVDT_GAIN_1;
+ 109              		.loc 1 88 5
+ 110              		.loc 1 88 40 is_stmt 0
+ 111 0000 97070000 		lla	a5,.LANCHOR0
+ 111      93870700 
+ 112              		.loc 1 88 13
+ 113 0008 03A50700 		lw	a0,0(a5)
+  87:../src/hal/hal_lvdt.c ****     return (GPIO_get_outputs( &instance->Gain ) & 1) ? LVDT_GAIN_8 : LVDT_GAIN_1;
+ 114              		.loc 1 87 1
+ 115 000c 130101FF 		addi	sp,sp,-16
+ 116              		.cfi_def_cfa_offset 16
+ 117 0010 23261100 		sw	ra,12(sp)
+ 118              		.cfi_offset 1, -4
+ 119              		.loc 1 88 13
+ 120 0014 13050502 		addi	a0,a0,32
+ 121 0018 97000000 		call	GPIO_get_outputs
+ 121      E7800000 
+ 122              	.LVL4:
+  89:../src/hal/hal_lvdt.c **** }
+ 123              		.loc 1 89 1
+ 124 0020 8320C100 		lw	ra,12(sp)
+ 125              		.cfi_restore 1
+ 126 0024 13751500 		andi	a0,a0,1
+ 127 0028 13010101 		addi	sp,sp,16
+ 128              		.cfi_def_cfa_offset 0
+ 129 002c 67800000 		jr	ra
+ 130              		.cfi_endproc
+ 131              	.LFE2:
+ 133              		.section	.text.v_Set_Displacement_Offset,"ax",@progbits
+ 134              		.align	2
+ 135              		.globl	v_Set_Displacement_Offset
+ 137              	v_Set_Displacement_Offset:
+ 138              	.LFB3:
+  90:../src/hal/hal_lvdt.c **** 
+  91:../src/hal/hal_lvdt.c **** /**
+  92:../src/hal/hal_lvdt.c ****  * @fn void v_Set_Displacement_Offset(int32_t)
+  93:../src/hal/hal_lvdt.c ****  * @brief Sets the LVDT offset in microns applied to position readings following table lookup and i
+  94:../src/hal/hal_lvdt.c ****  * This is used because the mechanical zero of the focus mechanism will not coincide perfecty with 
+  95:../src/hal/hal_lvdt.c ****  * electrical zero of the LVDT. Measured and true position are related as:
+  96:../src/hal/hal_lvdt.c ****  * True Position = Measured Position + Offset.
+  97:../src/hal/hal_lvdt.c ****  *
+  98:../src/hal/hal_lvdt.c ****  * @param i32_Offset
+  99:../src/hal/hal_lvdt.c ****  */
+ 100:../src/hal/hal_lvdt.c **** void v_Set_Displacement_Offset( int32_t i32_Offset )
+ 101:../src/hal/hal_lvdt.c **** {
+ 139              		.loc 1 101 1 is_stmt 1
+ 140              		.cfi_startproc
+ 141              	.LVL5:
+ 102:../src/hal/hal_lvdt.c ****     i32_Displacement_Offset = i32_Offset;
+ 142              		.loc 1 102 5
+ 103:../src/hal/hal_lvdt.c **** }
+ 143              		.loc 1 103 1 is_stmt 0
+ 144 0000 67800000 		ret
+ 145              		.cfi_endproc
+ 146              	.LFE3:
+ 148              		.section	.text.V_Get_LVDT_Snapshot,"ax",@progbits
+ 149              		.align	2
+ 150              		.globl	V_Get_LVDT_Snapshot
+ 152              	V_Get_LVDT_Snapshot:
+ 153              	.LFB4:
+ 104:../src/hal/hal_lvdt.c **** 
+ 105:../src/hal/hal_lvdt.c **** /**
+ 106:../src/hal/hal_lvdt.c ****  * @fn void V_Get_LVDT_Snapshot(LVDT_Sample_t*)
+ 107:../src/hal/hal_lvdt.c ****  * @brief Takes a complex valued sample of the primary and secondary voltages on the LVDT sensor.
+ 108:../src/hal/hal_lvdt.c ****  *
+ 109:../src/hal/hal_lvdt.c ****  * @param p_LVDT_Sample Pointer to LVDT sample struct to fill in.
+ 110:../src/hal/hal_lvdt.c ****  */
+ 111:../src/hal/hal_lvdt.c **** void V_Get_LVDT_Snapshot( LVDT_Sample_t *p_LVDT_Sample )
+ 112:../src/hal/hal_lvdt.c **** {
+ 154              		.loc 1 112 1 is_stmt 1
+ 155              		.cfi_startproc
+ 156              	.LVL6:
+ 113:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_I_Primary = GPIO_get_inputs( &instance->Primary_I );
+ 157              		.loc 1 113 5
+ 112:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_I_Primary = GPIO_get_inputs( &instance->Primary_I );
+ 158              		.loc 1 112 1 is_stmt 0
+ 159 0000 130101FF 		addi	sp,sp,-16
+ 160              		.cfi_def_cfa_offset 16
+ 161 0004 23229100 		sw	s1,4(sp)
+ 162              		.cfi_offset 9, -12
+ 163              		.loc 1 113 62
+ 164 0008 97040000 		lla	s1,.LANCHOR0
+ 164      93840400 
+ 112:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_I_Primary = GPIO_get_inputs( &instance->Primary_I );
+ 165              		.loc 1 112 1
+ 166 0010 23248100 		sw	s0,8(sp)
+ 167              		.cfi_offset 8, -8
+ 168 0014 13040500 		mv	s0,a0
+ 169              		.loc 1 113 36
+ 170 0018 03A50400 		lw	a0,0(s1)
+ 171              	.LVL7:
+ 112:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_I_Primary = GPIO_get_inputs( &instance->Primary_I );
+ 172              		.loc 1 112 1
+ 173 001c 23261100 		sw	ra,12(sp)
+ 174              		.cfi_offset 1, -4
+ 175              		.loc 1 113 36
+ 176 0020 97000000 		call	GPIO_get_inputs
+ 176      E7800000 
+ 177              	.LVL8:
+ 178              		.loc 1 113 34
+ 179 0028 2320A400 		sw	a0,0(s0)
+ 114:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_Q_Primary = GPIO_get_inputs( &instance->Primary_Q );
+ 180              		.loc 1 114 5 is_stmt 1
+ 181              		.loc 1 114 36 is_stmt 0
+ 182 002c 03A50400 		lw	a0,0(s1)
+ 183 0030 13058500 		addi	a0,a0,8
+ 184 0034 97000000 		call	GPIO_get_inputs
+ 184      E7800000 
+ 185              	.LVL9:
+ 186              		.loc 1 114 34
+ 187 003c 2322A400 		sw	a0,4(s0)
+ 115:../src/hal/hal_lvdt.c **** 
+ 116:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_I_Secondary = GPIO_get_inputs( &instance->Secondary_I );
+ 188              		.loc 1 116 5 is_stmt 1
+ 189              		.loc 1 116 38 is_stmt 0
+ 190 0040 03A50400 		lw	a0,0(s1)
+ 191 0044 13050501 		addi	a0,a0,16
+ 192 0048 97000000 		call	GPIO_get_inputs
+ 192      E7800000 
+ 193              	.LVL10:
+ 194              		.loc 1 116 36
+ 195 0050 2324A400 		sw	a0,8(s0)
+ 117:../src/hal/hal_lvdt.c ****     p_LVDT_Sample->i32_Q_Secondary = GPIO_get_inputs( &instance->Secondary_Q );
+ 196              		.loc 1 117 5 is_stmt 1
+ 197              		.loc 1 117 38 is_stmt 0
+ 198 0054 03A50400 		lw	a0,0(s1)
+ 199 0058 13058501 		addi	a0,a0,24
+ 200 005c 97000000 		call	GPIO_get_inputs
+ 200      E7800000 
+ 201              	.LVL11:
+ 202              		.loc 1 117 36
+ 203 0064 2326A400 		sw	a0,12(s0)
+ 118:../src/hal/hal_lvdt.c **** 
+ 119:../src/hal/hal_lvdt.c **** }
+ 204              		.loc 1 119 1
+ 205 0068 8320C100 		lw	ra,12(sp)
+ 206              		.cfi_restore 1
+ 207 006c 03248100 		lw	s0,8(sp)
+ 208              		.cfi_restore 8
+ 209              	.LVL12:
+ 210 0070 83244100 		lw	s1,4(sp)
+ 211              		.cfi_restore 9
+ 212 0074 13010101 		addi	sp,sp,16
+ 213              		.cfi_def_cfa_offset 0
+ 214 0078 67800000 		jr	ra
+ 215              		.cfi_endproc
+ 216              	.LFE4:
+ 218              		.globl	__divdi3
+ 219              		.section	.text.i32_Get_Projection,"ax",@progbits
+ 220              		.align	2
+ 221              		.globl	i32_Get_Projection
+ 223              	i32_Get_Projection:
+ 224              	.LFB5:
+ 120:../src/hal/hal_lvdt.c **** 
+ 121:../src/hal/hal_lvdt.c **** /**
+ 122:../src/hal/hal_lvdt.c ****  * @fn int32_t i32_Get_Projection(LVDT_Sample_t*)
+ 123:../src/hal/hal_lvdt.c ****  * @brief Calculates the projection of the secondary response onto the primary excitation
+ 124:../src/hal/hal_lvdt.c ****  * If the primary and secondary complex valued voltages are represented as vectors, this is
+ 125:../src/hal/hal_lvdt.c ****  * the projection of the secondary onto the primary, normalized by the amplitude of the primary.
+ 126:../src/hal/hal_lvdt.c ****  * This can be seen as a complex valued loss between the primary and secondary. Mathematically, thi
+ 127:../src/hal/hal_lvdt.c ****  * is:
+ 128:../src/hal/hal_lvdt.c ****  * Projection = (S dot P)/ norm(P)^2
+ 129:../src/hal/hal_lvdt.c ****  * where P = primary (I,Q) pair
+ 130:../src/hal/hal_lvdt.c ****  *       S = secondary (I,Q) pair
+ 131:../src/hal/hal_lvdt.c ****  *       dot - vector dot product
+ 132:../src/hal/hal_lvdt.c ****  *       norm - vector norm (length)
+ 133:../src/hal/hal_lvdt.c ****  *
+ 134:../src/hal/hal_lvdt.c ****  * @param p_LVDT_Sample The (I,Q) values for both the primary and the secondary coils of the LVDT
+ 135:../src/hal/hal_lvdt.c ****  * @return  The normalized projection of the secondary response onto the primary excitation
+ 136:../src/hal/hal_lvdt.c ****  */
+ 137:../src/hal/hal_lvdt.c **** int32_t i32_Get_Projection( LVDT_Sample_t *p_LVDT_Sample )
+ 138:../src/hal/hal_lvdt.c **** {
+ 225              		.loc 1 138 1 is_stmt 1
+ 226              		.cfi_startproc
+ 227              	.LVL13:
+ 139:../src/hal/hal_lvdt.c ****     // This calculates the projection of the secondary response onto the primary viewing them as 2D
+ 140:../src/hal/hal_lvdt.c ****     // formed by (I,Q)
+ 141:../src/hal/hal_lvdt.c ****     // The projection is scaled to increase precision.
+ 142:../src/hal/hal_lvdt.c **** 
+ 143:../src/hal/hal_lvdt.c ****     int64_t numerator = (int64_t)p_LVDT_Sample->i32_I_Primary * (int64_t)p_LVDT_Sample->i32_I_Secon
+ 228              		.loc 1 143 5
+ 229              		.loc 1 143 47 is_stmt 0
+ 230 0000 83260500 		lw	a3,0(a0)
+ 144:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 231              		.loc 1 144 47
+ 232 0004 83274500 		lw	a5,4(a0)
+ 233              	.LVL14:
+ 145:../src/hal/hal_lvdt.c **** 
+ 146:../src/hal/hal_lvdt.c ****     int64_t denom     = ((int64_t)p_LVDT_Sample->i32_I_Primary  * (int64_t)p_LVDT_Sample->i32_I_Pri
+ 234              		.loc 1 146 5 is_stmt 1
+ 147:../src/hal/hal_lvdt.c ****                         ((int64_t)p_LVDT_Sample->i32_Q_Primary  * (int64_t)p_LVDT_Sample->i32_Q_Pri
+ 148:../src/hal/hal_lvdt.c **** 
+ 149:../src/hal/hal_lvdt.c ****     // Calculates the ratio of the length of the projection of S along P to the norm of P
+ 150:../src/hal/hal_lvdt.c ****     // r = (S dot P)/ norm(P)^2
+ 151:../src/hal/hal_lvdt.c **** 
+ 152:../src/hal/hal_lvdt.c ****     int64_t i64_Projection = (numerator * LVDT_SCALING_FACTOR  ) / denom;
+ 235              		.loc 1 152 5
+ 153:../src/hal/hal_lvdt.c **** 
+ 154:../src/hal/hal_lvdt.c ****     return (int32_t)i64_Projection;
+ 236              		.loc 1 154 5
+ 143:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 237              		.loc 1 143 63 is_stmt 0
+ 238 0008 03278500 		lw	a4,8(a0)
+ 144:../src/hal/hal_lvdt.c **** 
+ 239              		.loc 1 144 63
+ 240 000c 0326C500 		lw	a2,12(a0)
+ 146:../src/hal/hal_lvdt.c ****                         ((int64_t)p_LVDT_Sample->i32_Q_Primary  * (int64_t)p_LVDT_Sample->i32_Q_Pri
+ 241              		.loc 1 146 65
+ 242 0010 3388D602 		mul	a6,a3,a3
+ 138:../src/hal/hal_lvdt.c ****     // This calculates the projection of the secondary response onto the primary viewing them as 2D
+ 243              		.loc 1 138 1
+ 244 0014 130101FF 		addi	sp,sp,-16
+ 245              		.cfi_def_cfa_offset 16
+ 246 0018 23261100 		sw	ra,12(sp)
+ 247              		.cfi_offset 1, -4
+ 143:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 248              		.loc 1 143 63
+ 249 001c B385E602 		mul	a1,a3,a4
+ 144:../src/hal/hal_lvdt.c **** 
+ 250              		.loc 1 144 63
+ 251 0020 3385C702 		mul	a0,a5,a2
+ 252              	.LVL15:
+ 143:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 253              		.loc 1 143 63
+ 254 0024 3397E602 		mulh	a4,a3,a4
+ 255              	.LVL16:
+ 143:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 256              		.loc 1 143 13
+ 257 0028 3385A500 		add	a0,a1,a0
+ 258 002c B335B500 		sltu	a1,a0,a1
+ 144:../src/hal/hal_lvdt.c **** 
+ 259              		.loc 1 144 63
+ 260 0030 3396C702 		mulh	a2,a5,a2
+ 261              	.LVL17:
+ 143:../src/hal/hal_lvdt.c ****                         (int64_t)p_LVDT_Sample->i32_Q_Primary * (int64_t)p_LVDT_Sample->i32_Q_Secon
+ 262              		.loc 1 143 13
+ 263 0034 3307C700 		add	a4,a4,a2
+ 264 0038 B385E500 		add	a1,a1,a4
+ 147:../src/hal/hal_lvdt.c **** 
+ 265              		.loc 1 147 65
+ 266 003c 3386F702 		mul	a2,a5,a5
+ 152:../src/hal/hal_lvdt.c **** 
+ 267              		.loc 1 152 41
+ 268 0040 37470F00 		li	a4,999424
+ 269 0044 13070724 		addi	a4,a4,576
+ 147:../src/hal/hal_lvdt.c **** 
+ 270              		.loc 1 147 65
+ 271 0048 B397F702 		mulh	a5,a5,a5
+ 272              	.LVL18:
+ 146:../src/hal/hal_lvdt.c ****                         ((int64_t)p_LVDT_Sample->i32_Q_Primary  * (int64_t)p_LVDT_Sample->i32_Q_Pri
+ 273              		.loc 1 146 13
+ 274 004c 3306C800 		add	a2,a6,a2
+ 275 0050 33380601 		sltu	a6,a2,a6
+ 146:../src/hal/hal_lvdt.c ****                         ((int64_t)p_LVDT_Sample->i32_Q_Primary  * (int64_t)p_LVDT_Sample->i32_Q_Pri
+ 276              		.loc 1 146 65
+ 277 0054 B396D602 		mulh	a3,a3,a3
+ 278              	.LVL19:
+ 152:../src/hal/hal_lvdt.c **** 
+ 279              		.loc 1 152 41
+ 280 0058 B338E502 		mulhu	a7,a0,a4
+ 146:../src/hal/hal_lvdt.c ****                         ((int64_t)p_LVDT_Sample->i32_Q_Primary  * (int64_t)p_LVDT_Sample->i32_Q_Pri
+ 281              		.loc 1 146 13
+ 282 005c B386F600 		add	a3,a3,a5
+ 152:../src/hal/hal_lvdt.c **** 
+ 283              		.loc 1 152 13
+ 284 0060 B306D800 		add	a3,a6,a3
+ 152:../src/hal/hal_lvdt.c **** 
+ 285              		.loc 1 152 41
+ 286 0064 B385E502 		mul	a1,a1,a4
+ 152:../src/hal/hal_lvdt.c **** 
+ 287              		.loc 1 152 13
+ 288 0068 3305E502 		mul	a0,a0,a4
+ 289 006c B3851501 		add	a1,a1,a7
+ 290 0070 97000000 		call	__divdi3
+ 290      E7800000 
+ 291              	.LVL20:
+ 155:../src/hal/hal_lvdt.c **** }
+ 292              		.loc 1 155 1
+ 293 0078 8320C100 		lw	ra,12(sp)
+ 294              		.cfi_restore 1
+ 295 007c 13010101 		addi	sp,sp,16
+ 296              		.cfi_def_cfa_offset 0
+ 297 0080 67800000 		jr	ra
+ 298              		.cfi_endproc
+ 299              	.LFE5:
+ 301              		.globl	__floatsisf
+ 302              		.globl	__subsf3
+ 303              		.globl	__mulsf3
+ 304              		.globl	__addsf3
+ 305              		.globl	__divsf3
+ 306              		.section	.text.f_Get_Displacement,"ax",@progbits
+ 307              		.align	2
+ 308              		.globl	f_Get_Displacement
+ 310              	f_Get_Displacement:
+ 311              	.LFB6:
+ 156:../src/hal/hal_lvdt.c **** 
+ 157:../src/hal/hal_lvdt.c **** /**
+ 158:../src/hal/hal_lvdt.c ****  * @fn float f_Get_Displacement(int32_t)
+ 159:../src/hal/hal_lvdt.c ****  * @brief Uses the projection of secondary response onto primary to calculate a displacement in mic
+ 160:../src/hal/hal_lvdt.c ****  * @note The appropriate interpolation table is selected based on the gain setting in use.
+ 161:../src/hal/hal_lvdt.c ****  *
+ 162:../src/hal/hal_lvdt.c ****  * @param i32_Projection
+ 163:../src/hal/hal_lvdt.c ****  * @return Displacement in microns.
+ 164:../src/hal/hal_lvdt.c ****  */
+ 165:../src/hal/hal_lvdt.c **** float f_Get_Displacement( int32_t i32_Projection )
+ 166:../src/hal/hal_lvdt.c **** {
+ 312              		.loc 1 166 1 is_stmt 1
+ 313              		.cfi_startproc
+ 314              	.LVL21:
+ 167:../src/hal/hal_lvdt.c ****     Cal_Value_t *table;
+ 315              		.loc 1 167 5
+ 168:../src/hal/hal_lvdt.c ****     uint8_t u8_Table_Size;
+ 316              		.loc 1 168 5
+ 169:../src/hal/hal_lvdt.c ****     LVDT_Gain_Sel_t e_Gain_Sel;
+ 317              		.loc 1 169 5
+ 170:../src/hal/hal_lvdt.c **** 
+ 171:../src/hal/hal_lvdt.c ****     /// choose table based on minimums for range
+ 172:../src/hal/hal_lvdt.c ****     e_Gain_Sel = e_Get_LVDT_Gain();
+ 318              		.loc 1 172 5
+ 166:../src/hal/hal_lvdt.c ****     Cal_Value_t *table;
+ 319              		.loc 1 166 1 is_stmt 0
+ 320 0000 130101FE 		addi	sp,sp,-32
+ 321              		.cfi_def_cfa_offset 32
+ 322 0004 23263101 		sw	s3,12(sp)
+ 323 0008 232E1100 		sw	ra,28(sp)
+ 324 000c 232C8100 		sw	s0,24(sp)
+ 325 0010 232A9100 		sw	s1,20(sp)
+ 326 0014 23282101 		sw	s2,16(sp)
+ 327 0018 23244101 		sw	s4,8(sp)
+ 328              		.cfi_offset 19, -20
+ 329              		.cfi_offset 1, -4
+ 330              		.cfi_offset 8, -8
+ 331              		.cfi_offset 9, -12
+ 332              		.cfi_offset 18, -16
+ 333              		.cfi_offset 20, -24
+ 166:../src/hal/hal_lvdt.c ****     Cal_Value_t *table;
+ 334              		.loc 1 166 1
+ 335 001c 93090500 		mv	s3,a0
+ 336              		.loc 1 172 18
+ 337 0020 97000000 		call	e_Get_LVDT_Gain
+ 337      E7800000 
+ 338              	.LVL22:
+ 173:../src/hal/hal_lvdt.c **** 
+ 174:../src/hal/hal_lvdt.c ****     switch( e_Gain_Sel )
+ 339              		.loc 1 174 5 is_stmt 1
+ 340 0028 63000502 		beq	a0,zero,.L15
+ 341 002c 93071000 		li	a5,1
+ 342 0030 13090000 		li	s2,0
+ 343 0034 6310F502 		bne	a0,a5,.L11
+ 175:../src/hal/hal_lvdt.c ****     {
+ 176:../src/hal/hal_lvdt.c ****     case LVDT_GAIN_1:
+ 177:../src/hal/hal_lvdt.c **** 
+ 178:../src/hal/hal_lvdt.c ****         u8_Table_Size = sizeof(Cal_G1)/sizeof(Cal_Value_t);
+ 179:../src/hal/hal_lvdt.c ****         table = (Cal_Value_t *)Cal_G1;
+ 180:../src/hal/hal_lvdt.c ****         break;
+ 181:../src/hal/hal_lvdt.c **** 
+ 182:../src/hal/hal_lvdt.c ****     case LVDT_GAIN_8:
+ 183:../src/hal/hal_lvdt.c ****         u8_Table_Size = sizeof(Cal_G8)/sizeof(Cal_Value_t);
+ 344              		.loc 1 183 23 is_stmt 0
+ 345 0038 13099000 		li	s2,9
+ 184:../src/hal/hal_lvdt.c ****         table = Cal_G8;
+ 346              		.loc 1 184 15
+ 347 003c 17040000 		lla	s0,.LANCHOR2
+ 347      13040400 
+ 348 0044 6F000001 		j	.L11
+ 349              	.L15:
+ 178:../src/hal/hal_lvdt.c ****         table = (Cal_Value_t *)Cal_G1;
+ 350              		.loc 1 178 23
+ 351 0048 13096001 		li	s2,22
+ 179:../src/hal/hal_lvdt.c ****         break;
+ 352              		.loc 1 179 15
+ 353 004c 17040000 		lla	s0,.LANCHOR3
+ 353      13040400 
+ 354              	.L11:
+ 355              	.LVL23:
+ 185:../src/hal/hal_lvdt.c ****         break;
+ 186:../src/hal/hal_lvdt.c **** 
+ 187:../src/hal/hal_lvdt.c ****     default:
+ 188:../src/hal/hal_lvdt.c ****         break;
+ 189:../src/hal/hal_lvdt.c ****     }
+ 190:../src/hal/hal_lvdt.c **** 
+ 191:../src/hal/hal_lvdt.c ****     uint8_t u8_n;
+ 356              		.loc 1 191 5 is_stmt 1
+ 192:../src/hal/hal_lvdt.c ****     float f_Displacement;
+ 357              		.loc 1 192 5
+ 193:../src/hal/hal_lvdt.c **** 
+ 194:../src/hal/hal_lvdt.c ****     /// Check first to see if it is out of range wrt to table limits
+ 195:../src/hal/hal_lvdt.c ****     if( i32_Projection < table[u8_Table_Size-1].i32_Projection )
+ 358              		.loc 1 195 5
+ 359              		.loc 1 195 31 is_stmt 0
+ 360 0054 93173900 		slli	a5,s2,3
+ 361              		.loc 1 195 48
+ 362 0058 B307F400 		add	a5,s0,a5
+ 363              		.loc 1 195 7
+ 364 005c 83A7C7FF 		lw	a5,-4(a5)
+ 365 0060 63C0F910 		bgt	a5,s3,.L17
+ 196:../src/hal/hal_lvdt.c ****         return -999999.0f;
+ 197:../src/hal/hal_lvdt.c **** 
+ 198:../src/hal/hal_lvdt.c ****     if( i32_Projection > table[0].i32_Projection )
+ 366              		.loc 1 198 5 is_stmt 1
+ 367              		.loc 1 198 7 is_stmt 0
+ 368 0064 83274400 		lw	a5,4(s0)
+ 369 0068 63C43711 		blt	a5,s3,.L18
+ 199:../src/hal/hal_lvdt.c ****         return 999999.0f;
+ 200:../src/hal/hal_lvdt.c **** 
+ 201:../src/hal/hal_lvdt.c ****     /// Find the two points bracketing the projection value, will be in interval (u8_n, u8_n+1)
+ 202:../src/hal/hal_lvdt.c ****     for( u8_n = 0; u8_n < (u8_Table_Size - 1); u8_n++ )
+ 370              		.loc 1 202 15
+ 371 006c 93040000 		li	s1,0
+ 372              		.loc 1 202 42
+ 373 0070 1309F9FF 		addi	s2,s2,-1
+ 374              	.LVL24:
+ 375              	.L14:
+ 203:../src/hal/hal_lvdt.c ****     {
+ 204:../src/hal/hal_lvdt.c ****         if( i32_Projection >  table[u8_n+1].i32_Projection )
+ 376              		.loc 1 204 9 is_stmt 1
+ 377              		.loc 1 204 36 is_stmt 0
+ 378 0074 13871400 		addi	a4,s1,1
+ 379              		.loc 1 204 44
+ 380 0078 93173700 		slli	a5,a4,3
+ 381 007c B307F400 		add	a5,s0,a5
+ 382              		.loc 1 204 11
+ 383 0080 83A74700 		lw	a5,4(a5)
+ 384 0084 63C63701 		blt	a5,s3,.L13
+ 202:../src/hal/hal_lvdt.c ****     {
+ 385              		.loc 1 202 52 discriminator 2
+ 386 0088 9374F70F 		andi	s1,a4,0xff
+ 387              	.LVL25:
+ 202:../src/hal/hal_lvdt.c ****     {
+ 388              		.loc 1 202 5 discriminator 2
+ 389 008c E3C424FF 		blt	s1,s2,.L14
+ 390              	.L13:
+ 205:../src/hal/hal_lvdt.c ****             break;
+ 206:../src/hal/hal_lvdt.c ****     }
+ 207:../src/hal/hal_lvdt.c **** 
+ 208:../src/hal/hal_lvdt.c ****     f_Displacement = f_Interpolate_2D( (float) i32_Projection,
+ 391              		.loc 1 208 5 is_stmt 1
+ 392              		.loc 1 208 22 is_stmt 0
+ 393 0090 13850900 		mv	a0,s3
+ 394              	.LVL26:
+ 209:../src/hal/hal_lvdt.c ****                                        (float)table[u8_n].i32_Projection,
+ 395              		.loc 1 209 52
+ 396 0094 93943400 		slli	s1,s1,3
+ 397              	.LVL27:
+ 208:../src/hal/hal_lvdt.c ****                                        (float)table[u8_n].i32_Projection,
+ 398              		.loc 1 208 22
+ 399 0098 97000000 		call	__floatsisf
+ 399      E7800000 
+ 400              	.LVL28:
+ 401              		.loc 1 209 52
+ 402 00a0 B3099400 		add	s3,s0,s1
+ 403              	.LVL29:
+ 208:../src/hal/hal_lvdt.c ****                                        (float)table[u8_n].i32_Projection,
+ 404              		.loc 1 208 22
+ 405 00a4 130A0500 		mv	s4,a0
+ 406 00a8 03A54900 		lw	a0,4(s3)
+ 210:../src/hal/hal_lvdt.c ****                                        (float)table[u8_n+1].i32_Projection,
+ 407              		.loc 1 210 52
+ 408 00ac 93848400 		addi	s1,s1,8
+ 409 00b0 33049400 		add	s0,s0,s1
+ 410              	.LVL30:
+ 208:../src/hal/hal_lvdt.c ****                                        (float)table[u8_n].i32_Projection,
+ 411              		.loc 1 208 22
+ 412 00b4 97000000 		call	__floatsisf
+ 412      E7800000 
+ 413              	.LVL31:
+ 414 00bc 13090500 		mv	s2,a0
+ 415 00c0 03254400 		lw	a0,4(s0)
+ 416 00c4 97000000 		call	__floatsisf
+ 416      E7800000 
+ 417              	.LVL32:
+ 418 00cc 93040500 		mv	s1,a0
+ 419              	.LVL33:
+ 420              	.LBB4:
+ 421              	.LBB5:
+ 211:../src/hal/hal_lvdt.c ****                                        table[u8_n].f_Displacement,
+ 212:../src/hal/hal_lvdt.c ****                                        table[u8_n+1].f_Displacement );
+ 213:../src/hal/hal_lvdt.c **** 
+ 214:../src/hal/hal_lvdt.c **** 
+ 215:../src/hal/hal_lvdt.c **** 
+ 216:../src/hal/hal_lvdt.c ****     return f_Displacement;
+ 217:../src/hal/hal_lvdt.c **** }
+ 218:../src/hal/hal_lvdt.c **** 
+ 219:../src/hal/hal_lvdt.c **** /**
+ 220:../src/hal/hal_lvdt.c ****  * @fn float f_Interpolate_2D(float, float, float, float, float)
+ 221:../src/hal/hal_lvdt.c ****  * @brief 2 Dimensional Lagrangian interpolation
+ 222:../src/hal/hal_lvdt.c ****  * @param x  Value of x between x0 and x1 where y is to be evaluated
+ 223:../src/hal/hal_lvdt.c ****  * @param x0 Lower bound of interval containing x
+ 224:../src/hal/hal_lvdt.c ****  * @param x1 Upper bound of interval containing x
+ 225:../src/hal/hal_lvdt.c ****  * @param y0 Value of y at lower bound
+ 226:../src/hal/hal_lvdt.c ****  * @param y1 Value of y at upper bound
+ 227:../src/hal/hal_lvdt.c ****  * @return
+ 228:../src/hal/hal_lvdt.c ****  */
+ 229:../src/hal/hal_lvdt.c **** static float f_Interpolate_2D( float x, float x0, float x1, float y0, float y1 )
+ 230:../src/hal/hal_lvdt.c **** {
+ 231:../src/hal/hal_lvdt.c ****     float  y = (x - x0) * y1 + (x1 - x) * y0;
+ 422              		.loc 1 231 5 is_stmt 1
+ 423              		.loc 1 231 19 is_stmt 0
+ 424 00d0 93050900 		mv	a1,s2
+ 425 00d4 13050A00 		mv	a0,s4
+ 426 00d8 97000000 		call	__subsf3
+ 426      E7800000 
+ 427              	.LVL34:
+ 428              		.loc 1 231 25
+ 429 00e0 83250400 		lw	a1,0(s0)
+ 430              	.LVL35:
+ 431 00e4 97000000 		call	__mulsf3
+ 431      E7800000 
+ 432              	.LVL36:
+ 433 00ec 13040500 		mv	s0,a0
+ 434              		.loc 1 231 36
+ 435 00f0 93050A00 		mv	a1,s4
+ 436 00f4 13850400 		mv	a0,s1
+ 437 00f8 97000000 		call	__subsf3
+ 437      E7800000 
+ 438              	.LVL37:
+ 439              		.loc 1 231 41
+ 440 0100 83A50900 		lw	a1,0(s3)
+ 441              	.LVL38:
+ 442 0104 97000000 		call	__mulsf3
+ 442      E7800000 
+ 443              	.LVL39:
+ 444              		.loc 1 231 12
+ 445 010c 93050500 		mv	a1,a0
+ 446 0110 13050400 		mv	a0,s0
+ 447 0114 97000000 		call	__addsf3
+ 447      E7800000 
+ 448              	.LVL40:
+ 449 011c 13040500 		mv	s0,a0
+ 450              	.LVL41:
+ 232:../src/hal/hal_lvdt.c ****     y /= (x1 - x0 );
+ 451              		.loc 1 232 5 is_stmt 1
+ 452              		.loc 1 232 14 is_stmt 0
+ 453 0120 93050900 		mv	a1,s2
+ 454 0124 13850400 		mv	a0,s1
+ 455 0128 97000000 		call	__subsf3
+ 455      E7800000 
+ 456              	.LVL42:
+ 457              		.loc 1 232 7
+ 458 0130 93050500 		mv	a1,a0
+ 459 0134 13050400 		mv	a0,s0
+ 460 0138 97000000 		call	__divsf3
+ 460      E7800000 
+ 461              	.LVL43:
+ 233:../src/hal/hal_lvdt.c **** 
+ 234:../src/hal/hal_lvdt.c ****     return y;
+ 462              		.loc 1 234 5 is_stmt 1
+ 463              	.LBE5:
+ 464              	.LBE4:
+ 216:../src/hal/hal_lvdt.c **** }
+ 465              		.loc 1 216 5
+ 466              	.L10:
+ 217:../src/hal/hal_lvdt.c **** 
+ 467              		.loc 1 217 1 is_stmt 0
+ 468 0140 8320C101 		lw	ra,28(sp)
+ 469              		.cfi_remember_state
+ 470              		.cfi_restore 1
+ 471 0144 03248101 		lw	s0,24(sp)
+ 472              		.cfi_restore 8
+ 473 0148 83244101 		lw	s1,20(sp)
+ 474              		.cfi_restore 9
+ 475 014c 03290101 		lw	s2,16(sp)
+ 476              		.cfi_restore 18
+ 477 0150 8329C100 		lw	s3,12(sp)
+ 478              		.cfi_restore 19
+ 479 0154 032A8100 		lw	s4,8(sp)
+ 480              		.cfi_restore 20
+ 481 0158 13010102 		addi	sp,sp,32
+ 482              		.cfi_def_cfa_offset 0
+ 483 015c 67800000 		jr	ra
+ 484              	.LVL44:
+ 485              	.L17:
+ 486              		.cfi_restore_state
+ 196:../src/hal/hal_lvdt.c **** 
+ 487              		.loc 1 196 16
+ 488 0160 97070000 		lla	a5,.LC0
+ 488      93870700 
+ 489              	.L21:
+ 199:../src/hal/hal_lvdt.c **** 
+ 490              		.loc 1 199 16
+ 491 0168 03A50700 		lw	a0,0(a5)
+ 492              	.LVL45:
+ 493 016c 6FF05FFD 		j	.L10
+ 494              	.LVL46:
+ 495              	.L18:
+ 496 0170 97070000 		lla	a5,.LC1
+ 496      93870700 
+ 497 0178 6FF01FFF 		j	.L21
+ 498              		.cfi_endproc
+ 499              	.LFE6:
+ 501              		.globl	__fixsfsi
+ 502              		.section	.text.i32_Get_Position,"ax",@progbits
+ 503              		.align	2
+ 504              		.globl	i32_Get_Position
+ 506              	i32_Get_Position:
+ 507              	.LFB8:
+ 235:../src/hal/hal_lvdt.c **** }
+ 236:../src/hal/hal_lvdt.c **** 
+ 237:../src/hal/hal_lvdt.c **** /**
+ 238:../src/hal/hal_lvdt.c ****  * @fn int32_t i32_Get_Position(void)
+ 239:../src/hal/hal_lvdt.c ****  * @brief Higher level function to take snapshot of LVDT response and derive a position in microns.
+ 240:../src/hal/hal_lvdt.c ****  * @return Position in microns of LVDT.
+ 241:../src/hal/hal_lvdt.c ****  */
+ 242:../src/hal/hal_lvdt.c **** int32_t i32_Get_Position(void)
+ 243:../src/hal/hal_lvdt.c **** {
+ 508              		.loc 1 243 1 is_stmt 1
+ 509              		.cfi_startproc
+ 244:../src/hal/hal_lvdt.c ****     LVDT_Sample_t LVDT_Sample;
+ 510              		.loc 1 244 5
+ 245:../src/hal/hal_lvdt.c ****     int32_t i32_Projection;
+ 511              		.loc 1 245 5
+ 246:../src/hal/hal_lvdt.c ****     int32_t  i32_Displacement_microns;
+ 512              		.loc 1 246 5
+ 247:../src/hal/hal_lvdt.c **** 
+ 248:../src/hal/hal_lvdt.c ****     V_Get_LVDT_Snapshot( &LVDT_Sample );
+ 513              		.loc 1 248 5
+ 243:../src/hal/hal_lvdt.c ****     LVDT_Sample_t LVDT_Sample;
+ 514              		.loc 1 243 1 is_stmt 0
+ 515 0000 130101FE 		addi	sp,sp,-32
+ 516              		.cfi_def_cfa_offset 32
+ 517              		.loc 1 248 5
+ 518 0004 13050100 		mv	a0,sp
+ 243:../src/hal/hal_lvdt.c ****     LVDT_Sample_t LVDT_Sample;
+ 519              		.loc 1 243 1
+ 520 0008 232E1100 		sw	ra,28(sp)
+ 521              		.cfi_offset 1, -4
+ 522              		.loc 1 248 5
+ 523 000c 97000000 		call	V_Get_LVDT_Snapshot
+ 523      E7800000 
+ 524              	.LVL47:
+ 249:../src/hal/hal_lvdt.c ****     i32_Projection = i32_Get_Projection( &LVDT_Sample );
+ 525              		.loc 1 249 5 is_stmt 1
+ 526              		.loc 1 249 22 is_stmt 0
+ 527 0014 13050100 		mv	a0,sp
+ 528 0018 97000000 		call	i32_Get_Projection
+ 528      E7800000 
+ 529              	.LVL48:
+ 250:../src/hal/hal_lvdt.c **** 
+ 251:../src/hal/hal_lvdt.c ****     ///Applying rounding
+ 252:../src/hal/hal_lvdt.c ****     i32_Displacement_microns  = (int32_t)(f_Get_Displacement( i32_Projection ) + 0.5f);
+ 530              		.loc 1 252 5 is_stmt 1
+ 531              		.loc 1 252 43 is_stmt 0
+ 532 0020 97000000 		call	f_Get_Displacement
+ 532      E7800000 
+ 533              	.LVL49:
+ 253:../src/hal/hal_lvdt.c **** 
+ 254:../src/hal/hal_lvdt.c ****     return POS_SGN_CONVENTION * i32_Displacement_microns;
+ 534              		.loc 1 254 5 is_stmt 1
+ 252:../src/hal/hal_lvdt.c **** 
+ 535              		.loc 1 252 80 is_stmt 0
+ 536 0028 97070000 		lla	a5,.LC2
+ 536      93870700 
+ 537 0030 83A50700 		lw	a1,0(a5)
+ 538 0034 97000000 		call	__addsf3
+ 538      E7800000 
+ 539              	.LVL50:
+ 252:../src/hal/hal_lvdt.c **** 
+ 540              		.loc 1 252 31
+ 541 003c 97000000 		call	__fixsfsi
+ 541      E7800000 
+ 542              	.LVL51:
+ 255:../src/hal/hal_lvdt.c **** }
+ 543              		.loc 1 255 1
+ 544 0044 8320C101 		lw	ra,28(sp)
+ 545              		.cfi_restore 1
+ 546 0048 3305A040 		neg	a0,a0
+ 547 004c 13010102 		addi	sp,sp,32
+ 548              		.cfi_def_cfa_offset 0
+ 549 0050 67800000 		jr	ra
+ 550              		.cfi_endproc
+ 551              	.LFE8:
+ 553              		.section	.bss.LVDT_Instance,"aw",@nobits
+ 554              		.align	2
+ 555              		.set	.LANCHOR1,. + 0
+ 558              	LVDT_Instance:
+ 559 0000 00000000 		.zero	40
+ 559      00000000 
+ 559      00000000 
+ 559      00000000 
+ 559      00000000 
+ 560              		.section	.data.Cal_G8,"aw"
+ 561              		.align	2
+ 562              		.set	.LANCHOR2,. + 0
+ 565              	Cal_G8:
+ 566 0000 000043C3 		.word	3275948032
+ 567 0004 65331B00 		.word	1782629
+ 568 0008 000016C3 		.word	3272998912
+ 569 000c 3A6A1400 		.word	1337914
+ 570 0010 0000C8C2 		.word	3267887104
+ 571 0014 286A0D00 		.word	879144
+ 572 0018 000048C2 		.word	3259498496
+ 573 001c 5B500600 		.word	413787
+ 574 0020 00000000 		.word	0
+ 575 0024 395EFFFF 		.word	-41415
+ 576 0028 00004842 		.word	1112014848
+ 577 002c 846EF8FF 		.word	-495996
+ 578 0030 0000C842 		.word	1120403456
+ 579 0034 9D6DF1FF 		.word	-954979
+ 580 0038 00801543 		.word	1125482496
+ 581 003c 1C78EAFF 		.word	-1411044
+ 582 0040 00004843 		.word	1128792064
+ 583 0044 EB67E3FF 		.word	-1873941
+ 584              		.section	.rodata.Cal_G1,"a"
+ 585              		.align	2
+ 586              		.set	.LANCHOR3,. + 0
+ 589              	Cal_G1:
+ 590 0000 00C08FC4 		.word	3297755136
+ 591 0004 B8481500 		.word	1394872
+ 592 0008 008060C4 		.word	3294658560
+ 593 000c 0CF40F00 		.word	1045516
+ 594 0010 008047C4 		.word	3293020160
+ 595 0014 83D60D00 		.word	906883
+ 596 0018 00002FC4 		.word	3291414528
+ 597 001c 671D0C00 		.word	793959
+ 598 0020 00C015C4 		.word	3289759744
+ 599 0024 25690A00 		.word	682277
+ 600 0028 0080F9C3 		.word	3287908352
+ 601 002c 0BA30800 		.word	566027
+ 602 0030 0000C8C3 		.word	3284664320
+ 603 0034 1AE50600 		.word	451866
+ 604 0038 008095C3 		.word	3281354752
+ 605 003c ED1B0500 		.word	334829
+ 606 0040 000047C3 		.word	3276210176
+ 607 0044 EF5D0300 		.word	220655
+ 608 0048 0000C8C2 		.word	3267887104
+ 609 004c 08A50100 		.word	107784
+ 610 0050 00000000 		.word	0
+ 611 0054 FDE2FFFF 		.word	-7427
+ 612 0058 0000CA42 		.word	1120534528
+ 613 005c C413FEFF 		.word	-126012
+ 614 0060 00004843 		.word	1128792064
+ 615 0064 F861FCFF 		.word	-237064
+ 616 0068 00009743 		.word	1133969408
+ 617 006c 8C9DFAFF 		.word	-352884
+ 618 0070 0080C843 		.word	1137213440
+ 619 0074 53E6F8FF 		.word	-465325
+ 620 0078 0000FB43 		.word	1140523008
+ 621 007c E424F7FF 		.word	-580380
+ 622 0080 00801644 		.word	1142325248
+ 623 0084 7368F5FF 		.word	-694157
+ 624 0088 00C02F44 		.word	1143980032
+ 625 008c 07AFF3FF 		.word	-807161
+ 626 0090 00804844 		.word	1145602048
+ 627 0094 00EEF1FF 		.word	-922112
+ 628 0098 00C06144 		.word	1147256832
+ 629 009c 2731F0FF 		.word	-1035993
+ 630 00a0 00407A44 		.word	1148862464
+ 631 00a4 9278EEFF 		.word	-1148782
+ 632 00a8 00C08F44 		.word	1150271488
+ 633 00ac B5DAEBFF 		.word	-1320267
+ 634              		.section	.rodata.f_Get_Displacement.cst4,"aM",@progbits,4
+ 635              		.align	2
+ 636              	.LC0:
+ 637 0000 F02374C9 		.word	3379831792
+ 638              	.LC1:
+ 639 0004 F0237449 		.word	1232348144
+ 640              		.section	.rodata.i32_Get_Position.cst4,"aM",@progbits,4
+ 641              		.align	2
+ 642              	.LC2:
+ 643 0000 0000003F 		.word	1056964608
+ 644              		.section	.sbss.instance,"aw",@nobits
+ 645              		.align	2
+ 646              		.set	.LANCHOR0,. + 0
+ 649              	instance:
+ 650 0000 00000000 		.zero	4
+ 651              		.text
+ 652              	.Letext0:
+ 653              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 654              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 655              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 656              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 657              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/core_gpio.h"
+ 658              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/lvdt.h"
+ 659              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/lvdt_cal.h"
+ 660              		.file 9 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hal_lvdt.c
+<<<<<<< HEAD
+     /tmp/ccnk37n4.s:13     .text.v_Init_LVDT:0000000000000000 v_Init_LVDT
+     /tmp/ccnk37n4.s:17     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:18     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:19     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:20     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:21     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:23     .text.v_Init_LVDT:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:25     .text.v_Init_LVDT:000000000000000c .L0 
+     /tmp/ccnk37n4.s:27     .text.v_Init_LVDT:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:28     .text.v_Init_LVDT:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:30     .text.v_Init_LVDT:0000000000000018 .L0 
+     /tmp/ccnk37n4.s:32     .text.v_Init_LVDT:000000000000001c .L0 
+     /tmp/ccnk37n4.s:34     .text.v_Init_LVDT:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:36     .text.v_Init_LVDT:0000000000000024 .L0 
+     /tmp/ccnk37n4.s:38     .text.v_Init_LVDT:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:40     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/ccnk37n4.s:41     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/ccnk37n4.s:42     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/ccnk37n4.s:44     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:45     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:46     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:48     .text.v_Init_LVDT:0000000000000034 .L0 
+     /tmp/ccnk37n4.s:49     .text.v_Init_LVDT:0000000000000034 .L0 
+     /tmp/ccnk37n4.s:51     .text.v_Init_LVDT:0000000000000038 .L0 
+     /tmp/ccnk37n4.s:52     .text.v_Init_LVDT:0000000000000038 .L0 
+     /tmp/ccnk37n4.s:54     .text.v_Init_LVDT:000000000000003c .L0 
+     /tmp/ccnk37n4.s:55     .text.v_Init_LVDT:000000000000003c .L0 
+     /tmp/ccnk37n4.s:57     .text.v_Init_LVDT:0000000000000040 .L0 
+     /tmp/ccnk37n4.s:59     .text.v_Init_LVDT:0000000000000044 .L0 
+     /tmp/ccnk37n4.s:61     .text.v_Init_LVDT:0000000000000048 .L0 
+     /tmp/ccnk37n4.s:63     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/ccnk37n4.s:64     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/ccnk37n4.s:65     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/ccnk37n4.s:68     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:69     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:70     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:71     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:72     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:73     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:74     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:75     .text.v_Init_LVDT:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:82     .text.v_Set_LVDT_Gain:0000000000000000 v_Set_LVDT_Gain
+     /tmp/ccnk37n4.s:85     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:87     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:88     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:89     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:91     .text.v_Set_LVDT_Gain:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:98     .text.v_Set_LVDT_Gain:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:105    .text.e_Get_LVDT_Gain:0000000000000000 e_Get_LVDT_Gain
+     /tmp/ccnk37n4.s:108    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:109    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:110    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:111    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:113    .text.e_Get_LVDT_Gain:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:115    .text.e_Get_LVDT_Gain:000000000000000c .L0 
+     /tmp/ccnk37n4.s:116    .text.e_Get_LVDT_Gain:0000000000000010 .L0 
+     /tmp/ccnk37n4.s:118    .text.e_Get_LVDT_Gain:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:120    .text.e_Get_LVDT_Gain:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:124    .text.e_Get_LVDT_Gain:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:125    .text.e_Get_LVDT_Gain:0000000000000024 .L0 
+     /tmp/ccnk37n4.s:128    .text.e_Get_LVDT_Gain:000000000000002c .L0 
+     /tmp/ccnk37n4.s:130    .text.e_Get_LVDT_Gain:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:137    .text.v_Set_Displacement_Offset:0000000000000000 v_Set_Displacement_Offset
+     /tmp/ccnk37n4.s:140    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:142    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:143    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:144    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:145    .text.v_Set_Displacement_Offset:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:152    .text.V_Get_LVDT_Snapshot:0000000000000000 V_Get_LVDT_Snapshot
+     /tmp/ccnk37n4.s:155    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:157    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:158    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:159    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:160    .text.V_Get_LVDT_Snapshot:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:162    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:164    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:166    .text.V_Get_LVDT_Snapshot:0000000000000010 .L0 
+     /tmp/ccnk37n4.s:167    .text.V_Get_LVDT_Snapshot:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:170    .text.V_Get_LVDT_Snapshot:0000000000000018 .L0 
+     /tmp/ccnk37n4.s:173    .text.V_Get_LVDT_Snapshot:000000000000001c .L0 
+     /tmp/ccnk37n4.s:174    .text.V_Get_LVDT_Snapshot:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:176    .text.V_Get_LVDT_Snapshot:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:179    .text.V_Get_LVDT_Snapshot:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:181    .text.V_Get_LVDT_Snapshot:000000000000002c .L0 
+     /tmp/ccnk37n4.s:182    .text.V_Get_LVDT_Snapshot:000000000000002c .L0 
+     /tmp/ccnk37n4.s:187    .text.V_Get_LVDT_Snapshot:000000000000003c .L0 
+     /tmp/ccnk37n4.s:189    .text.V_Get_LVDT_Snapshot:0000000000000040 .L0 
+     /tmp/ccnk37n4.s:190    .text.V_Get_LVDT_Snapshot:0000000000000040 .L0 
+     /tmp/ccnk37n4.s:195    .text.V_Get_LVDT_Snapshot:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:197    .text.V_Get_LVDT_Snapshot:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:198    .text.V_Get_LVDT_Snapshot:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:203    .text.V_Get_LVDT_Snapshot:0000000000000064 .L0 
+     /tmp/ccnk37n4.s:205    .text.V_Get_LVDT_Snapshot:0000000000000068 .L0 
+     /tmp/ccnk37n4.s:206    .text.V_Get_LVDT_Snapshot:000000000000006c .L0 
+     /tmp/ccnk37n4.s:208    .text.V_Get_LVDT_Snapshot:0000000000000070 .L0 
+     /tmp/ccnk37n4.s:211    .text.V_Get_LVDT_Snapshot:0000000000000074 .L0 
+     /tmp/ccnk37n4.s:213    .text.V_Get_LVDT_Snapshot:0000000000000078 .L0 
+     /tmp/ccnk37n4.s:215    .text.V_Get_LVDT_Snapshot:000000000000007c .L0 
+     /tmp/ccnk37n4.s:223    .text.i32_Get_Projection:0000000000000000 i32_Get_Projection
+     /tmp/ccnk37n4.s:226    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:228    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:229    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:230    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:232    .text.i32_Get_Projection:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:235    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:236    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:237    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:238    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:240    .text.i32_Get_Projection:000000000000000c .L0 
+     /tmp/ccnk37n4.s:242    .text.i32_Get_Projection:0000000000000010 .L0 
+     /tmp/ccnk37n4.s:244    .text.i32_Get_Projection:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:245    .text.i32_Get_Projection:0000000000000018 .L0 
+     /tmp/ccnk37n4.s:247    .text.i32_Get_Projection:000000000000001c .L0 
+     /tmp/ccnk37n4.s:249    .text.i32_Get_Projection:000000000000001c .L0 
+     /tmp/ccnk37n4.s:251    .text.i32_Get_Projection:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:254    .text.i32_Get_Projection:0000000000000024 .L0 
+     /tmp/ccnk37n4.s:257    .text.i32_Get_Projection:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:260    .text.i32_Get_Projection:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:263    .text.i32_Get_Projection:0000000000000034 .L0 
+     /tmp/ccnk37n4.s:266    .text.i32_Get_Projection:000000000000003c .L0 
+     /tmp/ccnk37n4.s:268    .text.i32_Get_Projection:0000000000000040 .L0 
+     /tmp/ccnk37n4.s:271    .text.i32_Get_Projection:0000000000000048 .L0 
+     /tmp/ccnk37n4.s:274    .text.i32_Get_Projection:000000000000004c .L0 
+     /tmp/ccnk37n4.s:277    .text.i32_Get_Projection:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:280    .text.i32_Get_Projection:0000000000000058 .L0 
+     /tmp/ccnk37n4.s:282    .text.i32_Get_Projection:000000000000005c .L0 
+     /tmp/ccnk37n4.s:284    .text.i32_Get_Projection:0000000000000060 .L0 
+     /tmp/ccnk37n4.s:286    .text.i32_Get_Projection:0000000000000064 .L0 
+     /tmp/ccnk37n4.s:288    .text.i32_Get_Projection:0000000000000068 .L0 
+     /tmp/ccnk37n4.s:293    .text.i32_Get_Projection:0000000000000078 .L0 
+     /tmp/ccnk37n4.s:294    .text.i32_Get_Projection:000000000000007c .L0 
+     /tmp/ccnk37n4.s:296    .text.i32_Get_Projection:0000000000000080 .L0 
+     /tmp/ccnk37n4.s:298    .text.i32_Get_Projection:0000000000000084 .L0 
+     /tmp/ccnk37n4.s:310    .text.f_Get_Displacement:0000000000000000 f_Get_Displacement
+     /tmp/ccnk37n4.s:313    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:315    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:316    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:317    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:318    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:319    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:320    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:321    .text.f_Get_Displacement:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:328    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:329    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:330    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:331    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:332    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:333    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:335    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/ccnk37n4.s:337    .text.f_Get_Displacement:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:340    .text.f_Get_Displacement:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:345    .text.f_Get_Displacement:0000000000000038 .L0 
+     /tmp/ccnk37n4.s:347    .text.f_Get_Displacement:000000000000003c .L0 
+     /tmp/ccnk37n4.s:351    .text.f_Get_Displacement:0000000000000048 .L0 
+     /tmp/ccnk37n4.s:353    .text.f_Get_Displacement:000000000000004c .L0 
+     /tmp/ccnk37n4.s:357    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:358    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:359    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:360    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:362    .text.f_Get_Displacement:0000000000000058 .L0 
+     /tmp/ccnk37n4.s:364    .text.f_Get_Displacement:000000000000005c .L0 
+     /tmp/ccnk37n4.s:367    .text.f_Get_Displacement:0000000000000064 .L0 
+     /tmp/ccnk37n4.s:368    .text.f_Get_Displacement:0000000000000064 .L0 
+     /tmp/ccnk37n4.s:371    .text.f_Get_Displacement:000000000000006c .L0 
+     /tmp/ccnk37n4.s:373    .text.f_Get_Displacement:0000000000000070 .L0 
+     /tmp/ccnk37n4.s:377    .text.f_Get_Displacement:0000000000000074 .L0 
+     /tmp/ccnk37n4.s:378    .text.f_Get_Displacement:0000000000000074 .L0 
+     /tmp/ccnk37n4.s:380    .text.f_Get_Displacement:0000000000000078 .L0 
+     /tmp/ccnk37n4.s:383    .text.f_Get_Displacement:0000000000000080 .L0 
+     /tmp/ccnk37n4.s:386    .text.f_Get_Displacement:0000000000000088 .L0 
+     /tmp/ccnk37n4.s:389    .text.f_Get_Displacement:000000000000008c .L0 
+     /tmp/ccnk37n4.s:392    .text.f_Get_Displacement:0000000000000090 .L0 
+     /tmp/ccnk37n4.s:393    .text.f_Get_Displacement:0000000000000090 .L0 
+     /tmp/ccnk37n4.s:396    .text.f_Get_Displacement:0000000000000094 .L0 
+     /tmp/ccnk37n4.s:399    .text.f_Get_Displacement:0000000000000098 .L0 
+     /tmp/ccnk37n4.s:402    .text.f_Get_Displacement:00000000000000a0 .L0 
+     /tmp/ccnk37n4.s:405    .text.f_Get_Displacement:00000000000000a4 .L0 
+     /tmp/ccnk37n4.s:408    .text.f_Get_Displacement:00000000000000ac .L0 
+     /tmp/ccnk37n4.s:412    .text.f_Get_Displacement:00000000000000b4 .L0 
+     /tmp/ccnk37n4.s:423    .text.f_Get_Displacement:00000000000000d0 .L0 
+     /tmp/ccnk37n4.s:424    .text.f_Get_Displacement:00000000000000d0 .L0 
+     /tmp/ccnk37n4.s:429    .text.f_Get_Displacement:00000000000000e0 .L0 
+     /tmp/ccnk37n4.s:435    .text.f_Get_Displacement:00000000000000f0 .L0 
+     /tmp/ccnk37n4.s:440    .text.f_Get_Displacement:0000000000000100 .L0 
+     /tmp/ccnk37n4.s:445    .text.f_Get_Displacement:000000000000010c .L0 
+     /tmp/ccnk37n4.s:452    .text.f_Get_Displacement:0000000000000120 .L0 
+     /tmp/ccnk37n4.s:453    .text.f_Get_Displacement:0000000000000120 .L0 
+     /tmp/ccnk37n4.s:458    .text.f_Get_Displacement:0000000000000130 .L0 
+     /tmp/ccnk37n4.s:465    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/ccnk37n4.s:467    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/ccnk37n4.s:468    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/ccnk37n4.s:469    .text.f_Get_Displacement:0000000000000144 .L0 
+     /tmp/ccnk37n4.s:470    .text.f_Get_Displacement:0000000000000144 .L0 
+     /tmp/ccnk37n4.s:472    .text.f_Get_Displacement:0000000000000148 .L0 
+     /tmp/ccnk37n4.s:474    .text.f_Get_Displacement:000000000000014c .L0 
+     /tmp/ccnk37n4.s:476    .text.f_Get_Displacement:0000000000000150 .L0 
+     /tmp/ccnk37n4.s:478    .text.f_Get_Displacement:0000000000000154 .L0 
+     /tmp/ccnk37n4.s:480    .text.f_Get_Displacement:0000000000000158 .L0 
+     /tmp/ccnk37n4.s:482    .text.f_Get_Displacement:000000000000015c .L0 
+     /tmp/ccnk37n4.s:486    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/ccnk37n4.s:488    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/ccnk37n4.s:491    .text.f_Get_Displacement:0000000000000168 .L0 
+     /tmp/ccnk37n4.s:498    .text.f_Get_Displacement:000000000000017c .L0 
+     /tmp/ccnk37n4.s:506    .text.i32_Get_Position:0000000000000000 i32_Get_Position
+     /tmp/ccnk37n4.s:509    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:510    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:511    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:512    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:513    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:514    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:515    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:516    .text.i32_Get_Position:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:518    .text.i32_Get_Position:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:520    .text.i32_Get_Position:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:521    .text.i32_Get_Position:000000000000000c .L0 
+     /tmp/ccnk37n4.s:523    .text.i32_Get_Position:000000000000000c .L0 
+     /tmp/ccnk37n4.s:526    .text.i32_Get_Position:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:527    .text.i32_Get_Position:0000000000000014 .L0 
+     /tmp/ccnk37n4.s:531    .text.i32_Get_Position:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:532    .text.i32_Get_Position:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:535    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:536    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:541    .text.i32_Get_Position:000000000000003c .L0 
+     /tmp/ccnk37n4.s:544    .text.i32_Get_Position:0000000000000044 .L0 
+     /tmp/ccnk37n4.s:545    .text.i32_Get_Position:0000000000000048 .L0 
+     /tmp/ccnk37n4.s:548    .text.i32_Get_Position:0000000000000050 .L0 
+     /tmp/ccnk37n4.s:550    .text.i32_Get_Position:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:555    .bss.LVDT_Instance:0000000000000000 .LANCHOR1
+     /tmp/ccnk37n4.s:558    .bss.LVDT_Instance:0000000000000000 LVDT_Instance
+     /tmp/ccnk37n4.s:562    .data.Cal_G8:0000000000000000 .LANCHOR2
+     /tmp/ccnk37n4.s:565    .data.Cal_G8:0000000000000000 Cal_G8
+     /tmp/ccnk37n4.s:586    .rodata.Cal_G1:0000000000000000 .LANCHOR3
+     /tmp/ccnk37n4.s:589    .rodata.Cal_G1:0000000000000000 Cal_G1
+     /tmp/ccnk37n4.s:646    .sbss.instance:0000000000000000 .LANCHOR0
+     /tmp/ccnk37n4.s:649    .sbss.instance:0000000000000000 instance
+     /tmp/ccnk37n4.s:78     .text.v_Init_LVDT:0000000000000054 .L0 
+     /tmp/ccnk37n4.s:101    .text.v_Set_LVDT_Gain:0000000000000020 .L0 
+     /tmp/ccnk37n4.s:133    .text.e_Get_LVDT_Gain:0000000000000030 .L0 
+     /tmp/ccnk37n4.s:148    .text.v_Set_Displacement_Offset:0000000000000004 .L0 
+     /tmp/ccnk37n4.s:219    .text.V_Get_LVDT_Snapshot:000000000000007c .L0 
+     /tmp/ccnk37n4.s:306    .text.i32_Get_Projection:0000000000000084 .L0 
+     /tmp/ccnk37n4.s:502    .text.f_Get_Displacement:000000000000017c .L0 
+     /tmp/ccnk37n4.s:553    .text.i32_Get_Position:0000000000000054 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:21     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:25     .text.v_Init_LVDT:000000000000000c .L0 
+     /tmp/ccnk37n4.s:89     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:111    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/ccnk37n4.s:164    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/ccnk37n4.s:347    .text.f_Get_Displacement:000000000000003c .L0 
+     /tmp/ccnk37n4.s:353    .text.f_Get_Displacement:000000000000004c .L0 
+     /tmp/ccnk37n4.s:636    .rodata.f_Get_Displacement.cst4:0000000000000000 .LC0
+     /tmp/ccnk37n4.s:488    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/ccnk37n4.s:638    .rodata.f_Get_Displacement.cst4:0000000000000004 .LC1
+     /tmp/ccnk37n4.s:496    .text.f_Get_Displacement:0000000000000170 .L0 
+     /tmp/ccnk37n4.s:349    .text.f_Get_Displacement:0000000000000048 .L15
+     /tmp/ccnk37n4.s:354    .text.f_Get_Displacement:0000000000000054 .L11
+     /tmp/ccnk37n4.s:485    .text.f_Get_Displacement:0000000000000160 .L17
+     /tmp/ccnk37n4.s:495    .text.f_Get_Displacement:0000000000000170 .L18
+     /tmp/ccnk37n4.s:390    .text.f_Get_Displacement:0000000000000090 .L13
+     /tmp/ccnk37n4.s:375    .text.f_Get_Displacement:0000000000000074 .L14
+     /tmp/ccnk37n4.s:466    .text.f_Get_Displacement:0000000000000140 .L10
+     /tmp/ccnk37n4.s:489    .text.f_Get_Displacement:0000000000000168 .L21
+     /tmp/ccnk37n4.s:642    .rodata.i32_Get_Position.cst4:0000000000000000 .LC2
+     /tmp/ccnk37n4.s:536    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/ccnk37n4.s:1430   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccnk37n4.s:3127   .debug_str:000000000000041d .LASF76
+     /tmp/ccnk37n4.s:3111   .debug_str:00000000000003a2 .LASF77
+     /tmp/ccnk37n4.s:3031   .debug_str:000000000000015e .LASF78
+     /tmp/ccnk37n4.s:2961   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccnk37n4.s:2981   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccnk37n4.s:2995   .debug_str:0000000000000062 .LASF0
+     /tmp/ccnk37n4.s:3007   .debug_str:00000000000000ac .LASF1
+     /tmp/ccnk37n4.s:3085   .debug_str:000000000000030b .LASF2
+     /tmp/ccnk37n4.s:2987   .debug_str:0000000000000035 .LASF6
+     /tmp/ccnk37n4.s:3041   .debug_str:00000000000001ca .LASF3
+     /tmp/ccnk37n4.s:3071   .debug_str:00000000000002a5 .LASF4
+     /tmp/ccnk37n4.s:3009   .debug_str:00000000000000ba .LASF5
+     /tmp/ccnk37n4.s:2991   .debug_str:000000000000004c .LASF7
+     /tmp/ccnk37n4.s:3095   .debug_str:000000000000033d .LASF8
+     /tmp/ccnk37n4.s:3099   .debug_str:000000000000035e .LASF9
+     /tmp/ccnk37n4.s:3049   .debug_str:0000000000000208 .LASF10
+     /tmp/ccnk37n4.s:3113   .debug_str:00000000000003b8 .LASF11
+     /tmp/ccnk37n4.s:3015   .debug_str:00000000000000dc .LASF12
+     /tmp/ccnk37n4.s:3045   .debug_str:00000000000001e6 .LASF13
+     /tmp/ccnk37n4.s:2999   .debug_str:0000000000000088 .LASF14
+     /tmp/ccnk37n4.s:3129   .debug_str:00000000000004e3 .LASF15
+     /tmp/ccnk37n4.s:3093   .debug_str:0000000000000335 .LASF16
+     /tmp/ccnk37n4.s:3143   .debug_str:0000000000000544 .LASF17
+     /tmp/ccnk37n4.s:3125   .debug_str:000000000000040c .LASF79
+     /tmp/ccnk37n4.s:3109   .debug_str:000000000000039d .LASF18
+     /tmp/ccnk37n4.s:3141   .debug_str:000000000000053d .LASF19
+     /tmp/ccnk37n4.s:3081   .debug_str:00000000000002ec .LASF80
+     /tmp/ccnk37n4.s:3053   .debug_str:0000000000000229 .LASF20
+     /tmp/ccnk37n4.s:3103   .debug_str:000000000000036e .LASF21
+     /tmp/ccnk37n4.s:3131   .debug_str:00000000000004eb .LASF22
+     /tmp/ccnk37n4.s:2983   .debug_str:0000000000000000 .LASF23
+     /tmp/ccnk37n4.s:3115   .debug_str:00000000000003c2 .LASF24
+     /tmp/ccnk37n4.s:3147   .debug_str:0000000000000553 .LASF81
+     /tmp/ccnk37n4.s:3059   .debug_str:000000000000025b .LASF25
+     /tmp/ccnk37n4.s:3055   .debug_str:000000000000023d .LASF26
+     /tmp/ccnk37n4.s:3075   .debug_str:00000000000002bf .LASF27
+     /tmp/ccnk37n4.s:3065   .debug_str:0000000000000278 .LASF28
+     /tmp/ccnk37n4.s:3117   .debug_str:00000000000003d3 .LASF29
+     /tmp/ccnk37n4.s:3133   .debug_str:0000000000000500 .LASF30
+     /tmp/ccnk37n4.s:3137   .debug_str:0000000000000518 .LASF31
+     /tmp/ccnk37n4.s:3013   .debug_str:00000000000000d7 .LASF32
+     /tmp/ccnk37n4.s:3091   .debug_str:0000000000000325 .LASF33
+     /tmp/ccnk37n4.s:3019   .debug_str:00000000000000ef .LASF34
+     /tmp/ccnk37n4.s:3051   .debug_str:000000000000021b .LASF35
+     /tmp/ccnk37n4.s:3047   .debug_str:00000000000001f8 .LASF36
+     /tmp/ccnk37n4.s:3123   .debug_str:00000000000003fc .LASF37
+     /tmp/ccnk37n4.s:3073   .debug_str:00000000000002b1 .LASF38
+     /tmp/ccnk37n4.s:2997   .debug_str:0000000000000079 .LASF39
+     /tmp/ccnk37n4.s:3121   .debug_str:00000000000003ed .LASF40
+     /tmp/ccnk37n4.s:3107   .debug_str:0000000000000391 .LASF41
+     /tmp/ccnk37n4.s:3079   .debug_str:00000000000002e0 .LASF42
+     /tmp/ccnk37n4.s:3083   .debug_str:00000000000002ff .LASF43
+     /tmp/ccnk37n4.s:3039   .debug_str:00000000000001ba .LASF44
+     /tmp/ccnk37n4.s:3037   .debug_str:00000000000001b3 .LASF45
+     /tmp/ccnk37n4.s:3145   .debug_str:000000000000054c .LASF46
+     /tmp/ccnk37n4.s:3105   .debug_str:0000000000000383 .LASF47
+     /tmp/ccnk37n4.s:3005   .debug_str:00000000000000a3 .LASF48
+     /tmp/ccnk37n4.s:3035   .debug_str:00000000000001a0 .LASF49
+     /tmp/ccnk37n4.s:3025   .debug_str:0000000000000125 .LASF50
+     /tmp/ccnk37n4.s:3023   .debug_str:000000000000010d .LASF51
+     /tmp/ccnk37n4.s:3077   .debug_str:00000000000002cf .LASF54
+     /tmp/ccnk37n4.s:507    .text.i32_Get_Position:0000000000000000 .LFB8
+     /tmp/ccnk37n4.s:551    .text.i32_Get_Position:0000000000000054 .LFE8
+     /tmp/ccnk37n4.s:2993   .debug_str:0000000000000056 .LASF52
+     /tmp/ccnk37n4.s:1982   .debug_loc:0000000000000000 .LLST17
+     /tmp/ccnk37n4.s:3139   .debug_str:0000000000000524 .LASF53
+     /tmp/ccnk37n4.s:1989   .debug_loc:0000000000000013 .LLST18
+     /tmp/ccnk37n4.s:524    .text.i32_Get_Position:0000000000000014 .LVL47
+     /tmp/ccnk37n4.s:529    .text.i32_Get_Position:0000000000000020 .LVL48
+     /tmp/ccnk37n4.s:533    .text.i32_Get_Position:0000000000000028 .LVL49
+     /tmp/ccnk37n4.s:3011   .debug_str:00000000000000c6 .LASF82
+     /tmp/ccnk37n4.s:3067   .debug_str:0000000000000282 .LASF55
+     /tmp/ccnk37n4.s:311    .text.f_Get_Displacement:0000000000000000 .LFB6
+     /tmp/ccnk37n4.s:499    .text.f_Get_Displacement:000000000000017c .LFE6
+     /tmp/ccnk37n4.s:2008   .debug_loc:0000000000000035 .LLST6
+     /tmp/ccnk37n4.s:3101   .debug_str:0000000000000368 .LASF56
+     /tmp/ccnk37n4.s:2030   .debug_loc:000000000000006c .LLST7
+     /tmp/ccnk37n4.s:3087   .debug_str:0000000000000311 .LASF57
+     /tmp/ccnk37n4.s:2041   .debug_loc:000000000000008a .LLST8
+     /tmp/ccnk37n4.s:3033   .debug_str:0000000000000195 .LASF58
+     /tmp/ccnk37n4.s:2052   .debug_loc:00000000000000a8 .LLST9
+     /tmp/ccnk37n4.s:3063   .debug_str:0000000000000273 .LASF59
+     /tmp/ccnk37n4.s:2067   .debug_loc:00000000000000d1 .LLST10
+     /tmp/ccnk37n4.s:420    .text.f_Get_Displacement:00000000000000d0 .LBB4
+     /tmp/ccnk37n4.s:464    .text.f_Get_Displacement:0000000000000140 .LBE4
+     /tmp/ccnk37n4.s:2074   .debug_loc:00000000000000e4 .LLST11
+     /tmp/ccnk37n4.s:2086   .debug_loc:0000000000000103 .LLST12
+     /tmp/ccnk37n4.s:2098   .debug_loc:0000000000000122 .LLST13
+     /tmp/ccnk37n4.s:2105   .debug_loc:0000000000000135 .LLST14
+     /tmp/ccnk37n4.s:2112   .debug_loc:0000000000000148 .LLST15
+     /tmp/ccnk37n4.s:421    .text.f_Get_Displacement:00000000000000d0 .LBB5
+     /tmp/ccnk37n4.s:463    .text.f_Get_Displacement:0000000000000140 .LBE5
+     /tmp/ccnk37n4.s:2119   .debug_loc:000000000000015b .LLST16
+     /tmp/ccnk37n4.s:338    .text.f_Get_Displacement:0000000000000028 .LVL22
+     /tmp/ccnk37n4.s:3097   .debug_str:000000000000034b .LASF60
+     /tmp/ccnk37n4.s:224    .text.i32_Get_Projection:0000000000000000 .LFB5
+     /tmp/ccnk37n4.s:299    .text.i32_Get_Projection:0000000000000084 .LFE5
+     /tmp/ccnk37n4.s:3061   .debug_str:0000000000000265 .LASF61
+     /tmp/ccnk37n4.s:2126   .debug_loc:000000000000016e .LLST2
+     /tmp/ccnk37n4.s:3017   .debug_str:00000000000000e5 .LASF62
+     /tmp/ccnk37n4.s:2140   .debug_loc:000000000000018f .LLST3
+     /tmp/ccnk37n4.s:3001   .debug_str:0000000000000092 .LASF63
+     /tmp/ccnk37n4.s:2303   .debug_loc:0000000000000253 .LLST4
+     /tmp/ccnk37n4.s:3043   .debug_str:00000000000001d7 .LASF64
+     /tmp/ccnk37n4.s:2419   .debug_loc:00000000000002e1 .LLST5
+     /tmp/ccnk37n4.s:3029   .debug_str:000000000000014a .LASF65
+     /tmp/ccnk37n4.s:153    .text.V_Get_LVDT_Snapshot:0000000000000000 .LFB4
+     /tmp/ccnk37n4.s:216    .text.V_Get_LVDT_Snapshot:000000000000007c .LFE4
+     /tmp/ccnk37n4.s:2902   .debug_loc:0000000000000505 .LLST1
+     /tmp/ccnk37n4.s:177    .text.V_Get_LVDT_Snapshot:0000000000000028 .LVL8
+     /tmp/ccnk37n4.s:185    .text.V_Get_LVDT_Snapshot:000000000000003c .LVL9
+     /tmp/ccnk37n4.s:193    .text.V_Get_LVDT_Snapshot:0000000000000050 .LVL10
+     /tmp/ccnk37n4.s:201    .text.V_Get_LVDT_Snapshot:0000000000000064 .LVL11
+     /tmp/ccnk37n4.s:2985   .debug_str:000000000000001b .LASF66
+     /tmp/ccnk37n4.s:138    .text.v_Set_Displacement_Offset:0000000000000000 .LFB3
+     /tmp/ccnk37n4.s:146    .text.v_Set_Displacement_Offset:0000000000000004 .LFE3
+     /tmp/ccnk37n4.s:3003   .debug_str:0000000000000098 .LASF67
+     /tmp/ccnk37n4.s:3021   .debug_str:00000000000000fd .LASF68
+     /tmp/ccnk37n4.s:106    .text.e_Get_LVDT_Gain:0000000000000000 .LFB2
+     /tmp/ccnk37n4.s:131    .text.e_Get_LVDT_Gain:0000000000000030 .LFE2
+     /tmp/ccnk37n4.s:122    .text.e_Get_LVDT_Gain:0000000000000020 .LVL4
+     /tmp/ccnk37n4.s:3069   .debug_str:0000000000000295 .LASF69
+     /tmp/ccnk37n4.s:83     .text.v_Set_LVDT_Gain:0000000000000000 .LFB1
+     /tmp/ccnk37n4.s:99     .text.v_Set_LVDT_Gain:0000000000000020 .LFE1
+     /tmp/ccnk37n4.s:3089   .debug_str:000000000000031f .LASF70
+     /tmp/ccnk37n4.s:2920   .debug_loc:0000000000000531 .LLST0
+     /tmp/ccnk37n4.s:97     .text.v_Set_LVDT_Gain:0000000000000020 .LVL3
+     /tmp/ccnk37n4.s:3135   .debug_str:000000000000050c .LASF71
+     /tmp/ccnk37n4.s:14     .text.v_Init_LVDT:0000000000000000 .LFB0
+     /tmp/ccnk37n4.s:76     .text.v_Init_LVDT:0000000000000054 .LFE0
+     /tmp/ccnk37n4.s:3057   .debug_str:000000000000024b .LASF72
+     /tmp/ccnk37n4.s:3119   .debug_str:00000000000003dd .LASF73
+     /tmp/ccnk37n4.s:3027   .debug_str:0000000000000139 .LASF74
+     /tmp/ccnk37n4.s:2989   .debug_str:000000000000003c .LASF75
+     /tmp/ccnk37n4.s:539    .text.i32_Get_Position:000000000000003c .LVL50
+     /tmp/ccnk37n4.s:314    .text.f_Get_Displacement:0000000000000000 .LVL21
+     /tmp/ccnk37n4.s:403    .text.f_Get_Displacement:00000000000000a4 .LVL29
+     /tmp/ccnk37n4.s:484    .text.f_Get_Displacement:0000000000000160 .LVL44
+     /tmp/ccnk37n4.s:355    .text.f_Get_Displacement:0000000000000054 .LVL23
+     /tmp/ccnk37n4.s:410    .text.f_Get_Displacement:00000000000000b4 .LVL30
+     /tmp/ccnk37n4.s:374    .text.f_Get_Displacement:0000000000000074 .LVL24
+     /tmp/ccnk37n4.s:394    .text.f_Get_Displacement:0000000000000094 .LVL26
+     /tmp/ccnk37n4.s:492    .text.f_Get_Displacement:000000000000016c .LVL45
+     /tmp/ccnk37n4.s:494    .text.f_Get_Displacement:0000000000000170 .LVL46
+     /tmp/ccnk37n4.s:397    .text.f_Get_Displacement:0000000000000098 .LVL27
+     /tmp/ccnk37n4.s:419    .text.f_Get_Displacement:00000000000000d0 .LVL33
+     /tmp/ccnk37n4.s:427    .text.f_Get_Displacement:00000000000000e0 .LVL34
+     /tmp/ccnk37n4.s:430    .text.f_Get_Displacement:00000000000000e4 .LVL35
+     /tmp/ccnk37n4.s:432    .text.f_Get_Displacement:00000000000000ec .LVL36
+     /tmp/ccnk37n4.s:441    .text.f_Get_Displacement:0000000000000104 .LVL38
+     /tmp/ccnk37n4.s:443    .text.f_Get_Displacement:000000000000010c .LVL39
+     /tmp/ccnk37n4.s:461    .text.f_Get_Displacement:0000000000000140 .LVL43
+     /tmp/ccnk37n4.s:450    .text.f_Get_Displacement:0000000000000120 .LVL41
+     /tmp/ccnk37n4.s:227    .text.i32_Get_Projection:0000000000000000 .LVL13
+     /tmp/ccnk37n4.s:252    .text.i32_Get_Projection:0000000000000024 .LVL15
+     /tmp/ccnk37n4.s:233    .text.i32_Get_Projection:0000000000000008 .LVL14
+     /tmp/ccnk37n4.s:272    .text.i32_Get_Projection:000000000000004c .LVL18
+     /tmp/ccnk37n4.s:278    .text.i32_Get_Projection:0000000000000058 .LVL19
+     /tmp/ccnk37n4.s:291    .text.i32_Get_Projection:0000000000000078 .LVL20
+     /tmp/ccnk37n4.s:255    .text.i32_Get_Projection:0000000000000028 .LVL16
+     /tmp/ccnk37n4.s:261    .text.i32_Get_Projection:0000000000000034 .LVL17
+     /tmp/ccnk37n4.s:156    .text.V_Get_LVDT_Snapshot:0000000000000000 .LVL6
+     /tmp/ccnk37n4.s:171    .text.V_Get_LVDT_Snapshot:000000000000001c .LVL7
+     /tmp/ccnk37n4.s:209    .text.V_Get_LVDT_Snapshot:0000000000000070 .LVL12
+     /tmp/ccnk37n4.s:86     .text.v_Set_LVDT_Gain:0000000000000000 .LVL1
+     /tmp/ccnk37n4.s:95     .text.v_Set_LVDT_Gain:0000000000000018 .LVL2
+     /tmp/ccnk37n4.s:662    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cclopAe5.s:13     .text.v_Init_LVDT:0000000000000000 v_Init_LVDT
+     /tmp/cclopAe5.s:17     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:18     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:19     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:20     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:21     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:23     .text.v_Init_LVDT:0000000000000008 .L0 
+     /tmp/cclopAe5.s:25     .text.v_Init_LVDT:000000000000000c .L0 
+     /tmp/cclopAe5.s:27     .text.v_Init_LVDT:0000000000000014 .L0 
+     /tmp/cclopAe5.s:28     .text.v_Init_LVDT:0000000000000014 .L0 
+     /tmp/cclopAe5.s:30     .text.v_Init_LVDT:0000000000000018 .L0 
+     /tmp/cclopAe5.s:32     .text.v_Init_LVDT:000000000000001c .L0 
+     /tmp/cclopAe5.s:34     .text.v_Init_LVDT:0000000000000020 .L0 
+     /tmp/cclopAe5.s:36     .text.v_Init_LVDT:0000000000000024 .L0 
+     /tmp/cclopAe5.s:38     .text.v_Init_LVDT:0000000000000028 .L0 
+     /tmp/cclopAe5.s:40     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/cclopAe5.s:41     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/cclopAe5.s:42     .text.v_Init_LVDT:000000000000002c .L0 
+     /tmp/cclopAe5.s:44     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/cclopAe5.s:45     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/cclopAe5.s:46     .text.v_Init_LVDT:0000000000000030 .L0 
+     /tmp/cclopAe5.s:48     .text.v_Init_LVDT:0000000000000034 .L0 
+     /tmp/cclopAe5.s:49     .text.v_Init_LVDT:0000000000000034 .L0 
+     /tmp/cclopAe5.s:51     .text.v_Init_LVDT:0000000000000038 .L0 
+     /tmp/cclopAe5.s:52     .text.v_Init_LVDT:0000000000000038 .L0 
+     /tmp/cclopAe5.s:54     .text.v_Init_LVDT:000000000000003c .L0 
+     /tmp/cclopAe5.s:55     .text.v_Init_LVDT:000000000000003c .L0 
+     /tmp/cclopAe5.s:57     .text.v_Init_LVDT:0000000000000040 .L0 
+     /tmp/cclopAe5.s:59     .text.v_Init_LVDT:0000000000000044 .L0 
+     /tmp/cclopAe5.s:61     .text.v_Init_LVDT:0000000000000048 .L0 
+     /tmp/cclopAe5.s:63     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/cclopAe5.s:64     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/cclopAe5.s:65     .text.v_Init_LVDT:000000000000004c .L0 
+     /tmp/cclopAe5.s:68     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:69     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:70     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:71     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:72     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:73     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:74     .text.v_Init_LVDT:0000000000000050 .L0 
+     /tmp/cclopAe5.s:75     .text.v_Init_LVDT:0000000000000054 .L0 
+     /tmp/cclopAe5.s:82     .text.v_Set_LVDT_Gain:0000000000000000 v_Set_LVDT_Gain
+     /tmp/cclopAe5.s:85     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:87     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:88     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:89     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:91     .text.v_Set_LVDT_Gain:0000000000000008 .L0 
+     /tmp/cclopAe5.s:98     .text.v_Set_LVDT_Gain:0000000000000020 .L0 
+     /tmp/cclopAe5.s:105    .text.e_Get_LVDT_Gain:0000000000000000 e_Get_LVDT_Gain
+     /tmp/cclopAe5.s:108    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:109    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:110    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:111    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:113    .text.e_Get_LVDT_Gain:0000000000000008 .L0 
+     /tmp/cclopAe5.s:115    .text.e_Get_LVDT_Gain:000000000000000c .L0 
+     /tmp/cclopAe5.s:116    .text.e_Get_LVDT_Gain:0000000000000010 .L0 
+     /tmp/cclopAe5.s:118    .text.e_Get_LVDT_Gain:0000000000000014 .L0 
+     /tmp/cclopAe5.s:120    .text.e_Get_LVDT_Gain:0000000000000014 .L0 
+     /tmp/cclopAe5.s:124    .text.e_Get_LVDT_Gain:0000000000000020 .L0 
+     /tmp/cclopAe5.s:125    .text.e_Get_LVDT_Gain:0000000000000024 .L0 
+     /tmp/cclopAe5.s:128    .text.e_Get_LVDT_Gain:000000000000002c .L0 
+     /tmp/cclopAe5.s:130    .text.e_Get_LVDT_Gain:0000000000000030 .L0 
+     /tmp/cclopAe5.s:137    .text.v_Set_Displacement_Offset:0000000000000000 v_Set_Displacement_Offset
+     /tmp/cclopAe5.s:140    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/cclopAe5.s:142    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/cclopAe5.s:143    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/cclopAe5.s:144    .text.v_Set_Displacement_Offset:0000000000000000 .L0 
+     /tmp/cclopAe5.s:145    .text.v_Set_Displacement_Offset:0000000000000004 .L0 
+     /tmp/cclopAe5.s:152    .text.V_Get_LVDT_Snapshot:0000000000000000 V_Get_LVDT_Snapshot
+     /tmp/cclopAe5.s:155    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/cclopAe5.s:157    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/cclopAe5.s:158    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/cclopAe5.s:159    .text.V_Get_LVDT_Snapshot:0000000000000000 .L0 
+     /tmp/cclopAe5.s:160    .text.V_Get_LVDT_Snapshot:0000000000000004 .L0 
+     /tmp/cclopAe5.s:162    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/cclopAe5.s:164    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/cclopAe5.s:166    .text.V_Get_LVDT_Snapshot:0000000000000010 .L0 
+     /tmp/cclopAe5.s:167    .text.V_Get_LVDT_Snapshot:0000000000000014 .L0 
+     /tmp/cclopAe5.s:170    .text.V_Get_LVDT_Snapshot:0000000000000018 .L0 
+     /tmp/cclopAe5.s:173    .text.V_Get_LVDT_Snapshot:000000000000001c .L0 
+     /tmp/cclopAe5.s:174    .text.V_Get_LVDT_Snapshot:0000000000000020 .L0 
+     /tmp/cclopAe5.s:176    .text.V_Get_LVDT_Snapshot:0000000000000020 .L0 
+     /tmp/cclopAe5.s:179    .text.V_Get_LVDT_Snapshot:0000000000000028 .L0 
+     /tmp/cclopAe5.s:181    .text.V_Get_LVDT_Snapshot:000000000000002c .L0 
+     /tmp/cclopAe5.s:182    .text.V_Get_LVDT_Snapshot:000000000000002c .L0 
+     /tmp/cclopAe5.s:187    .text.V_Get_LVDT_Snapshot:000000000000003c .L0 
+     /tmp/cclopAe5.s:189    .text.V_Get_LVDT_Snapshot:0000000000000040 .L0 
+     /tmp/cclopAe5.s:190    .text.V_Get_LVDT_Snapshot:0000000000000040 .L0 
+     /tmp/cclopAe5.s:195    .text.V_Get_LVDT_Snapshot:0000000000000050 .L0 
+     /tmp/cclopAe5.s:197    .text.V_Get_LVDT_Snapshot:0000000000000054 .L0 
+     /tmp/cclopAe5.s:198    .text.V_Get_LVDT_Snapshot:0000000000000054 .L0 
+     /tmp/cclopAe5.s:203    .text.V_Get_LVDT_Snapshot:0000000000000064 .L0 
+     /tmp/cclopAe5.s:205    .text.V_Get_LVDT_Snapshot:0000000000000068 .L0 
+     /tmp/cclopAe5.s:206    .text.V_Get_LVDT_Snapshot:000000000000006c .L0 
+     /tmp/cclopAe5.s:208    .text.V_Get_LVDT_Snapshot:0000000000000070 .L0 
+     /tmp/cclopAe5.s:211    .text.V_Get_LVDT_Snapshot:0000000000000074 .L0 
+     /tmp/cclopAe5.s:213    .text.V_Get_LVDT_Snapshot:0000000000000078 .L0 
+     /tmp/cclopAe5.s:215    .text.V_Get_LVDT_Snapshot:000000000000007c .L0 
+     /tmp/cclopAe5.s:223    .text.i32_Get_Projection:0000000000000000 i32_Get_Projection
+     /tmp/cclopAe5.s:226    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/cclopAe5.s:228    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/cclopAe5.s:229    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/cclopAe5.s:230    .text.i32_Get_Projection:0000000000000000 .L0 
+     /tmp/cclopAe5.s:232    .text.i32_Get_Projection:0000000000000004 .L0 
+     /tmp/cclopAe5.s:235    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/cclopAe5.s:236    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/cclopAe5.s:237    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/cclopAe5.s:238    .text.i32_Get_Projection:0000000000000008 .L0 
+     /tmp/cclopAe5.s:240    .text.i32_Get_Projection:000000000000000c .L0 
+     /tmp/cclopAe5.s:242    .text.i32_Get_Projection:0000000000000010 .L0 
+     /tmp/cclopAe5.s:244    .text.i32_Get_Projection:0000000000000014 .L0 
+     /tmp/cclopAe5.s:245    .text.i32_Get_Projection:0000000000000018 .L0 
+     /tmp/cclopAe5.s:247    .text.i32_Get_Projection:000000000000001c .L0 
+     /tmp/cclopAe5.s:249    .text.i32_Get_Projection:000000000000001c .L0 
+     /tmp/cclopAe5.s:251    .text.i32_Get_Projection:0000000000000020 .L0 
+     /tmp/cclopAe5.s:254    .text.i32_Get_Projection:0000000000000024 .L0 
+     /tmp/cclopAe5.s:257    .text.i32_Get_Projection:0000000000000028 .L0 
+     /tmp/cclopAe5.s:260    .text.i32_Get_Projection:0000000000000030 .L0 
+     /tmp/cclopAe5.s:263    .text.i32_Get_Projection:0000000000000034 .L0 
+     /tmp/cclopAe5.s:266    .text.i32_Get_Projection:000000000000003c .L0 
+     /tmp/cclopAe5.s:268    .text.i32_Get_Projection:0000000000000040 .L0 
+     /tmp/cclopAe5.s:271    .text.i32_Get_Projection:0000000000000048 .L0 
+     /tmp/cclopAe5.s:274    .text.i32_Get_Projection:000000000000004c .L0 
+     /tmp/cclopAe5.s:277    .text.i32_Get_Projection:0000000000000054 .L0 
+     /tmp/cclopAe5.s:280    .text.i32_Get_Projection:0000000000000058 .L0 
+     /tmp/cclopAe5.s:282    .text.i32_Get_Projection:000000000000005c .L0 
+     /tmp/cclopAe5.s:284    .text.i32_Get_Projection:0000000000000060 .L0 
+     /tmp/cclopAe5.s:286    .text.i32_Get_Projection:0000000000000064 .L0 
+     /tmp/cclopAe5.s:288    .text.i32_Get_Projection:0000000000000068 .L0 
+     /tmp/cclopAe5.s:293    .text.i32_Get_Projection:0000000000000078 .L0 
+     /tmp/cclopAe5.s:294    .text.i32_Get_Projection:000000000000007c .L0 
+     /tmp/cclopAe5.s:296    .text.i32_Get_Projection:0000000000000080 .L0 
+     /tmp/cclopAe5.s:298    .text.i32_Get_Projection:0000000000000084 .L0 
+     /tmp/cclopAe5.s:310    .text.f_Get_Displacement:0000000000000000 f_Get_Displacement
+     /tmp/cclopAe5.s:313    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:315    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:316    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:317    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:318    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:319    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:320    .text.f_Get_Displacement:0000000000000000 .L0 
+     /tmp/cclopAe5.s:321    .text.f_Get_Displacement:0000000000000004 .L0 
+     /tmp/cclopAe5.s:328    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:329    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:330    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:331    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:332    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:333    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:335    .text.f_Get_Displacement:000000000000001c .L0 
+     /tmp/cclopAe5.s:337    .text.f_Get_Displacement:0000000000000020 .L0 
+     /tmp/cclopAe5.s:340    .text.f_Get_Displacement:0000000000000028 .L0 
+     /tmp/cclopAe5.s:345    .text.f_Get_Displacement:0000000000000038 .L0 
+     /tmp/cclopAe5.s:347    .text.f_Get_Displacement:000000000000003c .L0 
+     /tmp/cclopAe5.s:351    .text.f_Get_Displacement:0000000000000048 .L0 
+     /tmp/cclopAe5.s:353    .text.f_Get_Displacement:000000000000004c .L0 
+     /tmp/cclopAe5.s:357    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/cclopAe5.s:358    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/cclopAe5.s:359    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/cclopAe5.s:360    .text.f_Get_Displacement:0000000000000054 .L0 
+     /tmp/cclopAe5.s:362    .text.f_Get_Displacement:0000000000000058 .L0 
+     /tmp/cclopAe5.s:364    .text.f_Get_Displacement:000000000000005c .L0 
+     /tmp/cclopAe5.s:367    .text.f_Get_Displacement:0000000000000064 .L0 
+     /tmp/cclopAe5.s:368    .text.f_Get_Displacement:0000000000000064 .L0 
+     /tmp/cclopAe5.s:371    .text.f_Get_Displacement:000000000000006c .L0 
+     /tmp/cclopAe5.s:373    .text.f_Get_Displacement:0000000000000070 .L0 
+     /tmp/cclopAe5.s:377    .text.f_Get_Displacement:0000000000000074 .L0 
+     /tmp/cclopAe5.s:378    .text.f_Get_Displacement:0000000000000074 .L0 
+     /tmp/cclopAe5.s:380    .text.f_Get_Displacement:0000000000000078 .L0 
+     /tmp/cclopAe5.s:383    .text.f_Get_Displacement:0000000000000080 .L0 
+     /tmp/cclopAe5.s:386    .text.f_Get_Displacement:0000000000000088 .L0 
+     /tmp/cclopAe5.s:389    .text.f_Get_Displacement:000000000000008c .L0 
+     /tmp/cclopAe5.s:392    .text.f_Get_Displacement:0000000000000090 .L0 
+     /tmp/cclopAe5.s:393    .text.f_Get_Displacement:0000000000000090 .L0 
+     /tmp/cclopAe5.s:396    .text.f_Get_Displacement:0000000000000094 .L0 
+     /tmp/cclopAe5.s:399    .text.f_Get_Displacement:0000000000000098 .L0 
+     /tmp/cclopAe5.s:402    .text.f_Get_Displacement:00000000000000a0 .L0 
+     /tmp/cclopAe5.s:405    .text.f_Get_Displacement:00000000000000a4 .L0 
+     /tmp/cclopAe5.s:408    .text.f_Get_Displacement:00000000000000ac .L0 
+     /tmp/cclopAe5.s:412    .text.f_Get_Displacement:00000000000000b4 .L0 
+     /tmp/cclopAe5.s:423    .text.f_Get_Displacement:00000000000000d0 .L0 
+     /tmp/cclopAe5.s:424    .text.f_Get_Displacement:00000000000000d0 .L0 
+     /tmp/cclopAe5.s:429    .text.f_Get_Displacement:00000000000000e0 .L0 
+     /tmp/cclopAe5.s:435    .text.f_Get_Displacement:00000000000000f0 .L0 
+     /tmp/cclopAe5.s:440    .text.f_Get_Displacement:0000000000000100 .L0 
+     /tmp/cclopAe5.s:445    .text.f_Get_Displacement:000000000000010c .L0 
+     /tmp/cclopAe5.s:452    .text.f_Get_Displacement:0000000000000120 .L0 
+     /tmp/cclopAe5.s:453    .text.f_Get_Displacement:0000000000000120 .L0 
+     /tmp/cclopAe5.s:458    .text.f_Get_Displacement:0000000000000130 .L0 
+     /tmp/cclopAe5.s:465    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/cclopAe5.s:467    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/cclopAe5.s:468    .text.f_Get_Displacement:0000000000000140 .L0 
+     /tmp/cclopAe5.s:469    .text.f_Get_Displacement:0000000000000144 .L0 
+     /tmp/cclopAe5.s:470    .text.f_Get_Displacement:0000000000000144 .L0 
+     /tmp/cclopAe5.s:472    .text.f_Get_Displacement:0000000000000148 .L0 
+     /tmp/cclopAe5.s:474    .text.f_Get_Displacement:000000000000014c .L0 
+     /tmp/cclopAe5.s:476    .text.f_Get_Displacement:0000000000000150 .L0 
+     /tmp/cclopAe5.s:478    .text.f_Get_Displacement:0000000000000154 .L0 
+     /tmp/cclopAe5.s:480    .text.f_Get_Displacement:0000000000000158 .L0 
+     /tmp/cclopAe5.s:482    .text.f_Get_Displacement:000000000000015c .L0 
+     /tmp/cclopAe5.s:486    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/cclopAe5.s:488    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/cclopAe5.s:491    .text.f_Get_Displacement:0000000000000168 .L0 
+     /tmp/cclopAe5.s:498    .text.f_Get_Displacement:000000000000017c .L0 
+     /tmp/cclopAe5.s:506    .text.i32_Get_Position:0000000000000000 i32_Get_Position
+     /tmp/cclopAe5.s:509    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:510    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:511    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:512    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:513    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:514    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:515    .text.i32_Get_Position:0000000000000000 .L0 
+     /tmp/cclopAe5.s:516    .text.i32_Get_Position:0000000000000004 .L0 
+     /tmp/cclopAe5.s:518    .text.i32_Get_Position:0000000000000004 .L0 
+     /tmp/cclopAe5.s:520    .text.i32_Get_Position:0000000000000008 .L0 
+     /tmp/cclopAe5.s:521    .text.i32_Get_Position:000000000000000c .L0 
+     /tmp/cclopAe5.s:523    .text.i32_Get_Position:000000000000000c .L0 
+     /tmp/cclopAe5.s:526    .text.i32_Get_Position:0000000000000014 .L0 
+     /tmp/cclopAe5.s:527    .text.i32_Get_Position:0000000000000014 .L0 
+     /tmp/cclopAe5.s:531    .text.i32_Get_Position:0000000000000020 .L0 
+     /tmp/cclopAe5.s:532    .text.i32_Get_Position:0000000000000020 .L0 
+     /tmp/cclopAe5.s:535    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/cclopAe5.s:536    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/cclopAe5.s:541    .text.i32_Get_Position:000000000000003c .L0 
+     /tmp/cclopAe5.s:544    .text.i32_Get_Position:0000000000000044 .L0 
+     /tmp/cclopAe5.s:545    .text.i32_Get_Position:0000000000000048 .L0 
+     /tmp/cclopAe5.s:548    .text.i32_Get_Position:0000000000000050 .L0 
+     /tmp/cclopAe5.s:550    .text.i32_Get_Position:0000000000000054 .L0 
+     /tmp/cclopAe5.s:555    .bss.LVDT_Instance:0000000000000000 .LANCHOR1
+     /tmp/cclopAe5.s:558    .bss.LVDT_Instance:0000000000000000 LVDT_Instance
+     /tmp/cclopAe5.s:562    .data.Cal_G8:0000000000000000 .LANCHOR2
+     /tmp/cclopAe5.s:565    .data.Cal_G8:0000000000000000 Cal_G8
+     /tmp/cclopAe5.s:586    .rodata.Cal_G1:0000000000000000 .LANCHOR3
+     /tmp/cclopAe5.s:589    .rodata.Cal_G1:0000000000000000 Cal_G1
+     /tmp/cclopAe5.s:646    .sbss.instance:0000000000000000 .LANCHOR0
+     /tmp/cclopAe5.s:649    .sbss.instance:0000000000000000 instance
+     /tmp/cclopAe5.s:78     .text.v_Init_LVDT:0000000000000054 .L0 
+     /tmp/cclopAe5.s:101    .text.v_Set_LVDT_Gain:0000000000000020 .L0 
+     /tmp/cclopAe5.s:133    .text.e_Get_LVDT_Gain:0000000000000030 .L0 
+     /tmp/cclopAe5.s:148    .text.v_Set_Displacement_Offset:0000000000000004 .L0 
+     /tmp/cclopAe5.s:219    .text.V_Get_LVDT_Snapshot:000000000000007c .L0 
+     /tmp/cclopAe5.s:306    .text.i32_Get_Projection:0000000000000084 .L0 
+     /tmp/cclopAe5.s:502    .text.f_Get_Displacement:000000000000017c .L0 
+     /tmp/cclopAe5.s:553    .text.i32_Get_Position:0000000000000054 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cclopAe5.s:21     .text.v_Init_LVDT:0000000000000000 .L0 
+     /tmp/cclopAe5.s:25     .text.v_Init_LVDT:000000000000000c .L0 
+     /tmp/cclopAe5.s:89     .text.v_Set_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:111    .text.e_Get_LVDT_Gain:0000000000000000 .L0 
+     /tmp/cclopAe5.s:164    .text.V_Get_LVDT_Snapshot:0000000000000008 .L0 
+     /tmp/cclopAe5.s:347    .text.f_Get_Displacement:000000000000003c .L0 
+     /tmp/cclopAe5.s:353    .text.f_Get_Displacement:000000000000004c .L0 
+     /tmp/cclopAe5.s:636    .rodata.f_Get_Displacement.cst4:0000000000000000 .LC0
+     /tmp/cclopAe5.s:488    .text.f_Get_Displacement:0000000000000160 .L0 
+     /tmp/cclopAe5.s:638    .rodata.f_Get_Displacement.cst4:0000000000000004 .LC1
+     /tmp/cclopAe5.s:496    .text.f_Get_Displacement:0000000000000170 .L0 
+     /tmp/cclopAe5.s:349    .text.f_Get_Displacement:0000000000000048 .L15
+     /tmp/cclopAe5.s:354    .text.f_Get_Displacement:0000000000000054 .L11
+     /tmp/cclopAe5.s:485    .text.f_Get_Displacement:0000000000000160 .L17
+     /tmp/cclopAe5.s:495    .text.f_Get_Displacement:0000000000000170 .L18
+     /tmp/cclopAe5.s:390    .text.f_Get_Displacement:0000000000000090 .L13
+     /tmp/cclopAe5.s:375    .text.f_Get_Displacement:0000000000000074 .L14
+     /tmp/cclopAe5.s:466    .text.f_Get_Displacement:0000000000000140 .L10
+     /tmp/cclopAe5.s:489    .text.f_Get_Displacement:0000000000000168 .L21
+     /tmp/cclopAe5.s:642    .rodata.i32_Get_Position.cst4:0000000000000000 .LC2
+     /tmp/cclopAe5.s:536    .text.i32_Get_Position:0000000000000028 .L0 
+     /tmp/cclopAe5.s:1430   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cclopAe5.s:3127   .debug_str:000000000000041d .LASF76
+     /tmp/cclopAe5.s:3111   .debug_str:00000000000003a2 .LASF77
+     /tmp/cclopAe5.s:3031   .debug_str:000000000000015e .LASF78
+     /tmp/cclopAe5.s:2961   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cclopAe5.s:2981   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cclopAe5.s:2995   .debug_str:0000000000000062 .LASF0
+     /tmp/cclopAe5.s:3007   .debug_str:00000000000000ac .LASF1
+     /tmp/cclopAe5.s:3085   .debug_str:000000000000030b .LASF2
+     /tmp/cclopAe5.s:2987   .debug_str:0000000000000035 .LASF6
+     /tmp/cclopAe5.s:3041   .debug_str:00000000000001ca .LASF3
+     /tmp/cclopAe5.s:3071   .debug_str:00000000000002a5 .LASF4
+     /tmp/cclopAe5.s:3009   .debug_str:00000000000000ba .LASF5
+     /tmp/cclopAe5.s:2991   .debug_str:000000000000004c .LASF7
+     /tmp/cclopAe5.s:3095   .debug_str:000000000000033d .LASF8
+     /tmp/cclopAe5.s:3099   .debug_str:000000000000035e .LASF9
+     /tmp/cclopAe5.s:3049   .debug_str:0000000000000208 .LASF10
+     /tmp/cclopAe5.s:3113   .debug_str:00000000000003b8 .LASF11
+     /tmp/cclopAe5.s:3015   .debug_str:00000000000000dc .LASF12
+     /tmp/cclopAe5.s:3045   .debug_str:00000000000001e6 .LASF13
+     /tmp/cclopAe5.s:2999   .debug_str:0000000000000088 .LASF14
+     /tmp/cclopAe5.s:3129   .debug_str:00000000000004e3 .LASF15
+     /tmp/cclopAe5.s:3093   .debug_str:0000000000000335 .LASF16
+     /tmp/cclopAe5.s:3143   .debug_str:0000000000000544 .LASF17
+     /tmp/cclopAe5.s:3125   .debug_str:000000000000040c .LASF79
+     /tmp/cclopAe5.s:3109   .debug_str:000000000000039d .LASF18
+     /tmp/cclopAe5.s:3141   .debug_str:000000000000053d .LASF19
+     /tmp/cclopAe5.s:3081   .debug_str:00000000000002ec .LASF80
+     /tmp/cclopAe5.s:3053   .debug_str:0000000000000229 .LASF20
+     /tmp/cclopAe5.s:3103   .debug_str:000000000000036e .LASF21
+     /tmp/cclopAe5.s:3131   .debug_str:00000000000004eb .LASF22
+     /tmp/cclopAe5.s:2983   .debug_str:0000000000000000 .LASF23
+     /tmp/cclopAe5.s:3115   .debug_str:00000000000003c2 .LASF24
+     /tmp/cclopAe5.s:3147   .debug_str:0000000000000553 .LASF81
+     /tmp/cclopAe5.s:3059   .debug_str:000000000000025b .LASF25
+     /tmp/cclopAe5.s:3055   .debug_str:000000000000023d .LASF26
+     /tmp/cclopAe5.s:3075   .debug_str:00000000000002bf .LASF27
+     /tmp/cclopAe5.s:3065   .debug_str:0000000000000278 .LASF28
+     /tmp/cclopAe5.s:3117   .debug_str:00000000000003d3 .LASF29
+     /tmp/cclopAe5.s:3133   .debug_str:0000000000000500 .LASF30
+     /tmp/cclopAe5.s:3137   .debug_str:0000000000000518 .LASF31
+     /tmp/cclopAe5.s:3013   .debug_str:00000000000000d7 .LASF32
+     /tmp/cclopAe5.s:3091   .debug_str:0000000000000325 .LASF33
+     /tmp/cclopAe5.s:3019   .debug_str:00000000000000ef .LASF34
+     /tmp/cclopAe5.s:3051   .debug_str:000000000000021b .LASF35
+     /tmp/cclopAe5.s:3047   .debug_str:00000000000001f8 .LASF36
+     /tmp/cclopAe5.s:3123   .debug_str:00000000000003fc .LASF37
+     /tmp/cclopAe5.s:3073   .debug_str:00000000000002b1 .LASF38
+     /tmp/cclopAe5.s:2997   .debug_str:0000000000000079 .LASF39
+     /tmp/cclopAe5.s:3121   .debug_str:00000000000003ed .LASF40
+     /tmp/cclopAe5.s:3107   .debug_str:0000000000000391 .LASF41
+     /tmp/cclopAe5.s:3079   .debug_str:00000000000002e0 .LASF42
+     /tmp/cclopAe5.s:3083   .debug_str:00000000000002ff .LASF43
+     /tmp/cclopAe5.s:3039   .debug_str:00000000000001ba .LASF44
+     /tmp/cclopAe5.s:3037   .debug_str:00000000000001b3 .LASF45
+     /tmp/cclopAe5.s:3145   .debug_str:000000000000054c .LASF46
+     /tmp/cclopAe5.s:3105   .debug_str:0000000000000383 .LASF47
+     /tmp/cclopAe5.s:3005   .debug_str:00000000000000a3 .LASF48
+     /tmp/cclopAe5.s:3035   .debug_str:00000000000001a0 .LASF49
+     /tmp/cclopAe5.s:3025   .debug_str:0000000000000125 .LASF50
+     /tmp/cclopAe5.s:3023   .debug_str:000000000000010d .LASF51
+     /tmp/cclopAe5.s:3077   .debug_str:00000000000002cf .LASF54
+     /tmp/cclopAe5.s:507    .text.i32_Get_Position:0000000000000000 .LFB8
+     /tmp/cclopAe5.s:551    .text.i32_Get_Position:0000000000000054 .LFE8
+     /tmp/cclopAe5.s:2993   .debug_str:0000000000000056 .LASF52
+     /tmp/cclopAe5.s:1982   .debug_loc:0000000000000000 .LLST17
+     /tmp/cclopAe5.s:3139   .debug_str:0000000000000524 .LASF53
+     /tmp/cclopAe5.s:1989   .debug_loc:0000000000000013 .LLST18
+     /tmp/cclopAe5.s:524    .text.i32_Get_Position:0000000000000014 .LVL47
+     /tmp/cclopAe5.s:529    .text.i32_Get_Position:0000000000000020 .LVL48
+     /tmp/cclopAe5.s:533    .text.i32_Get_Position:0000000000000028 .LVL49
+     /tmp/cclopAe5.s:3011   .debug_str:00000000000000c6 .LASF82
+     /tmp/cclopAe5.s:3067   .debug_str:0000000000000282 .LASF55
+     /tmp/cclopAe5.s:311    .text.f_Get_Displacement:0000000000000000 .LFB6
+     /tmp/cclopAe5.s:499    .text.f_Get_Displacement:000000000000017c .LFE6
+     /tmp/cclopAe5.s:2008   .debug_loc:0000000000000035 .LLST6
+     /tmp/cclopAe5.s:3101   .debug_str:0000000000000368 .LASF56
+     /tmp/cclopAe5.s:2030   .debug_loc:000000000000006c .LLST7
+     /tmp/cclopAe5.s:3087   .debug_str:0000000000000311 .LASF57
+     /tmp/cclopAe5.s:2041   .debug_loc:000000000000008a .LLST8
+     /tmp/cclopAe5.s:3033   .debug_str:0000000000000195 .LASF58
+     /tmp/cclopAe5.s:2052   .debug_loc:00000000000000a8 .LLST9
+     /tmp/cclopAe5.s:3063   .debug_str:0000000000000273 .LASF59
+     /tmp/cclopAe5.s:2067   .debug_loc:00000000000000d1 .LLST10
+     /tmp/cclopAe5.s:420    .text.f_Get_Displacement:00000000000000d0 .LBB4
+     /tmp/cclopAe5.s:464    .text.f_Get_Displacement:0000000000000140 .LBE4
+     /tmp/cclopAe5.s:2074   .debug_loc:00000000000000e4 .LLST11
+     /tmp/cclopAe5.s:2086   .debug_loc:0000000000000103 .LLST12
+     /tmp/cclopAe5.s:2098   .debug_loc:0000000000000122 .LLST13
+     /tmp/cclopAe5.s:2105   .debug_loc:0000000000000135 .LLST14
+     /tmp/cclopAe5.s:2112   .debug_loc:0000000000000148 .LLST15
+     /tmp/cclopAe5.s:421    .text.f_Get_Displacement:00000000000000d0 .LBB5
+     /tmp/cclopAe5.s:463    .text.f_Get_Displacement:0000000000000140 .LBE5
+     /tmp/cclopAe5.s:2119   .debug_loc:000000000000015b .LLST16
+     /tmp/cclopAe5.s:338    .text.f_Get_Displacement:0000000000000028 .LVL22
+     /tmp/cclopAe5.s:3097   .debug_str:000000000000034b .LASF60
+     /tmp/cclopAe5.s:224    .text.i32_Get_Projection:0000000000000000 .LFB5
+     /tmp/cclopAe5.s:299    .text.i32_Get_Projection:0000000000000084 .LFE5
+     /tmp/cclopAe5.s:3061   .debug_str:0000000000000265 .LASF61
+     /tmp/cclopAe5.s:2126   .debug_loc:000000000000016e .LLST2
+     /tmp/cclopAe5.s:3017   .debug_str:00000000000000e5 .LASF62
+     /tmp/cclopAe5.s:2140   .debug_loc:000000000000018f .LLST3
+     /tmp/cclopAe5.s:3001   .debug_str:0000000000000092 .LASF63
+     /tmp/cclopAe5.s:2303   .debug_loc:0000000000000253 .LLST4
+     /tmp/cclopAe5.s:3043   .debug_str:00000000000001d7 .LASF64
+     /tmp/cclopAe5.s:2419   .debug_loc:00000000000002e1 .LLST5
+     /tmp/cclopAe5.s:3029   .debug_str:000000000000014a .LASF65
+     /tmp/cclopAe5.s:153    .text.V_Get_LVDT_Snapshot:0000000000000000 .LFB4
+     /tmp/cclopAe5.s:216    .text.V_Get_LVDT_Snapshot:000000000000007c .LFE4
+     /tmp/cclopAe5.s:2902   .debug_loc:0000000000000505 .LLST1
+     /tmp/cclopAe5.s:177    .text.V_Get_LVDT_Snapshot:0000000000000028 .LVL8
+     /tmp/cclopAe5.s:185    .text.V_Get_LVDT_Snapshot:000000000000003c .LVL9
+     /tmp/cclopAe5.s:193    .text.V_Get_LVDT_Snapshot:0000000000000050 .LVL10
+     /tmp/cclopAe5.s:201    .text.V_Get_LVDT_Snapshot:0000000000000064 .LVL11
+     /tmp/cclopAe5.s:2985   .debug_str:000000000000001b .LASF66
+     /tmp/cclopAe5.s:138    .text.v_Set_Displacement_Offset:0000000000000000 .LFB3
+     /tmp/cclopAe5.s:146    .text.v_Set_Displacement_Offset:0000000000000004 .LFE3
+     /tmp/cclopAe5.s:3003   .debug_str:0000000000000098 .LASF67
+     /tmp/cclopAe5.s:3021   .debug_str:00000000000000fd .LASF68
+     /tmp/cclopAe5.s:106    .text.e_Get_LVDT_Gain:0000000000000000 .LFB2
+     /tmp/cclopAe5.s:131    .text.e_Get_LVDT_Gain:0000000000000030 .LFE2
+     /tmp/cclopAe5.s:122    .text.e_Get_LVDT_Gain:0000000000000020 .LVL4
+     /tmp/cclopAe5.s:3069   .debug_str:0000000000000295 .LASF69
+     /tmp/cclopAe5.s:83     .text.v_Set_LVDT_Gain:0000000000000000 .LFB1
+     /tmp/cclopAe5.s:99     .text.v_Set_LVDT_Gain:0000000000000020 .LFE1
+     /tmp/cclopAe5.s:3089   .debug_str:000000000000031f .LASF70
+     /tmp/cclopAe5.s:2920   .debug_loc:0000000000000531 .LLST0
+     /tmp/cclopAe5.s:97     .text.v_Set_LVDT_Gain:0000000000000020 .LVL3
+     /tmp/cclopAe5.s:3135   .debug_str:000000000000050c .LASF71
+     /tmp/cclopAe5.s:14     .text.v_Init_LVDT:0000000000000000 .LFB0
+     /tmp/cclopAe5.s:76     .text.v_Init_LVDT:0000000000000054 .LFE0
+     /tmp/cclopAe5.s:3057   .debug_str:000000000000024b .LASF72
+     /tmp/cclopAe5.s:3119   .debug_str:00000000000003dd .LASF73
+     /tmp/cclopAe5.s:3027   .debug_str:0000000000000139 .LASF74
+     /tmp/cclopAe5.s:2989   .debug_str:000000000000003c .LASF75
+     /tmp/cclopAe5.s:539    .text.i32_Get_Position:000000000000003c .LVL50
+     /tmp/cclopAe5.s:314    .text.f_Get_Displacement:0000000000000000 .LVL21
+     /tmp/cclopAe5.s:403    .text.f_Get_Displacement:00000000000000a4 .LVL29
+     /tmp/cclopAe5.s:484    .text.f_Get_Displacement:0000000000000160 .LVL44
+     /tmp/cclopAe5.s:355    .text.f_Get_Displacement:0000000000000054 .LVL23
+     /tmp/cclopAe5.s:410    .text.f_Get_Displacement:00000000000000b4 .LVL30
+     /tmp/cclopAe5.s:374    .text.f_Get_Displacement:0000000000000074 .LVL24
+     /tmp/cclopAe5.s:394    .text.f_Get_Displacement:0000000000000094 .LVL26
+     /tmp/cclopAe5.s:492    .text.f_Get_Displacement:000000000000016c .LVL45
+     /tmp/cclopAe5.s:494    .text.f_Get_Displacement:0000000000000170 .LVL46
+     /tmp/cclopAe5.s:397    .text.f_Get_Displacement:0000000000000098 .LVL27
+     /tmp/cclopAe5.s:419    .text.f_Get_Displacement:00000000000000d0 .LVL33
+     /tmp/cclopAe5.s:427    .text.f_Get_Displacement:00000000000000e0 .LVL34
+     /tmp/cclopAe5.s:430    .text.f_Get_Displacement:00000000000000e4 .LVL35
+     /tmp/cclopAe5.s:432    .text.f_Get_Displacement:00000000000000ec .LVL36
+     /tmp/cclopAe5.s:441    .text.f_Get_Displacement:0000000000000104 .LVL38
+     /tmp/cclopAe5.s:443    .text.f_Get_Displacement:000000000000010c .LVL39
+     /tmp/cclopAe5.s:461    .text.f_Get_Displacement:0000000000000140 .LVL43
+     /tmp/cclopAe5.s:450    .text.f_Get_Displacement:0000000000000120 .LVL41
+     /tmp/cclopAe5.s:227    .text.i32_Get_Projection:0000000000000000 .LVL13
+     /tmp/cclopAe5.s:252    .text.i32_Get_Projection:0000000000000024 .LVL15
+     /tmp/cclopAe5.s:233    .text.i32_Get_Projection:0000000000000008 .LVL14
+     /tmp/cclopAe5.s:272    .text.i32_Get_Projection:000000000000004c .LVL18
+     /tmp/cclopAe5.s:278    .text.i32_Get_Projection:0000000000000058 .LVL19
+     /tmp/cclopAe5.s:291    .text.i32_Get_Projection:0000000000000078 .LVL20
+     /tmp/cclopAe5.s:255    .text.i32_Get_Projection:0000000000000028 .LVL16
+     /tmp/cclopAe5.s:261    .text.i32_Get_Projection:0000000000000034 .LVL17
+     /tmp/cclopAe5.s:156    .text.V_Get_LVDT_Snapshot:0000000000000000 .LVL6
+     /tmp/cclopAe5.s:171    .text.V_Get_LVDT_Snapshot:000000000000001c .LVL7
+     /tmp/cclopAe5.s:209    .text.V_Get_LVDT_Snapshot:0000000000000070 .LVL12
+     /tmp/cclopAe5.s:86     .text.v_Set_LVDT_Gain:0000000000000000 .LVL1
+     /tmp/cclopAe5.s:95     .text.v_Set_LVDT_Gain:0000000000000018 .LVL2
+     /tmp/cclopAe5.s:662    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+GPIO_set_output
+GPIO_get_outputs
+GPIO_get_inputs
+__divdi3
+__floatsisf
+__subsf3
+__mulsf3
+__addsf3
+__divsf3
+__fixsfsi

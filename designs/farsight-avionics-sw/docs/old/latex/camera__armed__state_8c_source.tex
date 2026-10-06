@@ -1,0 +1,74 @@
+\doxysection{camera\+\_\+armed\+\_\+state.\+c}
+\hypertarget{camera__armed__state_8c_source}{}\label{camera__armed__state_8c_source}\index{src/CameraStates/camera\_armed\_state.c@{src/CameraStates/camera\_armed\_state.c}}
+\doxymbox{\hyperlink{camera__armed__state_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00002}00002\ \textcolor{comment}{\ *\ camera\_armed\_state.c}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Dec\ 8,\ 2025}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}camera.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{cam__trig_8h}{cam\_trig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{errors_8h}{errors.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}register.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{states_8h}{states.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}camera\_states.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00017}\doxymbox{\hyperlink{camera__armed__state_8c_a424c9c648f67179c1029febde6fb127c}{00017}}\ \textcolor{preprocessor}{\#define\ XTRIG\_LOW\_TIME\_USEC\ 1000}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00018}\doxymbox{\hyperlink{camera__armed__state_8c_ab4ce93706d3c1dbe7fd5042aa02ee2ff}{00018}}\ \textcolor{preprocessor}{\#define\ FRAME\_CAPTURE\_TIME\_USEC\ 20000}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00019}\doxymbox{\hyperlink{camera__armed__state_8c_abf54e7dfff7857af99e7f2e6b1996adf}{00019}}\ \textcolor{preprocessor}{\#define\ DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT\ 256}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00020}\doxymbox{\hyperlink{camera__armed__state_8c_a9cf251175ffc68b03a3749e1a2e5ff9b}{00020}}\ \textcolor{preprocessor}{\#define\ DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT\ 512}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00031}\doxymbox{\hyperlink{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca}{00031}}\ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca}{Camera\_Armed\_State}}(\ Camera\_Context\_t\ *context,\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00033}00033\ \ \ \ \ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca}{Camera\_Armed\_State}};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00034}00034\ \ \ \ \ uint32\_t\ u32\_Exposure\_Timer\_usec;}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00035}00035\ \ \ \ \ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ err\ =\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00037}00037\ \ \ \ \ \textcolor{keywordflow}{switch}(\ event-\/>\doxymbox{\hyperlink{unionEvent__t_a4e19afe281edd9a97e66b2d7284e07e4}{no\_data}}.\doxymbox{\hyperlink{structEvent__Msg__No__Data__t_a4df35076881d8d9a55c56ba5a26857ae}{sig}}\ )}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00038}00038\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aca71c643694e2a3478c60f35b622db2a}{ENTRANCE}}:}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00040}00040\ \ \ \ \ \ \ \ \ context-\/>eState\ =\ CAMERA\_ARMED\_STATE;}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00042}00042\ \ \ \ \ \ \ \ \ err\ =\ \doxymbox{\hyperlink{register_8c_a969b9cd557b255d4e0327817c0149972}{Read\_Register}}(\ \doxymbox{\hyperlink{reg__address_8h_accbe3018fbc826691c53c07d7d8851b6}{SENSOR\_EXPO\_USEC\_SYS\_REG}},\ \&u32\_Exposure\_Timer\_usec\ );}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00044}00044\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb}{configure\_trig}}(\ \doxymbox{\hyperlink{mem__map_8h_ac17ecf6c5ec2ab2c5040eb937812c7af}{CAM\_TRIG\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00045}00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{camera__armed__state_8c_a424c9c648f67179c1029febde6fb127c}{XTRIG\_LOW\_TIME\_USEC}},}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00046}00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ u32\_Exposure\_Timer\_usec,}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00047}00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{camera__armed__state_8c_a9cf251175ffc68b03a3749e1a2e5ff9b}{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT}});}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00048}00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00050}00050\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a7a10b5d68d31711288e1fe0fa17dbf4f}{EXIT}}:}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00051}00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00053}00053\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9addfc7f0f6d5ec0cd60c3f2c28eae8bb8}{POWER\_UP\_CAMERA}}:\ \textcolor{comment}{//\ Ignored,\ but\ harmless}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00056}00056\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9ad734702b94ce408cba0205b27ac20205}{POWER\_DOWN\_CAMERA}}:}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00057}00057\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84}{Camera\_Low\_Power\_State}};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a353d0131737dc6cf3d013004088085aa}{ARM\_CAMERA}}:\ \textcolor{comment}{//\ Ignored,\ but\ harmless}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00063}00063\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a99eb45fef8cb60cd10c3dd95d519038a}{CAMERA\_TAKE\_PICTURE}}:}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00064}00064\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a0306e142bfbce0a6616dbcee9441da87}{trig\_capture}}();}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00065}00065\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{camera__busy__state_8c_a6797068b9d698f18f8c3e6f40c179c2d}{Camera\_Busy\_State}};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00066}00066\ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00068}00068\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00070}00070\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00072}00072\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}};}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00074}00074\ \}}
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{camera__armed__state_8c_source_l00076}00076\ }
+
+\end{DoxyCode}

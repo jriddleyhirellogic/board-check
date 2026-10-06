@@ -1,0 +1,291 @@
+\doxysection{src/\+misc.c File Reference}
+\hypertarget{misc_8c}{}\label{misc_8c}\index{src/misc.c@{src/misc.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+switches.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+Include dependency graph for misc.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{misc_8c_ab4e2e4b72ec1e13b315dcdc910f5595b}{MIE\+\_\+\+MEIE}}~( 1UL $<$$<$ 11 )
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c}{v\+Application\+Malloc\+Failed\+Hook}} ()
+\item 
+void \doxymbox{\hyperlink{misc_8c_a11cbdd335da884dec1204e230554bfd9}{v\+Application\+Idle\+Hook}} ()
+\item 
+void \doxymbox{\hyperlink{misc_8c_a2850b09d1bb227364b5ff6de6f85f740}{v\+Application\+Tick\+Hook}} ()
+\item 
+void \doxymbox{\hyperlink{misc_8c_a54b14b665d04a631991869b21065bf90}{v\+Application\+Stack\+Overflow\+Hook}} (\doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{Task\+Handle\+\_\+t}} x\+Task, char \texorpdfstring{$\ast$}{*}pc\+Task\+Name)
+\item 
+void \doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{memcpy}} (void \texorpdfstring{$\ast$}{*}dest, void \texorpdfstring{$\ast$}{*}from, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} n\+\_\+bytes)
+\begin{DoxyCompactList}\small\item\em memcpy to avoid needing libgcc \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{memset}} (void \texorpdfstring{$\ast$}{*}s, int c, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}} n\+\_\+bytes)
+\item 
+void \doxymbox{\hyperlink{misc_8c_a3aca99352017ec5c655855d2102648d5}{v\+\_\+\+UART16550\+\_\+\+Handler}} (void)
+\begin{DoxyCompactList}\small\item\em Interrupt handler for the 16550 type uart. This handles both receive and transmit interrupts. A timer with a timeout of 3 characters is reloaded every time a character is received. Each receive character updates a state machine which parses the packet, extracting the header and data and updating a crc check. When the time expires, the serial\+\_\+comm thread is notified. Note that ill formed messages and garbage data do not result in the notification. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{misc_8c_ac41fb43edcbcee29280c2cb7b80866de}{freertos\+\_\+risc\+\_\+v\+\_\+application\+\_\+interrupt\+\_\+handler}} (unsigned long cause)
+\item 
+void \doxymbox{\hyperlink{misc_8c_adce9ecd2e9e985e8020b0d8d699653c9}{v\+\_\+\+IRQ\+\_\+\+Setup}} (void)
+\item 
+void \doxymbox{\hyperlink{misc_8c_a3a2d7c49268218a94eab25229689e937}{\+\_\+\+ATTRIBUTE}} ((\+\_\+\+\_\+noreturn\+\_\+\+\_\+))
+\item 
+void \doxymbox{\hyperlink{misc_8c_a2b86ff97c5a08cf76ccc983c92b92a27}{v\+\_\+\+Enable\+\_\+\+Logging}} (uint8\+\_\+t u8\+\_\+\+Enable)
+\item 
+void \doxymbox{\hyperlink{misc_8c_a3899159aa291b9f22eba33a16c265ba0}{v\+\_\+\+Toggle\+\_\+\+Logging}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{misc_8c_ae7313e3716ec926ba3cefa4cf6602891}{b\+\_\+\+Is\+\_\+\+Logging\+\_\+\+Enabled}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static volatile uint8\+\_\+t \doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\+\_\+\+Logging\+\_\+\+Enabled}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{misc_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{misc_8c_ab4e2e4b72ec1e13b315dcdc910f5595b}\index{misc.c@{misc.c}!MIE\_MEIE@{MIE\_MEIE}}
+\index{MIE\_MEIE@{MIE\_MEIE}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{MIE\_MEIE}{MIE\_MEIE}}
+{\footnotesize\ttfamily \label{misc_8c_ab4e2e4b72ec1e13b315dcdc910f5595b} 
+\+\#define MIE\+\_\+\+MEIE~( 1UL $<$$<$ 11 )}
+
+
+
+\label{doc-func-members}
+\Hypertarget{misc_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{misc_8c_a3a2d7c49268218a94eab25229689e937}\index{misc.c@{misc.c}!\_ATTRIBUTE@{\_ATTRIBUTE}}
+\index{\_ATTRIBUTE@{\_ATTRIBUTE}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{\_ATTRIBUTE()}{\_ATTRIBUTE()}}
+{\footnotesize\ttfamily \label{misc_8c_a3a2d7c49268218a94eab25229689e937} 
+void \+\_\+\+ATTRIBUTE (\begin{DoxyParamCaption}\item[{(\+\_\+\+\_\+noreturn\+\_\+\+\_\+)}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00100}{100}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_ae7313e3716ec926ba3cefa4cf6602891}\index{misc.c@{misc.c}!b\_Is\_Logging\_Enabled@{b\_Is\_Logging\_Enabled}}
+\index{b\_Is\_Logging\_Enabled@{b\_Is\_Logging\_Enabled}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{b\_Is\_Logging\_Enabled()}{b\_Is\_Logging\_Enabled()}}
+{\footnotesize\ttfamily \label{misc_8c_ae7313e3716ec926ba3cefa4cf6602891} 
+uint8\+\_\+t b\+\_\+\+Is\+\_\+\+Logging\+\_\+\+Enabled (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00116}{116}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_ac41fb43edcbcee29280c2cb7b80866de}\index{misc.c@{misc.c}!freertos\_risc\_v\_application\_interrupt\_handler@{freertos\_risc\_v\_application\_interrupt\_handler}}
+\index{freertos\_risc\_v\_application\_interrupt\_handler@{freertos\_risc\_v\_application\_interrupt\_handler}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{freertos\_risc\_v\_application\_interrupt\_handler()}{freertos\_risc\_v\_application\_interrupt\_handler()}}
+{\footnotesize\ttfamily \label{misc_8c_ac41fb43edcbcee29280c2cb7b80866de} 
+void freertos\+\_\+risc\+\_\+v\+\_\+application\+\_\+interrupt\+\_\+handler (\begin{DoxyParamCaption}\item[{unsigned long}]{cause}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00073}{73}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_ac41fb43edcbcee29280c2cb7b80866de_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}\index{misc.c@{misc.c}!memcpy@{memcpy}}
+\index{memcpy@{memcpy}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{memcpy()}{memcpy()}}
+{\footnotesize\ttfamily \label{misc_8c_a1cd40c40a6410f01b1439b165e76a00e} 
+void memcpy (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{dest}{, }\item[{void \texorpdfstring{$\ast$}{*}}]{from}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}}}]{n\+\_\+bytes}{}\end{DoxyParamCaption})}
+
+
+
+memcpy to avoid needing libgcc 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dest} & \\
+\hline
+{\em from} & \\
+\hline
+{\em n\+\_\+bytes} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00048}{48}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a1cd40c40a6410f01b1439b165e76a00e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}\index{misc.c@{misc.c}!memset@{memset}}
+\index{memset@{memset}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{memset()}{memset()}}
+{\footnotesize\ttfamily \label{misc_8c_a45e6a1e451a10b720fe645e9da1034a6} 
+void memset (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{s}{, }\item[{int}]{c}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\+\_\+t}}}]{n\+\_\+bytes}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00058}{58}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a45e6a1e451a10b720fe645e9da1034a6_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a2b86ff97c5a08cf76ccc983c92b92a27}\index{misc.c@{misc.c}!v\_Enable\_Logging@{v\_Enable\_Logging}}
+\index{v\_Enable\_Logging@{v\_Enable\_Logging}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Logging()}{v\_Enable\_Logging()}}
+{\footnotesize\ttfamily \label{misc_8c_a2b86ff97c5a08cf76ccc983c92b92a27} 
+void v\+\_\+\+Enable\+\_\+\+Logging (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Enable}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00106}{106}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_adce9ecd2e9e985e8020b0d8d699653c9}\index{misc.c@{misc.c}!v\_IRQ\_Setup@{v\_IRQ\_Setup}}
+\index{v\_IRQ\_Setup@{v\_IRQ\_Setup}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{v\_IRQ\_Setup()}{v\_IRQ\_Setup()}}
+{\footnotesize\ttfamily \label{misc_8c_adce9ecd2e9e985e8020b0d8d699653c9} 
+void v\+\_\+\+IRQ\+\_\+\+Setup (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00083}{83}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_a3899159aa291b9f22eba33a16c265ba0}\index{misc.c@{misc.c}!v\_Toggle\_Logging@{v\_Toggle\_Logging}}
+\index{v\_Toggle\_Logging@{v\_Toggle\_Logging}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{v\_Toggle\_Logging()}{v\_Toggle\_Logging()}}
+{\footnotesize\ttfamily \label{misc_8c_a3899159aa291b9f22eba33a16c265ba0} 
+void v\+\_\+\+Toggle\+\_\+\+Logging (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00111}{111}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_a3aca99352017ec5c655855d2102648d5}\index{misc.c@{misc.c}!v\_UART16550\_Handler@{v\_UART16550\_Handler}}
+\index{v\_UART16550\_Handler@{v\_UART16550\_Handler}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{v\_UART16550\_Handler()}{v\_UART16550\_Handler()}}
+{\footnotesize\ttfamily \label{misc_8c_a3aca99352017ec5c655855d2102648d5} 
+void v\+\_\+\+UART16550\+\_\+\+Handler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Interrupt handler for the 16550 type uart. This handles both receive and transmit interrupts. A timer with a timeout of 3 characters is reloaded every time a character is received. Each receive character updates a state machine which parses the packet, extracting the header and data and updating a crc check. When the time expires, the serial\+\_\+comm thread is notified. Note that ill formed messages and garbage data do not result in the notification. 
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00134}{134}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a3aca99352017ec5c655855d2102648d5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a3aca99352017ec5c655855d2102648d5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a11cbdd335da884dec1204e230554bfd9}\index{misc.c@{misc.c}!vApplicationIdleHook@{vApplicationIdleHook}}
+\index{vApplicationIdleHook@{vApplicationIdleHook}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{vApplicationIdleHook()}{vApplicationIdleHook()}}
+{\footnotesize\ttfamily \label{misc_8c_a11cbdd335da884dec1204e230554bfd9} 
+void v\+Application\+Idle\+Hook (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a11cbdd335da884dec1204e230554bfd9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c}\index{misc.c@{misc.c}!vApplicationMallocFailedHook@{vApplicationMallocFailedHook}}
+\index{vApplicationMallocFailedHook@{vApplicationMallocFailedHook}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{vApplicationMallocFailedHook()}{vApplicationMallocFailedHook()}}
+{\footnotesize\ttfamily \label{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c} 
+void v\+Application\+Malloc\+Failed\+Hook (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00020}{20}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{misc_8c_a54b14b665d04a631991869b21065bf90}\index{misc.c@{misc.c}!vApplicationStackOverflowHook@{vApplicationStackOverflowHook}}
+\index{vApplicationStackOverflowHook@{vApplicationStackOverflowHook}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{vApplicationStackOverflowHook()}{vApplicationStackOverflowHook()}}
+{\footnotesize\ttfamily \label{misc_8c_a54b14b665d04a631991869b21065bf90} 
+void v\+Application\+Stack\+Overflow\+Hook (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{Task\+Handle\+\_\+t}}}]{x\+Task}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{pc\+Task\+Name}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+\Hypertarget{misc_8c_a2850b09d1bb227364b5ff6de6f85f740}\index{misc.c@{misc.c}!vApplicationTickHook@{vApplicationTickHook}}
+\index{vApplicationTickHook@{vApplicationTickHook}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{vApplicationTickHook()}{vApplicationTickHook()}}
+{\footnotesize\ttfamily \label{misc_8c_a2850b09d1bb227364b5ff6de6f85f740} 
+void v\+Application\+Tick\+Hook (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00029}{29}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{misc_8c_a2850b09d1bb227364b5ff6de6f85f740_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{misc_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}\index{misc.c@{misc.c}!b\_Logging\_Enabled@{b\_Logging\_Enabled}}
+\index{b\_Logging\_Enabled@{b\_Logging\_Enabled}!misc.c@{misc.c}}
+\doxysubsubsection{\texorpdfstring{b\_Logging\_Enabled}{b\_Logging\_Enabled}}
+{\footnotesize\ttfamily \label{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09} 
+volatile uint8\+\_\+t b\+\_\+\+Logging\+\_\+\+Enabled\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{misc_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{misc_8c_source}{misc.\+c}}.
+

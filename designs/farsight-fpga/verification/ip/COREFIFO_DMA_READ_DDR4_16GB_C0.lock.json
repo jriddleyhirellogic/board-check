@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREFIFO:3.1.101",
+  "definition_digest": "91cbb9438a4630e6dc5f837548f31e055c01e85ba274e3da5b077c7228102cf1",
+  "generated": "2026-09-25T22:24:17Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "COREFIFO_DMA_READ_DDR4_16GB_C0",
+  "sources_digest": "9478dc6b954c5147310f4f157c23ec56b98971ce1276004422f9582cf58f9da6"
+}

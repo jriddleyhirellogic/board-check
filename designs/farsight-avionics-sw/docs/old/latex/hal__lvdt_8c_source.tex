@@ -1,0 +1,181 @@
+\doxysection{hal\+\_\+lvdt.\+c}
+\hypertarget{hal__lvdt_8c_source}{}\label{hal__lvdt_8c_source}\index{src/hal/hal\_lvdt.c@{src/hal/hal\_lvdt.c}}
+\doxymbox{\hyperlink{hal__lvdt_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00002}00002\ \textcolor{comment}{\ *\ lvdt.c}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Sep\ 28,\ 2025}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__gpio_8h}{debug\_gpio.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}lvdt.h"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}lvdt\_cal.h"{}}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00018}\doxymbox{\hyperlink{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d}{00018}}\ \textcolor{keyword}{static}\ LVDT\_Instance\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d}{LVDT\_Instance}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00019}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{00019}}\ \textcolor{keyword}{static}\ LVDT\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00021}\doxymbox{\hyperlink{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}{00021}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}{i32\_Low\_Gain\_Limit}}[2];}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00022}\doxymbox{\hyperlink{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}{00022}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}{i32\_High\_Gain\_Limit}}[2];}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00023}\doxymbox{\hyperlink{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f}{00023}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f}{i32\_Displacement\_Offset}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00025}00025\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}{f\_Interpolate\_2D}}(\ \textcolor{keywordtype}{float}\ f\_x,\ \textcolor{keywordtype}{float}\ f\_x0,\ \textcolor{keywordtype}{float}\ f\_x1,\ \textcolor{keywordtype}{float}\ f\_y0,\ \textcolor{keywordtype}{float}\ f\_y1\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00037}\doxymbox{\hyperlink{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40}{00037}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40}{v\_Init\_LVDT}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00039}00039\ \ \ \ \ uint8\_t\ n\_table\_entries;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00041}00041\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}\ =\ \&\doxymbox{\hyperlink{hal__lvdt_8c_aa12e29f7d2ff0b57b431fda47ee4100d}{LVDT\_Instance}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00043}00043\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_I.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00044}00044\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_I.base\_addr\ =\ \doxymbox{\hyperlink{mem__map_8h_abdd67f4040607b6a313ea36833488b42}{LVDT\_RO\_PRI\_Q\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00046}00046\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_Q.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00047}00047\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_Q.base\_addr\ =\ \doxymbox{\hyperlink{mem__map_8h_abdd67f4040607b6a313ea36833488b42}{LVDT\_RO\_PRI\_Q\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00049}00049\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_I.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00050}00050\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_I.base\_addr\ =\ \doxymbox{\hyperlink{mem__map_8h_a63ad4d762e17e3782fb6a40512c99466}{LVDT\_RO\_SEC\_I\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00052}00052\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_Q.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00053}00053\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_Q.base\_addr\ =\ \doxymbox{\hyperlink{mem__map_8h_aea8c3607a495ed7614a0db9c30b2dbf3}{LVDT\_RO\_SEC\_Q\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00055}00055\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Gain.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00056}00056\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Gain.base\_addr\ =\ \doxymbox{\hyperlink{mem__map_8h_a4079aa6e8aa64b8c12d1571ca4c7ec40}{LVDT\_GAIN\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ Establish\ limits\ of\ cal\ tables\ to\ determine\ which\ one\ to\ use}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00059}00059\ \ \ \ \ n\_table\_entries\ =\ \textcolor{keyword}{sizeof}(Cal\_G1)/\textcolor{keyword}{sizeof}(Cal\_Value\_t);}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00060}00060\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}{i32\_Low\_Gain\_Limit}}[0]\ =\ Cal\_G1[n\_table\_entries-\/1].i32\_Projection;\ \ \ \ \ \ \textcolor{comment}{//\ Smallest\ value\ of\ projection}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00061}00061\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_aa5b6f57d59622b1bb33c27e470930bac}{i32\_Low\_Gain\_Limit}}[1]\ =\ Cal\_G1[0].i32\_Projection;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00063}00063\ \ \ \ \ n\_table\_entries\ =\ \textcolor{keyword}{sizeof}(Cal\_G8)/\textcolor{keyword}{sizeof}(Cal\_Value\_t);}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00064}00064\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}{i32\_High\_Gain\_Limit}}[0]\ =\ Cal\_G8[n\_table\_entries-\/1].i32\_Projection;\ \ \ \ \ \textcolor{comment}{//\ Smallest\ value\ of\ projection}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00065}00065\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a065cd74ffb60734cd840c2d6de92e7c5}{i32\_High\_Gain\_Limit}}[1]\ =\ Cal\_G8[0].i32\_Projection;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00067}00067\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00075}\doxymbox{\hyperlink{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42}{00075}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42}{v\_Set\_LVDT\_Gain}}(LVDT\_Gain\_Sel\_t\ eGain)}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00076}00076\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00077}00077\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Gain,\ 0,\ (uint8\_t)eGain\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00078}00078\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00086}\doxymbox{\hyperlink{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}{00086}}\ LVDT\_Gain\_Sel\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}{e\_Get\_LVDT\_Gain}}(\ \textcolor{keywordtype}{void}\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00087}00087\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00088}00088\ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Gain\ )\ \&\ 1)\ ?\ LVDT\_GAIN\_8\ :\ LVDT\_GAIN\_1;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00089}00089\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00100}\doxymbox{\hyperlink{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25}{00100}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__lvdt_8c_a0fdca57b32c544962825f8fcd2958b25}{v\_Set\_Displacement\_Offset}}(\ int32\_t\ i32\_Offset\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00101}00101\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00102}00102\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a4d3a30e89645fd1febdd5bb8b977f99f}{i32\_Displacement\_Offset}}\ =\ i32\_Offset;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00103}00103\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00111}\doxymbox{\hyperlink{hal__lvdt_8c_a6420473a781772383359e21b383ebd97}{00111}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__lvdt_8c_a6420473a781772383359e21b383ebd97}{V\_Get\_LVDT\_Snapshot}}(\ LVDT\_Sample\_t\ *p\_LVDT\_Sample\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00112}00112\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00113}00113\ \ \ \ \ p\_LVDT\_Sample-\/>i32\_I\_Primary\ =\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_I\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00114}00114\ \ \ \ \ p\_LVDT\_Sample-\/>i32\_Q\_Primary\ =\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Primary\_Q\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00116}00116\ \ \ \ \ p\_LVDT\_Sample-\/>i32\_I\_Secondary\ =\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_I\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00117}00117\ \ \ \ \ p\_LVDT\_Sample-\/>i32\_Q\_Secondary\ =\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>Secondary\_Q\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00119}00119\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00137}\doxymbox{\hyperlink{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50}{00137}}\ int32\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50}{i32\_Get\_Projection}}(\ LVDT\_Sample\_t\ *p\_LVDT\_Sample\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00138}00138\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00139}00139\ \ \ \ \ \textcolor{comment}{//\ This\ calculates\ the\ projection\ of\ the\ secondary\ response\ onto\ the\ primary\ viewing\ them\ as\ 2D\ vectors}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00140}00140\ \ \ \ \ \textcolor{comment}{//\ formed\ by\ (I,Q)}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00141}00141\ \ \ \ \ \textcolor{comment}{//\ The\ projection\ is\ scaled\ to\ increase\ precision.}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00143}00143\ \ \ \ \ int64\_t\ numerator\ =\ (int64\_t)p\_LVDT\_Sample-\/>i32\_I\_Primary\ *\ (int64\_t)p\_LVDT\_Sample-\/>i32\_I\_Secondary\ +}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (int64\_t)p\_LVDT\_Sample-\/>i32\_Q\_Primary\ *\ (int64\_t)p\_LVDT\_Sample-\/>i32\_Q\_Secondary;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00146}00146\ \ \ \ \ int64\_t\ denom\ \ \ \ \ =\ ((int64\_t)p\_LVDT\_Sample-\/>i32\_I\_Primary\ \ *\ (int64\_t)p\_LVDT\_Sample-\/>i32\_I\_Primary\ \ )\ +}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((int64\_t)p\_LVDT\_Sample-\/>i32\_Q\_Primary\ \ *\ (int64\_t)p\_LVDT\_Sample-\/>i32\_Q\_Primary\ \ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00149}00149\ \ \ \ \ \textcolor{comment}{//\ Calculates\ the\ ratio\ of\ the\ length\ of\ the\ projection\ of\ S\ along\ P\ to\ the\ norm\ of\ P}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00150}00150\ \ \ \ \ \textcolor{comment}{//\ r\ =\ (S\ dot\ P)/\ norm(P)\string^2}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00152}00152\ \ \ \ \ int64\_t\ i64\_Projection\ =\ (numerator\ *\ LVDT\_SCALING\_FACTOR\ \ )\ /\ denom;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00153}00153\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00154}00154\ \ \ \ \ \textcolor{keywordflow}{return}\ (int32\_t)i64\_Projection;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00155}00155\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00156}00156\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00165}\doxymbox{\hyperlink{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9}{00165}}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9}{f\_Get\_Displacement}}(\ int32\_t\ i32\_Projection\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00166}00166\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00167}00167\ \ \ \ \ Cal\_Value\_t\ *table;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00168}00168\ \ \ \ \ uint8\_t\ u8\_Table\_Size;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00169}00169\ \ \ \ \ LVDT\_Gain\_Sel\_t\ e\_Gain\_Sel;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00172}00172\ \ \ \ \ e\_Gain\_Sel\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}{e\_Get\_LVDT\_Gain}}();}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00174}00174\ \ \ \ \ \textcolor{keywordflow}{switch}(\ e\_Gain\_Sel\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00175}00175\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00176}00176\ \ \ \ \ \textcolor{keywordflow}{case}\ LVDT\_GAIN\_1:}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00177}00177\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00178}00178\ \ \ \ \ \ \ \ \ u8\_Table\_Size\ =\ \textcolor{keyword}{sizeof}(Cal\_G1)/\textcolor{keyword}{sizeof}(Cal\_Value\_t);}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00179}00179\ \ \ \ \ \ \ \ \ table\ =\ (Cal\_Value\_t\ *)Cal\_G1;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00180}00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00181}00181\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00182}00182\ \ \ \ \ \textcolor{keywordflow}{case}\ LVDT\_GAIN\_8:}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00183}00183\ \ \ \ \ \ \ \ \ u8\_Table\_Size\ =\ \textcolor{keyword}{sizeof}(Cal\_G8)/\textcolor{keyword}{sizeof}(Cal\_Value\_t);}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00184}00184\ \ \ \ \ \ \ \ \ table\ =\ Cal\_G8;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00186}00186\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00187}00187\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00189}00189\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00191}00191\ \ \ \ \ uint8\_t\ u8\_n;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00192}00192\ \ \ \ \ \textcolor{keywordtype}{float}\ f\_Displacement;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00195}00195\ \ \ \ \ \textcolor{keywordflow}{if}(\ i32\_Projection\ <\ table[u8\_Table\_Size-\/1].i32\_Projection\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/999999.0f;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00198}00198\ \ \ \ \ \textcolor{keywordflow}{if}(\ i32\_Projection\ >\ table[0].i32\_Projection\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00199}00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 999999.0f;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00202}00202\ \ \ \ \ \textcolor{keywordflow}{for}(\ u8\_n\ =\ 0;\ u8\_n\ <\ (u8\_Table\_Size\ -\/\ 1);\ u8\_n++\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00203}00203\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00204}00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ i32\_Projection\ >\ \ table[u8\_n+1].i32\_Projection\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00206}00206\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00208}00208\ \ \ \ \ f\_Displacement\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}{f\_Interpolate\_2D}}(\ (\textcolor{keywordtype}{float})\ i32\_Projection,}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{float})table[u8\_n].i32\_Projection,}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{float})table[u8\_n+1].i32\_Projection,}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ table[u8\_n].f\_Displacement,}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ table[u8\_n+1].f\_Displacement\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00215}00215\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00216}00216\ \ \ \ \ \textcolor{keywordflow}{return}\ f\_Displacement;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00217}00217\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00218}00218\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00229}\doxymbox{\hyperlink{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}{00229}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{hal__lvdt_8c_ac9398ff6c8d1a166c5fafcef0ed73051}{f\_Interpolate\_2D}}(\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ x0,\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{portContext_8h_a647803975572334a4388665c70ddd3f8}{x1}},\ \textcolor{keywordtype}{float}\ y0,\ \textcolor{keywordtype}{float}\ y1\ )}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00230}00230\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00231}00231\ \ \ \ \ \textcolor{keywordtype}{float}\ \ y\ =\ (x\ -\/\ x0)\ *\ y1\ +\ (\doxymbox{\hyperlink{portContext_8h_a647803975572334a4388665c70ddd3f8}{x1}}\ -\/\ x)\ *\ y0;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00232}00232\ \ \ \ \ y\ /=\ (\doxymbox{\hyperlink{portContext_8h_a647803975572334a4388665c70ddd3f8}{x1}}\ -\/\ x0\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00234}00234\ \ \ \ \ \textcolor{keywordflow}{return}\ y;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00235}00235\ \}}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00236}00236\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00242}\doxymbox{\hyperlink{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434}{00242}}\ int32\_t\ \doxymbox{\hyperlink{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434}{i32\_Get\_Position}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00243}00243\ \{}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00244}00244\ \ \ \ \ LVDT\_Sample\_t\ LVDT\_Sample;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00245}00245\ \ \ \ \ int32\_t\ i32\_Projection;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00246}00246\ \ \ \ \ int32\_t\ \ i32\_Displacement\_microns;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00247}00247\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00248}00248\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a6420473a781772383359e21b383ebd97}{V\_Get\_LVDT\_Snapshot}}(\ \&LVDT\_Sample\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00249}00249\ \ \ \ \ i32\_Projection\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_a944affe336f1c118cb5d1b9823f42c50}{i32\_Get\_Projection}}(\ \&LVDT\_Sample\ );}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00250}00250\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00252}00252\ \ \ \ \ i32\_Displacement\_microns\ \ =\ (int32\_t)\doxymbox{\hyperlink{hal__lvdt_8c_a419bb9aeb19c5780352bdab5fba441a9}{f\_Get\_Displacement}}(\ i32\_Projection\ )\ +\ 0.5f;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00253}00253\ }
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00254}00254\ \ \ \ \ \textcolor{keywordflow}{return}\ i32\_Displacement\_microns;}
+\DoxyCodeLine{\Hypertarget{hal__lvdt_8c_source_l00255}00255\ \}}
+
+\end{DoxyCode}

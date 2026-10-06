@@ -1,0 +1,119 @@
+\doxysection{hw\+\_\+init.\+c}
+\hypertarget{hw__init_8c_source}{}\label{hw__init_8c_source}\index{src/hw\_init.c@{src/hw\_init.c}}
+\doxymbox{\hyperlink{hw__init_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00002}00002\ \textcolor{comment}{\ *\ hw\_init.c}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 3,\ 2025}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal__uart16550_8h}{hal\_uart16550.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__comm_8h}{serial\_comm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__gpio_8h}{debug\_gpio.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__switches_8h}{debug\_switches.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}pwm.h"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}hal\_stepper.h"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}lvdt.h"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}timer.h"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00025}00025\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}register.h"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{crc_8h}{crc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00029}00029\ \textcolor{comment}{//\ For\ now\ only\ stepper\ 1\ is\ being\ used.\ Later,\ there\ will\ be\ a\ provision\ to\ switch\ over\ to\ the\ other\ in\ case\ of\ failure.}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00030}\doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{00030}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ \doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{Serial\_Comm\_UART}};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00031}\doxymbox{\hyperlink{hw__init_8c_ad82818481f92c54df3faae5eebd66108}{00031}}\ \textcolor{keyword}{static}\ Stepper\_Instance\_t\ \doxymbox{\hyperlink{hw__init_8c_ad82818481f92c54df3faae5eebd66108}{Stepper\_1}};\ \textcolor{comment}{//Stepper\_2;}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00032}\doxymbox{\hyperlink{hw__init_8c_a4c428904cc5dd691463b7ce810696a37}{00032}}\ \textcolor{keyword}{static}\ Timer\_Instance\_t\ \doxymbox{\hyperlink{hw__init_8c_a4c428904cc5dd691463b7ce810696a37}{Serial\_Timer\_Instance}};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00040}\doxymbox{\hyperlink{hw__init_8c_a56dcf7c2e0fdbd1879f6622d91ade982}{00040}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hw__init_8c_a56dcf7c2e0fdbd1879f6622d91ade982}{v\_Hw\_Init}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00041}00041\ \{}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00042}00042\ \ \ \ \ uint32\_t\ u32\_CRC;}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ Done\ before\ any\ of\ the\ hardware\ init\ as\ some\ will\ use\ register\ settings}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00045}00045\ \ \ \ \ \doxymbox{\hyperlink{register_8c_aacd10faadd51c609afd6841166d86a19}{v\_Init\_Registers}}();}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00047}00047\ \ \ \ \ \textcolor{comment}{//\ Serial\ Comm\ UART}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00048}00048\ \ \ \ \ \doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{Serial\_Comm\_UART}}.u32\_Base\_Address\ =\ \doxymbox{\hyperlink{mem__map_8h_a9d6434ead44ff515d17d60f250b53e2e}{TMTC\_UART\_BASE\_ADDR}};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00049}00049\ \ \ \ \ \doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{Serial\_Comm\_UART}}.u8\_Status\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00050}00050\ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2}{v\_Init\_UART}}(\ \&\doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{Serial\_Comm\_UART}}\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//\ Serial\ comm\ timer}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00053}00053\ \ \ \ \ Timer\_Init\_t\ Timer\_Init\ =}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00054}00054\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00055}00055\ \ \ \ \ \ \ \ \ .u32\_Base\_Address\ =\ \doxymbox{\hyperlink{mem__map_8h_a6302cfdf958518b7ca1866dbdb79d402}{SERIAL\_COMM\_TIMER\_BASE}},}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00056}00056\ \ \ \ \ \ \ \ \ \ .u8\_Prescale\ =\ TIMER\_PRESCALE\_FACTOR\_2,}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00057}00057\ \ \ \ \ \ \ \ \ \ .u8\_Mode\ =\ TIMER\_MODE\_ONE\_SHOT}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00058}00058\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00059}00059\ \ \ \ \ \doxymbox{\hyperlink{timer_8c_a350462105c9e84d1624772a0799dbe86}{v\_Init\_Timer}}(\ \&\doxymbox{\hyperlink{hw__init_8c_a4c428904cc5dd691463b7ce810696a37}{Serial\_Timer\_Instance}},\ \ \&Timer\_Init\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00061}00061\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_ac184fd9d173aaa189206d71f20df8206}{v\_Set\_Serial\_Comm\_Instance}}(\ \&\doxymbox{\hyperlink{hw__init_8c_a14cf53d0f88309cc19cd375e9d85b0a8}{Serial\_Comm\_UART}}\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00062}00062\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a8f25298ce8f87ad4b70f7bf37ddc588c}{v\_Set\_Serial\_Timer\_Instance}}(\ \&\doxymbox{\hyperlink{hw__init_8c_a4c428904cc5dd691463b7ce810696a37}{Serial\_Timer\_Instance}}\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00064}00064\ \ \ \ \ \textcolor{comment}{//\ Stepper\ Control\ Block}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00065}00065\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00066}00066\ \textcolor{comment}{\ \ \ \ \ *\ Initial\ setup\ for\ stepper}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00067}00067\ \textcolor{comment}{\ \ \ \ \ *\ M0:\ 1}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00068}00068\ \textcolor{comment}{\ \ \ \ \ *\ M1:\ Hi-\/Z}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00069}00069\ \textcolor{comment}{\ \ \ \ \ *\ Decay0:\ 0}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00070}00070\ \textcolor{comment}{\ \ \ \ \ *\ Decay1:\ 1}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00071}00071\ \textcolor{comment}{\ \ \ \ \ *\ TOFF:\ 1\ or\ Hi-\/Z}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00072}00072\ \textcolor{comment}{\ \ \ \ \ *\ nSleep:\ 1}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00073}00073\ \textcolor{comment}{\ \ \ \ \ *\ Enable\ :\ 0\ or\ 1\ depending\ on\ mode}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00074}00074\ \textcolor{comment}{\ \ \ \ \ *\ Vref\ :\ 304\ mV}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00075}00075\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00076}00076\ \ \ \ \ PWM\_Init\_t\ PWM\_Init\ =}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00077}00077\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00078}00078\ \ \ \ \ \ \ \ .u32\_Base\_Address\ =\ \doxymbox{\hyperlink{mem__map_8h_ac1ed8f889852ca5ad56781b572fa8b87}{PRI\_STP\_VREF\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00079}00079\ \ \ \ \ \ \ \ .u16\_Prescale\ =\ 1,}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00080}00080\ \ \ \ \ \ \ \ .u16\_Period\ =\ (1\ <<\ 16)-\/1,\ \textcolor{comment}{//\ 16\ bit}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00081}00081\ \ \ \ \ \ \ \ .u16\_Negedge\ =\ 0}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00082}00082\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00084}00084\ \ \ \ \ Stepper\_Init\_t\ Stepper\_Init\ =}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00085}00085\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00086}00086\ \ \ \ \ \ \ \ \ .u32\_Stepper\_Control\_Base\ =\ \doxymbox{\hyperlink{mem__map_8h_a22647ecaaa9e42a4ca455b0ff2fc22ba}{PRI\_STP\_CTRL\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00087}00087\ \ \ \ \ \ \ \ \ .u32\_Stepper\_Out\_Base\ =\ \doxymbox{\hyperlink{mem__map_8h_a7ebd7551965805ac2e063affcede45ce}{PRI\_STP\_OUT\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00088}00088\ \ \ \ \ \ \ \ \ .Pwm\_Init\ =\ \&PWM\_Init}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00089}00089\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00091}00091\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a}{v\_Init\_Stepper}}(\ \&\doxymbox{\hyperlink{hw__init_8c_ad82818481f92c54df3faae5eebd66108}{Stepper\_1}},\ \&Stepper\_Init\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00092}00092\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157}{v\_Set\_Stepper\_Control\_Output}}(\ STEPPER\_CONTROL\_DEFAULTS\ \ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00094}00094\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d}{v\_Set\_Microstep\_Mode}}(\ STEP\_256\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00096}00096\ \textcolor{preprocessor}{\#ifdef\ STEPPER\_3p3V}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00097}00097\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6}{v\_Stepper\_Set\_Vref}}(\ 304\ );\ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ use\ with\ the\ 3.3V\ stepper}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00098}00098\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00099}00099\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac}{v\_Stepper\_Set\_I\_Max\_mA}}(\ 120\ );\ \ \ \ \textcolor{comment}{//\ For\ use\ with\ 12V\ stepper}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00100}00100\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00102}00102\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}{v\_Set\_Stepper\_out}}(\ \ 0\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00103}00103\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2}{v\_Enable\_Stepper}}(\ \ 1\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ LVDT}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00106}00106\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a6d080d24b71ea9abcef37ad551e1bf40}{v\_Init\_LVDT}}();}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00107}00107\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_ab324a9d0e90c030572ac2e2309caee42}{v\_Set\_LVDT\_Gain}}(\ LVDT\_GAIN\_1\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00109}00109\ \ \ \ \ \textcolor{comment}{//\ Various\ Debug\ GPIOs}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00110}00110\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8c_a206d3d520d97d5bba411d6a6db145ed3}{v\_Init\_Debug\_GPIO}}();}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00112}00112\ \}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00114}00114\ }
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00115}\doxymbox{\hyperlink{hw__init_8c_ac8c00223f71897be7f1b9685e59202b6}{00115}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hw__init_8c_ac8c00223f71897be7f1b9685e59202b6}{v\_Set\_Stepper\_Vel}}(uint32\_t\ u32\_Vel)}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00116}00116\ \{}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00117}00117\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}{v\_Set\_Stepper\_out}}(\ u32\_Vel\ );}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00118}00118\ \}}
+\DoxyCodeLine{\Hypertarget{hw__init_8c_source_l00119}00119\ }
+
+\end{DoxyCode}

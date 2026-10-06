@@ -1,0 +1,27 @@
+var dma__write__reg_8h =
+[
+    [ "CLEAR_INDEX_MASK", "dma__write__reg_8h.html#a1b401fc8470054cd617d74952b394118", null ],
+    [ "CLEAR_INDEX_OFFSET", "dma__write__reg_8h.html#a69f6fc0c592c14e8a134f7ac2299ff4b", null ],
+    [ "CLEAR_INDEX_REG_OFFSET", "dma__write__reg_8h.html#a01fe14e9c3d61bbc7bb101b0a0140d26", null ],
+    [ "CLEAR_INDEX_SHIFT", "dma__write__reg_8h.html#adf976096279046ef6ade67d85281a523", null ],
+    [ "CORE_READY_MASK", "dma__write__reg_8h.html#adfc8e38d3ef458a4702027e551c537f3", null ],
+    [ "CORE_READY_OFFSET", "dma__write__reg_8h.html#a53dca40641906e07fd2650c062cac8e3", null ],
+    [ "CORE_READY_REG_OFFSET", "dma__write__reg_8h.html#acab97b4a8f26c684c06b7adedd4ca7a2", null ],
+    [ "CORE_READY_SHIFT", "dma__write__reg_8h.html#a396cd8ea89557f787f472c35fc429b1b", null ],
+    [ "DMA_WRITE_FRAME_INDEX_MASK", "dma__write__reg_8h.html#a496876b7cacadb8e4a4a231e0174225d", null ],
+    [ "DMA_WRITE_FRAME_INDEX_OFFSET", "dma__write__reg_8h.html#a7af5cf47a2123d50adb367ad1b4fe216", null ],
+    [ "DMA_WRITE_FRAME_INDEX_REG_OFFSET", "dma__write__reg_8h.html#afbd9edc796f2d9a092f6b8111015ccdb", null ],
+    [ "DMA_WRITE_FRAME_INDEX_SHIFT", "dma__write__reg_8h.html#a502f5afd231f2b7cf0c69898da0e9fe1", null ],
+    [ "DMA_WRITE_H_SIZE_BYTE_MASK", "dma__write__reg_8h.html#a7830341b4e68f7fd0776ab7d20d63eff", null ],
+    [ "DMA_WRITE_H_SIZE_BYTE_OFFSET", "dma__write__reg_8h.html#a2eeebbf2b97b72f23453c623b33bfc3f", null ],
+    [ "DMA_WRITE_H_SIZE_BYTE_REG_OFFSET", "dma__write__reg_8h.html#a62617099afa703a6a6e5da8180a714ac", null ],
+    [ "DMA_WRITE_H_SIZE_BYTE_SHIFT", "dma__write__reg_8h.html#afd298cf033cc5eccc80546d6288f4b35", null ],
+    [ "FRAME_WRITE_DONE_MASK", "dma__write__reg_8h.html#a78f9c8a5bd52c84db6c05f792b00cdc6", null ],
+    [ "FRAME_WRITE_DONE_OFFSET", "dma__write__reg_8h.html#a04a9db929ca1574a8d1cf38a426cb31c", null ],
+    [ "FRAME_WRITE_DONE_REG_OFFSET", "dma__write__reg_8h.html#a013a49826ef179282868bea325a9c67e", null ],
+    [ "FRAME_WRITE_DONE_SHIFT", "dma__write__reg_8h.html#acbea29cb276699a850d99cbbf3f8ffc2", null ],
+    [ "TIMEOUT_ERR_MASK", "dma__write__reg_8h.html#ad86e68ee353eb8caa9972d7f6de77e17", null ],
+    [ "TIMEOUT_ERR_OFFSET", "dma__write__reg_8h.html#a445b2054ad604c912f60d4c069b03f10", null ],
+    [ "TIMEOUT_ERR_REG_OFFSET", "dma__write__reg_8h.html#a10bb1dad2302ba16292e19d382710cf1", null ],
+    [ "TIMEOUT_ERR_SHIFT", "dma__write__reg_8h.html#a7ad4101d2430f5d0e60456c61f1d4c69", null ]
+];

@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['v_5fsize_5fline_5fmask_0',['V_SIZE_LINE_MASK',['../udp__dmactrl__reg_8h.html#a95224e357e2772f59f4d264b158046a0',1,'udp_dmactrl_reg.h']]],
+  ['v_5fsize_5fline_5foffset_1',['V_SIZE_LINE_OFFSET',['../udp__dmactrl__reg_8h.html#a1bba132f3234d585913f9ea56771cfdc',1,'udp_dmactrl_reg.h']]],
+  ['v_5fsize_5fline_5freg_5foffset_2',['V_SIZE_LINE_REG_OFFSET',['../udp__dmactrl__reg_8h.html#aa056b748912047604caf79b57ce456cf',1,'udp_dmactrl_reg.h']]],
+  ['v_5fsize_5fline_5fshift_3',['V_SIZE_LINE_SHIFT',['../udp__dmactrl__reg_8h.html#a390bd2cc90c851ee7dbbd692c9ec0110',1,'udp_dmactrl_reg.h']]],
+  ['version_5fbase_5faddr_4',['VERSION_BASE_ADDR',['../mem__map_8h.html#a0e115e2a96b6cf5dccf2313a8984fa94',1,'mem_map.h']]],
+  ['vm_5fmbare_5',['VM_MBARE',['../miv__rv32__regs_8h.html#a136d72c1560058c881e418d809313c4d',1,'miv_rv32_regs.h']]],
+  ['vm_5fmbb_6',['VM_MBB',['../miv__rv32__regs_8h.html#aa14ac20603beff5cf88970ba9df3336d',1,'miv_rv32_regs.h']]],
+  ['vm_5fmbbid_7',['VM_MBBID',['../miv__rv32__regs_8h.html#a393d622a8cfcc7d8ea5343fdfcd32d07',1,'miv_rv32_regs.h']]],
+  ['vm_5fsv32_8',['VM_SV32',['../miv__rv32__regs_8h.html#a7ea29e1df0e38548df1183ec9ea9da44',1,'miv_rv32_regs.h']]],
+  ['vm_5fsv39_9',['VM_SV39',['../miv__rv32__regs_8h.html#ad246f74e1796b45a7f1675ed9aeb9ab1',1,'miv_rv32_regs.h']]],
+  ['vm_5fsv48_10',['VM_SV48',['../miv__rv32__regs_8h.html#a0b6c1ec7c117e3a245e09c635af9994b',1,'miv_rv32_regs.h']]],
+  ['vmessagebufferdelete_11',['vMessageBufferDelete',['../message__buffer_8h.html#aa29d6c50600a7b0154e4a47e7c981d1a',1,'message_buffer.h']]],
+  ['vportfreestack_12',['vPortFreeStack',['../portable_8h.html#aea845f6533dc5815a516b16ce7bda9e6',1,'portable.h']]],
+  ['vqueueaddtoregistry_13',['vQueueAddToRegistry',['../FreeRTOS_8h.html#a3e103eedd5088f5f30bc55e55820a9e3',1,'FreeRTOS.h']]],
+  ['vqueueunregisterqueue_14',['vQueueUnregisterQueue',['../FreeRTOS_8h.html#af007b655ee91c919bad9cd2798195899',1,'FreeRTOS.h']]],
+  ['vsemaphoredelete_15',['vSemaphoreDelete',['../semphr_8h.html#acd7d0eda0923d7caeeaaee9202c43eab',1,'semphr.h']]],
+  ['vtaskdelayuntil_16',['vTaskDelayUntil',['../task_8h.html#aeaef1dd0632e6e3441388bf82a7d18d3',1,'task.h']]],
+  ['vtaskgetruntimestats_17',['vTaskGetRunTimeStats',['../task_8h.html#a9d9cbeb55e8b255293690ceed544b047',1,'task.h']]],
+  ['vtaskgettaskinfo_18',['vTaskGetTaskInfo',['../FreeRTOS_8h.html#af91a84ee7fcd1c03bba33c0c86c9a493',1,'FreeRTOS.h']]],
+  ['vtasklist_19',['vTaskList',['../task_8h.html#a94a092579386c7dbdadaaa12a60f75ed',1,'task.h']]],
+  ['vtasknotifygivefromisr_20',['vTaskNotifyGiveFromISR',['../task_8h.html#a1add9ef24d3763e34603b18802fae9d7',1,'task.h']]],
+  ['vtasknotifygiveindexedfromisr_21',['vTaskNotifyGiveIndexedFromISR',['../task_8h.html#a756fe3c4656aaaa8ef6d309e0078e132',1,'task.h']]]
+];

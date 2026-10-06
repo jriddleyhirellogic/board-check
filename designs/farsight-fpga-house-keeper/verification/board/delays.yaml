@@ -1,0 +1,195 @@
+# How long each regulator family takes from enable to power-good.
+#
+# Every number here is traceable to a datasheet or to a component fitted on
+# this board. None is a blanket value, because a blanket value destroys the
+# information that decides whether the boot sequence completes: what matters
+# is the delay of each rail *relative* to the others, and making them all
+# equal manufactures ties that the real board does not have.
+#
+# That is not a theoretical concern. With a 2 ms blanket delay the DDR8 region
+# stalled and looked like a design defect. With the real values it boots, and
+# the reason is visible in the arithmetic: the VTT regulator's power-good
+# arrives 3.5 ms AFTER the housekeeper enables that source, so the rising edge
+# `HK-SRC-05` requires is there to be seen.
+#
+# These are *stimulus*, not verified behaviour. No housekeeper requirement
+# bounds a regulator; every timed requirement bounds the housekeeper's own
+# latency, measured from its own enable. What the model owes a test is an edge
+# in the right order, and the ability to withhold or move it.
+
+schematic:
+  file: CM-03545_ASSY__PCB__AVIONICS__FARSIGHT__FLIGHT_MODEL_sch_20260915_115317.json
+  sha256: 4e95391400ec512e7aec0e0d0dd9e8b39e0cd4dcbc9d4cbbb4e2dbd0e0e0f0a1
+
+# Families whose start-up time follows a datasheet equation, computed per rail
+# from the capacitor actually fitted.
+computed:
+
+  TPS54821:
+    # Enable to PWRGD, not the soft-start time. Equation 5 gives the
+    # soft-start time (10-90 % output) as Css x Vref / Iss with Vref = 0.6 V,
+    # but PWRGD is held low until SS/TR has charged to 1.4 V -- "the PWRGD is
+    # pulled low if ... the EN pin is pulled low or the SS/TR pin is below
+    # 1.4 V" (7.4.6) -- so power-good comes Css x 1.4 / Iss after enable,
+    # 2.33x the soft-start time. Iss is given as typical only.
+    formula: css_nf * pgood_ss_v / iss_ua
+    vref_v: 0.6
+    pgood_ss_v: 1.4
+    iss_ua: 2.3
+    timing_pin: [SS, TR]
+    source: >
+      TPS54821 datasheet, 7.4.5 (Equation 5, Iss 2.3 uA), 7.4.6 and Electrical
+      Characteristics "Minimum SS/TR voltage for PWRGD 1.4 V". PWRGD is low
+      while EN is low.
+
+  TPS7H4003:
+    # Enable to PWRGD: PWRGD is held low until SS/TR reaches 1.1 V (7.3.9),
+    # so Css x 1.1 / Iss. Iss is 1.5 / 2.5 / 3.0 uA min/typ/max, so the time
+    # varies by 2:1 between parts; the model uses typical.
+    formula: css_nf * pgood_ss_v / iss_ua
+    vref_v: 0.605
+    pgood_ss_v: 1.1
+    iss_ua: 2.5
+    iss_ua_min: 1.5
+    iss_ua_max: 3.0
+    timing_pin: [SS, TR]
+    source: >
+      TPS7H4003-SEP datasheet, 7.3.8 (Equation 5), 7.3.9 "the PWRGD is pulled
+      low if ... the EN pin is pulled low, or the SS/TR pin is below 1.1 V",
+      Electrical Characteristics SS charge current 1.5/2.5/3.0 uA.
+
+  LT3065:
+    # ADI gives start-up time as a curve, "Start-Up Time vs REF/BYP
+    # Capacitor", not an equation. Read off the curve at the fitted value and
+    # scaled linearly, which the datasheet supports: "Regulator start-up time
+    # is directly proportional to the size of the bypass capacitor."
+    formula: reference_ms * cref_nf / reference_nf
+    reference_nf: 10
+    reference_ms: 3.0
+    timing_pin: [REF/BYP, REF, BYP]
+    source: LT3065 datasheet, Start-Up Time vs REF/BYP Capacitor (curve read)
+    # Its power-good does not follow its enable down. PWRGD is open drain and
+    # only ever pulls low; with SHDN low the part draws 0.2 uA, so nothing
+    # holds the pin and the board's pull-up does: PGOOD reads HIGH whenever
+    # the enable is low. When the enable is applied it drops, and rises again
+    # at 90 % output. A power-down can therefore never be confirmed by this
+    # PGOOD falling -- only by the source's power-down timeout (HK-SRC-11).
+    #
+    # Not modelled: the PWRGD comparator's 25 us deglitch, so after enable the
+    # real pin may take up to ~25 us to fall where the model drops it at once.
+    # The low then lasts the whole start-up, milliseconds, far beyond the
+    # housekeeper's 5 us input filter, so boot behaviour is the same.
+    pgood_released_when_disabled: true
+    pgood_source: >
+      LT3065 datasheet: PWRGD "is an open-drain output that actively pulls low
+      if the output is less than 90% of the nominal output value ... There is
+      no internal pull-up resistor; an external pull-up resistor must be used"
+      (pin functions); it "de-asserts and becomes high impedance if the output
+      rises above 90%" with "25us of deglitching" (PWRGD Pin Operation);
+      quiescent current in shutdown 0.2 uA typ, 1 uA max. The datasheet does
+      not state the pin's level in shutdown; the board does. Dhruv (avionics
+      hardware), reply of 2026-10-01 on FAR-PM_FPGA_L4REQ-4: the LT3065 "loses
+      control of the PGOOD pin (open drain) when the EN signal is removed. This
+      caused PGOOD to stay high when the supply is commanded off (at boot this
+      PGOOD signal goes low when EN is applied before rising again when the
+      supply reaches 90% output)".
+
+# Rails whose power-good delay is a fixed datasheet figure rather than a
+# function of a fitted component.
+fixed:
+
+  TPS7H3302:
+    delay_ms: 4.0
+    source: >
+      TPS7H3302 datasheet, tPG(delay) = 4 ms typ: "During initial VTT startup,
+      PGOOD asserts high 4 ms (typ) after the VTT enters power-good window."
+
+# Rails not yet characterised. Each is a real gap rather than an oversight,
+# and none is in the hardware boot path -- the stepper rails are
+# software-controlled regions, and the IMX 2V9/3V3 regulators are on the
+# sensor board.
+#
+# The placeholder is deliberately slow: if one of these is wrong, a test
+# waiting on it times out visibly rather than passing early by luck.
+uncharacterised:
+  default_ms: 3.0
+  rails:
+    stepper_pri_en:
+      part: ADM1270ACPZ-R7
+      why: >
+        Enable-to-PWRGD is the inrush ramp, set by the downstream bulk
+        capacitance (52.8 uF) and the current limit from the sense resistor,
+        not by a datasheet constant. PWRGD follows the output voltage through
+        the FB_PG divider (VPGTH 1.0 V, 30 mV hysteresis), not ENABLE, so on
+        power-down it falls only as the bulk capacitance discharges -- the
+        model drops it with the enable, which is earlier. FAULT here is
+        latch-off: it stays low until TIMER_OFF has charged and ENABLE is
+        toggled (datasheet, TIMER_OFF), where the model releases it at once.
+        Needs a measured start-up and decay.
+    stepper_sec_en:
+      part: ADM1270ACPZ-R7
+      why: As stepper_pri_en.
+    imx_en_2v9:
+      part: off-board (sensor board CM-02456)
+      why: >
+        The enable leaves this board through connector J7; the regulator is on
+        the sensor board. Power-good returns through a TLV4H290 comparator
+        (U30) on the avionics board comparing the sensed rail with a
+        threshold, so it follows the rail's voltage -- rising when the rail
+        crosses the threshold and falling only as it decays, not with the
+        enable. Needs a measured start-up and decay.
+    imx_en_3v3:
+      part: off-board (sensor board CM-02456)
+      why: As imx_en_2v9.
+
+# Rails whose power-good is cascaded off another rail rather than off a
+# housekeeper enable.
+cascaded:
+  ddr8_pgood_0v6:
+    follows: ddr8_pgood_1v2
+    part: TPS7H3302MDAPTSEP
+    why: >
+      The VTT regulator (U40) starts without the housekeeper: its EN and VDD
+      tie to the 2V5 rail (EN through 0 ohm R441), and its VDDQSNS and VLDOIN
+      are the 1V2 rail. VTT is regulated to VDDQSNS / 2, so it cannot be in
+      its power-good window -- and PGOOD cannot rise, 4 ms after it is --
+      until 1V2 is up; 2V5 is up before 1V2 in the boot order, so 1V2 is what
+      it follows. The housekeeper's own *_en_0v6 output is not connected to
+      anything: ball N18 sits on a one-pin net. On power-down PGOOD falls when
+      VTTREF is disabled (VDDQSNS below 0.675 V) or EN falls; the model drops
+      it with 1V2's PGOOD, earlier than the 1V2 rail's decay would.
+      TPS7H3302-SEP datasheet 7.3.2-7.3.5: "When enable is low, PGOOD is low".
+  ddr16_pgood_0v6:
+    follows: ddr16_pgood_1v2
+    part: TPS7H3302MDAPTSEP
+    why: As ddr8_pgood_0v6, for U37 (EN via 0 ohm R946); ball D1 is likewise unconnected.
+
+# Facts that are not delays, recorded here so the model's other assumptions
+# have a source too.
+not_modelled:
+  nfault: >
+    Every regulator nFAULT input is an over-current comparator, not a
+    regulator pin: a TLV4H290 (100 ns propagation delay, 1.8 Mohm positive
+    feedback for hysteresis -- not a latch) comparing an OPA4H014 current-sense
+    amplifier across the rail's sense resistor with a fixed threshold. It reads
+    "load current above threshold now". The model asserts it only when a test
+    does. Open: whether start-up inrush, charging each rail's output
+    capacitance, crosses the threshold for longer than the housekeeper's 5 us
+    filter -- the step-down 4V0 is configured to ignore nFAULT during boot
+    (IGNORE_LATCHUP_ON_BOOT), which suggests it does there. Needs each rail's
+    threshold, output capacitance and inrush, or a measurement. Only the
+    stepper nFAULTs come from a part's own FAULT pin (ADM1270, above).
+  efuse: >
+    eps_efuse_pgood is the ADM1270 U88 on this board, not upstream of it: its
+    FAULT ties to its ENABLE (automatic retry), and its PWRGD follows the
+    28 V output through FB_PG. The model holds it good unless a test fails it.
+  pull_ups: >
+    Every PGOOD and nFAULT line is pulled up to 3V3_ASIC, the housekeeper's own
+    I/O supply (schematic, 2026-10-01), so a released power-good reads high
+    whenever the housekeeper is running.
+  oscillator: >
+    The model's clock is exactly 50 MHz. Fitted: Y6 X35T-L7M-50.000MHZ, +/-75
+    ppm overall over -55 to +125 C including 5-year aging; or Y10
+    ECS-3225MVQ-500-BP-TR, +/-50 ppm (initial, temperature, supply, load,
+    reflow) over -40 to +105 C plus +/-3 ppm a year aging. Worst case +/-75
+    ppm over the first five years. DRV-HK-06, HK-F-19.

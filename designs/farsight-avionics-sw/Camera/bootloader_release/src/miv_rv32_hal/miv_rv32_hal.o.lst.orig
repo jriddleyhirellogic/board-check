@@ -1,0 +1,2187 @@
+   1              		.file	"miv_rv32_hal.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.MRV_systick_config,"ax",@progbits
+  10              		.align	2
+  11              		.globl	MRV_systick_config
+  13              	MRV_systick_config:
+  14              	.LFB18:
+  15              		.file 1 "../src/miv_rv32_hal/miv_rv32_hal.c"
+   1:../src/miv_rv32_hal/miv_rv32_hal.c **** /*******************************************************************************
+   2:../src/miv_rv32_hal/miv_rv32_hal.c ****  * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3:../src/miv_rv32_hal/miv_rv32_hal.c ****  *
+   4:../src/miv_rv32_hal/miv_rv32_hal.c ****  * SPDX-License-Identifier: MIT
+   5:../src/miv_rv32_hal/miv_rv32_hal.c ****  *
+   6:../src/miv_rv32_hal/miv_rv32_hal.c ****  * @file miv_rv32_hal.c
+   7:../src/miv_rv32_hal/miv_rv32_hal.c ****  * @author Microchip FPGA Embedded Systems Solutions
+   8:../src/miv_rv32_hal/miv_rv32_hal.c ****  * @brief Implementation of Hardware Abstraction Layer for Mi-V soft processors
+   9:../src/miv_rv32_hal/miv_rv32_hal.c ****  *
+  10:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+  11:../src/miv_rv32_hal/miv_rv32_hal.c **** #include <unistd.h>
+  12:../src/miv_rv32_hal/miv_rv32_hal.c **** #include "miv_rv32_hal.h"
+  13:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  14:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifdef __cplusplus
+  15:../src/miv_rv32_hal/miv_rv32_hal.c **** extern "C" {
+  16:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+  17:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  18:../src/miv_rv32_hal/miv_rv32_hal.c **** #define SUCCESS                       0U
+  19:../src/miv_rv32_hal/miv_rv32_hal.c **** #define ERROR                         1U
+  20:../src/miv_rv32_hal/miv_rv32_hal.c **** #define MASK_32BIT                    0xFFFFFFFFu
+  21:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  22:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+  23:../src/miv_rv32_hal/miv_rv32_hal.c ****  *  Write in a sequence recommended by privileged spec to avoid spurious
+  24:../src/miv_rv32_hal/miv_rv32_hal.c ****  * interrupts
+  25:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  26:../src/miv_rv32_hal/miv_rv32_hal.c ****    # New comparand is in a1:a0.
+  27:../src/miv_rv32_hal/miv_rv32_hal.c ****     li t0, -1
+  28:../src/miv_rv32_hal/miv_rv32_hal.c ****     sw t0, mtimecmp # No smaller than old value.
+  29:../src/miv_rv32_hal/miv_rv32_hal.c ****     sw a1, mtimecmp+4 # No smaller than new value.
+  30:../src/miv_rv32_hal/miv_rv32_hal.c ****     sw a0, mtimecmp # New value.
+  31:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+  32:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef MIV_RV32_EXT_TIMECMP
+  33:../src/miv_rv32_hal/miv_rv32_hal.c **** #define WRITE_MTIMECMP(value)         MTIMECMPH = MASK_32BIT; \
+  34:../src/miv_rv32_hal/miv_rv32_hal.c ****                                       MTIMECMP  = value & MASK_32BIT;\
+  35:../src/miv_rv32_hal/miv_rv32_hal.c ****                                       MTIMECMPH =  (value >> 32u) & MASK_32BIT;
+  36:../src/miv_rv32_hal/miv_rv32_hal.c **** #else
+  37:../src/miv_rv32_hal/miv_rv32_hal.c **** #define WRITE_MTIMECMP(value)
+  38:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+  39:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  40:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef MIV_RV32_EXT_TIMER
+  41:../src/miv_rv32_hal/miv_rv32_hal.c **** #define WRITE_MTIME(value)            MTIME  = value & MASK_32BIT;\
+  42:../src/miv_rv32_hal/miv_rv32_hal.c ****                                       MTIMEH = (value >> 32u) & MASK_32BIT;
+  43:../src/miv_rv32_hal/miv_rv32_hal.c **** #else
+  44:../src/miv_rv32_hal/miv_rv32_hal.c **** #define WRITE_MTIME(value)
+  45:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+  46:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  47:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void Software_IRQHandler(void);
+  48:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  49:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifdef MIV_LEGACY_RV32
+  50:../src/miv_rv32_hal/miv_rv32_hal.c **** #define MTIME_PRESCALER                 100UL
+  51:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+  52:../src/miv_rv32_hal/miv_rv32_hal.c ****  *
+  53:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+  54:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t Invalid_IRQHandler(void);
+  55:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_1_IRQHandler(void);
+  56:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_2_IRQHandler(void);
+  57:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_3_IRQHandler(void);
+  58:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_4_IRQHandler(void);
+  59:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_5_IRQHandler(void);
+  60:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_6_IRQHandler(void);
+  61:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_7_IRQHandler(void);
+  62:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_8_IRQHandler(void);
+  63:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_9_IRQHandler(void);
+  64:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_10_IRQHandler(void);
+  65:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_11_IRQHandler(void);
+  66:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_12_IRQHandler(void);
+  67:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_13_IRQHandler(void);
+  68:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_14_IRQHandler(void);
+  69:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_15_IRQHandler(void);
+  70:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_16_IRQHandler(void);
+  71:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_17_IRQHandler(void);
+  72:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_18_IRQHandler(void);
+  73:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_19_IRQHandler(void);
+  74:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_20_IRQHandler(void);
+  75:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_21_IRQHandler(void);
+  76:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_22_IRQHandler(void);
+  77:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_23_IRQHandler(void);
+  78:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_24_IRQHandler(void);
+  79:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_25_IRQHandler(void);
+  80:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_26_IRQHandler(void);
+  81:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_27_IRQHandler(void);
+  82:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_28_IRQHandler(void);
+  83:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_29_IRQHandler(void);
+  84:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_30_IRQHandler(void);
+  85:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t External_31_IRQHandler(void);
+  86:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  87:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  88:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+  89:../src/miv_rv32_hal/miv_rv32_hal.c ****  * RISC-V interrupt handler for external interrupts.
+  90:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+  91:../src/miv_rv32_hal/miv_rv32_hal.c **** uint8_t (* const ext_irq_handler_table[32])(void) =
+  92:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+  93:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+  94:../src/miv_rv32_hal/miv_rv32_hal.c ****     Invalid_IRQHandler,
+  95:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_1_IRQHandler,
+  96:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_2_IRQHandler,
+  97:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_3_IRQHandler,
+  98:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_4_IRQHandler,
+  99:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_5_IRQHandler,
+ 100:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_6_IRQHandler,
+ 101:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_7_IRQHandler,
+ 102:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_8_IRQHandler,
+ 103:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_9_IRQHandler,
+ 104:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_10_IRQHandler,
+ 105:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_11_IRQHandler,
+ 106:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_12_IRQHandler,
+ 107:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_13_IRQHandler,
+ 108:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_14_IRQHandler,
+ 109:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_15_IRQHandler,
+ 110:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_16_IRQHandler,
+ 111:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_17_IRQHandler,
+ 112:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_18_IRQHandler,
+ 113:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_19_IRQHandler,
+ 114:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_20_IRQHandler,
+ 115:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_21_IRQHandler,
+ 116:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_22_IRQHandler,
+ 117:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_23_IRQHandler,
+ 118:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_24_IRQHandler,
+ 119:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_25_IRQHandler,
+ 120:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_26_IRQHandler,
+ 121:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_27_IRQHandler,
+ 122:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_28_IRQHandler,
+ 123:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_29_IRQHandler,
+ 124:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_30_IRQHandler,
+ 125:../src/miv_rv32_hal/miv_rv32_hal.c ****     External_31_IRQHandler
+ 126:../src/miv_rv32_hal/miv_rv32_hal.c **** };
+ 127:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 128:../src/miv_rv32_hal/miv_rv32_hal.c **** #else
+ 129:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 130:../src/miv_rv32_hal/miv_rv32_hal.c ****  * Interrupt handlers as mapped into the MIE register of the MIV_RV32
+ 131:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 132:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void External_IRQHandler(void);
+ 133:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MGEUI_IRQHandler(void);
+ 134:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MGECI_IRQHandler(void);
+ 135:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI0_IRQHandler(void);
+ 136:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI1_IRQHandler(void);
+ 137:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI2_IRQHandler(void);
+ 138:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI3_IRQHandler(void);
+ 139:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI4_IRQHandler(void);
+ 140:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void MSYS_EI5_IRQHandler(void);
+ 141:../src/miv_rv32_hal/miv_rv32_hal.c **** extern void OPSRV_IRQHandler(void);
+ 142:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 143:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif  /* MIV_LEGACY_RV32 */
+ 144:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 145:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 146:../src/miv_rv32_hal/miv_rv32_hal.c ****  * Increment value for the mtimecmp register in order to achieve a system tick
+ 147:../src/miv_rv32_hal/miv_rv32_hal.c ****  * interrupt as specified through the MRV_systick_config() function.
+ 148:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 149:../src/miv_rv32_hal/miv_rv32_hal.c **** static uint64_t g_systick_increment = 0U;
+ 150:../src/miv_rv32_hal/miv_rv32_hal.c **** static uint64_t g_systick_cmp_value = 0U;
+ 151:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 152:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 153:../src/miv_rv32_hal/miv_rv32_hal.c ****  * Configure the machine timer to generate an interrupt.
+ 154:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 155:../src/miv_rv32_hal/miv_rv32_hal.c **** uint32_t MRV_systick_config(uint64_t ticks)
+ 156:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+  16              		.loc 1 156 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+ 157:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint32_t ret_val = ERROR;
+  19              		.loc 1 157 5
+ 158:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint64_t remainder = ticks;
+  20              		.loc 1 158 5
+ 159:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 160:../src/miv_rv32_hal/miv_rv32_hal.c ****     while (remainder >= MTIME_PRESCALER)
+  21              		.loc 1 160 5
+  22 0000 97070000 		lla	a5,.LANCHOR0
+  22      93870700 
+  23 0008 83A60700 		lw	a3,0(a5)
+  24 000c 03A64700 		lw	a2,4(a5)
+  25              		.loc 1 160 11 is_stmt 0
+  26 0010 93080000 		li	a7,0
+  27 0014 13870700 		mv	a4,a5
+  28              		.loc 1 160 25
+  29 0018 37530002 		li	t1,33574912
+  30              	.LVL1:
+  31              	.L2:
+  32 001c 138E1600 		addi	t3,a3,1
+  33 0020 83270300 		lw	a5,0(t1)
+  34 0024 3338DE00 		sltu	a6,t3,a3
+  35 0028 3308C800 		add	a6,a6,a2
+  36              		.loc 1 160 11
+  37 002c 639E0506 		bne	a1,zero,.L3
+  38 0030 637CF506 		bleu	a5,a0,.L3
+  39 0034 638A0800 		beq	a7,zero,.L5
+  40 0038 97070000 		sw	a3,.LANCHOR0,a5
+  40      23A0D700 
+  41 0040 97070000 		sw	a2,.LANCHOR0+4,a5
+  41      23A0C700 
+  42              	.L5:
+ 161:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 162:../src/miv_rv32_hal/miv_rv32_hal.c ****         remainder -= MTIME_PRESCALER;
+ 163:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_increment++;
+ 164:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 165:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 166:../src/miv_rv32_hal/miv_rv32_hal.c ****     g_systick_cmp_value = g_systick_increment + MTIME;
+  43              		.loc 1 166 5 is_stmt 1
+  44              		.loc 1 166 49 is_stmt 0
+  45 0048 B7C70002 		li	a5,33603584
+  46 004c 83A787FF 		lw	a5,-8(a5)
+  47              		.loc 1 166 47
+  48 0050 83260700 		lw	a3,0(a4)
+  49 0054 03274700 		lw	a4,4(a4)
+ 157:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint64_t remainder = ticks;
+  50              		.loc 1 157 14
+  51 0058 13051000 		li	a0,1
+  52              	.LVL2:
+  53              		.loc 1 166 47
+  54 005c 3386D700 		add	a2,a5,a3
+  55 0060 B337F600 		sltu	a5,a2,a5
+  56 0064 B387E700 		add	a5,a5,a4
+  57              		.loc 1 166 25
+  58 0068 97050000 		sw	a2,.LANCHOR1,a1
+  58      23A0C500 
+  59 0070 97050000 		sw	a5,.LANCHOR1+4,a1
+  59      23A0F500 
+ 167:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 168:../src/miv_rv32_hal/miv_rv32_hal.c ****     if (g_systick_increment > 0U)
+  60              		.loc 1 168 5 is_stmt 1
+  61              		.loc 1 168 8 is_stmt 0
+  62 0078 B3E6E600 		or	a3,a3,a4
+  63 007c 63840602 		beq	a3,zero,.L1
+ 169:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 170:../src/miv_rv32_hal/miv_rv32_hal.c ****         WRITE_MTIMECMP(g_systick_cmp_value);
+  64              		.loc 1 170 9 is_stmt 1
+  65 0080 37470002 		li	a4,33570816
+  66 0084 9306F0FF 		li	a3,-1
+  67 0088 2322D700 		sw	a3,4(a4)
+  68              		.loc 1 170 9
+  69 008c 2320C700 		sw	a2,0(a4)
+  70              		.loc 1 170 9
+  71 0090 2322F700 		sw	a5,4(a4)
+  72              		.loc 1 170 44
+ 171:../src/miv_rv32_hal/miv_rv32_hal.c ****         set_csr(mie, MIP_MTIP);
+  73              		.loc 1 171 9
+  74              	.LBB6:
+  75              		.loc 1 171 9
+  76              		.loc 1 171 9
+  77 0094 93070008 		li	a5,128
+  78              	 #APP
+  79              	# 171 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 172              	        MRV_enable_interrupts();
+  80              		csrrs a5, mie, a5
+  81              	# 0 "" 2
+  82              	.LVL3:
+ 171:../src/miv_rv32_hal/miv_rv32_hal.c ****         set_csr(mie, MIP_MTIP);
+  83              		.loc 1 171 9
+  84              	 #NO_APP
+  85              	.LBE6:
+  86              		.loc 1 172 9
+  87              		.file 2 "../src/miv_rv32_hal/miv_rv32_hal.h"
+   1:../src/miv_rv32_hal/miv_rv32_hal.h **** /*******************************************************************************
+   2:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+   4:../src/miv_rv32_hal/miv_rv32_hal.h ****  * SPDX-License-Identifier: MIT
+   5:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+   6:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Permission is hereby granted, free of charge, to any person obtaining a copy
+   7:../src/miv_rv32_hal/miv_rv32_hal.h ****  * of this software and associated documentation files (the "Software"), to
+   8:../src/miv_rv32_hal/miv_rv32_hal.h ****  * deal in the Software without restriction, including without limitation the
+   9:../src/miv_rv32_hal/miv_rv32_hal.h ****  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  10:../src/miv_rv32_hal/miv_rv32_hal.h ****  * sell copies of the Software, and to permit persons to whom the Software is
+  11:../src/miv_rv32_hal/miv_rv32_hal.h ****  * furnished to do so, subject to the following conditions:
+  12:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+  13:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The above copyright notice and this permission notice shall be included in
+  14:../src/miv_rv32_hal/miv_rv32_hal.h ****  * all copies or substantial portions of the Software.
+  15:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+  16:../src/miv_rv32_hal/miv_rv32_hal.h ****  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  17:../src/miv_rv32_hal/miv_rv32_hal.h ****  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  18:../src/miv_rv32_hal/miv_rv32_hal.h ****  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  19:../src/miv_rv32_hal/miv_rv32_hal.h ****  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  20:../src/miv_rv32_hal/miv_rv32_hal.h ****  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  21:../src/miv_rv32_hal/miv_rv32_hal.h ****  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  22:../src/miv_rv32_hal/miv_rv32_hal.h ****  * IN THE SOFTWARE.
+  23:../src/miv_rv32_hal/miv_rv32_hal.h ****  * 
+  24:../src/miv_rv32_hal/miv_rv32_hal.h ****  * @file miv_rv32_hal.h
+  25:../src/miv_rv32_hal/miv_rv32_hal.h ****  * @author Microchip FPGA Embedded Systems Solutions
+  26:../src/miv_rv32_hal/miv_rv32_hal.h ****  * @brief Hardware Abstraction Layer functions for Mi-V soft processors
+  27:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+  28:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+  29:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  30:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifndef RISCV_HAL_H
+  31:../src/miv_rv32_hal/miv_rv32_hal.h **** #define RISCV_HAL_H
+  32:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  33:../src/miv_rv32_hal/miv_rv32_hal.h **** #include "miv_rv32_regs.h"
+  34:../src/miv_rv32_hal/miv_rv32_hal.h **** #include "miv_rv32_plic.h"
+  35:../src/miv_rv32_hal/miv_rv32_hal.h **** #include "miv_rv32_assert.h"
+  36:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  37:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifndef LEGACY_DIR_STRUCTURE
+  38:../src/miv_rv32_hal/miv_rv32_hal.h **** #include "fpga_design_config/fpga_design_config.h"
+  39:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+  40:../src/miv_rv32_hal/miv_rv32_hal.h **** #include "hw_platform.h"
+  41:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif  /*LEGACY_DIR_STRUCTURE*/
+  42:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  43:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifdef __cplusplus
+  44:../src/miv_rv32_hal/miv_rv32_hal.h **** extern "C" {
+  45:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+  46:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  47:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+  48:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Return value from External IRQ handler. This will be used to disable the
+  49:../src/miv_rv32_hal/miv_rv32_hal.h ****  * External interrupt.
+  50:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+  51:../src/miv_rv32_hal/miv_rv32_hal.h **** #define EXT_IRQ_KEEP_ENABLED                0U
+  52:../src/miv_rv32_hal/miv_rv32_hal.h **** #define EXT_IRQ_DISABLE                     1U
+  53:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  54:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+  55:../src/miv_rv32_hal/miv_rv32_hal.h ****  * System tick handler. This handler function gets called when the Machine
+  56:../src/miv_rv32_hal/miv_rv32_hal.h ****  * timer interrupt asserts. An implementation of this function should be
+  57:../src/miv_rv32_hal/miv_rv32_hal.h ****  * provided by the application to implement the application specific machine
+  58:../src/miv_rv32_hal/miv_rv32_hal.h ****  * timer interrupt handling. If application does not provide such implementation
+  59:../src/miv_rv32_hal/miv_rv32_hal.h ****  * the weakly linked handler stub function implemented in riscv_hal_stubs.c gets
+  60:../src/miv_rv32_hal/miv_rv32_hal.h ****  * linked.
+  61:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+  62:../src/miv_rv32_hal/miv_rv32_hal.h **** void SysTick_Handler(void);
+  63:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  64:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+  65:../src/miv_rv32_hal/miv_rv32_hal.h ****  * System timer tick configuration.
+  66:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Configures the machine timer to generate a system tick interrupt at regular
+  67:../src/miv_rv32_hal/miv_rv32_hal.h ****  * intervals.
+  68:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Takes the number of system clock ticks between interrupts.
+  69:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+  70:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Though this function can take any valid ticks value as parameter, we expect
+  71:../src/miv_rv32_hal/miv_rv32_hal.h ****  * that, for all practical purposes, a small tick value (to generate periodic 
+  72:../src/miv_rv32_hal/miv_rv32_hal.h ****  * interrupts every few miliseconds) will be passed. If you need to generate
+  73:../src/miv_rv32_hal/miv_rv32_hal.h ****  * periodic events in the range of seconds or more, you may use the SysTick_Handler()
+  74:../src/miv_rv32_hal/miv_rv32_hal.h ****  * to further count the number of interrupts and hence the larger time intervals.
+  75:../src/miv_rv32_hal/miv_rv32_hal.h ****  *
+  76:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Returns 0 if successful.
+  77:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Returns 1 if the interrupt interval cannot be achieved.
+  78:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+  79:../src/miv_rv32_hal/miv_rv32_hal.h **** uint32_t MRV_systick_config(uint64_t ticks);
+  80:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  81:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIME_DELTA                     5
+  82:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  83:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifdef MIV_LEGACY_RV32
+  84:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MSIP                            (*(uint32_t*)0x44000000UL)
+  85:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMP                        (*(uint32_t*)0x44004000UL)
+  86:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMPH                       (*(uint32_t*)0x44004004UL)
+  87:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIME                           (*(uint32_t*)0x4400BFF8UL)
+  88:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMEH                          (*(uint32_t*)0x4400BFFCUL)
+  89:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  90:../src/miv_rv32_hal/miv_rv32_hal.h **** /* To maintain backward compatibility with FreeRTOS config code */
+  91:../src/miv_rv32_hal/miv_rv32_hal.h **** #define PRCI_BASE                       0x44000000UL
+  92:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  93:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+  94:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  95:../src/miv_rv32_hal/miv_rv32_hal.h **** /* To maintain backward compatibility with FreeRTOS config code */
+  96:../src/miv_rv32_hal/miv_rv32_hal.h **** #define PRCI_BASE                       0x02000000UL
+  97:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+  98:../src/miv_rv32_hal/miv_rv32_hal.h **** /* OPSRV stands for "Offload Processor Subsystem for RISC-V" (OPSRV) on the
+  99:../src/miv_rv32_hal/miv_rv32_hal.h ****  * MIV_RV32 IP core. Please see the handbook for more details. */
+ 100:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 101:../src/miv_rv32_hal/miv_rv32_hal.h **** /* TCM ECC correctable error irq enable mask value */
+ 102:../src/miv_rv32_hal/miv_rv32_hal.h **** #define OPSRV_TCM_ECC_CE_IRQ            0x01u
+ 103:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 104:../src/miv_rv32_hal/miv_rv32_hal.h **** /* TCMECC uncorrectable error irq enable */
+ 105:../src/miv_rv32_hal/miv_rv32_hal.h **** #define OPSRV_TCM_ECC_UCE_IRQ           0x02u
+ 106:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 107:../src/miv_rv32_hal/miv_rv32_hal.h **** /* AXI write response error irq enable */
+ 108:../src/miv_rv32_hal/miv_rv32_hal.h **** #define OPSRV_AXI_WR_RESP_IRQ           0x10u
+ 109:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 110:../src/miv_rv32_hal/miv_rv32_hal.h **** #define OPSRV_BASE_ADDR                 0x00006000UL
+ 111:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 112:../src/miv_rv32_hal/miv_rv32_hal.h **** typedef struct
+ 113:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 114:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t cfg;          	/*Parity is not being supported by MIV_RV32 v3.0*/
+ 115:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t reserved0[3];
+ 116:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t irq_en;           /*offset 0x10*/
+ 117:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t irq_pend;
+ 118:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t reserved1[2];
+ 119:../src/miv_rv32_hal/miv_rv32_hal.h ****     volatile uint32_t soft_reg;         /*offset 0x20*/
+ 120:../src/miv_rv32_hal/miv_rv32_hal.h **** } OPSRV_Type;
+ 121:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 122:../src/miv_rv32_hal/miv_rv32_hal.h **** #define OPSRV                           ((OPSRV_Type *)OPSRV_BASE_ADDR)
+ 123:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 124:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifndef MIV_RV32_EXT_TIMECMP
+ 125:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMP                        (*(volatile uint32_t*)0x02004000UL)
+ 126:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMPH                       (*(volatile uint32_t*)0x02004004UL)
+ 127:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+ 128:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMP                        (0u)
+ 129:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMECMPH                       (0u)
+ 130:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 131:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 132:../src/miv_rv32_hal/miv_rv32_hal.h **** /* On MIV_RV32IMC v2.0 and v2.1 MTIME_PRESCALER is not defined and using this
+ 133:../src/miv_rv32_hal/miv_rv32_hal.h ****  * definition will result in crash. For those core use the definition as below
+ 134:../src/miv_rv32_hal/miv_rv32_hal.h ****  * #define MTIME_PRESCALER              100u
+ 135:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 136:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIME_PRESCALER                 (*(volatile uint32_t*)0x02005000UL)
+ 137:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 138:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifndef MIV_RV32_EXT_TIMER
+ 139:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIME                           (*(volatile uint32_t*)0x0200BFF8UL)
+ 140:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMEH                          (*(volatile uint32_t*)0x0200BFFCUL)
+ 141:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+ 142:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIME                           (0u)
+ 143:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MTIMEH                          (0u)
+ 144:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif  /*MIV_RV32_EXT_TIMER*/
+ 145:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 146:../src/miv_rv32_hal/miv_rv32_hal.h **** /* These definitions are provided for convenient identification of the interrupts
+ 147:../src/miv_rv32_hal/miv_rv32_hal.h ****  * in the MIE/MIP registers.
+ 148:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Apart from the standard software, timer and external interrupts, the names
+ 149:../src/miv_rv32_hal/miv_rv32_hal.h ****  * of the additional interrupts correspond to the names as used in the MIV_RV32
+ 150:../src/miv_rv32_hal/miv_rv32_hal.h ****  * handbook. Please refer the MIV_RV32 handbook for more details.
+ 151:../src/miv_rv32_hal/miv_rv32_hal.h ****  * */
+ 152:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_SOFT_IRQn                 MIE_3_IRQn
+ 153:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_TIMER_IRQn                MIE_7_IRQn
+ 154:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_EXT_IRQn                  MIE_11_IRQn
+ 155:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 156:../src/miv_rv32_hal/miv_rv32_hal.h **** /*==============================================================================
+ 157:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Interrupt numbers:
+ 158:../src/miv_rv32_hal/miv_rv32_hal.h ****  * This enum represents the interrupt enable bits in the MIE register.
+ 159:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 160:../src/miv_rv32_hal/miv_rv32_hal.h **** enum
+ 161:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 162:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_0_IRQn  =  (0x01u),
+ 163:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_1_IRQn  =  (0x01u<<1u),
+ 164:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_2_IRQn  =  (0x01u<<2u),
+ 165:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_3_IRQn  =  (0x01u<<3u),         /*MSIE*/
+ 166:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_4_IRQn  =  (0x01u<<4u),
+ 167:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_5_IRQn  =  (0x01u<<5u),
+ 168:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_6_IRQn  =  (0x01u<<6u),
+ 169:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_7_IRQn  =  (0x01u<<7u),         /*MTIE*/
+ 170:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_8_IRQn  =  (0x01u<<8u),
+ 171:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_9_IRQn  =  (0x01u<<9u),
+ 172:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_10_IRQn =  (0x01u<<10u),
+ 173:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_11_IRQn =  (0x01u<<11u),        /*MEIE*/
+ 174:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_12_IRQn =  (0x01u<<12u),
+ 175:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_13_IRQn =  (0x01u<<13u),
+ 176:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_14_IRQn =  (0x01u<<14u),
+ 177:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_15_IRQn =  (0x01u<<15u),
+ 178:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_16_IRQn =  (0x01u<<16u),        /*MGEUIE*/
+ 179:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_17_IRQn =  (0x01u<<17u),        /*MGECIE*/
+ 180:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_18_IRQn =  (0x01u<<18u),
+ 181:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_19_IRQn =  (0x01u<<19u),
+ 182:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_20_IRQn =  (0x01u<<20u),
+ 183:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_21_IRQn =  (0x01u<<21u),
+ 184:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_22_IRQn =  (0x01u<<22u),
+ 185:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_23_IRQn =  (0x01u<<23u),
+ 186:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_24_IRQn =  (0x01u<<24u),        /*MSYS_EIE0*/
+ 187:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_25_IRQn =  (0x01u<<25u),        /*MSYS_EIE1*/
+ 188:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_26_IRQn =  (0x01u<<26u),        /*MSYS_EIE2*/
+ 189:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_27_IRQn =  (0x01u<<27u),        /*MSYS_EIE3*/
+ 190:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_28_IRQn =  (0x01u<<28u),        /*MSYS_EIE4*/
+ 191:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_29_IRQn =  (0x01u<<29u),        /*MSYS_EIE5*/
+ 192:../src/miv_rv32_hal/miv_rv32_hal.h ****     MIE_30_IRQn =  (0x01u<<30u)         /*OPSRV_IRQ_IE*/
+ 193:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 194:../src/miv_rv32_hal/miv_rv32_hal.h **** } MRV_LOCAL_IRQn_Type;
+ 195:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 196:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 197:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MGEUIE_IRQn               MIE_16_IRQn
+ 198:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MGECIE_IRQn               MIE_17_IRQn
+ 199:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE0_IRQn            MIE_24_IRQn
+ 200:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE1_IRQn            MIE_25_IRQn
+ 201:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE2_IRQn            MIE_26_IRQn
+ 202:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE3_IRQn            MIE_27_IRQn
+ 203:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE4_IRQn            MIE_28_IRQn
+ 204:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_EIE5_IRQn            MIE_29_IRQn
+ 205:../src/miv_rv32_hal/miv_rv32_hal.h **** #define MRV32_MSYS_OPSRV_IRQn           MIE_30_IRQn
+ 206:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 207:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 208:../src/miv_rv32_hal/miv_rv32_hal.h ****     Enable OPSRV interrupt. Parameter takes logical OR of following values
+ 209:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_CE_IRQ                    0x01u
+ 210:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_UCE_IRQ                   0x02u
+ 211:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_AXI_WR_RESP_IRQ                   0x10u
+ 212:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 213:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_opsrv_enable_irq(uint32_t irq_mask)
+ 214:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 215:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->irq_en = irq_mask;
+ 216:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 217:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 218:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 219:../src/miv_rv32_hal/miv_rv32_hal.h ****     Disable OPSRV interrupt. Parameter takes logical OR of following values
+ 220:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_CE_IRQ                    0x01u
+ 221:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_UCE_IRQ                   0x02u
+ 222:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_AXI_WR_RESP_IRQ                   0x10u
+ 223:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 224:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_opsrv_disable_irq(uint32_t irq_mask)
+ 225:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 226:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->irq_en &= ~irq_mask;
+ 227:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 228:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 229:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 230:../src/miv_rv32_hal/miv_rv32_hal.h ****     Clear OPSRV interrupt. Parameter takes logical OR of following values
+ 231:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_CE_IRQ                    0x01u
+ 232:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_TCM_ECC_UCE_IRQ                   0x02u
+ 233:../src/miv_rv32_hal/miv_rv32_hal.h ****     #define OPSRV_AXI_WR_RESP_IRQ                   0x10u
+ 234:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 235:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_opsrv_clear_irq(uint32_t irq_mask)
+ 236:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 237:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->irq_pend |= irq_mask;
+ 238:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 239:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 240:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 241:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV32_is_gpr_ded() returns the core_gpr_ded_reset_reg bit value.
+ 242:../src/miv_rv32_hal/miv_rv32_hal.h ****  * When ECC is enabled, the core_gpr_ded_reset_reg is set when the core was
+ 243:../src/miv_rv32_hal/miv_rv32_hal.h ****  * reset due to GPR DED error.
+ 244:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 245:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline uint32_t MRV32_is_gpr_ded(void)
+ 246:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 247:../src/miv_rv32_hal/miv_rv32_hal.h ****     return((OPSRV->soft_reg & 0x04u) >> 0x02u);
+ 248:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 249:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 250:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 251:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV32_clear_gpr_ded() can be used to clear the
+ 252:../src/miv_rv32_hal/miv_rv32_hal.h ****  * core_gpr_ded_reset_reg bit. When ECC is enabled, the core_gpr_ded_reset_reg
+ 253:../src/miv_rv32_hal/miv_rv32_hal.h ****  * is set when the core was previously reset due to GPR DED error.
+ 254:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 255:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_clear_gpr_ded(void)
+ 256:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 257:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->soft_reg &= ~0x04u;
+ 258:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 259:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 260:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 261:../src/miv_rv32_hal/miv_rv32_hal.h ****   When ECC is enabled for the GPRs and if that data has a single bit error then
+ 262:../src/miv_rv32_hal/miv_rv32_hal.h ****   the data coming out of the ECC block will be corrected and will not have the
+ 263:../src/miv_rv32_hal/miv_rv32_hal.h ****   error but the data source will still have the error.
+ 264:../src/miv_rv32_hal/miv_rv32_hal.h ****   The ECC block does not write back corrected data to memory.
+ 265:../src/miv_rv32_hal/miv_rv32_hal.h ****   Therefore, if data has a single bit error, then the corrected data should be 
+ 266:../src/miv_rv32_hal/miv_rv32_hal.h ****   written back to prevent the single bit error from becoming a double bit error.
+ 267:../src/miv_rv32_hal/miv_rv32_hal.h ****   The MRV32_clear_gpr_ecc_errors() can be used for that.
+ 268:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 269:../src/miv_rv32_hal/miv_rv32_hal.h ****   Clear the pending interrupt bit after this using MRV32_mgeci_clear_irq()
+ 270:../src/miv_rv32_hal/miv_rv32_hal.h ****   function to complete the ECC error handling.
+ 271:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 272:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_clear_gpr_ecc_errors(void)
+ 273:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 274:../src/miv_rv32_hal/miv_rv32_hal.h ****     uint32_t temp;
+ 275:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 276:../src/miv_rv32_hal/miv_rv32_hal.h ****     __asm__ __volatile__ (
+ 277:../src/miv_rv32_hal/miv_rv32_hal.h ****             "sw x31, %0"
+ 278:../src/miv_rv32_hal/miv_rv32_hal.h ****             :"=m" (temp));
+ 279:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 280:../src/miv_rv32_hal/miv_rv32_hal.h ****     __asm__ volatile (
+ 281:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x1;"
+ 282:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x1, x31;"
+ 283:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 284:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x2;"
+ 285:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x2, x31;"
+ 286:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 287:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x3;"
+ 288:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x3, x31;"
+ 289:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 290:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x4;"
+ 291:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x4, x31;"
+ 292:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 293:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x5;"
+ 294:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x5, x31;"
+ 295:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 296:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x6;"
+ 297:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x6, x31;"
+ 298:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 299:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x7;"
+ 300:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x7, x31;"
+ 301:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 302:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x8;"
+ 303:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x8, x31;"
+ 304:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 305:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x9;"
+ 306:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x9, x31;"
+ 307:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 308:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x10;"
+ 309:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x10, x31;"
+ 310:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 311:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x11;"
+ 312:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x11, x31;"
+ 313:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 314:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x12;"
+ 315:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x12, x31;"
+ 316:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 317:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x13;"
+ 318:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x13, x31;"
+ 319:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 320:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x14;"
+ 321:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x14, x31;"
+ 322:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 323:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x15;"
+ 324:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x15, x31;"
+ 325:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 326:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x16;"
+ 327:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x16, x31;"
+ 328:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 329:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x17;"
+ 330:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x17, x31;"
+ 331:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 332:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x18;"
+ 333:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x18, x31;"
+ 334:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 335:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x19;"
+ 336:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x19, x31;"
+ 337:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 338:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x20;"
+ 339:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x20, x31;"
+ 340:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 341:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x21;"
+ 342:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x21, x31;"
+ 343:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 344:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x22;"
+ 345:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x22, x31;"
+ 346:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 347:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x23;"
+ 348:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x23, x31;"
+ 349:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 350:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x24;"
+ 351:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x24, x31;"
+ 352:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 353:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x25;"
+ 354:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x25, x31;"
+ 355:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 356:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x26;"
+ 357:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x26, x31;"
+ 358:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 359:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x27;"
+ 360:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x27, x31;"
+ 361:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 362:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x28;"
+ 363:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x28, x31;"
+ 364:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 365:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x29;"
+ 366:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x29, x31;"
+ 367:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 368:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x31, x30;"
+ 369:../src/miv_rv32_hal/miv_rv32_hal.h ****             "mv x30, x31;");
+ 370:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 371:../src/miv_rv32_hal/miv_rv32_hal.h ****     __asm__ __volatile__ (
+ 372:../src/miv_rv32_hal/miv_rv32_hal.h ****             "lw x31, %0;"
+ 373:../src/miv_rv32_hal/miv_rv32_hal.h ****             :
+ 374:../src/miv_rv32_hal/miv_rv32_hal.h ****             :"m" (temp));
+ 375:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 376:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 377:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 378:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV32_enable_parity_check() is used to enable parity check on
+ 379:../src/miv_rv32_hal/miv_rv32_hal.h ****  * the TCM and it's interface transactions. This feature is not available on
+ 380:../src/miv_rv32_hal/miv_rv32_hal.h ****  * MIV_RV32 v3.0.100 soft processor core.
+ 381:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 382:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_enable_parity_check(void)
+ 383:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 384:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->cfg |= 0x01u;
+ 385:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 386:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 387:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 388:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV32_disable_parity_check() is used to disable parity check on
+ 389:../src/miv_rv32_hal/miv_rv32_hal.h ****  * the TCM and it's interface transactions.
+ 390:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 391:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_disable_parity_check(void)
+ 392:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 393:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->cfg &= ~0x01u;
+ 394:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 395:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 396:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 397:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV32_cpu_soft_reset() is used to cause a soft cpu reset on
+ 398:../src/miv_rv32_hal/miv_rv32_hal.h ****  * the MIV_RV32 soft processor core.
+ 399:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 400:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_cpu_soft_reset(void)
+ 401:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 402:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->soft_reg &= ~0x01u;
+ 403:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 404:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 405:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 406:../src/miv_rv32_hal/miv_rv32_hal.h ****     Clear GPR ECC Uncorrectable interrupt. MGEUI interrupt is available only when
+ 407:../src/miv_rv32_hal/miv_rv32_hal.h ****     ECC is enabled in MIV_RV32 IP configurator.
+ 408:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 409:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_mgeui_clear_irq(uint32_t irq_mask)
+ 410:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 411:../src/miv_rv32_hal/miv_rv32_hal.h ****     clear_csr(mip, MRV32_MGEUIE_IRQn);
+ 412:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 413:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 414:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 415:../src/miv_rv32_hal/miv_rv32_hal.h ****     Clear GPR ECC correctable interrupt. MGECI interrupt is available only when
+ 416:../src/miv_rv32_hal/miv_rv32_hal.h ****     ECC is enabled in MIV_RV32 IP configurator.
+ 417:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 418:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV32_mgeci_clear_irq(uint32_t irq_mask)
+ 419:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 420:../src/miv_rv32_hal/miv_rv32_hal.h ****     clear_csr(mip, MRV32_MGECIE_IRQn);
+ 421:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 422:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 423:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 424:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Enable interrupts.
+ 425:../src/miv_rv32_hal/miv_rv32_hal.h ****  This function takes a mask value as input. For each set bit in the mask value,
+ 426:../src/miv_rv32_hal/miv_rv32_hal.h ****  corresponding interrupt bit in the MIE register is enabled.
+ 427:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 428:../src/miv_rv32_hal/miv_rv32_hal.h ****  MRV_enable_local_irq(MRV32_SOFT_IRQn  |
+ 429:../src/miv_rv32_hal/miv_rv32_hal.h ****                       MRV32_TIMER_IRQn |
+ 430:../src/miv_rv32_hal/miv_rv32_hal.h ****                       MRV32_EXT_IRQn   |
+ 431:../src/miv_rv32_hal/miv_rv32_hal.h ****                       MRV32_MSYS_EIE0_IRQn |
+ 432:../src/miv_rv32_hal/miv_rv32_hal.h ****                       MRV32_MSYS_OPSRV_IRQn);
+ 433:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 434:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV_enable_local_irq(uint32_t mask)
+ 435:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 436:../src/miv_rv32_hal/miv_rv32_hal.h ****     set_csr(mie, mask);
+ 437:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 438:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 439:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 440:../src/miv_rv32_hal/miv_rv32_hal.h ****  * Disable interrupts.
+ 441:../src/miv_rv32_hal/miv_rv32_hal.h ****  This function takes a mask value as input. For each set bit in the mask value,
+ 442:../src/miv_rv32_hal/miv_rv32_hal.h ****  corresponding interrupt bit in the MIE register is disabled.
+ 443:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 444:../src/miv_rv32_hal/miv_rv32_hal.h ****   MRV_disable_local_irq(MRV32_SOFT_IRQn  |
+ 445:../src/miv_rv32_hal/miv_rv32_hal.h ****                         MRV32_TIMER_IRQn |
+ 446:../src/miv_rv32_hal/miv_rv32_hal.h ****                         MRV32_EXT_IRQn   |
+ 447:../src/miv_rv32_hal/miv_rv32_hal.h ****                         MRV32_MSYS_EIE0_IRQn |
+ 448:../src/miv_rv32_hal/miv_rv32_hal.h ****                         MRV32_MSYS_OPSRV_IRQn);
+ 449:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 450:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV_disable_local_irq(uint32_t mask)
+ 451:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 452:../src/miv_rv32_hal/miv_rv32_hal.h ****     clear_csr(mie, mask);
+ 453:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 454:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 455:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif /* MIV_LEGACY_RV32 */
+ 456:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 457:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 458:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV_raise_soft_irq() raises a synchronous software interrupt
+ 459:../src/miv_rv32_hal/miv_rv32_hal.h ****  * by writing into the MSIP register.
+ 460:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 461:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV_raise_soft_irq(void)
+ 462:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 463:../src/miv_rv32_hal/miv_rv32_hal.h ****     set_csr(mie, MIP_MSIP);       /* Enable software interrupt bit */
+ 464:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 465:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifdef MIV_LEGACY_RV32
+ 466:../src/miv_rv32_hal/miv_rv32_hal.h ****     /* You need to make sure that the global interrupt is enabled */
+ 467:../src/miv_rv32_hal/miv_rv32_hal.h ****     MSIP = 0x01;   /* raise soft interrupt */
+ 468:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+ 469:../src/miv_rv32_hal/miv_rv32_hal.h ****     /* Raise soft IRQ on MIV_RV32 processor */
+ 470:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->soft_reg |= (1u << 1u);
+ 471:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 472:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 473:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 474:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 475:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV_clear_soft_irq() clears a synchronous software interrupt
+ 476:../src/miv_rv32_hal/miv_rv32_hal.h ****  * by clearing the MSIP register.
+ 477:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 478:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV_clear_soft_irq(void)
+ 479:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 480:../src/miv_rv32_hal/miv_rv32_hal.h **** #ifdef MIV_LEGACY_RV32
+ 481:../src/miv_rv32_hal/miv_rv32_hal.h ****     MSIP = 0x00u;   /* clear soft interrupt */
+ 482:../src/miv_rv32_hal/miv_rv32_hal.h **** #else
+ 483:../src/miv_rv32_hal/miv_rv32_hal.h ****     /* Clear soft IRQ on MIV_RV32 processor */
+ 484:../src/miv_rv32_hal/miv_rv32_hal.h ****     OPSRV->soft_reg &= ~(1u << 1u);
+ 485:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 486:../src/miv_rv32_hal/miv_rv32_hal.h **** }
+ 487:../src/miv_rv32_hal/miv_rv32_hal.h **** 
+ 488:../src/miv_rv32_hal/miv_rv32_hal.h **** /***************************************************************************//**
+ 489:../src/miv_rv32_hal/miv_rv32_hal.h ****  * The function MRV_enable_interrupts() enables all interrupts setting the
+ 490:../src/miv_rv32_hal/miv_rv32_hal.h ****  * machine mode interrupt enable bit in MSTATUS register.
+ 491:../src/miv_rv32_hal/miv_rv32_hal.h ****  */
+ 492:../src/miv_rv32_hal/miv_rv32_hal.h **** static inline void MRV_enable_interrupts(void)
+ 493:../src/miv_rv32_hal/miv_rv32_hal.h **** {
+ 494:../src/miv_rv32_hal/miv_rv32_hal.h ****     set_csr(mstatus, MSTATUS_MIE);
+  88              		.loc 2 494 5
+  89              	.LBB7:
+  90              	.LBB8:
+  91              		.loc 2 494 5
+  92              		.loc 2 494 5
+  93              	 #APP
+  94              	# 494 "../src/miv_rv32_hal/miv_rv32_hal.h" 1
+ 495              	}
+  95              		csrrs a5, mstatus, 8
+  96              	# 0 "" 2
+  97              	.LVL4:
+ 494:../src/miv_rv32_hal/miv_rv32_hal.h ****     set_csr(mstatus, MSTATUS_MIE);
+  98              		.loc 2 494 5
+  99              	 #NO_APP
+ 100              	.LBE8:
+ 101              	.LBE7:
+ 173:../src/miv_rv32_hal/miv_rv32_hal.c ****         ret_val = SUCCESS;
+ 102              		.loc 1 173 9
+ 103              		.loc 1 173 17 is_stmt 0
+ 104 00a0 13050000 		li	a0,0
+ 105              	.LVL5:
+ 106              	.L1:
+ 174:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 175:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 176:../src/miv_rv32_hal/miv_rv32_hal.c ****     return ret_val;
+ 177:../src/miv_rv32_hal/miv_rv32_hal.c **** }
+ 107              		.loc 1 177 1
+ 108 00a4 67800000 		ret
+ 109              	.LVL6:
+ 110              	.L3:
+ 162:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_increment++;
+ 111              		.loc 1 162 9 is_stmt 1
+ 162:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_increment++;
+ 112              		.loc 1 162 22 is_stmt 0
+ 113 00a8 83270300 		lw	a5,0(t1)
+ 114 00ac 93081000 		li	a7,1
+ 162:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_increment++;
+ 115              		.loc 1 162 19
+ 116 00b0 13060800 		mv	a2,a6
+ 117 00b4 B307F540 		sub	a5,a0,a5
+ 118 00b8 B336F500 		sgtu	a3,a5,a0
+ 119 00bc B385D540 		sub	a1,a1,a3
+ 120              	.LVL7:
+ 163:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 121              		.loc 1 163 9 is_stmt 1
+ 162:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_increment++;
+ 122              		.loc 1 162 19 is_stmt 0
+ 123 00c0 13850700 		mv	a0,a5
+ 124 00c4 93060E00 		mv	a3,t3
+ 125 00c8 6FF05FF5 		j	.L2
+ 126              		.cfi_endproc
+ 127              	.LFE18:
+ 129              		.section	.text.handle_m_timer_interrupt,"ax",@progbits
+ 130              		.align	2
+ 131              		.globl	handle_m_timer_interrupt
+ 133              	handle_m_timer_interrupt:
+ 134              	.LFB19:
+ 178:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 179:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 180:../src/miv_rv32_hal/miv_rv32_hal.c ****  * RISC-V interrupt handler for machine timer interrupts.
+ 181:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 182:../src/miv_rv32_hal/miv_rv32_hal.c **** void handle_m_timer_interrupt(void)
+ 183:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+ 135              		.loc 1 183 1 is_stmt 1
+ 136              		.cfi_startproc
+ 184:../src/miv_rv32_hal/miv_rv32_hal.c ****     clear_csr(mie, MIP_MTIP);
+ 137              		.loc 1 184 5
+ 138              	.LBB9:
+ 139              		.loc 1 184 5
+ 140              		.loc 1 184 5
+ 141              	.LBE9:
+ 183:../src/miv_rv32_hal/miv_rv32_hal.c ****     clear_csr(mie, MIP_MTIP);
+ 142              		.loc 1 183 1 is_stmt 0
+ 143 0000 130101FF 		addi	sp,sp,-16
+ 144              		.cfi_def_cfa_offset 16
+ 145 0004 23261100 		sw	ra,12(sp)
+ 146              		.cfi_offset 1, -4
+ 147              	.LBB10:
+ 148              		.loc 1 184 5
+ 149 0008 93070008 		li	a5,128
+ 150              	 #APP
+ 151              	# 184 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 185              	
+ 152              		csrrc a5, mie, a5
+ 153              	# 0 "" 2
+ 154              	.LVL8:
+ 184:../src/miv_rv32_hal/miv_rv32_hal.c ****     clear_csr(mie, MIP_MTIP);
+ 155              		.loc 1 184 5 is_stmt 1
+ 156              	 #NO_APP
+ 157              	.LBE10:
+ 186:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint64_t mtime_at_irq = MTIME;
+ 158              		.loc 1 186 5
+ 159              		.loc 1 186 29 is_stmt 0
+ 160 0010 B7C70002 		li	a5,33603584
+ 161 0014 83A687FF 		lw	a3,-8(a5)
+ 162              	.LVL9:
+ 187:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 188:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef NDEBUG
+ 189:../src/miv_rv32_hal/miv_rv32_hal.c ****     static volatile uint32_t d_tick = 0u;
+ 163              		.loc 1 189 5 is_stmt 1
+ 190:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 191:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 192:../src/miv_rv32_hal/miv_rv32_hal.c ****     while(g_systick_cmp_value < (mtime_at_irq + MTIME_DELTA)) {
+ 164              		.loc 1 192 5
+ 193:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_cmp_value = g_systick_cmp_value + g_systick_increment;
+ 165              		.loc 1 193 51 is_stmt 0
+ 166 0018 97070000 		lla	a5,.LANCHOR0
+ 166      93870700 
+ 167 0020 03A50700 		lw	a0,0(a5)
+ 168 0024 03A84700 		lw	a6,4(a5)
+ 169 0028 97070000 		lla	a5,.LANCHOR1
+ 169      93870700 
+ 170 0030 03A70700 		lw	a4,0(a5)
+ 171 0034 83A74700 		lw	a5,4(a5)
+ 192:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_cmp_value = g_systick_cmp_value + g_systick_increment;
+ 172              		.loc 1 192 47
+ 173 0038 93855600 		addi	a1,a3,5
+ 192:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_cmp_value = g_systick_cmp_value + g_systick_increment;
+ 174              		.loc 1 192 10
+ 175 003c 13060000 		li	a2,0
+ 192:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_cmp_value = g_systick_cmp_value + g_systick_increment;
+ 176              		.loc 1 192 47
+ 177 0040 B3B6D500 		sltu	a3,a1,a3
+ 178              	.LVL10:
+ 194:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 195:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef NDEBUG
+ 196:../src/miv_rv32_hal/miv_rv32_hal.c ****         d_tick += 1;
+ 179              		.loc 1 196 16
+ 180 0044 97080000 		lla	a7,.LANCHOR2
+ 180      93880800 
+ 181              	.L15:
+ 192:../src/miv_rv32_hal/miv_rv32_hal.c ****         g_systick_cmp_value = g_systick_cmp_value + g_systick_increment;
+ 182              		.loc 1 192 10
+ 183 004c 63E8D704 		bgtu	a3,a5,.L16
+ 184 0050 6394F600 		bne	a3,a5,.L19
+ 185 0054 6364B704 		bgtu	a1,a4,.L16
+ 186              	.L19:
+ 187 0058 630A0600 		beq	a2,zero,.L18
+ 188 005c 97060000 		sw	a4,.LANCHOR1,a3
+ 188      23A0E600 
+ 189 0064 97060000 		sw	a5,.LANCHOR1+4,a3
+ 189      23A0F600 
+ 190              	.L18:
+ 197:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 198:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 199:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 200:../src/miv_rv32_hal/miv_rv32_hal.c ****     /*
+ 201:../src/miv_rv32_hal/miv_rv32_hal.c ****      * Note: If d_tick > 1 it means, that a system timer interrupt has been missed.
+ 202:../src/miv_rv32_hal/miv_rv32_hal.c ****      *
+ 203:../src/miv_rv32_hal/miv_rv32_hal.c ****      * Please ensure that interrupt handlers are as short as possible to prevent
+ 204:../src/miv_rv32_hal/miv_rv32_hal.c ****      * them stopping other interrupts from being handled. For example, if a
+ 205:../src/miv_rv32_hal/miv_rv32_hal.c ****      * system timer interrupt occurs during a software interrupt, the system
+ 206:../src/miv_rv32_hal/miv_rv32_hal.c ****      * timer interrupt will not be handled until the software interrupt handling
+ 207:../src/miv_rv32_hal/miv_rv32_hal.c ****      * is complete. If the software interrupt handling time is more than one systick
+ 208:../src/miv_rv32_hal/miv_rv32_hal.c ****      * interval, it will result in d_tick > 1.
+ 209:../src/miv_rv32_hal/miv_rv32_hal.c ****      *
+ 210:../src/miv_rv32_hal/miv_rv32_hal.c ****      * If you are running the program using the debugger and halt the CPU at a breakpoint,
+ 211:../src/miv_rv32_hal/miv_rv32_hal.c ****      * MTIME will continue to increment and interrupts will be missed; resulting
+ 212:../src/miv_rv32_hal/miv_rv32_hal.c ****      * in d_tick > 1.
+ 213:../src/miv_rv32_hal/miv_rv32_hal.c ****      */
+ 214:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 215:../src/miv_rv32_hal/miv_rv32_hal.c ****     WRITE_MTIMECMP(g_systick_cmp_value);
+ 191              		.loc 1 215 5 is_stmt 1
+ 192 006c B7460002 		li	a3,33570816
+ 193 0070 1306F0FF 		li	a2,-1
+ 194 0074 23A2C600 		sw	a2,4(a3)
+ 195              		.loc 1 215 5
+ 196 0078 23A0E600 		sw	a4,0(a3)
+ 197              		.loc 1 215 5
+ 198 007c 23A2F600 		sw	a5,4(a3)
+ 199              		.loc 1 215 40
+ 216:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 217:../src/miv_rv32_hal/miv_rv32_hal.c ****     SysTick_Handler();
+ 200              		.loc 1 217 5
+ 201 0080 97000000 		call	SysTick_Handler
+ 201      E7800000 
+ 202              	.LVL11:
+ 218:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 219:../src/miv_rv32_hal/miv_rv32_hal.c ****     set_csr(mie, MIP_MTIP);
+ 203              		.loc 1 219 5
+ 204              	.LBB11:
+ 205              		.loc 1 219 5
+ 206              		.loc 1 219 5
+ 207 0088 93070008 		li	a5,128
+ 208              	 #APP
+ 209              	# 219 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 220              	}
+ 210              		csrrs a5, mie, a5
+ 211              	# 0 "" 2
+ 212              	.LVL12:
+ 219:../src/miv_rv32_hal/miv_rv32_hal.c ****     set_csr(mie, MIP_MTIP);
+ 213              		.loc 1 219 5
+ 214              	 #NO_APP
+ 215              	.LBE11:
+ 216              		.loc 1 220 1 is_stmt 0
+ 217 0090 8320C100 		lw	ra,12(sp)
+ 218              		.cfi_remember_state
+ 219              		.cfi_restore 1
+ 220 0094 13010101 		addi	sp,sp,16
+ 221              		.cfi_def_cfa_offset 0
+ 222 0098 67800000 		jr	ra
+ 223              	.LVL13:
+ 224              	.L16:
+ 225              		.cfi_restore_state
+ 193:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 226              		.loc 1 193 9 is_stmt 1
+ 193:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 227              		.loc 1 193 51 is_stmt 0
+ 228 009c 3306A700 		add	a2,a4,a0
+ 229 00a0 3333E600 		sltu	t1,a2,a4
+ 230 00a4 13070600 		mv	a4,a2
+ 196:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 231              		.loc 1 196 16
+ 232 00a8 03A60800 		lw	a2,0(a7)
+ 193:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 233              		.loc 1 193 51
+ 234 00ac B3870701 		add	a5,a5,a6
+ 235 00b0 B307F300 		add	a5,t1,a5
+ 196:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 236              		.loc 1 196 9 is_stmt 1
+ 196:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 237              		.loc 1 196 16 is_stmt 0
+ 238 00b4 13061600 		addi	a2,a2,1
+ 239 00b8 17030000 		sw	a2,.LANCHOR2,t1
+ 239      2320C300 
+ 240 00c0 13061000 		li	a2,1
+ 241 00c4 6FF09FF8 		j	.L15
+ 242              		.cfi_endproc
+ 243              	.LFE19:
+ 245              		.section	.text.handle_m_soft_interrupt,"ax",@progbits
+ 246              		.align	2
+ 247              		.globl	handle_m_soft_interrupt
+ 249              	handle_m_soft_interrupt:
+ 250              	.LFB20:
+ 221:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 222:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 223:../src/miv_rv32_hal/miv_rv32_hal.c ****  * RISC-V interrupt handler for software interrupts.
+ 224:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 225:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifdef MIV_LEGACY_RV32
+ 226:../src/miv_rv32_hal/miv_rv32_hal.c **** void handle_m_ext_interrupt(void)
+ 227:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+ 228:../src/miv_rv32_hal/miv_rv32_hal.c ****     unsigned long hart_id = read_csr(mhartid);
+ 229:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint32_t int_num  = PLIC->TARGET[hart_id].CLAIM_COMPLETE;
+ 230:../src/miv_rv32_hal/miv_rv32_hal.c ****     uint8_t disable = EXT_IRQ_KEEP_ENABLED;
+ 231:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 232:../src/miv_rv32_hal/miv_rv32_hal.c ****     if (0u !=int_num)
+ 233:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 234:../src/miv_rv32_hal/miv_rv32_hal.c ****         disable = ext_irq_handler_table[int_num]();
+ 235:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 236:../src/miv_rv32_hal/miv_rv32_hal.c ****         PLIC->TARGET[hart_id].CLAIM_COMPLETE = int_num;
+ 237:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 238:../src/miv_rv32_hal/miv_rv32_hal.c ****         if(EXT_IRQ_DISABLE == disable)
+ 239:../src/miv_rv32_hal/miv_rv32_hal.c ****         {
+ 240:../src/miv_rv32_hal/miv_rv32_hal.c ****             MRV_PLIC_disable_irq((IRQn_Type)int_num);
+ 241:../src/miv_rv32_hal/miv_rv32_hal.c ****         }
+ 242:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 243:../src/miv_rv32_hal/miv_rv32_hal.c **** }
+ 244:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif /* MIV_LEGACY_RV32 */
+ 245:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 246:../src/miv_rv32_hal/miv_rv32_hal.c **** void handle_m_soft_interrupt(void)
+ 247:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+ 251              		.loc 1 247 1 is_stmt 1
+ 252              		.cfi_startproc
+ 248:../src/miv_rv32_hal/miv_rv32_hal.c ****     Software_IRQHandler();
+ 253              		.loc 1 248 5
+ 247:../src/miv_rv32_hal/miv_rv32_hal.c ****     Software_IRQHandler();
+ 254              		.loc 1 247 1 is_stmt 0
+ 255 0000 130101FF 		addi	sp,sp,-16
+ 256              		.cfi_def_cfa_offset 16
+ 257 0004 23261100 		sw	ra,12(sp)
+ 258              		.cfi_offset 1, -4
+ 259              		.loc 1 248 5
+ 260 0008 97000000 		call	Software_IRQHandler
+ 260      E7800000 
+ 261              	.LVL14:
+ 249:../src/miv_rv32_hal/miv_rv32_hal.c ****     MRV_clear_soft_irq();
+ 262              		.loc 1 249 5 is_stmt 1
+ 263              	.LBB14:
+ 264              	.LBB15:
+ 484:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 265              		.loc 2 484 5
+ 484:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 266              		.loc 2 484 21 is_stmt 0
+ 267 0010 37670000 		li	a4,24576
+ 268 0014 83270702 		lw	a5,32(a4)
+ 269              	.LBE15:
+ 270              	.LBE14:
+ 250:../src/miv_rv32_hal/miv_rv32_hal.c **** }
+ 271              		.loc 1 250 1
+ 272 0018 8320C100 		lw	ra,12(sp)
+ 273              		.cfi_restore 1
+ 274              	.LBB17:
+ 275              	.LBB16:
+ 484:../src/miv_rv32_hal/miv_rv32_hal.h **** #endif
+ 276              		.loc 2 484 21
+ 277 001c 93F7D7FF 		andi	a5,a5,-3
+ 278 0020 2320F702 		sw	a5,32(a4)
+ 279              	.LBE16:
+ 280              	.LBE17:
+ 281              		.loc 1 250 1
+ 282 0024 13010101 		addi	sp,sp,16
+ 283              		.cfi_def_cfa_offset 0
+ 284 0028 67800000 		jr	ra
+ 285              		.cfi_endproc
+ 286              	.LFE20:
+ 288              		.section	.text.handle_trap,"ax",@progbits
+ 289              		.align	2
+ 290              		.globl	handle_trap
+ 292              	handle_trap:
+ 293              	.LFB21:
+ 251:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 252:../src/miv_rv32_hal/miv_rv32_hal.c **** /*------------------------------------------------------------------------------
+ 253:../src/miv_rv32_hal/miv_rv32_hal.c ****  * Trap handler. This function is invoked in the non-vectored mode.
+ 254:../src/miv_rv32_hal/miv_rv32_hal.c ****  */
+ 255:../src/miv_rv32_hal/miv_rv32_hal.c **** void handle_trap(uintptr_t mcause, uintptr_t mepc)
+ 256:../src/miv_rv32_hal/miv_rv32_hal.c **** {
+ 294              		.loc 1 256 1 is_stmt 1
+ 295              		.cfi_startproc
+ 296              	.LVL15:
+ 257:../src/miv_rv32_hal/miv_rv32_hal.c ****     if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == IRQ_M_SOFT))
+ 297              		.loc 1 257 5
+ 298              		.loc 1 257 8 is_stmt 0
+ 299 0000 6356050C 		bge	a0,zero,.L27
+ 300              		.loc 1 257 43 discriminator 1
+ 301 0004 13151500 		slli	a0,a0,1
+ 302              	.LVL16:
+ 303 0008 13551500 		srli	a0,a0,1
+ 304              		.loc 1 257 31 discriminator 1
+ 305 000c 93073000 		li	a5,3
+ 306 0010 6316F500 		bne	a0,a5,.L28
+ 258:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 259:../src/miv_rv32_hal/miv_rv32_hal.c ****         handle_m_soft_interrupt();
+ 307              		.loc 1 259 9 is_stmt 1
+ 308 0014 17030000 		tail	handle_m_soft_interrupt
+ 308      67000300 
+ 309              	.LVL17:
+ 310              	.L28:
+ 260:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 261:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == IRQ_M_TIMER))
+ 311              		.loc 1 261 10 discriminator 1
+ 312              		.loc 1 261 36 is_stmt 0 discriminator 1
+ 313 001c 93077000 		li	a5,7
+ 314 0020 6316F500 		bne	a0,a5,.L29
+ 262:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 263:../src/miv_rv32_hal/miv_rv32_hal.c ****         handle_m_timer_interrupt();
+ 315              		.loc 1 263 9 is_stmt 1
+ 316 0024 17030000 		tail	handle_m_timer_interrupt
+ 316      67000300 
+ 317              	.LVL18:
+ 318              	.L29:
+ 264:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 265:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == IRQ_M_EXT))
+ 319              		.loc 1 265 10 discriminator 1
+ 320              		.loc 1 265 36 is_stmt 0 discriminator 1
+ 321 002c 9307B000 		li	a5,11
+ 322 0030 6316F500 		bne	a0,a5,.L30
+ 266:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 267:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifdef MIV_LEGACY_RV32
+ 268:../src/miv_rv32_hal/miv_rv32_hal.c ****         handle_m_ext_interrupt();
+ 269:../src/miv_rv32_hal/miv_rv32_hal.c **** #else
+ 270:../src/miv_rv32_hal/miv_rv32_hal.c ****         External_IRQHandler();
+ 323              		.loc 1 270 9 is_stmt 1
+ 324 0034 17030000 		tail	External_IRQHandler
+ 324      67000300 
+ 325              	.LVL19:
+ 326              	.L30:
+ 271:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif
+ 272:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 273:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef MIV_LEGACY_RV32
+ 274:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI0))
+ 327              		.loc 1 274 10 discriminator 1
+ 328              		.loc 1 274 36 is_stmt 0 discriminator 1
+ 329 003c 93078001 		li	a5,24
+ 330 0040 6316F500 		bne	a0,a5,.L31
+ 275:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 276:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI0_IRQHandler();
+ 331              		.loc 1 276 9 is_stmt 1
+ 332 0044 17030000 		tail	MSYS_EI0_IRQHandler
+ 332      67000300 
+ 333              	.LVL20:
+ 334              	.L31:
+ 277:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 278:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI1))
+ 335              		.loc 1 278 10 discriminator 1
+ 336              		.loc 1 278 36 is_stmt 0 discriminator 1
+ 337 004c 93079001 		li	a5,25
+ 338 0050 6316F500 		bne	a0,a5,.L32
+ 279:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 280:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI1_IRQHandler();
+ 339              		.loc 1 280 9 is_stmt 1
+ 340 0054 17030000 		tail	MSYS_EI1_IRQHandler
+ 340      67000300 
+ 341              	.LVL21:
+ 342              	.L32:
+ 281:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 282:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI2))
+ 343              		.loc 1 282 10 discriminator 1
+ 344              		.loc 1 282 36 is_stmt 0 discriminator 1
+ 345 005c 9307A001 		li	a5,26
+ 346 0060 6316F500 		bne	a0,a5,.L33
+ 283:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 284:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI2_IRQHandler();
+ 347              		.loc 1 284 9 is_stmt 1
+ 348 0064 17030000 		tail	MSYS_EI2_IRQHandler
+ 348      67000300 
+ 349              	.LVL22:
+ 350              	.L33:
+ 285:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 286:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI3))
+ 351              		.loc 1 286 10 discriminator 1
+ 352              		.loc 1 286 36 is_stmt 0 discriminator 1
+ 353 006c 9307B001 		li	a5,27
+ 354 0070 6316F500 		bne	a0,a5,.L34
+ 287:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 288:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI3_IRQHandler();
+ 355              		.loc 1 288 9 is_stmt 1
+ 356 0074 17030000 		tail	MSYS_EI3_IRQHandler
+ 356      67000300 
+ 357              	.LVL23:
+ 358              	.L34:
+ 289:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 290:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI4))
+ 359              		.loc 1 290 10 discriminator 1
+ 360              		.loc 1 290 36 is_stmt 0 discriminator 1
+ 361 007c 9307C001 		li	a5,28
+ 362 0080 6316F500 		bne	a0,a5,.L35
+ 291:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 292:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI4_IRQHandler();
+ 363              		.loc 1 292 9 is_stmt 1
+ 364 0084 17030000 		tail	MSYS_EI4_IRQHandler
+ 364      67000300 
+ 365              	.LVL24:
+ 366              	.L35:
+ 293:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 294:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MSYS_EI5))
+ 367              		.loc 1 294 10 discriminator 1
+ 368              		.loc 1 294 36 is_stmt 0 discriminator 1
+ 369 008c 9307D001 		li	a5,29
+ 370 0090 6316F500 		bne	a0,a5,.L36
+ 295:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 296:../src/miv_rv32_hal/miv_rv32_hal.c ****         MSYS_EI5_IRQHandler();
+ 371              		.loc 1 296 9 is_stmt 1
+ 372 0094 17030000 		tail	MSYS_EI5_IRQHandler
+ 372      67000300 
+ 373              	.LVL25:
+ 374              	.L36:
+ 297:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 298:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == OPSRV_REG))
+ 375              		.loc 1 298 10 discriminator 1
+ 376              		.loc 1 298 36 is_stmt 0 discriminator 1
+ 377 009c 9307E001 		li	a5,30
+ 378 00a0 6316F500 		bne	a0,a5,.L37
+ 299:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 300:../src/miv_rv32_hal/miv_rv32_hal.c ****         OPSRV_IRQHandler();
+ 379              		.loc 1 300 9 is_stmt 1
+ 380 00a4 17030000 		tail	OPSRV_IRQHandler
+ 380      67000300 
+ 381              	.LVL26:
+ 382              	.L37:
+ 301:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 302:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MGEUI))
+ 383              		.loc 1 302 10 discriminator 1
+ 384              		.loc 1 302 36 is_stmt 0 discriminator 1
+ 385 00ac 93070001 		li	a5,16
+ 386 00b0 6316F500 		bne	a0,a5,.L38
+ 303:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 304:../src/miv_rv32_hal/miv_rv32_hal.c ****         MGEUI_IRQHandler();
+ 387              		.loc 1 304 9 is_stmt 1
+ 388 00b4 17030000 		tail	MGEUI_IRQHandler
+ 388      67000300 
+ 389              	.LVL27:
+ 390              	.L38:
+ 305:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 306:../src/miv_rv32_hal/miv_rv32_hal.c ****     else if ((mcause & MCAUSE_INT) && ((mcause & MCAUSE_CAUSE) == MGECI))
+ 391              		.loc 1 306 10 discriminator 1
+ 392              		.loc 1 306 36 is_stmt 0 discriminator 1
+ 393 00bc 93071001 		li	a5,17
+ 394 00c0 6316F500 		bne	a0,a5,.L27
+ 307:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 308:../src/miv_rv32_hal/miv_rv32_hal.c ****         MGECI_IRQHandler();
+ 395              		.loc 1 308 9 is_stmt 1
+ 396 00c4 17030000 		tail	MGECI_IRQHandler
+ 396      67000300 
+ 397              	.LVL28:
+ 398              	.L27:
+ 399              	.LBB18:
+ 309:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 310:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif /* MIV_LEGACY_RV32 */
+ 311:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 312:../src/miv_rv32_hal/miv_rv32_hal.c ****     else
+ 313:../src/miv_rv32_hal/miv_rv32_hal.c ****     {
+ 314:../src/miv_rv32_hal/miv_rv32_hal.c **** #ifndef NDEBUG
+ 315:../src/miv_rv32_hal/miv_rv32_hal.c ****         /*
+ 316:../src/miv_rv32_hal/miv_rv32_hal.c ****          Arguments supplied to this function are mcause, mepc (exception PC) and
+ 317:../src/miv_rv32_hal/miv_rv32_hal.c ****          stack pointer.
+ 318:../src/miv_rv32_hal/miv_rv32_hal.c ****          Based on privileged-isa specification mcause values and meanings are:
+ 319:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 320:../src/miv_rv32_hal/miv_rv32_hal.c ****          0 Instruction address misaligned (mtval/mtval is the address)
+ 321:../src/miv_rv32_hal/miv_rv32_hal.c ****          1 Instruction access fault       (mtval/mtval is the address)
+ 322:../src/miv_rv32_hal/miv_rv32_hal.c ****          2 Illegal instruction            (mtval/mtval contains the
+ 323:../src/miv_rv32_hal/miv_rv32_hal.c ****                                            offending instruction opcode)
+ 324:../src/miv_rv32_hal/miv_rv32_hal.c ****          3 Breakpoint
+ 325:../src/miv_rv32_hal/miv_rv32_hal.c ****          4 Load address misaligned        (mtval/mtval is the address)
+ 326:../src/miv_rv32_hal/miv_rv32_hal.c ****          5 Load address fault             (mtval/mtval is the address)
+ 327:../src/miv_rv32_hal/miv_rv32_hal.c ****          6 Store/AMO address fault        (mtval/mtval is the address)
+ 328:../src/miv_rv32_hal/miv_rv32_hal.c ****          7 Store/AMO access fault         (mtval/mtval is the address)
+ 329:../src/miv_rv32_hal/miv_rv32_hal.c ****          8 Environment call from U-mode
+ 330:../src/miv_rv32_hal/miv_rv32_hal.c ****          9 Environment call from S-mode
+ 331:../src/miv_rv32_hal/miv_rv32_hal.c ****          A Environment call from M-mode
+ 332:../src/miv_rv32_hal/miv_rv32_hal.c ****          B Instruction page fault
+ 333:../src/miv_rv32_hal/miv_rv32_hal.c ****          C Load page fault                (mtval/mtval is the address)
+ 334:../src/miv_rv32_hal/miv_rv32_hal.c ****          E Store page fault               (mtval/mtval is the address)
+ 335:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 336:../src/miv_rv32_hal/miv_rv32_hal.c ****          # Please note: mtval is the newer name for register mbadaddr
+ 337:../src/miv_rv32_hal/miv_rv32_hal.c ****          # If you get a compile failure here, use the older name.
+ 338:../src/miv_rv32_hal/miv_rv32_hal.c ****          # At this point, both are supported in latest compiler, older compiler
+ 339:../src/miv_rv32_hal/miv_rv32_hal.c ****          # versions only support mbadaddr.
+ 340:../src/miv_rv32_hal/miv_rv32_hal.c ****          # See: https://github.com/riscv/riscv-gcc/issues/133
+ 341:../src/miv_rv32_hal/miv_rv32_hal.c ****         */
+ 342:../src/miv_rv32_hal/miv_rv32_hal.c **** 
+ 343:../src/miv_rv32_hal/miv_rv32_hal.c ****         /* interrupt pending */
+ 344:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mip      = read_csr(mip);
+ 400              		.loc 1 344 10
+ 401              	.LBB19:
+ 402              		.loc 1 344 31
+ 403              		.loc 1 344 31
+ 404              	 #APP
+ 405              	# 344 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 345              	
+ 406              		csrr a5, mip
+ 407              	# 0 "" 2
+ 408              	.LVL29:
+ 344:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mip      = read_csr(mip);
+ 409              		.loc 1 344 31
+ 410              	 #NO_APP
+ 411              	.LBE19:
+ 346:../src/miv_rv32_hal/miv_rv32_hal.c ****          /* additional info and meaning depends on mcause */
+ 347:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mtval = read_csr(mtval);
+ 412              		.loc 1 347 10
+ 413              	.LBB20:
+ 414              		.loc 1 347 28
+ 415              		.loc 1 347 28
+ 416              	 #APP
+ 417              	# 347 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 348              	
+ 418              		csrr a5, mtval
+ 419              	# 0 "" 2
+ 420              	.LVL30:
+ 347:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mtval = read_csr(mtval);
+ 421              		.loc 1 347 28
+ 422              	 #NO_APP
+ 423              	.LBE20:
+ 349:../src/miv_rv32_hal/miv_rv32_hal.c ****          /* trap vector */
+ 350:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mtvec    = read_csr(mtvec);
+ 424              		.loc 1 350 10
+ 425              	.LBB21:
+ 426              		.loc 1 350 31
+ 427              		.loc 1 350 31
+ 428              	 #APP
+ 429              	# 350 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 351              	
+ 430              		csrr a5, mtvec
+ 431              	# 0 "" 2
+ 432              	.LVL31:
+ 350:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mtvec    = read_csr(mtvec);
+ 433              		.loc 1 350 31
+ 434              	 #NO_APP
+ 435              	.LBE21:
+ 352:../src/miv_rv32_hal/miv_rv32_hal.c ****          /* temporary, sometimes might hold temporary value of a0 */
+ 353:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mscratch = read_csr(mscratch);
+ 436              		.loc 1 353 10
+ 437              	.LBB22:
+ 438              		.loc 1 353 31
+ 439              		.loc 1 353 31
+ 440              	 #APP
+ 441              	# 353 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 354              	
+ 442              		csrr a5, mscratch
+ 443              	# 0 "" 2
+ 444              	.LVL32:
+ 353:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mscratch = read_csr(mscratch);
+ 445              		.loc 1 353 31
+ 446              	 #NO_APP
+ 447              	.LBE22:
+ 355:../src/miv_rv32_hal/miv_rv32_hal.c ****          /* status contains many smaller fields: */
+ 356:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mstatus  = read_csr(mstatus);
+ 448              		.loc 1 356 10
+ 449              	.LBB23:
+ 450              		.loc 1 356 31
+ 451              		.loc 1 356 31
+ 452              	 #APP
+ 453              	# 356 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 357              	
+ 454              		csrr a5, mstatus
+ 455              	# 0 "" 2
+ 456              	.LVL33:
+ 356:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mstatus  = read_csr(mstatus);
+ 457              		.loc 1 356 31
+ 458              	 #NO_APP
+ 459              	.LBE23:
+ 358:../src/miv_rv32_hal/miv_rv32_hal.c ****          /* PC value when the exception was taken*/
+ 359:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mmepc  = read_csr(mepc);
+ 460              		.loc 1 359 10
+ 461              	.LBB24:
+ 462              		.loc 1 359 29
+ 463              		.loc 1 359 29
+ 464              	 #APP
+ 465              	# 359 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 360              	
+ 466              		csrr a5, mepc
+ 467              	# 0 "" 2
+ 468              	.LVL34:
+ 359:../src/miv_rv32_hal/miv_rv32_hal.c ****          uintptr_t mmepc  = read_csr(mepc);
+ 469              		.loc 1 359 29
+ 470              	 #NO_APP
+ 471              	.LBE24:
+ 361:../src/miv_rv32_hal/miv_rv32_hal.c ****         /* breakpoint */
+ 362:../src/miv_rv32_hal/miv_rv32_hal.c ****         __asm__("ebreak");
+ 472              		.loc 1 362 9
+ 473              	 #APP
+ 474              	# 362 "../src/miv_rv32_hal/miv_rv32_hal.c" 1
+ 363              	#else
+ 475              		ebreak
+ 476              	# 0 "" 2
+ 477              	 #NO_APP
+ 478              	.LBE18:
+ 364:../src/miv_rv32_hal/miv_rv32_hal.c ****         _exit(1 + mcause);
+ 365:../src/miv_rv32_hal/miv_rv32_hal.c **** #endif  /* NDEBUG */
+ 366:../src/miv_rv32_hal/miv_rv32_hal.c ****     }
+ 367:../src/miv_rv32_hal/miv_rv32_hal.c **** }
+ 479              		.loc 1 367 1 is_stmt 0
+ 480 00e8 67800000 		ret
+ 481              		.cfi_endproc
+ 482              	.LFE21:
+ 484              		.comm	MRV_LOCAL_IRQn_Type,4,4
+ 485              		.section	.sbss.d_tick.2176,"aw",@nobits
+ 486              		.align	2
+ 487              		.set	.LANCHOR2,. + 0
+ 490              	d_tick.2176:
+ 491 0000 00000000 		.zero	4
+ 492              		.section	.sbss.g_systick_cmp_value,"aw",@nobits
+ 493              		.align	3
+ 494              		.set	.LANCHOR1,. + 0
+ 497              	g_systick_cmp_value:
+ 498 0000 00000000 		.zero	8
+ 498      00000000 
+ 499              		.section	.sbss.g_systick_increment,"aw",@nobits
+ 500              		.align	3
+ 501              		.set	.LANCHOR0,. + 0
+ 504              	g_systick_increment:
+ 505 0000 00000000 		.zero	8
+ 505      00000000 
+ 506              		.text
+ 507              	.Letext0:
+ 508              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 509              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 510              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/unistd.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 miv_rv32_hal.c
+<<<<<<< HEAD
+     /tmp/ccv2GpxF.s:13     .text.MRV_systick_config:0000000000000000 MRV_systick_config
+     /tmp/ccv2GpxF.s:17     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:19     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:20     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:21     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:22     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:26     .text.MRV_systick_config:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:29     .text.MRV_systick_config:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:37     .text.MRV_systick_config:000000000000002c .L0 
+     /tmp/ccv2GpxF.s:44     .text.MRV_systick_config:0000000000000048 .L0 
+     /tmp/ccv2GpxF.s:45     .text.MRV_systick_config:0000000000000048 .L0 
+     /tmp/ccv2GpxF.s:48     .text.MRV_systick_config:0000000000000050 .L0 
+     /tmp/ccv2GpxF.s:51     .text.MRV_systick_config:0000000000000058 .L0 
+     /tmp/ccv2GpxF.s:54     .text.MRV_systick_config:000000000000005c .L0 
+     /tmp/ccv2GpxF.s:58     .text.MRV_systick_config:0000000000000068 .L0 
+     /tmp/ccv2GpxF.s:61     .text.MRV_systick_config:0000000000000078 .L0 
+     /tmp/ccv2GpxF.s:62     .text.MRV_systick_config:0000000000000078 .L0 
+     /tmp/ccv2GpxF.s:65     .text.MRV_systick_config:0000000000000080 .L0 
+     /tmp/ccv2GpxF.s:69     .text.MRV_systick_config:000000000000008c .L0 
+     /tmp/ccv2GpxF.s:71     .text.MRV_systick_config:0000000000000090 .L0 
+     /tmp/ccv2GpxF.s:73     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:75     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:76     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:77     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:86     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:88     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:91     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:92     .text.MRV_systick_config:000000000000009c .L0 
+../src/miv_rv32_hal/miv_rv32_hal.h:494    .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:102    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/ccv2GpxF.s:103    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/ccv2GpxF.s:104    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/ccv2GpxF.s:108    .text.MRV_systick_config:00000000000000a4 .L0 
+     /tmp/ccv2GpxF.s:112    .text.MRV_systick_config:00000000000000a8 .L0 
+     /tmp/ccv2GpxF.s:113    .text.MRV_systick_config:00000000000000a8 .L0 
+     /tmp/ccv2GpxF.s:116    .text.MRV_systick_config:00000000000000b0 .L0 
+     /tmp/ccv2GpxF.s:122    .text.MRV_systick_config:00000000000000c0 .L0 
+     /tmp/ccv2GpxF.s:123    .text.MRV_systick_config:00000000000000c0 .L0 
+     /tmp/ccv2GpxF.s:126    .text.MRV_systick_config:00000000000000cc .L0 
+     /tmp/ccv2GpxF.s:133    .text.handle_m_timer_interrupt:0000000000000000 handle_m_timer_interrupt
+     /tmp/ccv2GpxF.s:136    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:137    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:139    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:140    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:142    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:143    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:144    .text.handle_m_timer_interrupt:0000000000000004 .L0 
+     /tmp/ccv2GpxF.s:146    .text.handle_m_timer_interrupt:0000000000000008 .L0 
+     /tmp/ccv2GpxF.s:149    .text.handle_m_timer_interrupt:0000000000000008 .L0 
+     /tmp/ccv2GpxF.s:158    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:159    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:160    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:164    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:165    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:166    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:173    .text.handle_m_timer_interrupt:0000000000000038 .L0 
+     /tmp/ccv2GpxF.s:175    .text.handle_m_timer_interrupt:000000000000003c .L0 
+     /tmp/ccv2GpxF.s:177    .text.handle_m_timer_interrupt:0000000000000040 .L0 
+     /tmp/ccv2GpxF.s:180    .text.handle_m_timer_interrupt:0000000000000044 .L0 
+     /tmp/ccv2GpxF.s:183    .text.handle_m_timer_interrupt:000000000000004c .L0 
+     /tmp/ccv2GpxF.s:192    .text.handle_m_timer_interrupt:000000000000006c .L0 
+     /tmp/ccv2GpxF.s:196    .text.handle_m_timer_interrupt:0000000000000078 .L0 
+     /tmp/ccv2GpxF.s:198    .text.handle_m_timer_interrupt:000000000000007c .L0 
+     /tmp/ccv2GpxF.s:200    .text.handle_m_timer_interrupt:0000000000000080 .L0 
+     /tmp/ccv2GpxF.s:201    .text.handle_m_timer_interrupt:0000000000000080 .L0 
+     /tmp/ccv2GpxF.s:205    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/ccv2GpxF.s:206    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/ccv2GpxF.s:207    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/ccv2GpxF.s:216    .text.handle_m_timer_interrupt:0000000000000090 .L0 
+     /tmp/ccv2GpxF.s:217    .text.handle_m_timer_interrupt:0000000000000090 .L0 
+     /tmp/ccv2GpxF.s:218    .text.handle_m_timer_interrupt:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:219    .text.handle_m_timer_interrupt:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:221    .text.handle_m_timer_interrupt:0000000000000098 .L0 
+     /tmp/ccv2GpxF.s:225    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:227    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:228    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:232    .text.handle_m_timer_interrupt:00000000000000a8 .L0 
+     /tmp/ccv2GpxF.s:234    .text.handle_m_timer_interrupt:00000000000000ac .L0 
+     /tmp/ccv2GpxF.s:237    .text.handle_m_timer_interrupt:00000000000000b4 .L0 
+     /tmp/ccv2GpxF.s:238    .text.handle_m_timer_interrupt:00000000000000b4 .L0 
+     /tmp/ccv2GpxF.s:242    .text.handle_m_timer_interrupt:00000000000000c8 .L0 
+     /tmp/ccv2GpxF.s:249    .text.handle_m_soft_interrupt:0000000000000000 handle_m_soft_interrupt
+     /tmp/ccv2GpxF.s:252    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:253    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:254    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:255    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:256    .text.handle_m_soft_interrupt:0000000000000004 .L0 
+     /tmp/ccv2GpxF.s:258    .text.handle_m_soft_interrupt:0000000000000008 .L0 
+     /tmp/ccv2GpxF.s:260    .text.handle_m_soft_interrupt:0000000000000008 .L0 
+     /tmp/ccv2GpxF.s:265    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:266    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:267    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/ccv2GpxF.s:272    .text.handle_m_soft_interrupt:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:273    .text.handle_m_soft_interrupt:000000000000001c .L0 
+     /tmp/ccv2GpxF.s:277    .text.handle_m_soft_interrupt:000000000000001c .L0 
+     /tmp/ccv2GpxF.s:282    .text.handle_m_soft_interrupt:0000000000000024 .L0 
+     /tmp/ccv2GpxF.s:283    .text.handle_m_soft_interrupt:0000000000000028 .L0 
+     /tmp/ccv2GpxF.s:285    .text.handle_m_soft_interrupt:000000000000002c .L0 
+     /tmp/ccv2GpxF.s:292    .text.handle_trap:0000000000000000 handle_trap
+     /tmp/ccv2GpxF.s:295    .text.handle_trap:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:297    .text.handle_trap:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:298    .text.handle_trap:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:299    .text.handle_trap:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:301    .text.handle_trap:0000000000000004 .L0 
+     /tmp/ccv2GpxF.s:305    .text.handle_trap:000000000000000c .L0 
+     /tmp/ccv2GpxF.s:308    .text.handle_trap:0000000000000014 .L0 
+     /tmp/ccv2GpxF.s:312    .text.handle_trap:000000000000001c .L0 
+     /tmp/ccv2GpxF.s:313    .text.handle_trap:000000000000001c .L0 
+     /tmp/ccv2GpxF.s:316    .text.handle_trap:0000000000000024 .L0 
+     /tmp/ccv2GpxF.s:320    .text.handle_trap:000000000000002c .L0 
+     /tmp/ccv2GpxF.s:321    .text.handle_trap:000000000000002c .L0 
+     /tmp/ccv2GpxF.s:324    .text.handle_trap:0000000000000034 .L0 
+     /tmp/ccv2GpxF.s:328    .text.handle_trap:000000000000003c .L0 
+     /tmp/ccv2GpxF.s:329    .text.handle_trap:000000000000003c .L0 
+     /tmp/ccv2GpxF.s:332    .text.handle_trap:0000000000000044 .L0 
+     /tmp/ccv2GpxF.s:336    .text.handle_trap:000000000000004c .L0 
+     /tmp/ccv2GpxF.s:337    .text.handle_trap:000000000000004c .L0 
+     /tmp/ccv2GpxF.s:340    .text.handle_trap:0000000000000054 .L0 
+     /tmp/ccv2GpxF.s:344    .text.handle_trap:000000000000005c .L0 
+     /tmp/ccv2GpxF.s:345    .text.handle_trap:000000000000005c .L0 
+     /tmp/ccv2GpxF.s:348    .text.handle_trap:0000000000000064 .L0 
+     /tmp/ccv2GpxF.s:352    .text.handle_trap:000000000000006c .L0 
+     /tmp/ccv2GpxF.s:353    .text.handle_trap:000000000000006c .L0 
+     /tmp/ccv2GpxF.s:356    .text.handle_trap:0000000000000074 .L0 
+     /tmp/ccv2GpxF.s:360    .text.handle_trap:000000000000007c .L0 
+     /tmp/ccv2GpxF.s:361    .text.handle_trap:000000000000007c .L0 
+     /tmp/ccv2GpxF.s:364    .text.handle_trap:0000000000000084 .L0 
+     /tmp/ccv2GpxF.s:368    .text.handle_trap:000000000000008c .L0 
+     /tmp/ccv2GpxF.s:369    .text.handle_trap:000000000000008c .L0 
+     /tmp/ccv2GpxF.s:372    .text.handle_trap:0000000000000094 .L0 
+     /tmp/ccv2GpxF.s:376    .text.handle_trap:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:377    .text.handle_trap:000000000000009c .L0 
+     /tmp/ccv2GpxF.s:380    .text.handle_trap:00000000000000a4 .L0 
+     /tmp/ccv2GpxF.s:384    .text.handle_trap:00000000000000ac .L0 
+     /tmp/ccv2GpxF.s:385    .text.handle_trap:00000000000000ac .L0 
+     /tmp/ccv2GpxF.s:388    .text.handle_trap:00000000000000b4 .L0 
+     /tmp/ccv2GpxF.s:392    .text.handle_trap:00000000000000bc .L0 
+     /tmp/ccv2GpxF.s:393    .text.handle_trap:00000000000000bc .L0 
+     /tmp/ccv2GpxF.s:396    .text.handle_trap:00000000000000c4 .L0 
+     /tmp/ccv2GpxF.s:402    .text.handle_trap:00000000000000cc .L0 
+     /tmp/ccv2GpxF.s:403    .text.handle_trap:00000000000000cc .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:344    .text.handle_trap:00000000000000cc .L0 
+     /tmp/ccv2GpxF.s:412    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/ccv2GpxF.s:414    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/ccv2GpxF.s:415    .text.handle_trap:00000000000000d0 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:347    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/ccv2GpxF.s:424    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/ccv2GpxF.s:426    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/ccv2GpxF.s:427    .text.handle_trap:00000000000000d4 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:350    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/ccv2GpxF.s:436    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/ccv2GpxF.s:438    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/ccv2GpxF.s:439    .text.handle_trap:00000000000000d8 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:353    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/ccv2GpxF.s:448    .text.handle_trap:00000000000000dc .L0 
+     /tmp/ccv2GpxF.s:450    .text.handle_trap:00000000000000dc .L0 
+     /tmp/ccv2GpxF.s:451    .text.handle_trap:00000000000000dc .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:356    .text.handle_trap:00000000000000dc .L0 
+     /tmp/ccv2GpxF.s:460    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/ccv2GpxF.s:462    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/ccv2GpxF.s:463    .text.handle_trap:00000000000000e0 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:359    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/ccv2GpxF.s:472    .text.handle_trap:00000000000000e4 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:362    .text.handle_trap:00000000000000e4 .L0 
+     /tmp/ccv2GpxF.s:480    .text.handle_trap:00000000000000e8 .L0 
+     /tmp/ccv2GpxF.s:481    .text.handle_trap:00000000000000ec .L0 
+                            *COM*:0000000000000004 MRV_LOCAL_IRQn_Type
+     /tmp/ccv2GpxF.s:487    .sbss.d_tick.2176:0000000000000000 .LANCHOR2
+     /tmp/ccv2GpxF.s:490    .sbss.d_tick.2176:0000000000000000 d_tick.2176
+     /tmp/ccv2GpxF.s:494    .sbss.g_systick_cmp_value:0000000000000000 .LANCHOR1
+     /tmp/ccv2GpxF.s:497    .sbss.g_systick_cmp_value:0000000000000000 g_systick_cmp_value
+     /tmp/ccv2GpxF.s:501    .sbss.g_systick_increment:0000000000000000 .LANCHOR0
+     /tmp/ccv2GpxF.s:504    .sbss.g_systick_increment:0000000000000000 g_systick_increment
+     /tmp/ccv2GpxF.s:129    .text.MRV_systick_config:00000000000000cc .L0 
+     /tmp/ccv2GpxF.s:245    .text.handle_m_timer_interrupt:00000000000000c8 .L0 
+     /tmp/ccv2GpxF.s:288    .text.handle_m_soft_interrupt:000000000000002c .L0 
+     /tmp/ccv2GpxF.s:485    .text.handle_trap:00000000000000ec .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:22     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/ccv2GpxF.s:40     .text.MRV_systick_config:0000000000000038 .L0 
+     /tmp/ccv2GpxF.s:41     .text.MRV_systick_config:0000000000000040 .L0 
+     /tmp/ccv2GpxF.s:58     .text.MRV_systick_config:0000000000000068 .L0 
+     /tmp/ccv2GpxF.s:59     .text.MRV_systick_config:0000000000000070 .L0 
+     /tmp/ccv2GpxF.s:110    .text.MRV_systick_config:00000000000000a8 .L3
+     /tmp/ccv2GpxF.s:42     .text.MRV_systick_config:0000000000000048 .L5
+     /tmp/ccv2GpxF.s:106    .text.MRV_systick_config:00000000000000a4 .L1
+     /tmp/ccv2GpxF.s:31     .text.MRV_systick_config:000000000000001c .L2
+     /tmp/ccv2GpxF.s:166    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/ccv2GpxF.s:169    .text.handle_m_timer_interrupt:0000000000000028 .L0 
+     /tmp/ccv2GpxF.s:180    .text.handle_m_timer_interrupt:0000000000000044 .L0 
+     /tmp/ccv2GpxF.s:188    .text.handle_m_timer_interrupt:000000000000005c .L0 
+     /tmp/ccv2GpxF.s:189    .text.handle_m_timer_interrupt:0000000000000064 .L0 
+     /tmp/ccv2GpxF.s:239    .text.handle_m_timer_interrupt:00000000000000b8 .L0 
+     /tmp/ccv2GpxF.s:224    .text.handle_m_timer_interrupt:000000000000009c .L16
+     /tmp/ccv2GpxF.s:186    .text.handle_m_timer_interrupt:0000000000000058 .L19
+     /tmp/ccv2GpxF.s:190    .text.handle_m_timer_interrupt:000000000000006c .L18
+     /tmp/ccv2GpxF.s:181    .text.handle_m_timer_interrupt:000000000000004c .L15
+     /tmp/ccv2GpxF.s:398    .text.handle_trap:00000000000000cc .L27
+     /tmp/ccv2GpxF.s:310    .text.handle_trap:000000000000001c .L28
+     /tmp/ccv2GpxF.s:318    .text.handle_trap:000000000000002c .L29
+     /tmp/ccv2GpxF.s:326    .text.handle_trap:000000000000003c .L30
+     /tmp/ccv2GpxF.s:334    .text.handle_trap:000000000000004c .L31
+     /tmp/ccv2GpxF.s:342    .text.handle_trap:000000000000005c .L32
+     /tmp/ccv2GpxF.s:350    .text.handle_trap:000000000000006c .L33
+     /tmp/ccv2GpxF.s:358    .text.handle_trap:000000000000007c .L34
+     /tmp/ccv2GpxF.s:366    .text.handle_trap:000000000000008c .L35
+     /tmp/ccv2GpxF.s:374    .text.handle_trap:000000000000009c .L36
+     /tmp/ccv2GpxF.s:382    .text.handle_trap:00000000000000ac .L37
+     /tmp/ccv2GpxF.s:390    .text.handle_trap:00000000000000bc .L38
+     /tmp/ccv2GpxF.s:1248   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccv2GpxF.s:2231   .debug_str:0000000000000485 .LASF91
+     /tmp/ccv2GpxF.s:2193   .debug_str:000000000000038a .LASF92
+     /tmp/ccv2GpxF.s:2107   .debug_str:000000000000015f .LASF93
+     /tmp/ccv2GpxF.s:2029   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccv2GpxF.s:2053   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccv2GpxF.s:2075   .debug_str:0000000000000080 .LASF0
+     /tmp/ccv2GpxF.s:2091   .debug_str:0000000000000106 .LASF1
+     /tmp/ccv2GpxF.s:2181   .debug_str:000000000000033b .LASF2
+     /tmp/ccv2GpxF.s:2183   .debug_str:0000000000000349 .LASF3
+     /tmp/ccv2GpxF.s:2137   .debug_str:000000000000024d .LASF4
+     /tmp/ccv2GpxF.s:2099   .debug_str:000000000000012c .LASF5
+     /tmp/ccv2GpxF.s:2111   .debug_str:00000000000001a7 .LASF8
+     /tmp/ccv2GpxF.s:2133   .debug_str:0000000000000234 .LASF6
+     /tmp/ccv2GpxF.s:2089   .debug_str:00000000000000f8 .LASF7
+     /tmp/ccv2GpxF.s:2169   .debug_str:00000000000002f5 .LASF9
+     /tmp/ccv2GpxF.s:2191   .debug_str:000000000000037e .LASF10
+     /tmp/ccv2GpxF.s:2123   .debug_str:00000000000001f6 .LASF11
+     /tmp/ccv2GpxF.s:2199   .debug_str:00000000000003be .LASF12
+     /tmp/ccv2GpxF.s:2067   .debug_str:000000000000004f .LASF13
+     /tmp/ccv2GpxF.s:2065   .debug_str:0000000000000045 .LASF14
+     /tmp/ccv2GpxF.s:2205   .debug_str:00000000000003e3 .LASF15
+     /tmp/ccv2GpxF.s:2159   .debug_str:00000000000002bf .LASF16
+     /tmp/ccv2GpxF.s:2145   .debug_str:000000000000027e .LASF17
+     /tmp/ccv2GpxF.s:2155   .debug_str:00000000000002b2 .LASF18
+     /tmp/ccv2GpxF.s:2161   .debug_str:00000000000002cb .LASF19
+     /tmp/ccv2GpxF.s:2211   .debug_str:0000000000000408 .LASF20
+     /tmp/ccv2GpxF.s:2197   .debug_str:00000000000003b7 .LASF21
+     /tmp/ccv2GpxF.s:2151   .debug_str:000000000000029d .LASF22
+     /tmp/ccv2GpxF.s:2239   .debug_str:0000000000000574 .LASF23
+     /tmp/ccv2GpxF.s:2143   .debug_str:0000000000000277 .LASF24
+     /tmp/ccv2GpxF.s:2097   .debug_str:0000000000000123 .LASF25
+     /tmp/ccv2GpxF.s:2241   .debug_str:000000000000057e .LASF26
+     /tmp/ccv2GpxF.s:2233   .debug_str:000000000000054b .LASF27
+     /tmp/ccv2GpxF.s:2141   .debug_str:000000000000026c .LASF28
+     /tmp/ccv2GpxF.s:2103   .debug_str:0000000000000149 .LASF29
+     /tmp/ccv2GpxF.s:2129   .debug_str:0000000000000223 .LASF30
+     /tmp/ccv2GpxF.s:2149   .debug_str:0000000000000292 .LASF31
+     /tmp/ccv2GpxF.s:2229   .debug_str:000000000000047a .LASF32
+     /tmp/ccv2GpxF.s:2061   .debug_str:0000000000000021 .LASF33
+     /tmp/ccv2GpxF.s:2085   .debug_str:00000000000000d7 .LASF34
+     /tmp/ccv2GpxF.s:2165   .debug_str:00000000000002de .LASF35
+     /tmp/ccv2GpxF.s:2189   .debug_str:0000000000000373 .LASF36
+     /tmp/ccv2GpxF.s:2213   .debug_str:000000000000040f .LASF37
+     /tmp/ccv2GpxF.s:2105   .debug_str:0000000000000154 .LASF38
+     /tmp/ccv2GpxF.s:2173   .debug_str:0000000000000311 .LASF39
+     /tmp/ccv2GpxF.s:2203   .debug_str:00000000000003d7 .LASF40
+     /tmp/ccv2GpxF.s:2095   .debug_str:0000000000000117 .LASF41
+     /tmp/ccv2GpxF.s:2113   .debug_str:00000000000001b2 .LASF42
+     /tmp/ccv2GpxF.s:2139   .debug_str:0000000000000260 .LASF43
+     /tmp/ccv2GpxF.s:2217   .debug_str:0000000000000422 .LASF44
+     /tmp/ccv2GpxF.s:2243   .debug_str:0000000000000588 .LASF45
+     /tmp/ccv2GpxF.s:2071   .debug_str:0000000000000060 .LASF46
+     /tmp/ccv2GpxF.s:2153   .debug_str:00000000000002a6 .LASF47
+     /tmp/ccv2GpxF.s:2175   .debug_str:000000000000031d .LASF48
+     /tmp/ccv2GpxF.s:2081   .debug_str:00000000000000bf .LASF49
+     /tmp/ccv2GpxF.s:2163   .debug_str:00000000000002d2 .LASF50
+     /tmp/ccv2GpxF.s:2187   .debug_str:0000000000000367 .LASF51
+     /tmp/ccv2GpxF.s:2209   .debug_str:00000000000003fc .LASF52
+     /tmp/ccv2GpxF.s:2235   .debug_str:0000000000000554 .LASF53
+     /tmp/ccv2GpxF.s:2127   .debug_str:0000000000000217 .LASF54
+     /tmp/ccv2GpxF.s:2147   .debug_str:0000000000000286 .LASF55
+     /tmp/ccv2GpxF.s:2167   .debug_str:00000000000002e9 .LASF56
+     /tmp/ccv2GpxF.s:2059   .debug_str:0000000000000015 .LASF57
+     /tmp/ccv2GpxF.s:2083   .debug_str:00000000000000cb .LASF58
+     /tmp/ccv2GpxF.s:2179   .debug_str:000000000000032f .LASF59
+     /tmp/ccv2GpxF.s:2207   .debug_str:00000000000003e8 .LASF60
+     /tmp/ccv2GpxF.s:2101   .debug_str:0000000000000135 .LASF61
+     /tmp/ccv2GpxF.s:2125   .debug_str:0000000000000203 .LASF62
+     /tmp/ccv2GpxF.s:2055   .debug_str:0000000000000000 .LASF71
+     /tmp/ccv2GpxF.s:293    .text.handle_trap:0000000000000000 .LFB21
+     /tmp/ccv2GpxF.s:482    .text.handle_trap:00000000000000ec .LFE21
+     /tmp/ccv2GpxF.s:2135   .debug_str:0000000000000246 .LASF63
+     /tmp/ccv2GpxF.s:1788   .debug_loc:0000000000000000 .LLST3
+     /tmp/ccv2GpxF.s:2093   .debug_str:0000000000000112 .LASF64
+     /tmp/ccv2GpxF.s:1802   .debug_loc:0000000000000021 .LLST4
+     /tmp/ccv2GpxF.s:399    .text.handle_trap:00000000000000cc .LBB18
+     /tmp/ccv2GpxF.s:478    .text.handle_trap:00000000000000e8 .LBE18
+     /tmp/ccv2GpxF.s:2219   .debug_str:000000000000042e .LASF65
+     /tmp/ccv2GpxF.s:2131   .debug_str:000000000000022e .LASF66
+     /tmp/ccv2GpxF.s:2057   .debug_str:000000000000000c .LASF67
+     /tmp/ccv2GpxF.s:2215   .debug_str:000000000000041a .LASF68
+     /tmp/ccv2GpxF.s:2177   .debug_str:0000000000000329 .LASF69
+     /tmp/ccv2GpxF.s:401    .text.handle_trap:00000000000000cc .LBB19
+     /tmp/ccv2GpxF.s:411    .text.handle_trap:00000000000000d0 .LBE19
+     /tmp/ccv2GpxF.s:2115   .debug_str:00000000000001be .LASF70
+     /tmp/ccv2GpxF.s:413    .text.handle_trap:00000000000000d0 .LBB20
+     /tmp/ccv2GpxF.s:423    .text.handle_trap:00000000000000d4 .LBE20
+     /tmp/ccv2GpxF.s:425    .text.handle_trap:00000000000000d4 .LBB21
+     /tmp/ccv2GpxF.s:435    .text.handle_trap:00000000000000d8 .LBE21
+     /tmp/ccv2GpxF.s:437    .text.handle_trap:00000000000000d8 .LBB22
+     /tmp/ccv2GpxF.s:447    .text.handle_trap:00000000000000dc .LBE22
+     /tmp/ccv2GpxF.s:449    .text.handle_trap:00000000000000dc .LBB23
+     /tmp/ccv2GpxF.s:459    .text.handle_trap:00000000000000e0 .LBE23
+     /tmp/ccv2GpxF.s:461    .text.handle_trap:00000000000000e0 .LBB24
+     /tmp/ccv2GpxF.s:471    .text.handle_trap:00000000000000e4 .LBE24
+     /tmp/ccv2GpxF.s:309    .text.handle_trap:000000000000001c .LVL17
+     /tmp/ccv2GpxF.s:317    .text.handle_trap:000000000000002c .LVL18
+     /tmp/ccv2GpxF.s:325    .text.handle_trap:000000000000003c .LVL19
+     /tmp/ccv2GpxF.s:333    .text.handle_trap:000000000000004c .LVL20
+     /tmp/ccv2GpxF.s:341    .text.handle_trap:000000000000005c .LVL21
+     /tmp/ccv2GpxF.s:349    .text.handle_trap:000000000000006c .LVL22
+     /tmp/ccv2GpxF.s:357    .text.handle_trap:000000000000007c .LVL23
+     /tmp/ccv2GpxF.s:365    .text.handle_trap:000000000000008c .LVL24
+     /tmp/ccv2GpxF.s:373    .text.handle_trap:000000000000009c .LVL25
+     /tmp/ccv2GpxF.s:381    .text.handle_trap:00000000000000ac .LVL26
+     /tmp/ccv2GpxF.s:389    .text.handle_trap:00000000000000bc .LVL27
+     /tmp/ccv2GpxF.s:397    .text.handle_trap:00000000000000cc .LVL28
+     /tmp/ccv2GpxF.s:2221   .debug_str:0000000000000434 .LASF72
+     /tmp/ccv2GpxF.s:250    .text.handle_m_soft_interrupt:0000000000000000 .LFB20
+     /tmp/ccv2GpxF.s:286    .text.handle_m_soft_interrupt:000000000000002c .LFE20
+     /tmp/ccv2GpxF.s:263    .text.handle_m_soft_interrupt:0000000000000010 .LBB14
+     /tmp/ccv2GpxF.s:261    .text.handle_m_soft_interrupt:0000000000000010 .LVL14
+     /tmp/ccv2GpxF.s:2063   .debug_str:000000000000002c .LASF73
+     /tmp/ccv2GpxF.s:134    .text.handle_m_timer_interrupt:0000000000000000 .LFB19
+     /tmp/ccv2GpxF.s:243    .text.handle_m_timer_interrupt:00000000000000c8 .LFE19
+     /tmp/ccv2GpxF.s:2117   .debug_str:00000000000001c4 .LASF74
+     /tmp/ccv2GpxF.s:2223   .debug_str:000000000000044c .LASF75
+     /tmp/ccv2GpxF.s:204    .text.handle_m_timer_interrupt:0000000000000088 .LBB11
+     /tmp/ccv2GpxF.s:215    .text.handle_m_timer_interrupt:0000000000000090 .LBE11
+     /tmp/ccv2GpxF.s:202    .text.handle_m_timer_interrupt:0000000000000088 .LVL11
+     /tmp/ccv2GpxF.s:2227   .debug_str:0000000000000467 .LASF94
+     /tmp/ccv2GpxF.s:14     .text.MRV_systick_config:0000000000000000 .LFB18
+     /tmp/ccv2GpxF.s:127    .text.MRV_systick_config:00000000000000cc .LFE18
+     /tmp/ccv2GpxF.s:2157   .debug_str:00000000000002b9 .LASF76
+     /tmp/ccv2GpxF.s:1941   .debug_loc:0000000000000160 .LLST0
+     /tmp/ccv2GpxF.s:2069   .debug_str:0000000000000058 .LASF77
+     /tmp/ccv2GpxF.s:1962   .debug_loc:0000000000000188 .LLST1
+     /tmp/ccv2GpxF.s:2195   .debug_str:00000000000003ad .LASF78
+     /tmp/ccv2GpxF.s:1980   .debug_loc:00000000000001b4 .LLST2
+     /tmp/ccv2GpxF.s:74     .text.MRV_systick_config:0000000000000094 .LBB6
+     /tmp/ccv2GpxF.s:85     .text.MRV_systick_config:000000000000009c .LBE6
+     /tmp/ccv2GpxF.s:89     .text.MRV_systick_config:000000000000009c .LBB7
+     /tmp/ccv2GpxF.s:101    .text.MRV_systick_config:00000000000000a0 .LBE7
+     /tmp/ccv2GpxF.s:90     .text.MRV_systick_config:000000000000009c .LBB8
+     /tmp/ccv2GpxF.s:100    .text.MRV_systick_config:00000000000000a0 .LBE8
+     /tmp/ccv2GpxF.s:2087   .debug_str:00000000000000e2 .LASF95
+     /tmp/ccv2GpxF.s:2245   .debug_str:0000000000000594 .LASF96
+     /tmp/ccv2GpxF.s:2247   .debug_str:00000000000005a7 .LASF79
+     /tmp/ccv2GpxF.s:2237   .debug_str:0000000000000560 .LASF80
+     /tmp/ccv2GpxF.s:2073   .debug_str:000000000000006c .LASF81
+     /tmp/ccv2GpxF.s:2225   .debug_str:0000000000000453 .LASF82
+     /tmp/ccv2GpxF.s:2077   .debug_str:0000000000000097 .LASF83
+     /tmp/ccv2GpxF.s:2119   .debug_str:00000000000001d1 .LASF84
+     /tmp/ccv2GpxF.s:2185   .debug_str:0000000000000353 .LASF85
+     /tmp/ccv2GpxF.s:2109   .debug_str:0000000000000196 .LASF86
+     /tmp/ccv2GpxF.s:2171   .debug_str:0000000000000300 .LASF87
+     /tmp/ccv2GpxF.s:2121   .debug_str:00000000000001e5 .LASF88
+     /tmp/ccv2GpxF.s:2079   .debug_str:00000000000000ab .LASF89
+     /tmp/ccv2GpxF.s:2201   .debug_str:00000000000003c7 .LASF90
+     /tmp/ccv2GpxF.s:296    .text.handle_trap:0000000000000000 .LVL15
+     /tmp/ccv2GpxF.s:302    .text.handle_trap:0000000000000008 .LVL16
+     /tmp/ccv2GpxF.s:18     .text.MRV_systick_config:0000000000000000 .LVL0
+     /tmp/ccv2GpxF.s:30     .text.MRV_systick_config:000000000000001c .LVL1
+     /tmp/ccv2GpxF.s:97     .text.MRV_systick_config:00000000000000a0 .LVL4
+     /tmp/ccv2GpxF.s:105    .text.MRV_systick_config:00000000000000a4 .LVL5
+     /tmp/ccv2GpxF.s:109    .text.MRV_systick_config:00000000000000a8 .LVL6
+     /tmp/ccv2GpxF.s:52     .text.MRV_systick_config:000000000000005c .LVL2
+     /tmp/ccv2GpxF.s:120    .text.MRV_systick_config:00000000000000c0 .LVL7
+     /tmp/ccv2GpxF.s:512    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccv2GpxF.s:138    .text.handle_m_timer_interrupt:0000000000000000 .LBB9
+     /tmp/ccv2GpxF.s:141    .text.handle_m_timer_interrupt:0000000000000000 .LBE9
+     /tmp/ccv2GpxF.s:147    .text.handle_m_timer_interrupt:0000000000000008 .LBB10
+     /tmp/ccv2GpxF.s:157    .text.handle_m_timer_interrupt:0000000000000010 .LBE10
+     /tmp/ccv2GpxF.s:270    .text.handle_m_soft_interrupt:0000000000000018 .LBE14
+     /tmp/ccv2GpxF.s:274    .text.handle_m_soft_interrupt:000000000000001c .LBB17
+     /tmp/ccv2GpxF.s:280    .text.handle_m_soft_interrupt:0000000000000024 .LBE17
+=======
+     /tmp/cckhVCsw.s:13     .text.MRV_systick_config:0000000000000000 MRV_systick_config
+     /tmp/cckhVCsw.s:17     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:19     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:20     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:21     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:22     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:26     .text.MRV_systick_config:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:29     .text.MRV_systick_config:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:37     .text.MRV_systick_config:000000000000002c .L0 
+     /tmp/cckhVCsw.s:44     .text.MRV_systick_config:0000000000000048 .L0 
+     /tmp/cckhVCsw.s:45     .text.MRV_systick_config:0000000000000048 .L0 
+     /tmp/cckhVCsw.s:48     .text.MRV_systick_config:0000000000000050 .L0 
+     /tmp/cckhVCsw.s:51     .text.MRV_systick_config:0000000000000058 .L0 
+     /tmp/cckhVCsw.s:54     .text.MRV_systick_config:000000000000005c .L0 
+     /tmp/cckhVCsw.s:58     .text.MRV_systick_config:0000000000000068 .L0 
+     /tmp/cckhVCsw.s:61     .text.MRV_systick_config:0000000000000078 .L0 
+     /tmp/cckhVCsw.s:62     .text.MRV_systick_config:0000000000000078 .L0 
+     /tmp/cckhVCsw.s:65     .text.MRV_systick_config:0000000000000080 .L0 
+     /tmp/cckhVCsw.s:69     .text.MRV_systick_config:000000000000008c .L0 
+     /tmp/cckhVCsw.s:71     .text.MRV_systick_config:0000000000000090 .L0 
+     /tmp/cckhVCsw.s:73     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:75     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:76     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:77     .text.MRV_systick_config:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:86     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/cckhVCsw.s:88     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/cckhVCsw.s:91     .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/cckhVCsw.s:92     .text.MRV_systick_config:000000000000009c .L0 
+../src/miv_rv32_hal/miv_rv32_hal.h:494    .text.MRV_systick_config:000000000000009c .L0 
+     /tmp/cckhVCsw.s:102    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/cckhVCsw.s:103    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/cckhVCsw.s:104    .text.MRV_systick_config:00000000000000a0 .L0 
+     /tmp/cckhVCsw.s:108    .text.MRV_systick_config:00000000000000a4 .L0 
+     /tmp/cckhVCsw.s:112    .text.MRV_systick_config:00000000000000a8 .L0 
+     /tmp/cckhVCsw.s:113    .text.MRV_systick_config:00000000000000a8 .L0 
+     /tmp/cckhVCsw.s:116    .text.MRV_systick_config:00000000000000b0 .L0 
+     /tmp/cckhVCsw.s:122    .text.MRV_systick_config:00000000000000c0 .L0 
+     /tmp/cckhVCsw.s:123    .text.MRV_systick_config:00000000000000c0 .L0 
+     /tmp/cckhVCsw.s:126    .text.MRV_systick_config:00000000000000cc .L0 
+     /tmp/cckhVCsw.s:133    .text.handle_m_timer_interrupt:0000000000000000 handle_m_timer_interrupt
+     /tmp/cckhVCsw.s:136    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:137    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:139    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:140    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:142    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:143    .text.handle_m_timer_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:144    .text.handle_m_timer_interrupt:0000000000000004 .L0 
+     /tmp/cckhVCsw.s:146    .text.handle_m_timer_interrupt:0000000000000008 .L0 
+     /tmp/cckhVCsw.s:149    .text.handle_m_timer_interrupt:0000000000000008 .L0 
+     /tmp/cckhVCsw.s:158    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:159    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:160    .text.handle_m_timer_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:164    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:165    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:166    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:173    .text.handle_m_timer_interrupt:0000000000000038 .L0 
+     /tmp/cckhVCsw.s:175    .text.handle_m_timer_interrupt:000000000000003c .L0 
+     /tmp/cckhVCsw.s:177    .text.handle_m_timer_interrupt:0000000000000040 .L0 
+     /tmp/cckhVCsw.s:180    .text.handle_m_timer_interrupt:0000000000000044 .L0 
+     /tmp/cckhVCsw.s:183    .text.handle_m_timer_interrupt:000000000000004c .L0 
+     /tmp/cckhVCsw.s:192    .text.handle_m_timer_interrupt:000000000000006c .L0 
+     /tmp/cckhVCsw.s:196    .text.handle_m_timer_interrupt:0000000000000078 .L0 
+     /tmp/cckhVCsw.s:198    .text.handle_m_timer_interrupt:000000000000007c .L0 
+     /tmp/cckhVCsw.s:200    .text.handle_m_timer_interrupt:0000000000000080 .L0 
+     /tmp/cckhVCsw.s:201    .text.handle_m_timer_interrupt:0000000000000080 .L0 
+     /tmp/cckhVCsw.s:205    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/cckhVCsw.s:206    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/cckhVCsw.s:207    .text.handle_m_timer_interrupt:0000000000000088 .L0 
+     /tmp/cckhVCsw.s:216    .text.handle_m_timer_interrupt:0000000000000090 .L0 
+     /tmp/cckhVCsw.s:217    .text.handle_m_timer_interrupt:0000000000000090 .L0 
+     /tmp/cckhVCsw.s:218    .text.handle_m_timer_interrupt:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:219    .text.handle_m_timer_interrupt:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:221    .text.handle_m_timer_interrupt:0000000000000098 .L0 
+     /tmp/cckhVCsw.s:225    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/cckhVCsw.s:227    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/cckhVCsw.s:228    .text.handle_m_timer_interrupt:000000000000009c .L0 
+     /tmp/cckhVCsw.s:232    .text.handle_m_timer_interrupt:00000000000000a8 .L0 
+     /tmp/cckhVCsw.s:234    .text.handle_m_timer_interrupt:00000000000000ac .L0 
+     /tmp/cckhVCsw.s:237    .text.handle_m_timer_interrupt:00000000000000b4 .L0 
+     /tmp/cckhVCsw.s:238    .text.handle_m_timer_interrupt:00000000000000b4 .L0 
+     /tmp/cckhVCsw.s:242    .text.handle_m_timer_interrupt:00000000000000c8 .L0 
+     /tmp/cckhVCsw.s:249    .text.handle_m_soft_interrupt:0000000000000000 handle_m_soft_interrupt
+     /tmp/cckhVCsw.s:252    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:253    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:254    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:255    .text.handle_m_soft_interrupt:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:256    .text.handle_m_soft_interrupt:0000000000000004 .L0 
+     /tmp/cckhVCsw.s:258    .text.handle_m_soft_interrupt:0000000000000008 .L0 
+     /tmp/cckhVCsw.s:260    .text.handle_m_soft_interrupt:0000000000000008 .L0 
+     /tmp/cckhVCsw.s:265    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:266    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:267    .text.handle_m_soft_interrupt:0000000000000010 .L0 
+     /tmp/cckhVCsw.s:272    .text.handle_m_soft_interrupt:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:273    .text.handle_m_soft_interrupt:000000000000001c .L0 
+     /tmp/cckhVCsw.s:277    .text.handle_m_soft_interrupt:000000000000001c .L0 
+     /tmp/cckhVCsw.s:282    .text.handle_m_soft_interrupt:0000000000000024 .L0 
+     /tmp/cckhVCsw.s:283    .text.handle_m_soft_interrupt:0000000000000028 .L0 
+     /tmp/cckhVCsw.s:285    .text.handle_m_soft_interrupt:000000000000002c .L0 
+     /tmp/cckhVCsw.s:292    .text.handle_trap:0000000000000000 handle_trap
+     /tmp/cckhVCsw.s:295    .text.handle_trap:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:297    .text.handle_trap:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:298    .text.handle_trap:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:299    .text.handle_trap:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:301    .text.handle_trap:0000000000000004 .L0 
+     /tmp/cckhVCsw.s:305    .text.handle_trap:000000000000000c .L0 
+     /tmp/cckhVCsw.s:308    .text.handle_trap:0000000000000014 .L0 
+     /tmp/cckhVCsw.s:312    .text.handle_trap:000000000000001c .L0 
+     /tmp/cckhVCsw.s:313    .text.handle_trap:000000000000001c .L0 
+     /tmp/cckhVCsw.s:316    .text.handle_trap:0000000000000024 .L0 
+     /tmp/cckhVCsw.s:320    .text.handle_trap:000000000000002c .L0 
+     /tmp/cckhVCsw.s:321    .text.handle_trap:000000000000002c .L0 
+     /tmp/cckhVCsw.s:324    .text.handle_trap:0000000000000034 .L0 
+     /tmp/cckhVCsw.s:328    .text.handle_trap:000000000000003c .L0 
+     /tmp/cckhVCsw.s:329    .text.handle_trap:000000000000003c .L0 
+     /tmp/cckhVCsw.s:332    .text.handle_trap:0000000000000044 .L0 
+     /tmp/cckhVCsw.s:336    .text.handle_trap:000000000000004c .L0 
+     /tmp/cckhVCsw.s:337    .text.handle_trap:000000000000004c .L0 
+     /tmp/cckhVCsw.s:340    .text.handle_trap:0000000000000054 .L0 
+     /tmp/cckhVCsw.s:344    .text.handle_trap:000000000000005c .L0 
+     /tmp/cckhVCsw.s:345    .text.handle_trap:000000000000005c .L0 
+     /tmp/cckhVCsw.s:348    .text.handle_trap:0000000000000064 .L0 
+     /tmp/cckhVCsw.s:352    .text.handle_trap:000000000000006c .L0 
+     /tmp/cckhVCsw.s:353    .text.handle_trap:000000000000006c .L0 
+     /tmp/cckhVCsw.s:356    .text.handle_trap:0000000000000074 .L0 
+     /tmp/cckhVCsw.s:360    .text.handle_trap:000000000000007c .L0 
+     /tmp/cckhVCsw.s:361    .text.handle_trap:000000000000007c .L0 
+     /tmp/cckhVCsw.s:364    .text.handle_trap:0000000000000084 .L0 
+     /tmp/cckhVCsw.s:368    .text.handle_trap:000000000000008c .L0 
+     /tmp/cckhVCsw.s:369    .text.handle_trap:000000000000008c .L0 
+     /tmp/cckhVCsw.s:372    .text.handle_trap:0000000000000094 .L0 
+     /tmp/cckhVCsw.s:376    .text.handle_trap:000000000000009c .L0 
+     /tmp/cckhVCsw.s:377    .text.handle_trap:000000000000009c .L0 
+     /tmp/cckhVCsw.s:380    .text.handle_trap:00000000000000a4 .L0 
+     /tmp/cckhVCsw.s:384    .text.handle_trap:00000000000000ac .L0 
+     /tmp/cckhVCsw.s:385    .text.handle_trap:00000000000000ac .L0 
+     /tmp/cckhVCsw.s:388    .text.handle_trap:00000000000000b4 .L0 
+     /tmp/cckhVCsw.s:392    .text.handle_trap:00000000000000bc .L0 
+     /tmp/cckhVCsw.s:393    .text.handle_trap:00000000000000bc .L0 
+     /tmp/cckhVCsw.s:396    .text.handle_trap:00000000000000c4 .L0 
+     /tmp/cckhVCsw.s:402    .text.handle_trap:00000000000000cc .L0 
+     /tmp/cckhVCsw.s:403    .text.handle_trap:00000000000000cc .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:344    .text.handle_trap:00000000000000cc .L0 
+     /tmp/cckhVCsw.s:412    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/cckhVCsw.s:414    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/cckhVCsw.s:415    .text.handle_trap:00000000000000d0 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:347    .text.handle_trap:00000000000000d0 .L0 
+     /tmp/cckhVCsw.s:424    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/cckhVCsw.s:426    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/cckhVCsw.s:427    .text.handle_trap:00000000000000d4 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:350    .text.handle_trap:00000000000000d4 .L0 
+     /tmp/cckhVCsw.s:436    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/cckhVCsw.s:438    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/cckhVCsw.s:439    .text.handle_trap:00000000000000d8 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:353    .text.handle_trap:00000000000000d8 .L0 
+     /tmp/cckhVCsw.s:448    .text.handle_trap:00000000000000dc .L0 
+     /tmp/cckhVCsw.s:450    .text.handle_trap:00000000000000dc .L0 
+     /tmp/cckhVCsw.s:451    .text.handle_trap:00000000000000dc .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:356    .text.handle_trap:00000000000000dc .L0 
+     /tmp/cckhVCsw.s:460    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/cckhVCsw.s:462    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/cckhVCsw.s:463    .text.handle_trap:00000000000000e0 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:359    .text.handle_trap:00000000000000e0 .L0 
+     /tmp/cckhVCsw.s:472    .text.handle_trap:00000000000000e4 .L0 
+../src/miv_rv32_hal/miv_rv32_hal.c:362    .text.handle_trap:00000000000000e4 .L0 
+     /tmp/cckhVCsw.s:480    .text.handle_trap:00000000000000e8 .L0 
+     /tmp/cckhVCsw.s:481    .text.handle_trap:00000000000000ec .L0 
+                            *COM*:0000000000000004 MRV_LOCAL_IRQn_Type
+     /tmp/cckhVCsw.s:487    .sbss.d_tick.2176:0000000000000000 .LANCHOR2
+     /tmp/cckhVCsw.s:490    .sbss.d_tick.2176:0000000000000000 d_tick.2176
+     /tmp/cckhVCsw.s:494    .sbss.g_systick_cmp_value:0000000000000000 .LANCHOR1
+     /tmp/cckhVCsw.s:497    .sbss.g_systick_cmp_value:0000000000000000 g_systick_cmp_value
+     /tmp/cckhVCsw.s:501    .sbss.g_systick_increment:0000000000000000 .LANCHOR0
+     /tmp/cckhVCsw.s:504    .sbss.g_systick_increment:0000000000000000 g_systick_increment
+     /tmp/cckhVCsw.s:129    .text.MRV_systick_config:00000000000000cc .L0 
+     /tmp/cckhVCsw.s:245    .text.handle_m_timer_interrupt:00000000000000c8 .L0 
+     /tmp/cckhVCsw.s:288    .text.handle_m_soft_interrupt:000000000000002c .L0 
+     /tmp/cckhVCsw.s:485    .text.handle_trap:00000000000000ec .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:22     .text.MRV_systick_config:0000000000000000 .L0 
+     /tmp/cckhVCsw.s:40     .text.MRV_systick_config:0000000000000038 .L0 
+     /tmp/cckhVCsw.s:41     .text.MRV_systick_config:0000000000000040 .L0 
+     /tmp/cckhVCsw.s:58     .text.MRV_systick_config:0000000000000068 .L0 
+     /tmp/cckhVCsw.s:59     .text.MRV_systick_config:0000000000000070 .L0 
+     /tmp/cckhVCsw.s:110    .text.MRV_systick_config:00000000000000a8 .L3
+     /tmp/cckhVCsw.s:42     .text.MRV_systick_config:0000000000000048 .L5
+     /tmp/cckhVCsw.s:106    .text.MRV_systick_config:00000000000000a4 .L1
+     /tmp/cckhVCsw.s:31     .text.MRV_systick_config:000000000000001c .L2
+     /tmp/cckhVCsw.s:166    .text.handle_m_timer_interrupt:0000000000000018 .L0 
+     /tmp/cckhVCsw.s:169    .text.handle_m_timer_interrupt:0000000000000028 .L0 
+     /tmp/cckhVCsw.s:180    .text.handle_m_timer_interrupt:0000000000000044 .L0 
+     /tmp/cckhVCsw.s:188    .text.handle_m_timer_interrupt:000000000000005c .L0 
+     /tmp/cckhVCsw.s:189    .text.handle_m_timer_interrupt:0000000000000064 .L0 
+     /tmp/cckhVCsw.s:239    .text.handle_m_timer_interrupt:00000000000000b8 .L0 
+     /tmp/cckhVCsw.s:224    .text.handle_m_timer_interrupt:000000000000009c .L16
+     /tmp/cckhVCsw.s:186    .text.handle_m_timer_interrupt:0000000000000058 .L19
+     /tmp/cckhVCsw.s:190    .text.handle_m_timer_interrupt:000000000000006c .L18
+     /tmp/cckhVCsw.s:181    .text.handle_m_timer_interrupt:000000000000004c .L15
+     /tmp/cckhVCsw.s:398    .text.handle_trap:00000000000000cc .L27
+     /tmp/cckhVCsw.s:310    .text.handle_trap:000000000000001c .L28
+     /tmp/cckhVCsw.s:318    .text.handle_trap:000000000000002c .L29
+     /tmp/cckhVCsw.s:326    .text.handle_trap:000000000000003c .L30
+     /tmp/cckhVCsw.s:334    .text.handle_trap:000000000000004c .L31
+     /tmp/cckhVCsw.s:342    .text.handle_trap:000000000000005c .L32
+     /tmp/cckhVCsw.s:350    .text.handle_trap:000000000000006c .L33
+     /tmp/cckhVCsw.s:358    .text.handle_trap:000000000000007c .L34
+     /tmp/cckhVCsw.s:366    .text.handle_trap:000000000000008c .L35
+     /tmp/cckhVCsw.s:374    .text.handle_trap:000000000000009c .L36
+     /tmp/cckhVCsw.s:382    .text.handle_trap:00000000000000ac .L37
+     /tmp/cckhVCsw.s:390    .text.handle_trap:00000000000000bc .L38
+     /tmp/cckhVCsw.s:1248   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cckhVCsw.s:2231   .debug_str:0000000000000485 .LASF91
+     /tmp/cckhVCsw.s:2193   .debug_str:000000000000038a .LASF92
+     /tmp/cckhVCsw.s:2107   .debug_str:000000000000015f .LASF93
+     /tmp/cckhVCsw.s:2029   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cckhVCsw.s:2053   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cckhVCsw.s:2075   .debug_str:0000000000000080 .LASF0
+     /tmp/cckhVCsw.s:2091   .debug_str:0000000000000106 .LASF1
+     /tmp/cckhVCsw.s:2181   .debug_str:000000000000033b .LASF2
+     /tmp/cckhVCsw.s:2183   .debug_str:0000000000000349 .LASF3
+     /tmp/cckhVCsw.s:2137   .debug_str:000000000000024d .LASF4
+     /tmp/cckhVCsw.s:2099   .debug_str:000000000000012c .LASF5
+     /tmp/cckhVCsw.s:2111   .debug_str:00000000000001a7 .LASF8
+     /tmp/cckhVCsw.s:2133   .debug_str:0000000000000234 .LASF6
+     /tmp/cckhVCsw.s:2089   .debug_str:00000000000000f8 .LASF7
+     /tmp/cckhVCsw.s:2169   .debug_str:00000000000002f5 .LASF9
+     /tmp/cckhVCsw.s:2191   .debug_str:000000000000037e .LASF10
+     /tmp/cckhVCsw.s:2123   .debug_str:00000000000001f6 .LASF11
+     /tmp/cckhVCsw.s:2199   .debug_str:00000000000003be .LASF12
+     /tmp/cckhVCsw.s:2067   .debug_str:000000000000004f .LASF13
+     /tmp/cckhVCsw.s:2065   .debug_str:0000000000000045 .LASF14
+     /tmp/cckhVCsw.s:2205   .debug_str:00000000000003e3 .LASF15
+     /tmp/cckhVCsw.s:2159   .debug_str:00000000000002bf .LASF16
+     /tmp/cckhVCsw.s:2145   .debug_str:000000000000027e .LASF17
+     /tmp/cckhVCsw.s:2155   .debug_str:00000000000002b2 .LASF18
+     /tmp/cckhVCsw.s:2161   .debug_str:00000000000002cb .LASF19
+     /tmp/cckhVCsw.s:2211   .debug_str:0000000000000408 .LASF20
+     /tmp/cckhVCsw.s:2197   .debug_str:00000000000003b7 .LASF21
+     /tmp/cckhVCsw.s:2151   .debug_str:000000000000029d .LASF22
+     /tmp/cckhVCsw.s:2239   .debug_str:0000000000000574 .LASF23
+     /tmp/cckhVCsw.s:2143   .debug_str:0000000000000277 .LASF24
+     /tmp/cckhVCsw.s:2097   .debug_str:0000000000000123 .LASF25
+     /tmp/cckhVCsw.s:2241   .debug_str:000000000000057e .LASF26
+     /tmp/cckhVCsw.s:2233   .debug_str:000000000000054b .LASF27
+     /tmp/cckhVCsw.s:2141   .debug_str:000000000000026c .LASF28
+     /tmp/cckhVCsw.s:2103   .debug_str:0000000000000149 .LASF29
+     /tmp/cckhVCsw.s:2129   .debug_str:0000000000000223 .LASF30
+     /tmp/cckhVCsw.s:2149   .debug_str:0000000000000292 .LASF31
+     /tmp/cckhVCsw.s:2229   .debug_str:000000000000047a .LASF32
+     /tmp/cckhVCsw.s:2061   .debug_str:0000000000000021 .LASF33
+     /tmp/cckhVCsw.s:2085   .debug_str:00000000000000d7 .LASF34
+     /tmp/cckhVCsw.s:2165   .debug_str:00000000000002de .LASF35
+     /tmp/cckhVCsw.s:2189   .debug_str:0000000000000373 .LASF36
+     /tmp/cckhVCsw.s:2213   .debug_str:000000000000040f .LASF37
+     /tmp/cckhVCsw.s:2105   .debug_str:0000000000000154 .LASF38
+     /tmp/cckhVCsw.s:2173   .debug_str:0000000000000311 .LASF39
+     /tmp/cckhVCsw.s:2203   .debug_str:00000000000003d7 .LASF40
+     /tmp/cckhVCsw.s:2095   .debug_str:0000000000000117 .LASF41
+     /tmp/cckhVCsw.s:2113   .debug_str:00000000000001b2 .LASF42
+     /tmp/cckhVCsw.s:2139   .debug_str:0000000000000260 .LASF43
+     /tmp/cckhVCsw.s:2217   .debug_str:0000000000000422 .LASF44
+     /tmp/cckhVCsw.s:2243   .debug_str:0000000000000588 .LASF45
+     /tmp/cckhVCsw.s:2071   .debug_str:0000000000000060 .LASF46
+     /tmp/cckhVCsw.s:2153   .debug_str:00000000000002a6 .LASF47
+     /tmp/cckhVCsw.s:2175   .debug_str:000000000000031d .LASF48
+     /tmp/cckhVCsw.s:2081   .debug_str:00000000000000bf .LASF49
+     /tmp/cckhVCsw.s:2163   .debug_str:00000000000002d2 .LASF50
+     /tmp/cckhVCsw.s:2187   .debug_str:0000000000000367 .LASF51
+     /tmp/cckhVCsw.s:2209   .debug_str:00000000000003fc .LASF52
+     /tmp/cckhVCsw.s:2235   .debug_str:0000000000000554 .LASF53
+     /tmp/cckhVCsw.s:2127   .debug_str:0000000000000217 .LASF54
+     /tmp/cckhVCsw.s:2147   .debug_str:0000000000000286 .LASF55
+     /tmp/cckhVCsw.s:2167   .debug_str:00000000000002e9 .LASF56
+     /tmp/cckhVCsw.s:2059   .debug_str:0000000000000015 .LASF57
+     /tmp/cckhVCsw.s:2083   .debug_str:00000000000000cb .LASF58
+     /tmp/cckhVCsw.s:2179   .debug_str:000000000000032f .LASF59
+     /tmp/cckhVCsw.s:2207   .debug_str:00000000000003e8 .LASF60
+     /tmp/cckhVCsw.s:2101   .debug_str:0000000000000135 .LASF61
+     /tmp/cckhVCsw.s:2125   .debug_str:0000000000000203 .LASF62
+     /tmp/cckhVCsw.s:2055   .debug_str:0000000000000000 .LASF71
+     /tmp/cckhVCsw.s:293    .text.handle_trap:0000000000000000 .LFB21
+     /tmp/cckhVCsw.s:482    .text.handle_trap:00000000000000ec .LFE21
+     /tmp/cckhVCsw.s:2135   .debug_str:0000000000000246 .LASF63
+     /tmp/cckhVCsw.s:1788   .debug_loc:0000000000000000 .LLST3
+     /tmp/cckhVCsw.s:2093   .debug_str:0000000000000112 .LASF64
+     /tmp/cckhVCsw.s:1802   .debug_loc:0000000000000021 .LLST4
+     /tmp/cckhVCsw.s:399    .text.handle_trap:00000000000000cc .LBB18
+     /tmp/cckhVCsw.s:478    .text.handle_trap:00000000000000e8 .LBE18
+     /tmp/cckhVCsw.s:2219   .debug_str:000000000000042e .LASF65
+     /tmp/cckhVCsw.s:2131   .debug_str:000000000000022e .LASF66
+     /tmp/cckhVCsw.s:2057   .debug_str:000000000000000c .LASF67
+     /tmp/cckhVCsw.s:2215   .debug_str:000000000000041a .LASF68
+     /tmp/cckhVCsw.s:2177   .debug_str:0000000000000329 .LASF69
+     /tmp/cckhVCsw.s:401    .text.handle_trap:00000000000000cc .LBB19
+     /tmp/cckhVCsw.s:411    .text.handle_trap:00000000000000d0 .LBE19
+     /tmp/cckhVCsw.s:2115   .debug_str:00000000000001be .LASF70
+     /tmp/cckhVCsw.s:413    .text.handle_trap:00000000000000d0 .LBB20
+     /tmp/cckhVCsw.s:423    .text.handle_trap:00000000000000d4 .LBE20
+     /tmp/cckhVCsw.s:425    .text.handle_trap:00000000000000d4 .LBB21
+     /tmp/cckhVCsw.s:435    .text.handle_trap:00000000000000d8 .LBE21
+     /tmp/cckhVCsw.s:437    .text.handle_trap:00000000000000d8 .LBB22
+     /tmp/cckhVCsw.s:447    .text.handle_trap:00000000000000dc .LBE22
+     /tmp/cckhVCsw.s:449    .text.handle_trap:00000000000000dc .LBB23
+     /tmp/cckhVCsw.s:459    .text.handle_trap:00000000000000e0 .LBE23
+     /tmp/cckhVCsw.s:461    .text.handle_trap:00000000000000e0 .LBB24
+     /tmp/cckhVCsw.s:471    .text.handle_trap:00000000000000e4 .LBE24
+     /tmp/cckhVCsw.s:309    .text.handle_trap:000000000000001c .LVL17
+     /tmp/cckhVCsw.s:317    .text.handle_trap:000000000000002c .LVL18
+     /tmp/cckhVCsw.s:325    .text.handle_trap:000000000000003c .LVL19
+     /tmp/cckhVCsw.s:333    .text.handle_trap:000000000000004c .LVL20
+     /tmp/cckhVCsw.s:341    .text.handle_trap:000000000000005c .LVL21
+     /tmp/cckhVCsw.s:349    .text.handle_trap:000000000000006c .LVL22
+     /tmp/cckhVCsw.s:357    .text.handle_trap:000000000000007c .LVL23
+     /tmp/cckhVCsw.s:365    .text.handle_trap:000000000000008c .LVL24
+     /tmp/cckhVCsw.s:373    .text.handle_trap:000000000000009c .LVL25
+     /tmp/cckhVCsw.s:381    .text.handle_trap:00000000000000ac .LVL26
+     /tmp/cckhVCsw.s:389    .text.handle_trap:00000000000000bc .LVL27
+     /tmp/cckhVCsw.s:397    .text.handle_trap:00000000000000cc .LVL28
+     /tmp/cckhVCsw.s:2221   .debug_str:0000000000000434 .LASF72
+     /tmp/cckhVCsw.s:250    .text.handle_m_soft_interrupt:0000000000000000 .LFB20
+     /tmp/cckhVCsw.s:286    .text.handle_m_soft_interrupt:000000000000002c .LFE20
+     /tmp/cckhVCsw.s:263    .text.handle_m_soft_interrupt:0000000000000010 .LBB14
+     /tmp/cckhVCsw.s:261    .text.handle_m_soft_interrupt:0000000000000010 .LVL14
+     /tmp/cckhVCsw.s:2063   .debug_str:000000000000002c .LASF73
+     /tmp/cckhVCsw.s:134    .text.handle_m_timer_interrupt:0000000000000000 .LFB19
+     /tmp/cckhVCsw.s:243    .text.handle_m_timer_interrupt:00000000000000c8 .LFE19
+     /tmp/cckhVCsw.s:2117   .debug_str:00000000000001c4 .LASF74
+     /tmp/cckhVCsw.s:2223   .debug_str:000000000000044c .LASF75
+     /tmp/cckhVCsw.s:204    .text.handle_m_timer_interrupt:0000000000000088 .LBB11
+     /tmp/cckhVCsw.s:215    .text.handle_m_timer_interrupt:0000000000000090 .LBE11
+     /tmp/cckhVCsw.s:202    .text.handle_m_timer_interrupt:0000000000000088 .LVL11
+     /tmp/cckhVCsw.s:2227   .debug_str:0000000000000467 .LASF94
+     /tmp/cckhVCsw.s:14     .text.MRV_systick_config:0000000000000000 .LFB18
+     /tmp/cckhVCsw.s:127    .text.MRV_systick_config:00000000000000cc .LFE18
+     /tmp/cckhVCsw.s:2157   .debug_str:00000000000002b9 .LASF76
+     /tmp/cckhVCsw.s:1941   .debug_loc:0000000000000160 .LLST0
+     /tmp/cckhVCsw.s:2069   .debug_str:0000000000000058 .LASF77
+     /tmp/cckhVCsw.s:1962   .debug_loc:0000000000000188 .LLST1
+     /tmp/cckhVCsw.s:2195   .debug_str:00000000000003ad .LASF78
+     /tmp/cckhVCsw.s:1980   .debug_loc:00000000000001b4 .LLST2
+     /tmp/cckhVCsw.s:74     .text.MRV_systick_config:0000000000000094 .LBB6
+     /tmp/cckhVCsw.s:85     .text.MRV_systick_config:000000000000009c .LBE6
+     /tmp/cckhVCsw.s:89     .text.MRV_systick_config:000000000000009c .LBB7
+     /tmp/cckhVCsw.s:101    .text.MRV_systick_config:00000000000000a0 .LBE7
+     /tmp/cckhVCsw.s:90     .text.MRV_systick_config:000000000000009c .LBB8
+     /tmp/cckhVCsw.s:100    .text.MRV_systick_config:00000000000000a0 .LBE8
+     /tmp/cckhVCsw.s:2087   .debug_str:00000000000000e2 .LASF95
+     /tmp/cckhVCsw.s:2245   .debug_str:0000000000000594 .LASF96
+     /tmp/cckhVCsw.s:2247   .debug_str:00000000000005a7 .LASF79
+     /tmp/cckhVCsw.s:2237   .debug_str:0000000000000560 .LASF80
+     /tmp/cckhVCsw.s:2073   .debug_str:000000000000006c .LASF81
+     /tmp/cckhVCsw.s:2225   .debug_str:0000000000000453 .LASF82
+     /tmp/cckhVCsw.s:2077   .debug_str:0000000000000097 .LASF83
+     /tmp/cckhVCsw.s:2119   .debug_str:00000000000001d1 .LASF84
+     /tmp/cckhVCsw.s:2185   .debug_str:0000000000000353 .LASF85
+     /tmp/cckhVCsw.s:2109   .debug_str:0000000000000196 .LASF86
+     /tmp/cckhVCsw.s:2171   .debug_str:0000000000000300 .LASF87
+     /tmp/cckhVCsw.s:2121   .debug_str:00000000000001e5 .LASF88
+     /tmp/cckhVCsw.s:2079   .debug_str:00000000000000ab .LASF89
+     /tmp/cckhVCsw.s:2201   .debug_str:00000000000003c7 .LASF90
+     /tmp/cckhVCsw.s:296    .text.handle_trap:0000000000000000 .LVL15
+     /tmp/cckhVCsw.s:302    .text.handle_trap:0000000000000008 .LVL16
+     /tmp/cckhVCsw.s:18     .text.MRV_systick_config:0000000000000000 .LVL0
+     /tmp/cckhVCsw.s:30     .text.MRV_systick_config:000000000000001c .LVL1
+     /tmp/cckhVCsw.s:97     .text.MRV_systick_config:00000000000000a0 .LVL4
+     /tmp/cckhVCsw.s:105    .text.MRV_systick_config:00000000000000a4 .LVL5
+     /tmp/cckhVCsw.s:109    .text.MRV_systick_config:00000000000000a8 .LVL6
+     /tmp/cckhVCsw.s:52     .text.MRV_systick_config:000000000000005c .LVL2
+     /tmp/cckhVCsw.s:120    .text.MRV_systick_config:00000000000000c0 .LVL7
+     /tmp/cckhVCsw.s:512    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cckhVCsw.s:138    .text.handle_m_timer_interrupt:0000000000000000 .LBB9
+     /tmp/cckhVCsw.s:141    .text.handle_m_timer_interrupt:0000000000000000 .LBE9
+     /tmp/cckhVCsw.s:147    .text.handle_m_timer_interrupt:0000000000000008 .LBB10
+     /tmp/cckhVCsw.s:157    .text.handle_m_timer_interrupt:0000000000000010 .LBE10
+     /tmp/cckhVCsw.s:270    .text.handle_m_soft_interrupt:0000000000000018 .LBE14
+     /tmp/cckhVCsw.s:274    .text.handle_m_soft_interrupt:000000000000001c .LBB17
+     /tmp/cckhVCsw.s:280    .text.handle_m_soft_interrupt:0000000000000024 .LBE17
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+SysTick_Handler
+Software_IRQHandler
+External_IRQHandler
+MSYS_EI0_IRQHandler
+MSYS_EI1_IRQHandler
+MSYS_EI2_IRQHandler
+MSYS_EI3_IRQHandler
+MSYS_EI4_IRQHandler
+MSYS_EI5_IRQHandler
+OPSRV_IRQHandler
+MGEUI_IRQHandler
+MGECI_IRQHandler

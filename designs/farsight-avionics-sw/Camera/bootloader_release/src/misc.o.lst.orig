@@ -1,0 +1,1246 @@
+   1              		.file	"misc.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.vApplicationMallocFailedHook,"ax",@progbits
+  10              		.align	2
+  11              		.globl	vApplicationMallocFailedHook
+  13              	vApplicationMallocFailedHook:
+  14              	.LFB0:
+  15              		.file 1 "../src/misc.c"
+   1:../src/misc.c **** /*
+   2:../src/misc.c ****  * misc.c
+   3:../src/misc.c ****  *
+   4:../src/misc.c ****  *  Created on: Sep 27, 2025
+   5:../src/misc.c ****  *      Author: iboard
+   6:../src/misc.c ****  */
+   7:../src/misc.c **** 
+   8:../src/misc.c **** #include <stdint.h>
+   9:../src/misc.c **** #include <assert.h>
+  10:../src/misc.c **** #include <focus.h>
+  11:../src/misc.c **** #include "FreeRTOSConfig.h"
+  12:../src/misc.c **** #include "FreeRTOS.h"
+  13:../src/misc.c **** #include "task.h"
+  14:../src/misc.c **** #include "debug_switches.h"
+  15:../src/misc.c **** #include "serial_comm.h"
+  16:../src/misc.c **** #include "misc.h"
+  17:../src/misc.c **** #include "hal_stepper.h"
+  18:../src/misc.c **** 
+  19:../src/misc.c **** static volatile uint8_t b_Logging_Enabled;
+  20:../src/misc.c **** static uint8_t u8_SW2_Counter, u8_SW3_Counter;
+  21:../src/misc.c **** 
+  22:../src/misc.c **** //uint32_t u32_Step = 1;
+  23:../src/misc.c **** uint32_t u32_Step = 50;
+  24:../src/misc.c **** #define FAST 40
+  25:../src/misc.c **** #define SLOW 1
+  26:../src/misc.c **** 
+  27:../src/misc.c **** /**
+  28:../src/misc.c ****  * @fn void vApplicationMallocFailedHook()
+  29:../src/misc.c ****  * @brief Handler in case malloc fails.
+  30:../src/misc.c ****  * Currently, FreeRTOS is using the heap1 model, in which only malloc() is implemented,
+  31:../src/misc.c ****  * not free(). Dynamic allocation is used only during initialization, not during operation.
+  32:../src/misc.c ****  * Initialization failures are handled by configASSERT()s so this may not be necessary.
+  33:../src/misc.c ****  *
+  34:../src/misc.c ****  */
+  35:../src/misc.c **** void vApplicationMallocFailedHook()
+  36:../src/misc.c **** {
+  16              		.loc 1 36 1
+  17              		.cfi_startproc
+  37:../src/misc.c **** }
+  18              		.loc 1 37 1
+  19 0000 67800000 		ret
+  20              		.cfi_endproc
+  21              	.LFE0:
+  23              		.section	.text.vApplicationIdleHook,"ax",@progbits
+  24              		.align	2
+  25              		.globl	vApplicationIdleHook
+  27              	vApplicationIdleHook:
+  28              	.LFB12:
+  29              		.cfi_startproc
+  30 0000 67800000 		ret
+  31              		.cfi_endproc
+  32              	.LFE12:
+  34              		.section	.text.vApplicationTickHook,"ax",@progbits
+  35              		.align	2
+  36              		.globl	vApplicationTickHook
+  38              	vApplicationTickHook:
+  39              	.LFB2:
+  38:../src/misc.c **** 
+  39:../src/misc.c **** /**
+  40:../src/misc.c ****  * @fn void vApplicationIdleHook()
+  41:../src/misc.c ****  * @brief Called when no task is executing. This may be used in the future. It
+  42:../src/misc.c ****  * is important that nothing that causes task suspension or delay be executed here.
+  43:../src/misc.c ****  *
+  44:../src/misc.c ****  */
+  45:../src/misc.c **** void vApplicationIdleHook()
+  46:../src/misc.c **** {
+  47:../src/misc.c **** }
+  48:../src/misc.c **** 
+  49:../src/misc.c **** 
+  50:../src/misc.c **** /**
+  51:../src/misc.c ****  * @fn void vApplicationTickHook()
+  52:../src/misc.c ****  * @brief Called during system tick. This is called after times have been updated - last - before a
+  53:../src/misc.c ****  * context switch. This is currently unused but may be used in the future for things which call
+  54:../src/misc.c ****  * for fast, low-overhead polling.
+  55:../src/misc.c ****  *
+  56:../src/misc.c ****  */
+  57:../src/misc.c **** void v_Set_Stepper_Vel(uint32_t u32_Vel);
+  58:../src/misc.c **** 
+  59:../src/misc.c **** void vApplicationTickHook()
+  60:../src/misc.c **** {
+  40              		.loc 1 60 1
+  41              		.cfi_startproc
+  61:../src/misc.c ****     uint32_t u32_Raw_Switch_State;
+  42              		.loc 1 61 5
+  62:../src/misc.c **** 
+  63:../src/misc.c ****     uint8_t SW2_State_Debounced = u8_Update_Switch_Debounce( &u8_SW2_Counter, SW2);
+  43              		.loc 1 63 5
+  60:../src/misc.c ****     uint32_t u32_Raw_Switch_State;
+  44              		.loc 1 60 1 is_stmt 0
+  45 0000 130101FF 		addi	sp,sp,-16
+  46              		.cfi_def_cfa_offset 16
+  47              		.loc 1 63 35
+  48 0004 B7050040 		li	a1,1073741824
+  49 0008 17050000 		lla	a0,.LANCHOR0
+  49      13050500 
+  60:../src/misc.c ****     uint32_t u32_Raw_Switch_State;
+  50              		.loc 1 60 1
+  51 0010 23261100 		sw	ra,12(sp)
+  52 0014 23248100 		sw	s0,8(sp)
+  53 0018 23229100 		sw	s1,4(sp)
+  54              		.cfi_offset 1, -4
+  55              		.cfi_offset 8, -8
+  56              		.cfi_offset 9, -12
+  57              		.loc 1 63 35
+  58 001c 97000000 		call	u8_Update_Switch_Debounce
+  58      E7800000 
+  59              	.LVL0:
+  60 0024 13040500 		mv	s0,a0
+  61              	.LVL1:
+  64:../src/misc.c ****     uint8_t SW3_State_Debounced = u8_Update_Switch_Debounce( &u8_SW3_Counter, SW3 );
+  62              		.loc 1 64 5 is_stmt 1
+  63              		.loc 1 64 35 is_stmt 0
+  64 0028 B7050080 		li	a1,-2147483648
+  65 002c 17050000 		lla	a0,.LANCHOR1
+  65      13050500 
+  66 0034 97000000 		call	u8_Update_Switch_Debounce
+  66      E7800000 
+  67              	.LVL2:
+  68 003c 93040500 		mv	s1,a0
+  69              	.LVL3:
+  65:../src/misc.c **** 
+  66:../src/misc.c ****     if( b_Is_Idle() )
+  70              		.loc 1 66 5 is_stmt 1
+  71              		.loc 1 66 9 is_stmt 0
+  72 0040 97000000 		call	b_Is_Idle
+  72      E7800000 
+  73              	.LVL4:
+  74              		.loc 1 66 7
+  75 0048 63080508 		beq	a0,zero,.L3
+  67:../src/misc.c ****     {
+  68:../src/misc.c ****         u32_Raw_Switch_State = u32_Get_Switch_State();
+  76              		.loc 1 68 9 is_stmt 1
+  77              		.loc 1 68 32 is_stmt 0
+  78 004c 97000000 		call	u32_Get_Switch_State
+  78      E7800000 
+  79              	.LVL5:
+  69:../src/misc.c **** 
+  70:../src/misc.c ****         if( !(u32_Raw_Switch_State & SW2) || !(u32_Raw_Switch_State & SW3))
+  80              		.loc 1 70 9 is_stmt 1
+  81              		.loc 1 70 11 is_stmt 0
+  82 0054 93171500 		slli	a5,a0,1
+  83 0058 63D40700 		bge	a5,zero,.L5
+  84              		.loc 1 70 43 discriminator 1
+  85 005c 63440504 		blt	a0,zero,.L6
+  86              	.L5:
+  71:../src/misc.c ****           v_Enable_Stepper(1);
+  87              		.loc 1 71 11 is_stmt 1
+  88 0060 13051000 		li	a0,1
+  89              	.LVL6:
+  90              	.L14:
+  72:../src/misc.c ****         else
+  73:../src/misc.c ****           v_Enable_Stepper(0);
+  91              		.loc 1 73 11 is_stmt 0
+  92 0064 97000000 		call	v_Enable_Stepper
+  92      E7800000 
+  93              	.LVL7:
+  74:../src/misc.c **** 
+  75:../src/misc.c ****         if( SW2_State_Debounced & !SW3_State_Debounced ) // these are debounced, so they give the s
+  94              		.loc 1 75 9 is_stmt 1
+  95              		.loc 1 75 35 is_stmt 0
+  96 006c 93B71400 		seqz	a5,s1
+  97              		.loc 1 75 33
+  98 0070 B3F78700 		and	a5,a5,s0
+  99              		.loc 1 75 11
+ 100 0074 638C0702 		beq	a5,zero,.L8
+  76:../src/misc.c ****         {
+  77:../src/misc.c ****             v_Arm_Stepper_Watchdog();
+ 101              		.loc 1 77 13 is_stmt 1
+ 102 0078 97000000 		call	v_Arm_Stepper_Watchdog
+ 102      E7800000 
+ 103              	.LVL8:
+  78:../src/misc.c ****             v_Set_Stepper_Vel( u32_Step*SLOW ); // Move in neg direction
+ 104              		.loc 1 78 13
+ 105 0080 97070000 		lla	a5,.LANCHOR2
+ 105      93870700 
+ 106 0088 03A50700 		lw	a0,0(a5)
+ 107              	.LVL9:
+ 108              	.L15:
+  79:../src/misc.c **** //            v_Set_Stepper_Vel( u32_Step*FAST );
+  80:../src/misc.c ****         }
+  81:../src/misc.c ****         else if( !SW2_State_Debounced & SW3_State_Debounced )  // Move in pos direction
+  82:../src/misc.c ****         {
+  83:../src/misc.c ****             v_Arm_Stepper_Watchdog();
+  84:../src/misc.c ****             v_Set_Stepper_Vel(-(u32_Step*SLOW) );
+  85:../src/misc.c **** //            v_Set_Stepper_Vel(-(u32_Step*FAST) );
+  86:../src/misc.c ****         }
+  87:../src/misc.c ****         else
+  88:../src/misc.c ****             v_Set_Stepper_Vel(0 );
+  89:../src/misc.c ****     }
+  90:../src/misc.c **** }
+ 109              		.loc 1 90 1 is_stmt 0
+ 110 008c 03248100 		lw	s0,8(sp)
+ 111              		.cfi_remember_state
+ 112              		.cfi_restore 8
+ 113 0090 8320C100 		lw	ra,12(sp)
+ 114              		.cfi_restore 1
+ 115 0094 83244100 		lw	s1,4(sp)
+ 116              		.cfi_restore 9
+ 117              	.LVL10:
+ 118 0098 13010101 		addi	sp,sp,16
+ 119              		.cfi_def_cfa_offset 0
+  88:../src/misc.c ****     }
+ 120              		.loc 1 88 13
+ 121 009c 17030000 		tail	v_Set_Stepper_Vel
+ 121      67000300 
+ 122              	.LVL11:
+ 123              	.L6:
+ 124              		.cfi_restore_state
+  73:../src/misc.c **** 
+ 125              		.loc 1 73 11 is_stmt 1
+ 126 00a4 13050000 		li	a0,0
+ 127              	.LVL12:
+ 128 00a8 6FF0DFFB 		j	.L14
+ 129              	.L8:
+  81:../src/misc.c ****         {
+ 130              		.loc 1 81 14
+  81:../src/misc.c ****         {
+ 131              		.loc 1 81 18 is_stmt 0
+ 132 00ac 13341400 		seqz	s0,s0
+ 133              	.LVL13:
+  81:../src/misc.c ****         {
+ 134              		.loc 1 81 39
+ 135 00b0 33749400 		and	s0,s0,s1
+  88:../src/misc.c ****     }
+ 136              		.loc 1 88 13
+ 137 00b4 13050000 		li	a0,0
+  81:../src/misc.c ****         {
+ 138              		.loc 1 81 16
+ 139 00b8 E30A04FC 		beq	s0,zero,.L15
+  83:../src/misc.c ****             v_Set_Stepper_Vel(-(u32_Step*SLOW) );
+ 140              		.loc 1 83 13 is_stmt 1
+ 141 00bc 97000000 		call	v_Arm_Stepper_Watchdog
+ 141      E7800000 
+ 142              	.LVL14:
+  84:../src/misc.c **** //            v_Set_Stepper_Vel(-(u32_Step*FAST) );
+ 143              		.loc 1 84 13
+  84:../src/misc.c **** //            v_Set_Stepper_Vel(-(u32_Step*FAST) );
+ 144              		.loc 1 84 41 is_stmt 0
+ 145 00c4 97070000 		lla	a5,.LANCHOR2
+ 145      93870700 
+  84:../src/misc.c **** //            v_Set_Stepper_Vel(-(u32_Step*FAST) );
+ 146              		.loc 1 84 13
+ 147 00cc 03A50700 		lw	a0,0(a5)
+ 148 00d0 3305A040 		neg	a0,a0
+ 149 00d4 6FF09FFB 		j	.L15
+ 150              	.LVL15:
+ 151              	.L3:
+ 152              		.loc 1 90 1
+ 153 00d8 8320C100 		lw	ra,12(sp)
+ 154              		.cfi_restore 1
+ 155 00dc 03248100 		lw	s0,8(sp)
+ 156              		.cfi_restore 8
+ 157              	.LVL16:
+ 158 00e0 83244100 		lw	s1,4(sp)
+ 159              		.cfi_restore 9
+ 160              	.LVL17:
+ 161 00e4 13010101 		addi	sp,sp,16
+ 162              		.cfi_def_cfa_offset 0
+ 163 00e8 67800000 		jr	ra
+ 164              		.cfi_endproc
+ 165              	.LFE2:
+ 167              		.section	.text.vApplicationStackOverflowHook,"ax",@progbits
+ 168              		.align	2
+ 169              		.globl	vApplicationStackOverflowHook
+ 171              	vApplicationStackOverflowHook:
+ 172              	.LFB3:
+  91:../src/misc.c **** 
+  92:../src/misc.c **** void vApplicationStackOverflowHook( TaskHandle_t xTask,  char * pcTaskName )
+  93:../src/misc.c **** {
+ 173              		.loc 1 93 1 is_stmt 1
+ 174              		.cfi_startproc
+ 175              	.LVL18:
+  94:../src/misc.c **** }
+ 176              		.loc 1 94 1
+ 177 0000 67800000 		ret
+ 178              		.cfi_endproc
+ 179              	.LFE3:
+ 181              		.section	.text.memcpy,"ax",@progbits
+ 182              		.align	2
+ 183              		.globl	memcpy
+ 185              	memcpy:
+ 186              	.LFB4:
+  95:../src/misc.c **** 
+  96:../src/misc.c **** #pragma GCC diagnostic push
+  97:../src/misc.c **** #pragma GCC diagnostic ignored "-Wbuiltin-declaration-mismatch"
+  98:../src/misc.c **** 
+  99:../src/misc.c **** /**
+ 100:../src/misc.c ****  * @fn void memcpy(void*, void*, size_t)
+ 101:../src/misc.c ****  * @brief memcpy to avoid needing libgcc
+ 102:../src/misc.c ****  *
+ 103:../src/misc.c ****  * @param dest
+ 104:../src/misc.c ****  * @param from
+ 105:../src/misc.c ****  * @param n_bytes
+ 106:../src/misc.c ****  */
+ 107:../src/misc.c **** void memcpy( void *dest, void *from, size_t  n_bytes)
+ 108:../src/misc.c **** {
+ 187              		.loc 1 108 1
+ 188              		.cfi_startproc
+ 189              	.LVL19:
+ 109:../src/misc.c ****    size_t n;
+ 190              		.loc 1 109 4
+ 110:../src/misc.c ****    char *p_dest = (char *)dest;
+ 191              		.loc 1 110 4
+ 111:../src/misc.c ****    char *p_from = (char *)from;
+ 192              		.loc 1 111 4
+ 112:../src/misc.c **** 
+ 113:../src/misc.c ****    for( n = 0; n < n_bytes; n++ )
+ 193              		.loc 1 113 4
+ 194              		.loc 1 113 11 is_stmt 0
+ 195 0000 93070000 		li	a5,0
+ 196              	.LVL20:
+ 197              	.L18:
+ 198              		.loc 1 113 4 discriminator 1
+ 199 0004 6394C700 		bne	a5,a2,.L19
+ 114:../src/misc.c ****        *p_dest++ = *p_from++;
+ 115:../src/misc.c **** }
+ 200              		.loc 1 115 1
+ 201 0008 67800000 		ret
+ 202              	.L19:
+ 114:../src/misc.c ****        *p_dest++ = *p_from++;
+ 203              		.loc 1 114 8 is_stmt 1 discriminator 3
+ 204              	.LVL21:
+ 114:../src/misc.c ****        *p_dest++ = *p_from++;
+ 205              		.loc 1 114 20 is_stmt 0 discriminator 3
+ 206 000c 3387F500 		add	a4,a1,a5
+ 207 0010 83060700 		lb	a3,0(a4)
+ 114:../src/misc.c ****        *p_dest++ = *p_from++;
+ 208              		.loc 1 114 18 discriminator 3
+ 209 0014 3307F500 		add	a4,a0,a5
+ 113:../src/misc.c ****        *p_dest++ = *p_from++;
+ 210              		.loc 1 113 30 discriminator 3
+ 211 0018 93871700 		addi	a5,a5,1
+ 212              	.LVL22:
+ 114:../src/misc.c ****        *p_dest++ = *p_from++;
+ 213              		.loc 1 114 18 discriminator 3
+ 214 001c 2300D700 		sb	a3,0(a4)
+ 215 0020 6FF05FFE 		j	.L18
+ 216              		.cfi_endproc
+ 217              	.LFE4:
+ 219              		.section	.text.memset,"ax",@progbits
+ 220              		.align	2
+ 221              		.globl	memset
+ 223              	memset:
+ 224              	.LFB5:
+ 116:../src/misc.c **** 
+ 117:../src/misc.c **** void memset(void *s, int c, size_t n_bytes)
+ 118:../src/misc.c **** {
+ 225              		.loc 1 118 1 is_stmt 1
+ 226              		.cfi_startproc
+ 227              	.LVL23:
+ 119:../src/misc.c ****   size_t n;
+ 228              		.loc 1 119 3
+ 120:../src/misc.c ****   char *p_dest = (char *)s;
+ 229              		.loc 1 120 3
+ 121:../src/misc.c **** 
+ 122:../src/misc.c ****   for( n = 0; n < n_bytes; n++ )
+ 230              		.loc 1 122 3
+ 231 0000 3306C500 		add	a2,a0,a2
+ 232              	.LVL24:
+ 233              	.L21:
+ 234              		.loc 1 122 3 is_stmt 0 discriminator 1
+ 235 0004 6314C500 		bne	a0,a2,.L22
+ 123:../src/misc.c ****       *p_dest++ = (char)c;
+ 124:../src/misc.c **** }
+ 236              		.loc 1 124 1
+ 237 0008 67800000 		ret
+ 238              	.L22:
+ 123:../src/misc.c ****       *p_dest++ = (char)c;
+ 239              		.loc 1 123 7 is_stmt 1 discriminator 3
+ 123:../src/misc.c ****       *p_dest++ = (char)c;
+ 240              		.loc 1 123 14 is_stmt 0 discriminator 3
+ 241 000c 13051500 		addi	a0,a0,1
+ 242              	.LVL25:
+ 123:../src/misc.c ****       *p_dest++ = (char)c;
+ 243              		.loc 1 123 19 discriminator 3
+ 244 0010 A30FB5FE 		sb	a1,-1(a0)
+ 245 0014 6FF01FFF 		j	.L21
+ 246              		.cfi_endproc
+ 247              	.LFE5:
+ 249              		.section	.text.freertos_risc_v_application_interrupt_handler,"ax",@progbits
+ 250              		.align	2
+ 251              		.globl	freertos_risc_v_application_interrupt_handler
+ 253              	freertos_risc_v_application_interrupt_handler:
+ 254              	.LFB6:
+ 125:../src/misc.c **** 
+ 126:../src/misc.c **** 
+ 127:../src/misc.c **** #pragma GCC_diagnostic pop
+ 128:../src/misc.c **** 
+ 129:../src/misc.c **** #ifndef VECTORED_IRQ_FREERTOS
+ 130:../src/misc.c **** void v_UART16550_Handler(void);
+ 131:../src/misc.c **** 
+ 132:../src/misc.c **** void freertos_risc_v_application_interrupt_handler( unsigned long cause )
+ 133:../src/misc.c **** {
+ 134:../src/misc.c ****     uint8_t u8_Cause = cause & 0xff;
+ 135:../src/misc.c **** 
+ 136:../src/misc.c ****     if ( u8_Cause == 0xb )
+ 137:../src/misc.c ****     {
+ 138:../src/misc.c ****         v_UART16550_Handler();
+ 139:../src/misc.c ****     }
+ 140:../src/misc.c **** }
+ 141:../src/misc.c **** 
+ 142:../src/misc.c **** void v_IRQ_Setup(void)
+ 143:../src/misc.c **** {
+ 144:../src/misc.c **** #define MIE_MEIE ( 1UL << 11 )
+ 145:../src/misc.c **** __asm volatile ( "csrs mie, %0" ::"r" ( MIE_MEIE ) );
+ 146:../src/misc.c **** }
+ 147:../src/misc.c **** 
+ 148:../src/misc.c **** #else /* VECTORED_IRQ_FREERTOS */
+ 149:../src/misc.c **** 
+ 150:../src/misc.c **** /*
+ 151:../src/misc.c ****  * Strong override of the weak FreeRTOS default in portASM.S (which just spins).
+ 152:../src/misc.c ****  * It runs from freertos_risc_v_trap_handler AFTER the full interrupt context has
+ 153:../src/misc.c ****  * been saved to the TCB and sp switched to xISRStackTop, so it is safe to call
+ 154:../src/misc.c ****  * the FreeRTOS ...FromISR() APIs here. The MSYS external vectors EI3/EI4/EI5 in
+ 155:../src/misc.c ****  * miv_rv32_entry.S are routed here and dispatched by mcause. Running these on the
+ 156:../src/misc.c ****  * dedicated ISR stack (instead of the interrupted task's stack via the old
+ 157:../src/misc.c ****  * irq_save_regs path) is required to avoid stack corruption / firmware crash.
+ 158:../src/misc.c ****  */
+ 159:../src/misc.c **** extern void v_Camera_Trigger_IRQ_Handler(void);
+ 160:../src/misc.c **** extern void v_UDP_Transfer_Handler(void);
+ 161:../src/misc.c **** extern void v_PPS_IRQ_Handler(void);
+ 162:../src/misc.c **** 
+ 163:../src/misc.c **** void freertos_risc_v_application_interrupt_handler( unsigned long cause )
+ 164:../src/misc.c **** {
+ 255              		.loc 1 164 1 is_stmt 1
+ 256              		.cfi_startproc
+ 257              	.LVL26:
+ 165:../src/misc.c ****     switch ( cause & 0xff )
+ 258              		.loc 1 165 5
+ 259              		.loc 1 165 20 is_stmt 0
+ 260 0000 1375F50F 		andi	a0,a0,0xff
+ 261              	.LVL27:
+ 262              		.loc 1 165 5
+ 263 0004 9307C001 		li	a5,28
+ 264 0008 630EF500 		beq	a0,a5,.L24
+ 265 000c 9307D001 		li	a5,29
+ 266 0010 630EF500 		beq	a0,a5,.L25
+ 267 0014 9307B001 		li	a5,27
+ 268 0018 631EF500 		bne	a0,a5,.L23
+ 166:../src/misc.c ****     {
+ 167:../src/misc.c ****         case 27:    /* MSYS EI3 - camera trigger */
+ 168:../src/misc.c ****             v_Camera_Trigger_IRQ_Handler();
+ 269              		.loc 1 168 13 is_stmt 1
+ 270 001c 17030000 		tail	v_Camera_Trigger_IRQ_Handler
+ 270      67000300 
+ 271              	.LVL28:
+ 272              	.L24:
+ 169:../src/misc.c ****             break;
+ 170:../src/misc.c **** 
+ 171:../src/misc.c ****         case 28:    /* MSYS EI4 - PPS */
+ 172:../src/misc.c ****             v_PPS_IRQ_Handler();
+ 273              		.loc 1 172 13
+ 274 0024 17030000 		tail	v_PPS_IRQ_Handler
+ 274      67000300 
+ 275              	.LVL29:
+ 276              	.L25:
+ 173:../src/misc.c ****             break;
+ 174:../src/misc.c **** 
+ 175:../src/misc.c ****         case 29:    /* MSYS EI5 - UDP transfer complete */
+ 176:../src/misc.c ****             v_UDP_Transfer_Handler();
+ 277              		.loc 1 176 13
+ 278 002c 17030000 		tail	v_UDP_Transfer_Handler
+ 278      67000300 
+ 279              	.LVL30:
+ 280              	.L23:
+ 177:../src/misc.c ****             break;
+ 178:../src/misc.c **** 
+ 179:../src/misc.c ****         default:
+ 180:../src/misc.c ****             break;
+ 181:../src/misc.c ****     }
+ 182:../src/misc.c **** }
+ 281              		.loc 1 182 1 is_stmt 0
+ 282 0034 67800000 		ret
+ 283              		.cfi_endproc
+ 284              	.LFE6:
+ 286              		.section	.text.__assert_func,"ax",@progbits
+ 287              		.align	2
+ 288              		.globl	__assert_func
+ 290              	__assert_func:
+ 291              	.LFB7:
+ 183:../src/misc.c **** 
+ 184:../src/misc.c **** #endif
+ 185:../src/misc.c **** 
+ 186:../src/misc.c **** /**
+ 187:../src/misc.c ****  * @fn void __assert_func(const char*, int, const char*, const char*)
+ 188:../src/misc.c ****  * @brief Function called when assert() fails
+ 189:../src/misc.c ****  * Keeps file, line number and function where assertion failed. To assist in debugging.
+ 190:../src/misc.c ****  * @param filename
+ 191:../src/misc.c ****  * @param line_number
+ 192:../src/misc.c ****  * @param function
+ 193:../src/misc.c ****  * @param test
+ 194:../src/misc.c ****  */
+ 195:../src/misc.c **** void _ATTRIBUTE ((__noreturn__)) __assert_func (const char *filename, int line_number, const char *
+ 196:../src/misc.c **** {
+ 292              		.loc 1 196 1 is_stmt 1
+ 293              		.cfi_startproc
+ 294              	.LVL31:
+ 197:../src/misc.c ****     __asm volatile( "ebreak" );
+ 295              		.loc 1 197 5
+ 296              	 #APP
+ 297              	# 197 "../src/misc.c" 1
+ 198              	    for( ;; );
+ 298              		ebreak
+ 299              	# 0 "" 2
+ 300              	 #NO_APP
+ 301              	.L28:
+ 302              		.loc 1 198 5 discriminator 1
+ 303              		.loc 1 198 14 discriminator 1
+ 304 0004 6F000000 		j	.L28
+ 305              		.cfi_endproc
+ 306              	.LFE7:
+ 308              		.section	.text.v_Enable_Logging,"ax",@progbits
+ 309              		.align	2
+ 310              		.globl	v_Enable_Logging
+ 312              	v_Enable_Logging:
+ 313              	.LFB8:
+ 199:../src/misc.c **** }
+ 200:../src/misc.c **** 
+ 201:../src/misc.c **** void v_Enable_Logging(uint8_t u8_Enable )
+ 202:../src/misc.c **** {
+ 314              		.loc 1 202 1
+ 315              		.cfi_startproc
+ 316              	.LVL32:
+ 203:../src/misc.c ****     b_Logging_Enabled = u8_Enable != 0 ? 1 : 0;
+ 317              		.loc 1 203 5
+ 318              		.loc 1 203 44 is_stmt 0
+ 319 0000 3335A000 		snez	a0,a0
+ 320              	.LVL33:
+ 321              		.loc 1 203 23
+ 322 0004 97070000 		sb	a0,.LANCHOR3,a5
+ 322      2380A700 
+ 204:../src/misc.c **** }
+ 323              		.loc 1 204 1
+ 324 000c 67800000 		ret
+ 325              		.cfi_endproc
+ 326              	.LFE8:
+ 328              		.section	.text.v_Toggle_Logging,"ax",@progbits
+ 329              		.align	2
+ 330              		.globl	v_Toggle_Logging
+ 332              	v_Toggle_Logging:
+ 333              	.LFB9:
+ 205:../src/misc.c **** 
+ 206:../src/misc.c **** void v_Toggle_Logging(void)
+ 207:../src/misc.c **** {
+ 334              		.loc 1 207 1 is_stmt 1
+ 335              		.cfi_startproc
+ 208:../src/misc.c ****     b_Logging_Enabled = !b_Logging_Enabled;
+ 336              		.loc 1 208 5
+ 337              		.loc 1 208 25 is_stmt 0
+ 338 0000 97070000 		lbu	a5,.LANCHOR3
+ 338      83C70700 
+ 339 0008 93B71700 		seqz	a5,a5
+ 340              		.loc 1 208 23
+ 341 000c 17070000 		sb	a5,.LANCHOR3,a4
+ 341      2300F700 
+ 209:../src/misc.c **** }
+ 342              		.loc 1 209 1
+ 343 0014 67800000 		ret
+ 344              		.cfi_endproc
+ 345              	.LFE9:
+ 347              		.section	.text.b_Is_Logging_Enabled,"ax",@progbits
+ 348              		.align	2
+ 349              		.globl	b_Is_Logging_Enabled
+ 351              	b_Is_Logging_Enabled:
+ 352              	.LFB10:
+ 210:../src/misc.c **** 
+ 211:../src/misc.c **** uint8_t b_Is_Logging_Enabled(void)
+ 212:../src/misc.c **** {
+ 353              		.loc 1 212 1 is_stmt 1
+ 354              		.cfi_startproc
+ 213:../src/misc.c ****     return b_Logging_Enabled;
+ 355              		.loc 1 213 5
+ 214:../src/misc.c **** }
+ 356              		.loc 1 214 1 is_stmt 0
+ 357 0000 17050000 		lbu	a0,.LANCHOR3
+ 357      03450500 
+ 358 0008 67800000 		ret
+ 359              		.cfi_endproc
+ 360              	.LFE10:
+ 362              		.globl	u32_Step
+ 363              		.section	.sbss.b_Logging_Enabled,"aw",@nobits
+ 364              		.set	.LANCHOR3,. + 0
+ 367              	b_Logging_Enabled:
+ 368 0000 00       		.zero	1
+ 369              		.section	.sbss.u8_SW2_Counter,"aw",@nobits
+ 370              		.set	.LANCHOR0,. + 0
+ 373              	u8_SW2_Counter:
+ 374 0000 00       		.zero	1
+ 375              		.section	.sbss.u8_SW3_Counter,"aw",@nobits
+ 376              		.set	.LANCHOR1,. + 0
+ 379              	u8_SW3_Counter:
+ 380 0000 00       		.zero	1
+ 381              		.section	.sdata.u32_Step,"aw"
+ 382              		.align	2
+ 383              		.set	.LANCHOR2,. + 0
+ 386              	u32_Step:
+ 387 0000 32000000 		.word	50
+ 388              		.text
+ 389              	.Letext0:
+ 390              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 391              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 392              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 393              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/task.h"
+ 394              		.file 6 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 395              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/debug_switches.h"
+ 396              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+ 397              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 398              		.file 10 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/assert.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 misc.c
+<<<<<<< HEAD
+     /tmp/ccwWFI2n.s:13     .text.vApplicationMallocFailedHook:0000000000000000 vApplicationMallocFailedHook
+     /tmp/ccwWFI2n.s:17     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:18     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:19     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:20     .text.vApplicationMallocFailedHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:27     .text.vApplicationIdleHook:0000000000000000 vApplicationIdleHook
+     /tmp/ccwWFI2n.s:29     .text.vApplicationIdleHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:31     .text.vApplicationIdleHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:38     .text.vApplicationTickHook:0000000000000000 vApplicationTickHook
+     /tmp/ccwWFI2n.s:41     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:42     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:43     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:44     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:45     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:46     .text.vApplicationTickHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:48     .text.vApplicationTickHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:51     .text.vApplicationTickHook:0000000000000010 .L0 
+     /tmp/ccwWFI2n.s:54     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:55     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:56     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:58     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:63     .text.vApplicationTickHook:0000000000000028 .L0 
+     /tmp/ccwWFI2n.s:64     .text.vApplicationTickHook:0000000000000028 .L0 
+     /tmp/ccwWFI2n.s:71     .text.vApplicationTickHook:0000000000000040 .L0 
+     /tmp/ccwWFI2n.s:72     .text.vApplicationTickHook:0000000000000040 .L0 
+     /tmp/ccwWFI2n.s:75     .text.vApplicationTickHook:0000000000000048 .L0 
+     /tmp/ccwWFI2n.s:77     .text.vApplicationTickHook:000000000000004c .L0 
+     /tmp/ccwWFI2n.s:78     .text.vApplicationTickHook:000000000000004c .L0 
+     /tmp/ccwWFI2n.s:81     .text.vApplicationTickHook:0000000000000054 .L0 
+     /tmp/ccwWFI2n.s:82     .text.vApplicationTickHook:0000000000000054 .L0 
+     /tmp/ccwWFI2n.s:85     .text.vApplicationTickHook:000000000000005c .L0 
+     /tmp/ccwWFI2n.s:88     .text.vApplicationTickHook:0000000000000060 .L0 
+     /tmp/ccwWFI2n.s:92     .text.vApplicationTickHook:0000000000000064 .L0 
+     /tmp/ccwWFI2n.s:95     .text.vApplicationTickHook:000000000000006c .L0 
+     /tmp/ccwWFI2n.s:96     .text.vApplicationTickHook:000000000000006c .L0 
+     /tmp/ccwWFI2n.s:98     .text.vApplicationTickHook:0000000000000070 .L0 
+     /tmp/ccwWFI2n.s:100    .text.vApplicationTickHook:0000000000000074 .L0 
+     /tmp/ccwWFI2n.s:102    .text.vApplicationTickHook:0000000000000078 .L0 
+     /tmp/ccwWFI2n.s:105    .text.vApplicationTickHook:0000000000000080 .L0 
+     /tmp/ccwWFI2n.s:110    .text.vApplicationTickHook:000000000000008c .L0 
+     /tmp/ccwWFI2n.s:111    .text.vApplicationTickHook:0000000000000090 .L0 
+     /tmp/ccwWFI2n.s:112    .text.vApplicationTickHook:0000000000000090 .L0 
+     /tmp/ccwWFI2n.s:114    .text.vApplicationTickHook:0000000000000094 .L0 
+     /tmp/ccwWFI2n.s:116    .text.vApplicationTickHook:0000000000000098 .L0 
+     /tmp/ccwWFI2n.s:119    .text.vApplicationTickHook:000000000000009c .L0 
+     /tmp/ccwWFI2n.s:121    .text.vApplicationTickHook:000000000000009c .L0 
+     /tmp/ccwWFI2n.s:124    .text.vApplicationTickHook:00000000000000a4 .L0 
+     /tmp/ccwWFI2n.s:126    .text.vApplicationTickHook:00000000000000a4 .L0 
+     /tmp/ccwWFI2n.s:131    .text.vApplicationTickHook:00000000000000ac .L0 
+     /tmp/ccwWFI2n.s:132    .text.vApplicationTickHook:00000000000000ac .L0 
+     /tmp/ccwWFI2n.s:135    .text.vApplicationTickHook:00000000000000b0 .L0 
+     /tmp/ccwWFI2n.s:137    .text.vApplicationTickHook:00000000000000b4 .L0 
+     /tmp/ccwWFI2n.s:139    .text.vApplicationTickHook:00000000000000b8 .L0 
+     /tmp/ccwWFI2n.s:141    .text.vApplicationTickHook:00000000000000bc .L0 
+     /tmp/ccwWFI2n.s:144    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/ccwWFI2n.s:145    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/ccwWFI2n.s:147    .text.vApplicationTickHook:00000000000000cc .L0 
+     /tmp/ccwWFI2n.s:153    .text.vApplicationTickHook:00000000000000d8 .L0 
+     /tmp/ccwWFI2n.s:154    .text.vApplicationTickHook:00000000000000dc .L0 
+     /tmp/ccwWFI2n.s:156    .text.vApplicationTickHook:00000000000000e0 .L0 
+     /tmp/ccwWFI2n.s:159    .text.vApplicationTickHook:00000000000000e4 .L0 
+     /tmp/ccwWFI2n.s:162    .text.vApplicationTickHook:00000000000000e8 .L0 
+     /tmp/ccwWFI2n.s:164    .text.vApplicationTickHook:00000000000000ec .L0 
+     /tmp/ccwWFI2n.s:171    .text.vApplicationStackOverflowHook:0000000000000000 vApplicationStackOverflowHook
+     /tmp/ccwWFI2n.s:174    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:176    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:177    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:178    .text.vApplicationStackOverflowHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:185    .text.memcpy:0000000000000000 memcpy
+     /tmp/ccwWFI2n.s:188    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:190    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:191    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:192    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:193    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:194    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:195    .text.memcpy:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:199    .text.memcpy:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:201    .text.memcpy:0000000000000008 .L0 
+     /tmp/ccwWFI2n.s:205    .text.memcpy:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:206    .text.memcpy:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:209    .text.memcpy:0000000000000014 .L0 
+     /tmp/ccwWFI2n.s:211    .text.memcpy:0000000000000018 .L0 
+     /tmp/ccwWFI2n.s:214    .text.memcpy:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:216    .text.memcpy:0000000000000024 .L0 
+     /tmp/ccwWFI2n.s:223    .text.memset:0000000000000000 memset
+     /tmp/ccwWFI2n.s:226    .text.memset:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:228    .text.memset:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:229    .text.memset:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:230    .text.memset:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:231    .text.memset:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:235    .text.memset:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:237    .text.memset:0000000000000008 .L0 
+     /tmp/ccwWFI2n.s:240    .text.memset:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:241    .text.memset:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:244    .text.memset:0000000000000010 .L0 
+     /tmp/ccwWFI2n.s:246    .text.memset:0000000000000018 .L0 
+     /tmp/ccwWFI2n.s:253    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 freertos_risc_v_application_interrupt_handler
+     /tmp/ccwWFI2n.s:256    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:258    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:259    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:260    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:263    .text.freertos_risc_v_application_interrupt_handler:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:270    .text.freertos_risc_v_application_interrupt_handler:000000000000001c .L0 
+     /tmp/ccwWFI2n.s:274    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .L0 
+     /tmp/ccwWFI2n.s:278    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .L0 
+     /tmp/ccwWFI2n.s:282    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .L0 
+     /tmp/ccwWFI2n.s:283    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .L0 
+     /tmp/ccwWFI2n.s:290    .text.__assert_func:0000000000000000 __assert_func
+     /tmp/ccwWFI2n.s:293    .text.__assert_func:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:295    .text.__assert_func:0000000000000000 .L0 
+       ../src/misc.c:197    .text.__assert_func:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:303    .text.__assert_func:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:304    .text.__assert_func:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:305    .text.__assert_func:0000000000000008 .L0 
+     /tmp/ccwWFI2n.s:312    .text.v_Enable_Logging:0000000000000000 v_Enable_Logging
+     /tmp/ccwWFI2n.s:315    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:317    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:318    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:319    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:322    .text.v_Enable_Logging:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:324    .text.v_Enable_Logging:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:325    .text.v_Enable_Logging:0000000000000010 .L0 
+     /tmp/ccwWFI2n.s:332    .text.v_Toggle_Logging:0000000000000000 v_Toggle_Logging
+     /tmp/ccwWFI2n.s:335    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:336    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:337    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:338    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:341    .text.v_Toggle_Logging:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:343    .text.v_Toggle_Logging:0000000000000014 .L0 
+     /tmp/ccwWFI2n.s:344    .text.v_Toggle_Logging:0000000000000018 .L0 
+     /tmp/ccwWFI2n.s:351    .text.b_Is_Logging_Enabled:0000000000000000 b_Is_Logging_Enabled
+     /tmp/ccwWFI2n.s:354    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:355    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:356    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:357    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:359    .text.b_Is_Logging_Enabled:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:386    .sdata.u32_Step:0000000000000000 u32_Step
+     /tmp/ccwWFI2n.s:364    .sbss.b_Logging_Enabled:0000000000000000 .LANCHOR3
+     /tmp/ccwWFI2n.s:367    .sbss.b_Logging_Enabled:0000000000000000 b_Logging_Enabled
+     /tmp/ccwWFI2n.s:370    .sbss.u8_SW2_Counter:0000000000000000 .LANCHOR0
+     /tmp/ccwWFI2n.s:373    .sbss.u8_SW2_Counter:0000000000000000 u8_SW2_Counter
+     /tmp/ccwWFI2n.s:376    .sbss.u8_SW3_Counter:0000000000000000 .LANCHOR1
+     /tmp/ccwWFI2n.s:379    .sbss.u8_SW3_Counter:0000000000000000 u8_SW3_Counter
+     /tmp/ccwWFI2n.s:383    .sdata.u32_Step:0000000000000000 .LANCHOR2
+     /tmp/ccwWFI2n.s:23     .text.vApplicationMallocFailedHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:167    .text.vApplicationTickHook:00000000000000ec .L0 
+     /tmp/ccwWFI2n.s:181    .text.vApplicationStackOverflowHook:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:219    .text.memcpy:0000000000000024 .L0 
+     /tmp/ccwWFI2n.s:249    .text.memset:0000000000000018 .L0 
+     /tmp/ccwWFI2n.s:286    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .L0 
+     /tmp/ccwWFI2n.s:308    .text.__assert_func:0000000000000008 .L0 
+     /tmp/ccwWFI2n.s:328    .text.v_Enable_Logging:0000000000000010 .L0 
+     /tmp/ccwWFI2n.s:347    .text.v_Toggle_Logging:0000000000000018 .L0 
+     /tmp/ccwWFI2n.s:363    .text.b_Is_Logging_Enabled:000000000000000c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:49     .text.vApplicationTickHook:0000000000000008 .L0 
+     /tmp/ccwWFI2n.s:65     .text.vApplicationTickHook:000000000000002c .L0 
+     /tmp/ccwWFI2n.s:105    .text.vApplicationTickHook:0000000000000080 .L0 
+     /tmp/ccwWFI2n.s:145    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/ccwWFI2n.s:151    .text.vApplicationTickHook:00000000000000d8 .L3
+     /tmp/ccwWFI2n.s:86     .text.vApplicationTickHook:0000000000000060 .L5
+     /tmp/ccwWFI2n.s:123    .text.vApplicationTickHook:00000000000000a4 .L6
+     /tmp/ccwWFI2n.s:129    .text.vApplicationTickHook:00000000000000ac .L8
+     /tmp/ccwWFI2n.s:90     .text.vApplicationTickHook:0000000000000064 .L14
+     /tmp/ccwWFI2n.s:108    .text.vApplicationTickHook:000000000000008c .L15
+     /tmp/ccwWFI2n.s:202    .text.memcpy:000000000000000c .L19
+     /tmp/ccwWFI2n.s:197    .text.memcpy:0000000000000004 .L18
+     /tmp/ccwWFI2n.s:238    .text.memset:000000000000000c .L22
+     /tmp/ccwWFI2n.s:233    .text.memset:0000000000000004 .L21
+     /tmp/ccwWFI2n.s:272    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .L24
+     /tmp/ccwWFI2n.s:276    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .L25
+     /tmp/ccwWFI2n.s:280    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .L23
+     /tmp/ccwWFI2n.s:301    .text.__assert_func:0000000000000004 .L28
+     /tmp/ccwWFI2n.s:322    .text.v_Enable_Logging:0000000000000004 .L0 
+     /tmp/ccwWFI2n.s:338    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:341    .text.v_Toggle_Logging:000000000000000c .L0 
+     /tmp/ccwWFI2n.s:357    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/ccwWFI2n.s:954    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccwWFI2n.s:1717   .debug_str:00000000000000ec .LASF53
+     /tmp/ccwWFI2n.s:1783   .debug_str:00000000000003b6 .LASF54
+     /tmp/ccwWFI2n.s:1759   .debug_str:00000000000002e2 .LASF55
+     /tmp/ccwWFI2n.s:1653   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccwWFI2n.s:1677   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccwWFI2n.s:1749   .debug_str:0000000000000297 .LASF0
+     /tmp/ccwWFI2n.s:1735   .debug_str:000000000000022c .LASF5
+     /tmp/ccwWFI2n.s:1745   .debug_str:000000000000027f .LASF1
+     /tmp/ccwWFI2n.s:1685   .debug_str:0000000000000022 .LASF2
+     /tmp/ccwWFI2n.s:1761   .debug_str:0000000000000319 .LASF3
+     /tmp/ccwWFI2n.s:1731   .debug_str:000000000000020f .LASF4
+     /tmp/ccwWFI2n.s:1697   .debug_str:000000000000006f .LASF6
+     /tmp/ccwWFI2n.s:1773   .debug_str:0000000000000365 .LASF7
+     /tmp/ccwWFI2n.s:1727   .debug_str:00000000000001fa .LASF8
+     /tmp/ccwWFI2n.s:1751   .debug_str:00000000000002a3 .LASF9
+     /tmp/ccwWFI2n.s:1755   .debug_str:00000000000002c3 .LASF10
+     /tmp/ccwWFI2n.s:1779   .debug_str:0000000000000391 .LASF11
+     /tmp/ccwWFI2n.s:1753   .debug_str:00000000000002ba .LASF12
+     /tmp/ccwWFI2n.s:1687   .debug_str:000000000000002c .LASF13
+     /tmp/ccwWFI2n.s:1743   .debug_str:0000000000000273 .LASF14
+     /tmp/ccwWFI2n.s:1771   .debug_str:0000000000000354 .LASF20
+     /tmp/ccwWFI2n.s:1689   .debug_str:0000000000000033 .LASF15
+     /tmp/ccwWFI2n.s:1733   .debug_str:0000000000000218 .LASF56
+     /tmp/ccwWFI2n.s:1763   .debug_str:000000000000032c .LASF16
+     /tmp/ccwWFI2n.s:1757   .debug_str:00000000000002d0 .LASF17
+     /tmp/ccwWFI2n.s:1711   .debug_str:00000000000000b6 .LASF18
+     /tmp/ccwWFI2n.s:1721   .debug_str:00000000000001c7 .LASF19
+     /tmp/ccwWFI2n.s:1681   .debug_str:0000000000000014 .LASF21
+     /tmp/ccwWFI2n.s:1795   .debug_str:0000000000000442 .LASF57
+     /tmp/ccwWFI2n.s:352    .text.b_Is_Logging_Enabled:0000000000000000 .LFB10
+     /tmp/ccwWFI2n.s:360    .text.b_Is_Logging_Enabled:000000000000000c .LFE10
+     /tmp/ccwWFI2n.s:1797   .debug_str:0000000000000457 .LASF58
+     /tmp/ccwWFI2n.s:333    .text.v_Toggle_Logging:0000000000000000 .LFB9
+     /tmp/ccwWFI2n.s:345    .text.v_Toggle_Logging:0000000000000018 .LFE9
+     /tmp/ccwWFI2n.s:1699   .debug_str:000000000000007a .LASF27
+     /tmp/ccwWFI2n.s:313    .text.v_Enable_Logging:0000000000000000 .LFB8
+     /tmp/ccwWFI2n.s:326    .text.v_Enable_Logging:0000000000000010 .LFE8
+     /tmp/ccwWFI2n.s:1707   .debug_str:00000000000000a5 .LASF22
+     /tmp/ccwWFI2n.s:1445   .debug_loc:0000000000000000 .LLST9
+     /tmp/ccwWFI2n.s:1789   .debug_str:0000000000000409 .LASF59
+     /tmp/ccwWFI2n.s:291    .text.__assert_func:0000000000000000 .LFB7
+     /tmp/ccwWFI2n.s:306    .text.__assert_func:0000000000000008 .LFE7
+     /tmp/ccwWFI2n.s:1695   .debug_str:0000000000000066 .LASF23
+     /tmp/ccwWFI2n.s:1705   .debug_str:0000000000000099 .LASF24
+     /tmp/ccwWFI2n.s:1765   .debug_str:0000000000000331 .LASF25
+     /tmp/ccwWFI2n.s:1767   .debug_str:000000000000033a .LASF26
+     /tmp/ccwWFI2n.s:1785   .debug_str:00000000000003c4 .LASF28
+     /tmp/ccwWFI2n.s:254    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .LFB6
+     /tmp/ccwWFI2n.s:284    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .LFE6
+     /tmp/ccwWFI2n.s:1741   .debug_str:000000000000026d .LASF29
+     /tmp/ccwWFI2n.s:1459   .debug_loc:0000000000000021 .LLST8
+     /tmp/ccwWFI2n.s:271    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .LVL28
+     /tmp/ccwWFI2n.s:275    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .LVL29
+     /tmp/ccwWFI2n.s:279    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .LVL30
+     /tmp/ccwWFI2n.s:1729   .debug_str:0000000000000208 .LASF30
+     /tmp/ccwWFI2n.s:224    .text.memset:0000000000000000 .LFB5
+     /tmp/ccwWFI2n.s:247    .text.memset:0000000000000018 .LFE5
+     /tmp/ccwWFI2n.s:1473   .debug_loc:0000000000000042 .LLST6
+     /tmp/ccwWFI2n.s:1775   .debug_str:0000000000000377 .LASF31
+     /tmp/ccwWFI2n.s:1487   .debug_loc:0000000000000063 .LLST7
+     /tmp/ccwWFI2n.s:1709   .debug_str:00000000000000af .LASF32
+     /tmp/ccwWFI2n.s:1703   .debug_str:0000000000000092 .LASF33
+     /tmp/ccwWFI2n.s:186    .text.memcpy:0000000000000000 .LFB4
+     /tmp/ccwWFI2n.s:217    .text.memcpy:0000000000000024 .LFE4
+     /tmp/ccwWFI2n.s:1683   .debug_str:000000000000001d .LASF34
+     /tmp/ccwWFI2n.s:1799   .debug_str:0000000000000468 .LASF35
+     /tmp/ccwWFI2n.s:1501   .debug_loc:0000000000000084 .LLST3
+     /tmp/ccwWFI2n.s:1513   .debug_loc:00000000000000a3 .LLST4
+     /tmp/ccwWFI2n.s:1701   .debug_str:000000000000008b .LASF36
+     /tmp/ccwWFI2n.s:1549   .debug_loc:00000000000000e8 .LLST5
+     /tmp/ccwWFI2n.s:1723   .debug_str:00000000000001d6 .LASF37
+     /tmp/ccwWFI2n.s:172    .text.vApplicationStackOverflowHook:0000000000000000 .LFB3
+     /tmp/ccwWFI2n.s:179    .text.vApplicationStackOverflowHook:0000000000000004 .LFE3
+     /tmp/ccwWFI2n.s:1725   .debug_str:00000000000001f4 .LASF38
+     /tmp/ccwWFI2n.s:1801   .debug_str:000000000000046d .LASF39
+     /tmp/ccwWFI2n.s:1719   .debug_str:00000000000001b2 .LASF40
+     /tmp/ccwWFI2n.s:39     .text.vApplicationTickHook:0000000000000000 .LFB2
+     /tmp/ccwWFI2n.s:165    .text.vApplicationTickHook:00000000000000ec .LFE2
+     /tmp/ccwWFI2n.s:1713   .debug_str:00000000000000c5 .LASF41
+     /tmp/ccwWFI2n.s:1585   .debug_loc:000000000000012d .LLST0
+     /tmp/ccwWFI2n.s:1679   .debug_str:0000000000000000 .LASF42
+     /tmp/ccwWFI2n.s:1596   .debug_loc:000000000000014b .LLST1
+     /tmp/ccwWFI2n.s:1791   .debug_str:0000000000000417 .LASF43
+     /tmp/ccwWFI2n.s:1611   .debug_loc:0000000000000174 .LLST2
+     /tmp/ccwWFI2n.s:59     .text.vApplicationTickHook:0000000000000024 .LVL0
+     /tmp/ccwWFI2n.s:67     .text.vApplicationTickHook:000000000000003c .LVL2
+     /tmp/ccwWFI2n.s:73     .text.vApplicationTickHook:0000000000000048 .LVL4
+     /tmp/ccwWFI2n.s:79     .text.vApplicationTickHook:0000000000000054 .LVL5
+     /tmp/ccwWFI2n.s:93     .text.vApplicationTickHook:000000000000006c .LVL7
+     /tmp/ccwWFI2n.s:103    .text.vApplicationTickHook:0000000000000080 .LVL8
+     /tmp/ccwWFI2n.s:122    .text.vApplicationTickHook:00000000000000a4 .LVL11
+     /tmp/ccwWFI2n.s:142    .text.vApplicationTickHook:00000000000000c4 .LVL14
+     /tmp/ccwWFI2n.s:1691   .debug_str:0000000000000040 .LASF60
+     /tmp/ccwWFI2n.s:1739   .debug_str:0000000000000250 .LASF61
+     /tmp/ccwWFI2n.s:14     .text.vApplicationMallocFailedHook:0000000000000000 .LFB0
+     /tmp/ccwWFI2n.s:21     .text.vApplicationMallocFailedHook:0000000000000004 .LFE0
+     /tmp/ccwWFI2n.s:1781   .debug_str:0000000000000399 .LASF44
+     /tmp/ccwWFI2n.s:1715   .debug_str:00000000000000da .LASF45
+     /tmp/ccwWFI2n.s:1793   .debug_str:000000000000042b .LASF46
+     /tmp/ccwWFI2n.s:1737   .debug_str:0000000000000236 .LASF47
+     /tmp/ccwWFI2n.s:1747   .debug_str:000000000000028d .LASF48
+     /tmp/ccwWFI2n.s:1769   .debug_str:000000000000033f .LASF49
+     /tmp/ccwWFI2n.s:1693   .debug_str:0000000000000055 .LASF50
+     /tmp/ccwWFI2n.s:1787   .debug_str:00000000000003f2 .LASF51
+     /tmp/ccwWFI2n.s:1777   .debug_str:000000000000037f .LASF52
+     /tmp/ccwWFI2n.s:316    .text.v_Enable_Logging:0000000000000000 .LVL32
+     /tmp/ccwWFI2n.s:320    .text.v_Enable_Logging:0000000000000004 .LVL33
+     /tmp/ccwWFI2n.s:257    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .LVL26
+     /tmp/ccwWFI2n.s:261    .text.freertos_risc_v_application_interrupt_handler:0000000000000004 .LVL27
+     /tmp/ccwWFI2n.s:227    .text.memset:0000000000000000 .LVL23
+     /tmp/ccwWFI2n.s:232    .text.memset:0000000000000004 .LVL24
+     /tmp/ccwWFI2n.s:189    .text.memcpy:0000000000000000 .LVL19
+     /tmp/ccwWFI2n.s:196    .text.memcpy:0000000000000004 .LVL20
+     /tmp/ccwWFI2n.s:204    .text.memcpy:000000000000000c .LVL21
+     /tmp/ccwWFI2n.s:212    .text.memcpy:000000000000001c .LVL22
+     /tmp/ccwWFI2n.s:89     .text.vApplicationTickHook:0000000000000064 .LVL6
+     /tmp/ccwWFI2n.s:127    .text.vApplicationTickHook:00000000000000a8 .LVL12
+     /tmp/ccwWFI2n.s:61     .text.vApplicationTickHook:0000000000000028 .LVL1
+     /tmp/ccwWFI2n.s:107    .text.vApplicationTickHook:000000000000008c .LVL9
+     /tmp/ccwWFI2n.s:133    .text.vApplicationTickHook:00000000000000b0 .LVL13
+     /tmp/ccwWFI2n.s:150    .text.vApplicationTickHook:00000000000000d8 .LVL15
+     /tmp/ccwWFI2n.s:157    .text.vApplicationTickHook:00000000000000e0 .LVL16
+     /tmp/ccwWFI2n.s:69     .text.vApplicationTickHook:0000000000000040 .LVL3
+     /tmp/ccwWFI2n.s:117    .text.vApplicationTickHook:0000000000000098 .LVL10
+     /tmp/ccwWFI2n.s:160    .text.vApplicationTickHook:00000000000000e4 .LVL17
+     /tmp/ccwWFI2n.s:400    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cctTh1Vo.s:13     .text.vApplicationMallocFailedHook:0000000000000000 vApplicationMallocFailedHook
+     /tmp/cctTh1Vo.s:17     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:18     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:19     .text.vApplicationMallocFailedHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:20     .text.vApplicationMallocFailedHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:27     .text.vApplicationIdleHook:0000000000000000 vApplicationIdleHook
+     /tmp/cctTh1Vo.s:29     .text.vApplicationIdleHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:31     .text.vApplicationIdleHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:38     .text.vApplicationTickHook:0000000000000000 vApplicationTickHook
+     /tmp/cctTh1Vo.s:41     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:42     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:43     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:44     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:45     .text.vApplicationTickHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:46     .text.vApplicationTickHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:48     .text.vApplicationTickHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:51     .text.vApplicationTickHook:0000000000000010 .L0 
+     /tmp/cctTh1Vo.s:54     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:55     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:56     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:58     .text.vApplicationTickHook:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:63     .text.vApplicationTickHook:0000000000000028 .L0 
+     /tmp/cctTh1Vo.s:64     .text.vApplicationTickHook:0000000000000028 .L0 
+     /tmp/cctTh1Vo.s:71     .text.vApplicationTickHook:0000000000000040 .L0 
+     /tmp/cctTh1Vo.s:72     .text.vApplicationTickHook:0000000000000040 .L0 
+     /tmp/cctTh1Vo.s:75     .text.vApplicationTickHook:0000000000000048 .L0 
+     /tmp/cctTh1Vo.s:77     .text.vApplicationTickHook:000000000000004c .L0 
+     /tmp/cctTh1Vo.s:78     .text.vApplicationTickHook:000000000000004c .L0 
+     /tmp/cctTh1Vo.s:81     .text.vApplicationTickHook:0000000000000054 .L0 
+     /tmp/cctTh1Vo.s:82     .text.vApplicationTickHook:0000000000000054 .L0 
+     /tmp/cctTh1Vo.s:85     .text.vApplicationTickHook:000000000000005c .L0 
+     /tmp/cctTh1Vo.s:88     .text.vApplicationTickHook:0000000000000060 .L0 
+     /tmp/cctTh1Vo.s:92     .text.vApplicationTickHook:0000000000000064 .L0 
+     /tmp/cctTh1Vo.s:95     .text.vApplicationTickHook:000000000000006c .L0 
+     /tmp/cctTh1Vo.s:96     .text.vApplicationTickHook:000000000000006c .L0 
+     /tmp/cctTh1Vo.s:98     .text.vApplicationTickHook:0000000000000070 .L0 
+     /tmp/cctTh1Vo.s:100    .text.vApplicationTickHook:0000000000000074 .L0 
+     /tmp/cctTh1Vo.s:102    .text.vApplicationTickHook:0000000000000078 .L0 
+     /tmp/cctTh1Vo.s:105    .text.vApplicationTickHook:0000000000000080 .L0 
+     /tmp/cctTh1Vo.s:110    .text.vApplicationTickHook:000000000000008c .L0 
+     /tmp/cctTh1Vo.s:111    .text.vApplicationTickHook:0000000000000090 .L0 
+     /tmp/cctTh1Vo.s:112    .text.vApplicationTickHook:0000000000000090 .L0 
+     /tmp/cctTh1Vo.s:114    .text.vApplicationTickHook:0000000000000094 .L0 
+     /tmp/cctTh1Vo.s:116    .text.vApplicationTickHook:0000000000000098 .L0 
+     /tmp/cctTh1Vo.s:119    .text.vApplicationTickHook:000000000000009c .L0 
+     /tmp/cctTh1Vo.s:121    .text.vApplicationTickHook:000000000000009c .L0 
+     /tmp/cctTh1Vo.s:124    .text.vApplicationTickHook:00000000000000a4 .L0 
+     /tmp/cctTh1Vo.s:126    .text.vApplicationTickHook:00000000000000a4 .L0 
+     /tmp/cctTh1Vo.s:131    .text.vApplicationTickHook:00000000000000ac .L0 
+     /tmp/cctTh1Vo.s:132    .text.vApplicationTickHook:00000000000000ac .L0 
+     /tmp/cctTh1Vo.s:135    .text.vApplicationTickHook:00000000000000b0 .L0 
+     /tmp/cctTh1Vo.s:137    .text.vApplicationTickHook:00000000000000b4 .L0 
+     /tmp/cctTh1Vo.s:139    .text.vApplicationTickHook:00000000000000b8 .L0 
+     /tmp/cctTh1Vo.s:141    .text.vApplicationTickHook:00000000000000bc .L0 
+     /tmp/cctTh1Vo.s:144    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/cctTh1Vo.s:145    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/cctTh1Vo.s:147    .text.vApplicationTickHook:00000000000000cc .L0 
+     /tmp/cctTh1Vo.s:153    .text.vApplicationTickHook:00000000000000d8 .L0 
+     /tmp/cctTh1Vo.s:154    .text.vApplicationTickHook:00000000000000dc .L0 
+     /tmp/cctTh1Vo.s:156    .text.vApplicationTickHook:00000000000000e0 .L0 
+     /tmp/cctTh1Vo.s:159    .text.vApplicationTickHook:00000000000000e4 .L0 
+     /tmp/cctTh1Vo.s:162    .text.vApplicationTickHook:00000000000000e8 .L0 
+     /tmp/cctTh1Vo.s:164    .text.vApplicationTickHook:00000000000000ec .L0 
+     /tmp/cctTh1Vo.s:171    .text.vApplicationStackOverflowHook:0000000000000000 vApplicationStackOverflowHook
+     /tmp/cctTh1Vo.s:174    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:176    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:177    .text.vApplicationStackOverflowHook:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:178    .text.vApplicationStackOverflowHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:185    .text.memcpy:0000000000000000 memcpy
+     /tmp/cctTh1Vo.s:188    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:190    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:191    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:192    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:193    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:194    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:195    .text.memcpy:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:199    .text.memcpy:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:201    .text.memcpy:0000000000000008 .L0 
+     /tmp/cctTh1Vo.s:205    .text.memcpy:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:206    .text.memcpy:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:209    .text.memcpy:0000000000000014 .L0 
+     /tmp/cctTh1Vo.s:211    .text.memcpy:0000000000000018 .L0 
+     /tmp/cctTh1Vo.s:214    .text.memcpy:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:216    .text.memcpy:0000000000000024 .L0 
+     /tmp/cctTh1Vo.s:223    .text.memset:0000000000000000 memset
+     /tmp/cctTh1Vo.s:226    .text.memset:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:228    .text.memset:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:229    .text.memset:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:230    .text.memset:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:231    .text.memset:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:235    .text.memset:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:237    .text.memset:0000000000000008 .L0 
+     /tmp/cctTh1Vo.s:240    .text.memset:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:241    .text.memset:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:244    .text.memset:0000000000000010 .L0 
+     /tmp/cctTh1Vo.s:246    .text.memset:0000000000000018 .L0 
+     /tmp/cctTh1Vo.s:253    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 freertos_risc_v_application_interrupt_handler
+     /tmp/cctTh1Vo.s:256    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:258    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:259    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:260    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:263    .text.freertos_risc_v_application_interrupt_handler:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:270    .text.freertos_risc_v_application_interrupt_handler:000000000000001c .L0 
+     /tmp/cctTh1Vo.s:274    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .L0 
+     /tmp/cctTh1Vo.s:278    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .L0 
+     /tmp/cctTh1Vo.s:282    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .L0 
+     /tmp/cctTh1Vo.s:283    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .L0 
+     /tmp/cctTh1Vo.s:290    .text.__assert_func:0000000000000000 __assert_func
+     /tmp/cctTh1Vo.s:293    .text.__assert_func:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:295    .text.__assert_func:0000000000000000 .L0 
+       ../src/misc.c:197    .text.__assert_func:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:303    .text.__assert_func:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:304    .text.__assert_func:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:305    .text.__assert_func:0000000000000008 .L0 
+     /tmp/cctTh1Vo.s:312    .text.v_Enable_Logging:0000000000000000 v_Enable_Logging
+     /tmp/cctTh1Vo.s:315    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:317    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:318    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:319    .text.v_Enable_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:322    .text.v_Enable_Logging:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:324    .text.v_Enable_Logging:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:325    .text.v_Enable_Logging:0000000000000010 .L0 
+     /tmp/cctTh1Vo.s:332    .text.v_Toggle_Logging:0000000000000000 v_Toggle_Logging
+     /tmp/cctTh1Vo.s:335    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:336    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:337    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:338    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:341    .text.v_Toggle_Logging:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:343    .text.v_Toggle_Logging:0000000000000014 .L0 
+     /tmp/cctTh1Vo.s:344    .text.v_Toggle_Logging:0000000000000018 .L0 
+     /tmp/cctTh1Vo.s:351    .text.b_Is_Logging_Enabled:0000000000000000 b_Is_Logging_Enabled
+     /tmp/cctTh1Vo.s:354    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:355    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:356    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:357    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:359    .text.b_Is_Logging_Enabled:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:386    .sdata.u32_Step:0000000000000000 u32_Step
+     /tmp/cctTh1Vo.s:364    .sbss.b_Logging_Enabled:0000000000000000 .LANCHOR3
+     /tmp/cctTh1Vo.s:367    .sbss.b_Logging_Enabled:0000000000000000 b_Logging_Enabled
+     /tmp/cctTh1Vo.s:370    .sbss.u8_SW2_Counter:0000000000000000 .LANCHOR0
+     /tmp/cctTh1Vo.s:373    .sbss.u8_SW2_Counter:0000000000000000 u8_SW2_Counter
+     /tmp/cctTh1Vo.s:376    .sbss.u8_SW3_Counter:0000000000000000 .LANCHOR1
+     /tmp/cctTh1Vo.s:379    .sbss.u8_SW3_Counter:0000000000000000 u8_SW3_Counter
+     /tmp/cctTh1Vo.s:383    .sdata.u32_Step:0000000000000000 .LANCHOR2
+     /tmp/cctTh1Vo.s:23     .text.vApplicationMallocFailedHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:167    .text.vApplicationTickHook:00000000000000ec .L0 
+     /tmp/cctTh1Vo.s:181    .text.vApplicationStackOverflowHook:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:219    .text.memcpy:0000000000000024 .L0 
+     /tmp/cctTh1Vo.s:249    .text.memset:0000000000000018 .L0 
+     /tmp/cctTh1Vo.s:286    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .L0 
+     /tmp/cctTh1Vo.s:308    .text.__assert_func:0000000000000008 .L0 
+     /tmp/cctTh1Vo.s:328    .text.v_Enable_Logging:0000000000000010 .L0 
+     /tmp/cctTh1Vo.s:347    .text.v_Toggle_Logging:0000000000000018 .L0 
+     /tmp/cctTh1Vo.s:363    .text.b_Is_Logging_Enabled:000000000000000c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:49     .text.vApplicationTickHook:0000000000000008 .L0 
+     /tmp/cctTh1Vo.s:65     .text.vApplicationTickHook:000000000000002c .L0 
+     /tmp/cctTh1Vo.s:105    .text.vApplicationTickHook:0000000000000080 .L0 
+     /tmp/cctTh1Vo.s:145    .text.vApplicationTickHook:00000000000000c4 .L0 
+     /tmp/cctTh1Vo.s:151    .text.vApplicationTickHook:00000000000000d8 .L3
+     /tmp/cctTh1Vo.s:86     .text.vApplicationTickHook:0000000000000060 .L5
+     /tmp/cctTh1Vo.s:123    .text.vApplicationTickHook:00000000000000a4 .L6
+     /tmp/cctTh1Vo.s:129    .text.vApplicationTickHook:00000000000000ac .L8
+     /tmp/cctTh1Vo.s:90     .text.vApplicationTickHook:0000000000000064 .L14
+     /tmp/cctTh1Vo.s:108    .text.vApplicationTickHook:000000000000008c .L15
+     /tmp/cctTh1Vo.s:202    .text.memcpy:000000000000000c .L19
+     /tmp/cctTh1Vo.s:197    .text.memcpy:0000000000000004 .L18
+     /tmp/cctTh1Vo.s:238    .text.memset:000000000000000c .L22
+     /tmp/cctTh1Vo.s:233    .text.memset:0000000000000004 .L21
+     /tmp/cctTh1Vo.s:272    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .L24
+     /tmp/cctTh1Vo.s:276    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .L25
+     /tmp/cctTh1Vo.s:280    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .L23
+     /tmp/cctTh1Vo.s:301    .text.__assert_func:0000000000000004 .L28
+     /tmp/cctTh1Vo.s:322    .text.v_Enable_Logging:0000000000000004 .L0 
+     /tmp/cctTh1Vo.s:338    .text.v_Toggle_Logging:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:341    .text.v_Toggle_Logging:000000000000000c .L0 
+     /tmp/cctTh1Vo.s:357    .text.b_Is_Logging_Enabled:0000000000000000 .L0 
+     /tmp/cctTh1Vo.s:954    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cctTh1Vo.s:1717   .debug_str:00000000000000ec .LASF53
+     /tmp/cctTh1Vo.s:1783   .debug_str:00000000000003b6 .LASF54
+     /tmp/cctTh1Vo.s:1759   .debug_str:00000000000002e2 .LASF55
+     /tmp/cctTh1Vo.s:1653   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cctTh1Vo.s:1677   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cctTh1Vo.s:1749   .debug_str:0000000000000297 .LASF0
+     /tmp/cctTh1Vo.s:1735   .debug_str:000000000000022c .LASF5
+     /tmp/cctTh1Vo.s:1745   .debug_str:000000000000027f .LASF1
+     /tmp/cctTh1Vo.s:1685   .debug_str:0000000000000022 .LASF2
+     /tmp/cctTh1Vo.s:1761   .debug_str:0000000000000319 .LASF3
+     /tmp/cctTh1Vo.s:1731   .debug_str:000000000000020f .LASF4
+     /tmp/cctTh1Vo.s:1697   .debug_str:000000000000006f .LASF6
+     /tmp/cctTh1Vo.s:1773   .debug_str:0000000000000365 .LASF7
+     /tmp/cctTh1Vo.s:1727   .debug_str:00000000000001fa .LASF8
+     /tmp/cctTh1Vo.s:1751   .debug_str:00000000000002a3 .LASF9
+     /tmp/cctTh1Vo.s:1755   .debug_str:00000000000002c3 .LASF10
+     /tmp/cctTh1Vo.s:1779   .debug_str:0000000000000391 .LASF11
+     /tmp/cctTh1Vo.s:1753   .debug_str:00000000000002ba .LASF12
+     /tmp/cctTh1Vo.s:1687   .debug_str:000000000000002c .LASF13
+     /tmp/cctTh1Vo.s:1743   .debug_str:0000000000000273 .LASF14
+     /tmp/cctTh1Vo.s:1771   .debug_str:0000000000000354 .LASF20
+     /tmp/cctTh1Vo.s:1689   .debug_str:0000000000000033 .LASF15
+     /tmp/cctTh1Vo.s:1733   .debug_str:0000000000000218 .LASF56
+     /tmp/cctTh1Vo.s:1763   .debug_str:000000000000032c .LASF16
+     /tmp/cctTh1Vo.s:1757   .debug_str:00000000000002d0 .LASF17
+     /tmp/cctTh1Vo.s:1711   .debug_str:00000000000000b6 .LASF18
+     /tmp/cctTh1Vo.s:1721   .debug_str:00000000000001c7 .LASF19
+     /tmp/cctTh1Vo.s:1681   .debug_str:0000000000000014 .LASF21
+     /tmp/cctTh1Vo.s:1795   .debug_str:0000000000000442 .LASF57
+     /tmp/cctTh1Vo.s:352    .text.b_Is_Logging_Enabled:0000000000000000 .LFB10
+     /tmp/cctTh1Vo.s:360    .text.b_Is_Logging_Enabled:000000000000000c .LFE10
+     /tmp/cctTh1Vo.s:1797   .debug_str:0000000000000457 .LASF58
+     /tmp/cctTh1Vo.s:333    .text.v_Toggle_Logging:0000000000000000 .LFB9
+     /tmp/cctTh1Vo.s:345    .text.v_Toggle_Logging:0000000000000018 .LFE9
+     /tmp/cctTh1Vo.s:1699   .debug_str:000000000000007a .LASF27
+     /tmp/cctTh1Vo.s:313    .text.v_Enable_Logging:0000000000000000 .LFB8
+     /tmp/cctTh1Vo.s:326    .text.v_Enable_Logging:0000000000000010 .LFE8
+     /tmp/cctTh1Vo.s:1707   .debug_str:00000000000000a5 .LASF22
+     /tmp/cctTh1Vo.s:1445   .debug_loc:0000000000000000 .LLST9
+     /tmp/cctTh1Vo.s:1789   .debug_str:0000000000000409 .LASF59
+     /tmp/cctTh1Vo.s:291    .text.__assert_func:0000000000000000 .LFB7
+     /tmp/cctTh1Vo.s:306    .text.__assert_func:0000000000000008 .LFE7
+     /tmp/cctTh1Vo.s:1695   .debug_str:0000000000000066 .LASF23
+     /tmp/cctTh1Vo.s:1705   .debug_str:0000000000000099 .LASF24
+     /tmp/cctTh1Vo.s:1765   .debug_str:0000000000000331 .LASF25
+     /tmp/cctTh1Vo.s:1767   .debug_str:000000000000033a .LASF26
+     /tmp/cctTh1Vo.s:1785   .debug_str:00000000000003c4 .LASF28
+     /tmp/cctTh1Vo.s:254    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .LFB6
+     /tmp/cctTh1Vo.s:284    .text.freertos_risc_v_application_interrupt_handler:0000000000000038 .LFE6
+     /tmp/cctTh1Vo.s:1741   .debug_str:000000000000026d .LASF29
+     /tmp/cctTh1Vo.s:1459   .debug_loc:0000000000000021 .LLST8
+     /tmp/cctTh1Vo.s:271    .text.freertos_risc_v_application_interrupt_handler:0000000000000024 .LVL28
+     /tmp/cctTh1Vo.s:275    .text.freertos_risc_v_application_interrupt_handler:000000000000002c .LVL29
+     /tmp/cctTh1Vo.s:279    .text.freertos_risc_v_application_interrupt_handler:0000000000000034 .LVL30
+     /tmp/cctTh1Vo.s:1729   .debug_str:0000000000000208 .LASF30
+     /tmp/cctTh1Vo.s:224    .text.memset:0000000000000000 .LFB5
+     /tmp/cctTh1Vo.s:247    .text.memset:0000000000000018 .LFE5
+     /tmp/cctTh1Vo.s:1473   .debug_loc:0000000000000042 .LLST6
+     /tmp/cctTh1Vo.s:1775   .debug_str:0000000000000377 .LASF31
+     /tmp/cctTh1Vo.s:1487   .debug_loc:0000000000000063 .LLST7
+     /tmp/cctTh1Vo.s:1709   .debug_str:00000000000000af .LASF32
+     /tmp/cctTh1Vo.s:1703   .debug_str:0000000000000092 .LASF33
+     /tmp/cctTh1Vo.s:186    .text.memcpy:0000000000000000 .LFB4
+     /tmp/cctTh1Vo.s:217    .text.memcpy:0000000000000024 .LFE4
+     /tmp/cctTh1Vo.s:1683   .debug_str:000000000000001d .LASF34
+     /tmp/cctTh1Vo.s:1799   .debug_str:0000000000000468 .LASF35
+     /tmp/cctTh1Vo.s:1501   .debug_loc:0000000000000084 .LLST3
+     /tmp/cctTh1Vo.s:1513   .debug_loc:00000000000000a3 .LLST4
+     /tmp/cctTh1Vo.s:1701   .debug_str:000000000000008b .LASF36
+     /tmp/cctTh1Vo.s:1549   .debug_loc:00000000000000e8 .LLST5
+     /tmp/cctTh1Vo.s:1723   .debug_str:00000000000001d6 .LASF37
+     /tmp/cctTh1Vo.s:172    .text.vApplicationStackOverflowHook:0000000000000000 .LFB3
+     /tmp/cctTh1Vo.s:179    .text.vApplicationStackOverflowHook:0000000000000004 .LFE3
+     /tmp/cctTh1Vo.s:1725   .debug_str:00000000000001f4 .LASF38
+     /tmp/cctTh1Vo.s:1801   .debug_str:000000000000046d .LASF39
+     /tmp/cctTh1Vo.s:1719   .debug_str:00000000000001b2 .LASF40
+     /tmp/cctTh1Vo.s:39     .text.vApplicationTickHook:0000000000000000 .LFB2
+     /tmp/cctTh1Vo.s:165    .text.vApplicationTickHook:00000000000000ec .LFE2
+     /tmp/cctTh1Vo.s:1713   .debug_str:00000000000000c5 .LASF41
+     /tmp/cctTh1Vo.s:1585   .debug_loc:000000000000012d .LLST0
+     /tmp/cctTh1Vo.s:1679   .debug_str:0000000000000000 .LASF42
+     /tmp/cctTh1Vo.s:1596   .debug_loc:000000000000014b .LLST1
+     /tmp/cctTh1Vo.s:1791   .debug_str:0000000000000417 .LASF43
+     /tmp/cctTh1Vo.s:1611   .debug_loc:0000000000000174 .LLST2
+     /tmp/cctTh1Vo.s:59     .text.vApplicationTickHook:0000000000000024 .LVL0
+     /tmp/cctTh1Vo.s:67     .text.vApplicationTickHook:000000000000003c .LVL2
+     /tmp/cctTh1Vo.s:73     .text.vApplicationTickHook:0000000000000048 .LVL4
+     /tmp/cctTh1Vo.s:79     .text.vApplicationTickHook:0000000000000054 .LVL5
+     /tmp/cctTh1Vo.s:93     .text.vApplicationTickHook:000000000000006c .LVL7
+     /tmp/cctTh1Vo.s:103    .text.vApplicationTickHook:0000000000000080 .LVL8
+     /tmp/cctTh1Vo.s:122    .text.vApplicationTickHook:00000000000000a4 .LVL11
+     /tmp/cctTh1Vo.s:142    .text.vApplicationTickHook:00000000000000c4 .LVL14
+     /tmp/cctTh1Vo.s:1691   .debug_str:0000000000000040 .LASF60
+     /tmp/cctTh1Vo.s:1739   .debug_str:0000000000000250 .LASF61
+     /tmp/cctTh1Vo.s:14     .text.vApplicationMallocFailedHook:0000000000000000 .LFB0
+     /tmp/cctTh1Vo.s:21     .text.vApplicationMallocFailedHook:0000000000000004 .LFE0
+     /tmp/cctTh1Vo.s:1781   .debug_str:0000000000000399 .LASF44
+     /tmp/cctTh1Vo.s:1715   .debug_str:00000000000000da .LASF45
+     /tmp/cctTh1Vo.s:1793   .debug_str:000000000000042b .LASF46
+     /tmp/cctTh1Vo.s:1737   .debug_str:0000000000000236 .LASF47
+     /tmp/cctTh1Vo.s:1747   .debug_str:000000000000028d .LASF48
+     /tmp/cctTh1Vo.s:1769   .debug_str:000000000000033f .LASF49
+     /tmp/cctTh1Vo.s:1693   .debug_str:0000000000000055 .LASF50
+     /tmp/cctTh1Vo.s:1787   .debug_str:00000000000003f2 .LASF51
+     /tmp/cctTh1Vo.s:1777   .debug_str:000000000000037f .LASF52
+     /tmp/cctTh1Vo.s:316    .text.v_Enable_Logging:0000000000000000 .LVL32
+     /tmp/cctTh1Vo.s:320    .text.v_Enable_Logging:0000000000000004 .LVL33
+     /tmp/cctTh1Vo.s:257    .text.freertos_risc_v_application_interrupt_handler:0000000000000000 .LVL26
+     /tmp/cctTh1Vo.s:261    .text.freertos_risc_v_application_interrupt_handler:0000000000000004 .LVL27
+     /tmp/cctTh1Vo.s:227    .text.memset:0000000000000000 .LVL23
+     /tmp/cctTh1Vo.s:232    .text.memset:0000000000000004 .LVL24
+     /tmp/cctTh1Vo.s:189    .text.memcpy:0000000000000000 .LVL19
+     /tmp/cctTh1Vo.s:196    .text.memcpy:0000000000000004 .LVL20
+     /tmp/cctTh1Vo.s:204    .text.memcpy:000000000000000c .LVL21
+     /tmp/cctTh1Vo.s:212    .text.memcpy:000000000000001c .LVL22
+     /tmp/cctTh1Vo.s:89     .text.vApplicationTickHook:0000000000000064 .LVL6
+     /tmp/cctTh1Vo.s:127    .text.vApplicationTickHook:00000000000000a8 .LVL12
+     /tmp/cctTh1Vo.s:61     .text.vApplicationTickHook:0000000000000028 .LVL1
+     /tmp/cctTh1Vo.s:107    .text.vApplicationTickHook:000000000000008c .LVL9
+     /tmp/cctTh1Vo.s:133    .text.vApplicationTickHook:00000000000000b0 .LVL13
+     /tmp/cctTh1Vo.s:150    .text.vApplicationTickHook:00000000000000d8 .LVL15
+     /tmp/cctTh1Vo.s:157    .text.vApplicationTickHook:00000000000000e0 .LVL16
+     /tmp/cctTh1Vo.s:69     .text.vApplicationTickHook:0000000000000040 .LVL3
+     /tmp/cctTh1Vo.s:117    .text.vApplicationTickHook:0000000000000098 .LVL10
+     /tmp/cctTh1Vo.s:160    .text.vApplicationTickHook:00000000000000e4 .LVL17
+     /tmp/cctTh1Vo.s:400    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+u8_Update_Switch_Debounce
+b_Is_Idle
+u32_Get_Switch_State
+v_Enable_Stepper
+v_Arm_Stepper_Watchdog
+v_Set_Stepper_Vel
+v_Camera_Trigger_IRQ_Handler
+v_PPS_IRQ_Handler
+v_UDP_Transfer_Handler

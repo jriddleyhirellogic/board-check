@@ -1,0 +1,335 @@
+\doxysection{camera.\+c}
+\hypertarget{camera_8c_source}{}\label{camera_8c_source}\index{src/camera.c@{src/camera.c}}
+\doxymbox{\hyperlink{camera_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00002}00002\ \textcolor{comment}{\ *\ camera.c}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Dec\ 4,\ 2025}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}lvdt.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}timer.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{core__spi_8h}{core\_spi.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{eth_8h}{eth.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}register.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{udp__core__reg_8h}{udp\_core\_reg.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{dma__write__reg_8h}{dma\_write\_reg.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{udp__dmactrl__reg_8h}{udp\_dmactrl\_reg.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}util.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00025}00025\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{cam__trig_8h}{cam\_trig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{cam__mux_8h}{cam\_mux.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}camera.h"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00028}00028\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{gpio__pin__def_8h}{gpio\_pin\_def.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00029}00029\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{reg__address_8h}{reg\_address.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00033}\doxymbox{\hyperlink{camera_8c_a75e7721e73d856e867305eb81dc784d9}{00033}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a75e7721e73d856e867305eb81dc784d9}{v\_Init\_Camera}}(\ Camera\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}\ )}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00034}00034\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00035}00035\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_ctrl,\ \ \ \doxymbox{\hyperlink{mem__map_8h_a9456be99f90d055b24ccde7bef136354}{GPO\_HK\_PWR\_BASE\_ADDR}},\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00036}00036\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_stat,\ \ \ \doxymbox{\hyperlink{mem__map_8h_af237b3059a023f3588ed79ebad8bb80d}{GPI\_HK\_STATUS\_BASE\_ADDR}},\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00037}00037\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth1\_ctrl,\ \ \doxymbox{\hyperlink{mem__map_8h_aa1113713f24375f7891834cd55d4e1ad}{ETH1\_CTRL\_BASE\_ADDR}},\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00038}00038\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth1\_stat,\ \ \doxymbox{\hyperlink{mem__map_8h_a32b9bdddc356d0951708db943b9d11bf}{ETH1\_STAT\_BASE\_ADDR}},\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00039}00039\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth2\_ctrl,\ \ \doxymbox{\hyperlink{mem__map_8h_a7619a6ca43f006fe24785cab440d13d2}{ETH2\_CTRL\_BASE\_ADDR}},\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00040}00040\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth2\_stat,\ \ \doxymbox{\hyperlink{mem__map_8h_aa3e97af7d20a402920fa3b207570a169}{ETH2\_STAT\_BASE\_ADDR}},\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00041}00041\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_ctrl,\ \ \ \doxymbox{\hyperlink{mem__map_8h_a9c8188530fca18f16fa7ad720ececeb3}{GPO\_CAM\_BASE\_ADDR}},\ \ \ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00042}00042\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_stat,\ \ \ \doxymbox{\hyperlink{mem__map_8h_a66c8e8b9a85c3caf5e610acab21d3090}{GPI\_CAM\_BASE\_ADDR}},\ \ \ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00043}00043\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_mux,\ \ \ \ \doxymbox{\hyperlink{mem__map_8h_a3071672bcb89eca88bbf057e75d490aa}{CAM\_MUX\_CTRL\_BASE\_ADDR}},\ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00044}00044\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>dbg\_ctrl,\ \ \ \doxymbox{\hyperlink{mem__map_8h_ae14749410e6d09c17578bad843d68cb8}{DBG\_GPIO\_BASE\_ADDR}},\ \ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ SPI}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00047}00047\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8c_a604018a460cbb77c22a486df479792a0}{SPI\_init}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>spi,\ \doxymbox{\hyperlink{mem__map_8h_a2d056590c22877e0db76ff4ac898183f}{SLVSEC\_SPI\_BASE\_ADDR}},\ SPI\_FIFO\_DEPTH\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00048}00048\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8c_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\_configure\_master\_mode}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>spi\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00049}00049\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a99b018e1d163b3be5baf621486c092d2}{v\_Set\_Camera\_SPI\_Instance}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>spi\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00051}00051\ \textcolor{preprocessor}{\#ifdef\ USE\_ETH1}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00052}00052\ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00053}00053\ \ \ \ \ \textcolor{comment}{//\ Eth1\ Phy\ POWER\ ON}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00055}00055\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a1bcc748ddabc48e4ad7508ad0e5ac0b4}{ETH1\_PWR\_EN}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00056}00056\ \ \ \ \ uint32\_t\ eth1\_pwr\_status\ =\ (\doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_stat)\ >>\ 6)\ \&\ 1;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00058}00058\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aa154068cecd7f31446a7a84af44ab1a3}{vTaskDelay}}(10);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00060}00060\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth1\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_aadce1a127b78650f41dbfad830a55d1e}{ETH1\_PHY\_RST\_N}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00061}00061\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth1\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_ab26010d199a9a13371418bf5423e57d9}{ETH1\_CTRL\_COMMA\_MODE}},\ 0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00062}00062\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth1\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a77372fd44c232ea96b685cd09b44ba46}{ETH1\_CTRL\_CLK\_SQUELCH\_IN}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00064}00064\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00066}00066\ \ \ \ \ \textcolor{comment}{//\ @todo\ -\/\ are\ both\ eth1\ and\ eth2\ used\ or\ just\ eth1?}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00067}00067\ \ \ \ \ \textcolor{comment}{//\ Eth2\ Phy\ POWER\ ON}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00069}00069\ \textcolor{preprocessor}{\#if\ USE\_ETH2}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00070}00070\ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00071}00071\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a6b7840bf700dbe36abe67c375f43fd16}{ETH2\_PWR\_EN}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00072}00072\ \ \ \ \ uint32\_t\ eth2\_pwr\_status\ =\ (\doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_stat)\ >>\ 6)\ \&\ 1;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00074}00074\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aa154068cecd7f31446a7a84af44ab1a3}{vTaskDelay}}(10);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00076}00076\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth2\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a18dc17770a20e96d32bac928151387d0}{ETH2\_PHY\_RST\_N}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00077}00077\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth2\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a35460faad09e35a87d4b890d7891be34}{ETH2\_CTRL\_COMMA\_MODE}},\ 0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00078}00078\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth2\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a8bafdddbf05a176054b025cd09d14a0e}{ETH2\_CTRL\_CLK\_SQUELCH\_IN}},\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00080}00080\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00082}00082\ \textcolor{comment}{//\ \ \ \ \ //-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00083}00083\ \textcolor{comment}{//\ \ \ \ \ //\ Eth\ config}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00084}00084\ \textcolor{comment}{//\ \ \ \ \ //-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00086}00086\ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989}{init\_eth1}}(\ \&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>eth\_core\_1\_regs\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00088}00088\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00089}00089\ \ \ \ \ \ \textcolor{comment}{//\ Configure\ UDP\ cores}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00090}00090\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00091}00091\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a873d789e69465192c00c3f0f48533924}{configure\_udp1}}();}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00093}00093\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00094}00094\ \ \ \ \ \ \textcolor{comment}{//\ Configure\ DMA\ Write}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00095}00095\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00096}00096\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_acd250119412bbdf137e91a9f93d4c57c}{configure\_dma\_write}}(\doxymbox{\hyperlink{mem__map_8h_ad0123bf117745a0000a0f8a302dc5e76}{DMA\_WRITE\_DDR4\_8GB\_BASE\_ADDR}},\ HORIZ\_WIDTH\_BYTE);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00097}00097\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_acd250119412bbdf137e91a9f93d4c57c}{configure\_dma\_write}}(\doxymbox{\hyperlink{mem__map_8h_ae7d5a881e058d2185c378e7302b294b9}{DMA\_WRITE\_DDR4\_16GB\_BASE\_ADDR}},\ HORIZ\_WIDTH\_BYTE);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00099}00099\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a0e86868cef208ecab6ca015584592182}{configure\_udp\_dmactrl}}(\doxymbox{\hyperlink{mem__map_8h_a91ae062f521d55e6c952d10a47e00d1c}{UDP\_DMACTRL\_DDR4\_8GB\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LINES\_PER\_FRAME,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HORIZ\_WIDTH\_BYTE,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HORIZ\_WIDTH\_BEAT\_8GB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00104}00104\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_a0e86868cef208ecab6ca015584592182}{configure\_udp\_dmactrl}}(\doxymbox{\hyperlink{mem__map_8h_a7180a4b807599649a940531ad7cf98a4}{UDP\_DMACTRL\_DDR4\_16GB\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LINES\_PER\_FRAME,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HORIZ\_WIDTH\_BYTE,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HORIZ\_WIDTH\_BEAT\_16GB\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00108}00108\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00109}00109\ \ \ \ \ \ \textcolor{comment}{//\ Test\ UDP\ Standard\ Frame}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00110}00110\ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00111}00111\ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ \doxymbox{\hyperlink{mem__map_8h_a6fba55d0134f4e92c4531f269d3ed68a}{UDP\_TX\_BASE\_ADDR}},\ FRAME\_GAP,\ 10);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00112}00112\ \ \ \ \ \ \textcolor{comment}{//\ for\ (int\ i\ =\ 0;\ i\ <\ 10;\ i++)\ \{}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00113}00113\ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ test\_udp\_dbg(UDP\_TX\_BASE\_ADDR,\ 0,\ 1000);}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00114}00114\ \ \ \ \ \ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00116}00116\ \ \ \ \ \ uint32\_t\ frame\_index\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00117}00117\ \ \ \ \ \ \doxymbox{\hyperlink{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284}{set\_read\_mux}}(\ \doxymbox{\hyperlink{mem__map_8h_a6fba55d0134f4e92c4531f269d3ed68a}{UDP\_TX\_BASE\_ADDR}},\ \doxymbox{\hyperlink{udp__core__reg_8h_a288935511bf5142eafa8430392a9fb40}{UDP\_MUX\_SELECT\_DDR4\_8GB}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00118}00118\ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\doxymbox{\hyperlink{mem__map_8h_a91ae062f521d55e6c952d10a47e00d1c}{UDP\_DMACTRL\_DDR4\_8GB\_BASE\_ADDR}},\ CLEAR\_UDP\_DMACTRL,\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00119}00119\ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\doxymbox{\hyperlink{mem__map_8h_a91ae062f521d55e6c952d10a47e00d1c}{UDP\_DMACTRL\_DDR4\_8GB\_BASE\_ADDR}},\ CLEAR\_UDP\_DMACTRL,\ 0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00120}00120\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00122}\doxymbox{\hyperlink{camera_8c_af34b6de374c8caa3634b10f2ba3efab5}{00122}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_af34b6de374c8caa3634b10f2ba3efab5}{v\_Enable\_Camera\_Power}}(\ Camera\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ uint8\_t\ b\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00123}00123\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00124}00124\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a3de9a90859aa10ee43d1f2af7e67a7a1}{CAM\_PWR\_EN}},\ b\_Enable\ !=\ 0\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00125}00125\ \ \ \ \ uint32\_t\ cam\_pwr\_status\ =\ (\doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_stat)\ >>\ 11)\ \&\ 1;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00126}00126\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00127}00127\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aa154068cecd7f31446a7a84af44ab1a3}{vTaskDelay}}(10);\ \textcolor{comment}{//\ @todo\ necessary?}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00129}00129\ \ \ \ \ \ \textcolor{comment}{//Enable\ sensor\ oscillator}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00130}00130\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>pwr\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a6f7cb2eb46e5dbd3b536a623dbf672b2}{CAM\_OSC\_EN}},\ b\_Enable\ !=\ 0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00131}00131\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00133}\doxymbox{\hyperlink{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989}{00133}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a82a6bd37cc0f5ef6460321fa26f01989}{init\_eth1}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}\ *p\_eth\_core\_1\_regs\ )}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00134}00134\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00135}00135\ \ \ \ \ \textcolor{comment}{//\ Initialize\ register\ pointers\ for\ each\ core}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00136}00136\ \ \ \ \ \doxymbox{\hyperlink{eth_8c_a4e3e7f0a830012fd4a008f4aacced5f9}{eth\_core\_init\_regs}}(p\_eth\_core\_1\_regs,\ \doxymbox{\hyperlink{mem__map_8h_ab0e62eac20c8130d520e66b686cf8d17}{ETH1\_MAC\_BASE\_ADDR}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00138}00138\ \ \ \ \ \textcolor{comment}{//\ Initialize\ eth1}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00139}00139\ \ \ \ \ \doxymbox{\hyperlink{eth_8c_a8d121b9ceea235b0d1a9000ccc5b1108}{tse\_init}}(\ p\_eth\_core\_1\_regs\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00140}00140\ \ \ \ \ \doxymbox{\hyperlink{eth_8c_a2a4b556ebd34273cd3cd887884f9eb16}{phy\_init}}(\ p\_eth\_core\_1\_regs\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00141}00141\ \ \ \ \ \doxymbox{\hyperlink{eth_8c_a0430d38d671d1696904e074af2453b6e}{phy\_advertise}}(\ p\_eth\_core\_1\_regs\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00142}00142\ \ \ \ \ \doxymbox{\hyperlink{eth_8c_abe71503d3700d7311cc1b13f93a16291}{phy\_autonegotiation}}(\ p\_eth\_core\_1\_regs\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00143}00143\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00145}\doxymbox{\hyperlink{camera_8c_a873d789e69465192c00c3f0f48533924}{00145}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a873d789e69465192c00c3f0f48533924}{configure\_udp1}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00146}00146\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00147}00147\ \ \ \ \ \doxymbox{\hyperlink{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5}{configure\_udp}}(\doxymbox{\hyperlink{mem__map_8h_a6fba55d0134f4e92c4531f269d3ed68a}{UDP\_TX\_BASE\_ADDR}},}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_DST\_PORT,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_SRC\_PORT,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_DST\_IP,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_SRC\_IP,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_DST\_MAC\_MSB,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_DST\_MAC\_LSB,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_SRC\_MAC\_MSB,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ETH1\_SRC\_MAC\_LSB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00156}00156\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00158}\doxymbox{\hyperlink{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5}{00158}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_acd4cf146e9ee92eba7dc818476b6fbb5}{configure\_udp}}(uint32\_t\ base\_addr,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ dst\_port,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ src\_port,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ dst\_ip,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ src\_ip,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ dst\_mac\_msb,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ dst\_mac\_lsb,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ src\_mac\_msb,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ src\_mac\_lsb)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00167}00167\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00168}00168\ \ \ \ \ uint32\_t\ reg32\_status\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00170}00170\ \ \ \ \ \textcolor{comment}{//\ Configure\ UDP\ ports}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00171}00171\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ UDP\_DST\_PORT,\ dst\_port);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00172}00172\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ UDP\_DST\_PORT);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00174}00174\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ UDP\_SRC\_PORT,\ src\_port);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00175}00175\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ UDP\_SRC\_PORT);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00176}00176\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00177}00177\ \ \ \ \ \textcolor{comment}{//\ Configure\ IP\ addresses}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00178}00178\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ DST\_IP,\ dst\_ip);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00179}00179\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ DST\_IP);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00181}00181\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ SRC\_IP,\ src\_ip);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00182}00182\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ SRC\_IP);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00184}00184\ \ \ \ \ \textcolor{comment}{//\ Configure\ destination\ MAC\ address}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00185}00185\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ DST\_MAC\_MSB,\ dst\_mac\_msb);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00186}00186\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ DST\_MAC\_MSB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00188}00188\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ DST\_MAC\_LSB,\ dst\_mac\_lsb);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00189}00189\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ DST\_MAC\_LSB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00190}00190\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00191}00191\ \ \ \ \ \textcolor{comment}{//\ Configure\ source\ MAC\ address}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00192}00192\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ SRC\_MAC\_MSB,\ src\_mac\_msb);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00193}00193\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ SRC\_MAC\_MSB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00195}00195\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ SRC\_MAC\_LSB,\ src\_mac\_lsb);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00196}00196\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ SRC\_MAC\_LSB);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00198}00198\ \ \ \ \ (void)reg32\_status;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00199}00199\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00201}\doxymbox{\hyperlink{camera_8c_acd250119412bbdf137e91a9f93d4c57c}{00201}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_acd250119412bbdf137e91a9f93d4c57c}{configure\_dma\_write}}(uint32\_t\ base\_addr,\ uint32\_t\ h\_size\_byte)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00202}00202\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00203}00203\ \ \ \ \ uint32\_t\ reg32\_status\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00204}00204\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ DMA\_WRITE\_H\_SIZE\_BYTE,\ h\_size\_byte);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00206}00206\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ DMA\_WRITE\_H\_SIZE\_BYTE);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00208}00208\ \ \ \ \ (void)reg32\_status;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00209}00209\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00210}00210\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00211}\doxymbox{\hyperlink{camera_8c_a0e86868cef208ecab6ca015584592182}{00211}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a0e86868cef208ecab6ca015584592182}{configure\_udp\_dmactrl}}(uint32\_t\ base\_addr,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ v\_size\_line,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ h\_size\_byte,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ h\_size\_beat)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00215}00215\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00216}00216\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ V\_SIZE\_LINE,\ v\_size\_line);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00217}00217\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ H\_SIZE\_BYTE,\ h\_size\_byte);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00218}00218\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ H\_SIZE\_BEAT,\ h\_size\_beat);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00219}00219\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00220}00220\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00221}\doxymbox{\hyperlink{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad}{00221}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a3d5cc8c897947a95bd1aab4b8f2927ad}{cam\_reset}}(\ Camera\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}\ )}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00222}00222\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00223}00223\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a571ad48a93c9c4be1f6efcda2583be9a}{CAM\_XCLR\_N}},\ 0u);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00224}00224\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aa154068cecd7f31446a7a84af44ab1a3}{vTaskDelay}}(10);\ \textcolor{comment}{//\ @todo\ -\/\ appears\ to\ matter.\ Need\ to\ find\ out\ exactly\ how\ much\ time\ is\ required.}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00225}00225\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00226}00226\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_ctrl,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a571ad48a93c9c4be1f6efcda2583be9a}{CAM\_XCLR\_N}},\ 1u);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00227}00227\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aa154068cecd7f31446a7a84af44ab1a3}{vTaskDelay}}(100);\ \textcolor{comment}{//\ was\ 1000}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00228}00228\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00229}00229\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00230}\doxymbox{\hyperlink{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c}{00230}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a8ce938bdd0978ce7edfc3d47b0d30e7c}{init\_slvsec}}(\ Camera\_Instance\_t\ *\doxymbox{\hyperlink{camera__task_8c_a1419de7a1596d40d3056bf064b1b48d5}{camera\_instance}})}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00231}00231\ \{\ \textcolor{comment}{//\ @todo\ some\ of\ these\ values\ will\ get\ replaced\ by\ register\ values}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00232}00232\ \ \ \ \ uint32\_t\ u32\_Arg;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00234}00234\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a859f46c6c0863ce677ff2a711e31926a}{set\_standby}}(\ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00235}00235\ \ \ \ \ \doxymbox{\hyperlink{util_8c_ae9a50467ece92d03401e9afd3b1bec53}{set\_master\_mode}}(\ \ \ \ \ \ \ \ \ \ 0x01);\ \ \textcolor{comment}{//\ Disable\ LVDS\ transfers}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00236}00236\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a65f7849c70042899a38355e8f9723244}{set\_incksel}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00237}00237\ \ \ \ \ \doxymbox{\hyperlink{util_8c_abf0d79b4e097331db7ebb9197b4ca669}{set\_hvmode}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00238}00238\ \ \ \ \ \doxymbox{\hyperlink{util_8c_af7b321a806df6663489e8a8dd277e087}{set\_vopb\_vblk\_hwidth}}(\ \ \ \ \ 0x0000);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00239}00239\ \ \ \ \ \doxymbox{\hyperlink{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5}{set\_finfo\_hwidth}}(\ \ \ \ \ \ \ \ \ 0x11A0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00240}00240\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a7b41e6b0dde5c77f8495bc7254259740}{set\_vmax}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00001244);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00241}00241\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a30f863c7dad42269d6857bf7a07b07bf}{set\_hmax}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x0106);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00242}00242\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624}{set\_freq}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00243}00243\ \ \ \ \ \doxymbox{\hyperlink{util_8c_abdce3f93aa3642b79607f9c1c5ce7007}{set\_vndmy}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00244}00244\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e}{set\_vndmy\_trig}}(\ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00245}00245\ \ \ \ \ \doxymbox{\hyperlink{util_8c_ab000c32033b01fc1cfa5f8314358403f}{set\_gmrwt}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x0C);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00246}00246\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531}{set\_gmtwt}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x14);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00247}00247\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2}{set\_gaindly}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x04);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00248}00248\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a14f51108dde7ff11b236a7fec81e47ed}{set\_gsdly}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x20);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00249}00249\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc}{set\_roi\_mode}}(\ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00250}00250\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a879f17850ba85699520f937aef65fbcf}{set\_adbit}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00251}00251\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a344d5de9cc46cca1ea54d402a870bb21}{set\_slvs\_en}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00252}00252\ \ \ \ \ \doxymbox{\hyperlink{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a}{set\_shs}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x00000048);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00253}00253\ \ \ \ \ \doxymbox{\hyperlink{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6}{set\_trig\_mode\_timing}}(\ \ \ \ \ 0x02,\ \ \ \ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00254}00254\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a}{set\_odbit}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00255}00255\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9}{set\_tout0sel}}(\ \ \ \ \ \ \ \ \ \ \ \ \ 0x01);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00256}00256\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a4a810a1d2d12c7034b450abe169d4df1}{set\_gain\_rts}}(\ \ \ \ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00257}00257\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00258}00258\ \ \ \ \ \doxymbox{\hyperlink{register_8c_a969b9cd557b255d4e0327817c0149972}{Read\_Register}}(\ \doxymbox{\hyperlink{reg__address_8h_a818ecbefe44887dcd675c02ae3930570}{SENSOR\_GAIN\_SYS\_REG}}\ ,\ \&u32\_Arg\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00259}00259\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4}{set\_gain}}(\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ u32\_Arg\ \&\ 0xFFFF\ );\ \textcolor{comment}{//\ Camera\ gain}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00260}00260\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00261}00261\ \ \ \ \ \doxymbox{\hyperlink{register_8c_a969b9cd557b255d4e0327817c0149972}{Read\_Register}}(\ \doxymbox{\hyperlink{reg__address_8h_ae7c4bdbdefebe3e16ebdd7d558f782e6}{SENSOR\_BLO\_SYS\_REG}},\ \&u32\_Arg\ );}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00262}00262\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a2e4b0fbcc9d1d92d59518250a003b852}{set\_blklevel}}(\ \ \ \ \ \ \ \ \ \ \ \ \ u32\_Arg\ \&\ 0xFFFF\ );\ \textcolor{comment}{//\ Black\ level\ offset}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00263}00263\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00264}00264\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a7f3c650ffbd13c00398c510885f74b7f}{set\_synccode}}(\ \ \ \ \ \ \ \ \ \ \ \ \ 0x00AA);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00265}00265\ \ \ \ \ \doxymbox{\hyperlink{util_8c_a5b9cf47b3e724fd7dae36c91a248810f}{set\_crc\_err\_mode}}(\ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00266}00266\ \ \ \ \ \doxymbox{\hyperlink{util_8c_ae9a50467ece92d03401e9afd3b1bec53}{set\_master\_mode}}(\ \ \ \ \ \ \ \ \ \ 0x00);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00267}00267\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00268}00268\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00269}00269\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00270}\doxymbox{\hyperlink{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb}{00270}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a6d2f68aa4e9995c7ee528b4f9ce75ddb}{configure\_trig}}(uint32\_t\ base\_addr,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ xtrig\_low\_time,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ frame\_capture\_time,}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ frame\_capture\_amount)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00274}00274\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00275}00275\ \ \ \ \ uint32\_t\ reg32\_status\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00277}00277\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ XTRIG\_LOW\_TIME,\ xtrig\_low\_time);\ \textcolor{comment}{//\ actual\ exposure}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00278}00278\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ XTRIG\_LOW\_TIME);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00279}00279\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00280}00280\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ FRAME\_CAPTURE\_TIME,\ frame\_capture\_time);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00281}00281\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ FRAME\_CAPTURE\_TIME);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00282}00282\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00283}00283\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ FRAME\_CAPTURE\_AMOUNT,\ frame\_capture\_amount);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00284}00284\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(base\_addr,\ FRAME\_CAPTURE\_AMOUNT);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00285}00285\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00286}00286\ \ \ \ \ (void)reg32\_status;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00287}00287\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00288}00288\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00289}\doxymbox{\hyperlink{camera_8c_a0306e142bfbce0a6616dbcee9441da87}{00289}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a0306e142bfbce0a6616dbcee9441da87}{trig\_capture}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00290}00290\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00291}00291\ \ \ \ \ uint32\_t\ reg32\_status\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00292}00292\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ \doxymbox{\hyperlink{mem__map_8h_ac17ecf6c5ec2ab2c5040eb937812c7af}{CAM\_TRIG\_BASE\_ADDR}},\ XTRIG\_START,\ 0);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00293}00293\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ \doxymbox{\hyperlink{mem__map_8h_ac17ecf6c5ec2ab2c5040eb937812c7af}{CAM\_TRIG\_BASE\_ADDR}},\ XTRIG\_START,\ 1);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00294}00294\ \ \ \ \ reg32\_status\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ \doxymbox{\hyperlink{mem__map_8h_ac17ecf6c5ec2ab2c5040eb937812c7af}{CAM\_TRIG\_BASE\_ADDR}},\ XTRIG\_START);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00295}00295\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00296}00296\ \ \ \ \ (void)reg32\_status;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00297}00297\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00298}00298\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00299}\doxymbox{\hyperlink{camera_8c_af522c6f246e2a9cc76fd33c7cbbe5fb9}{00299}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_af522c6f246e2a9cc76fd33c7cbbe5fb9}{configure\_trig1}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00300}00300\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00301}00301\ \ \ \ \ \textcolor{comment}{//\ configure\_trig(CAM\_TRIG\_BASE\_ADDR,\ 0x1F4,\ 0x4E20,\ 0x10,\ 0x1);}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00302}00302\ \ \ \ \ \textcolor{comment}{//configure\_trig(CAM\_TRIG\_BASE\_ADDR,\ 0x3E8,\ 0x4E20,\ 0x10,\ 0x1);}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00303}00303\ \ \ \ \ \textcolor{comment}{//\ configure\_trig(CAM\_TRIG\_BASE\_ADDR,\ 0x7D0,\ 0x4E20,\ 0x10,\ 0x1);}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00304}00304\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00305}00305\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00306}\doxymbox{\hyperlink{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284}{00306}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_aa20c84307d3a8de4cccfd5e09ebde284}{set\_read\_mux}}(uint32\_t\ base\_addr,\ uint32\_t\ sel)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00307}00307\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00308}00308\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(base\_addr,\ UDP\_MUX\_SEL,\ sel);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00309}00309\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00310}00310\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00311}\doxymbox{\hyperlink{camera_8c_a102e73f9401d42db6fab31f949e631ba}{00311}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a102e73f9401d42db6fab31f949e631ba}{enable\_capture\_to\_ddr}}(Camera\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ \textcolor{comment}{/*uint32\_t\ base\_addr,*/}\ uint8\_t\ target\_mem\_space)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00312}00312\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00313}00313\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_mux,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a82d8028a68835feb5aff3873aad5c906}{CAM\_MUX\_SELECT}},\ target\_mem\_space);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00314}00314\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_mux,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a0db32c036d614ec4f28468fdb60ab69c}{CAM\_MUX\_ENABLE}},\ \doxymbox{\hyperlink{cam__mux_8h_a1bd0fa25d5a56f23e5ebc116ec6cbba0}{MUX\_ENABLE}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00315}00315\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00316}00316\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00317}\doxymbox{\hyperlink{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b}{00317}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{camera_8c_a1e08bb86f5f08e787caa7ee1660d043b}{disable\_capture\_to\_ddr}}(Camera\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ uint32\_t\ base\_addr,\ uint8\_t\ target\_mem\_space)}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00318}00318\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00319}00319\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_mux,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a82d8028a68835feb5aff3873aad5c906}{CAM\_MUX\_SELECT}},\ target\_mem\_space);}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00320}00320\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\&\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>cam\_mux,\ \doxymbox{\hyperlink{gpio__pin__def_8h_a0db32c036d614ec4f28468fdb60ab69c}{CAM\_MUX\_ENABLE}},\ \doxymbox{\hyperlink{cam__mux_8h_a3a759a494ff6e152a354508f1158a1a7}{MUX\_DISABLE}});}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00321}00321\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00322}00322\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00323}\doxymbox{\hyperlink{camera_8c_a935c0986319ad5e2a18b69782d7ebda2}{00323}}\ uint8\_t\ \doxymbox{\hyperlink{camera_8c_a935c0986319ad5e2a18b69782d7ebda2}{u8\_Calculate\_Focus\_Distance\_microns}}(\ uint32\_t\ u32\_Raw\_Pos\ ,\ int32\_t\ *i32\_Focus\_Distance\_microns\ )}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00324}00324\ \{}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00325}00325\ \ \ \ \ *i32\_Focus\_Distance\_microns\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00326}00326\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00327}00327\ \}}
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00328}00328\ }
+\DoxyCodeLine{\Hypertarget{camera_8c_source_l00329}00329\ }
+
+\end{DoxyCode}

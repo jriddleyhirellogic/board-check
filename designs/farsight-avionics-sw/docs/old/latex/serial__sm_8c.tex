@@ -1,0 +1,270 @@
+\doxysection{src/\+serial\+\_\+sm.c File Reference}
+\hypertarget{serial__sm_8c}{}\label{serial__sm_8c}\index{src/serial\_sm.c@{src/serial\_sm.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+uart16550.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+sm.\+h"{}}\newline
+{\ttfamily \+\#include "{}command.\+h"{}}\newline
+{\ttfamily \+\#include "{}crc.\+h"{}}\newline
+Include dependency graph for serial\+\_\+sm.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}{RX\+\_\+\+BUFSIZE}}~64
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}{Received\+\_\+\+Message\+\_\+\+Notification}} (void)
+\item 
+void \doxymbox{\hyperlink{serial__sm_8c_a318ca21f6a277906e99215773de6db53}{v\+\_\+\+Update\+\_\+\+Serial\+\_\+\+SM}} (uint8\+\_\+t u8\+\_\+\+Received\+\_\+\+Char)
+\item 
+void \doxymbox{\hyperlink{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}{v\+\_\+\+Framing\+\_\+\+Timeout}} (void)
+\item 
+void \doxymbox{\hyperlink{serial__sm_8c_add62247398443f8539532c99b386c595}{Reset\+\_\+\+Serial\+\_\+\+SM}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_ac865dd6b603e7cb7a3aeb7c815ae753b}{b\+\_\+\+In\+\_\+\+Error\+\_\+\+State}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}} \doxymbox{\hyperlink{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}{Current\+\_\+\+State}}
+\item 
+static \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}} \doxymbox{\hyperlink{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}{Next\+\_\+\+State}}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}{u8\+\_\+\+Bytes\+\_\+\+Received}}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}{u8\+\_\+\+Rx\+\_\+\+Buf}} \+[\doxymbox{\hyperlink{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}{RX\+\_\+\+BUFSIZE}}]\+
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}{u32\+\_\+\+Calculated\+\_\+\+CRC}}
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}{u32\+\_\+\+Received\+\_\+\+CRC}}
+\item 
+static \doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \doxymbox{\hyperlink{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}{Header}}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}{u8\+\_\+\+Cnt}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{serial__sm_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}\index{serial\_sm.c@{serial\_sm.c}!RX\_BUFSIZE@{RX\_BUFSIZE}}
+\index{RX\_BUFSIZE@{RX\_BUFSIZE}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{RX\_BUFSIZE}{RX\_BUFSIZE}}
+{\footnotesize\ttfamily \label{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9} 
+\+\#define RX\+\_\+\+BUFSIZE~64}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{serial__sm_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{serial__sm_8c_ac865dd6b603e7cb7a3aeb7c815ae753b}\index{serial\_sm.c@{serial\_sm.c}!b\_In\_Error\_State@{b\_In\_Error\_State}}
+\index{b\_In\_Error\_State@{b\_In\_Error\_State}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{b\_In\_Error\_State()}{b\_In\_Error\_State()}}
+{\footnotesize\ttfamily \label{serial__sm_8c_ac865dd6b603e7cb7a3aeb7c815ae753b} 
+uint8\+\_\+t b\+\_\+\+In\+\_\+\+Error\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00235}{235}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80}\index{serial\_sm.c@{serial\_sm.c}!Received\_Message\_Notification@{Received\_Message\_Notification}}
+\index{Received\_Message\_Notification@{Received\_Message\_Notification}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{Received\_Message\_Notification()}{Received\_Message\_Notification()}}
+{\footnotesize\ttfamily \label{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80} 
+void Received\+\_\+\+Message\+\_\+\+Notification (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00218}{218}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_ac0cb4d07107323df631153b4912e1c80_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__sm_8c_add62247398443f8539532c99b386c595}\index{serial\_sm.c@{serial\_sm.c}!Reset\_Serial\_SM@{Reset\_Serial\_SM}}
+\index{Reset\_Serial\_SM@{Reset\_Serial\_SM}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{Reset\_Serial\_SM()}{Reset\_Serial\_SM()}}
+{\footnotesize\ttfamily \label{serial__sm_8c_add62247398443f8539532c99b386c595} 
+void Reset\+\_\+\+Serial\+\_\+\+SM (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00228}{228}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=271pt]{serial__sm_8c_add62247398443f8539532c99b386c595_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_add62247398443f8539532c99b386c595_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}\index{serial\_sm.c@{serial\_sm.c}!v\_Framing\_Timeout@{v\_Framing\_Timeout}}
+\index{v\_Framing\_Timeout@{v\_Framing\_Timeout}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{v\_Framing\_Timeout()}{v\_Framing\_Timeout()}}
+{\footnotesize\ttfamily \label{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9} 
+void v\+\_\+\+Framing\+\_\+\+Timeout (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00206}{206}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_a0e2ace05906b4e931dc3f92238f4d5b9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__sm_8c_a318ca21f6a277906e99215773de6db53}\index{serial\_sm.c@{serial\_sm.c}!v\_Update\_Serial\_SM@{v\_Update\_Serial\_SM}}
+\index{v\_Update\_Serial\_SM@{v\_Update\_Serial\_SM}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{v\_Update\_Serial\_SM()}{v\_Update\_Serial\_SM()}}
+{\footnotesize\ttfamily \label{serial__sm_8c_a318ca21f6a277906e99215773de6db53} 
+void v\+\_\+\+Update\+\_\+\+Serial\+\_\+\+SM (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Received\+\_\+\+Char}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00068}{68}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{serial__sm_8c_a318ca21f6a277906e99215773de6db53_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8c_a318ca21f6a277906e99215773de6db53_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{serial__sm_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6}\index{serial\_sm.c@{serial\_sm.c}!Current\_State@{Current\_State}}
+\index{Current\_State@{Current\_State}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{Current\_State}{Current\_State}}
+{\footnotesize\ttfamily \label{serial__sm_8c_a90f935f8cffd73cfb4becc0118eb0ec6} 
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}} Current\+\_\+\+State\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00040}{40}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178}\index{serial\_sm.c@{serial\_sm.c}!Header@{Header}}
+\index{Header@{Header}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{Header}{Header}}
+{\footnotesize\ttfamily \label{serial__sm_8c_a715d07bbf6f0cde16aa291ab20f92178} 
+\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} Header\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00064}{64}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d}\index{serial\_sm.c@{serial\_sm.c}!Next\_State@{Next\_State}}
+\index{Next\_State@{Next\_State}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{Next\_State}{Next\_State}}
+{\footnotesize\ttfamily \label{serial__sm_8c_af166efd2c14cf93f6a45e93449d4b04d} 
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}} Next\+\_\+\+State\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00040}{40}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742}\index{serial\_sm.c@{serial\_sm.c}!u32\_Calculated\_CRC@{u32\_Calculated\_CRC}}
+\index{u32\_Calculated\_CRC@{u32\_Calculated\_CRC}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{u32\_Calculated\_CRC}{u32\_Calculated\_CRC}}
+{\footnotesize\ttfamily \label{serial__sm_8c_aae9ac8c1ce7c504c1c0e64d9b4343742} 
+uint32\+\_\+t u32\+\_\+\+Calculated\+\_\+\+CRC\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00045}{45}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664}\index{serial\_sm.c@{serial\_sm.c}!u32\_Received\_CRC@{u32\_Received\_CRC}}
+\index{u32\_Received\_CRC@{u32\_Received\_CRC}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{u32\_Received\_CRC}{u32\_Received\_CRC}}
+{\footnotesize\ttfamily \label{serial__sm_8c_abf51fe370a8d9f0cc35a200d6135e664} 
+uint32\+\_\+t u32\+\_\+\+Received\+\_\+\+CRC\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00045}{45}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186}\index{serial\_sm.c@{serial\_sm.c}!u8\_Bytes\_Received@{u8\_Bytes\_Received}}
+\index{u8\_Bytes\_Received@{u8\_Bytes\_Received}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Bytes\_Received}{u8\_Bytes\_Received}}
+{\footnotesize\ttfamily \label{serial__sm_8c_ae64d544c1980f5a7b60b39fb7c237186} 
+uint8\+\_\+t u8\+\_\+\+Bytes\+\_\+\+Received\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00041}{41}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e}\index{serial\_sm.c@{serial\_sm.c}!u8\_Cnt@{u8\_Cnt}}
+\index{u8\_Cnt@{u8\_Cnt}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Cnt}{u8\_Cnt}}
+{\footnotesize\ttfamily \label{serial__sm_8c_ad2d13447aa607f569fbfabe2fec4250e} 
+uint8\+\_\+t u8\+\_\+\+Cnt\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00065}{65}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+\Hypertarget{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de}\index{serial\_sm.c@{serial\_sm.c}!u8\_Rx\_Buf@{u8\_Rx\_Buf}}
+\index{u8\_Rx\_Buf@{u8\_Rx\_Buf}!serial\_sm.c@{serial\_sm.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Rx\_Buf}{u8\_Rx\_Buf}}
+{\footnotesize\ttfamily \label{serial__sm_8c_a41a9b368f84ea1adb0d58f97d808b5de} 
+uint8\+\_\+t u8\+\_\+\+Rx\+\_\+\+Buf\+[\doxymbox{\hyperlink{serial__sm_8c_aa5be9eab1b4ef100a79c12228668f5a9}{RX\+\_\+\+BUFSIZE}}]\+\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00042}{42}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+

@@ -1,0 +1,140 @@
+# Code no test executed that is not a gap in the tests, and why.
+#
+# Read by `make code-coverage` (fsverif.codecov.dispositions). Each entry names
+# a file as the coverage report does, a line range, the text expected on its
+# first line, one of the kinds below, and the reason. An entry is not applied,
+# and the report says so, if its first line no longer reads `at` (the source
+# moved) or if any line in it was executed (the reason is wrong, or no longer
+# needed). Anything never executed and not listed here is a gap: behaviour to
+# test, or a requirement to ask for.
+#
+# Kinds:
+#   illegal-state   recovery from a state encoding the FSM never assigns;
+#                   reachable only by an upset of its state register
+#   outside-flight  reachable only with a parameter or register value the
+#                   flight configuration does not use
+#   unreachable     no input reaches it
+
+# ---- illegal-state: a default arm for encodings the FSM never assigns
+
+- file: cam_trig.sv
+  lines: 164-168
+  at: "default: begin"
+  kind: illegal-state
+  reason: 3-bit state register, 5 states assigned; 3 encodings are reachable only by an upset.
+- file: cam_trig.sv
+  lines: 213-214
+  at: "default: begin"
+  kind: illegal-state
+  reason: Next-state decode of the same 3-bit register (cam_trig.sv:59), 5 states assigned.
+- file: IQ_MIXER.sv
+  lines: 143-153
+  at: "default:"
+  kind: illegal-state
+  reason: Untyped enum, 5 states assigned; every other value of FSM_state is reachable only by an upset.
+- file: pcie_translator.sv
+  lines: 523-524
+  at: "default: begin"
+  kind: illegal-state
+  reason: fetch_sm is 3 bits with 6 states assigned; 2 encodings are reachable only by an upset.
+- file: pcie_translator.sv
+  lines: 589-590
+  at: "default: begin"
+  kind: illegal-state
+  reason: drain_sm is 3 bits with 5 states assigned; 3 encodings are reachable only by an upset.
+- file: xcvr_disparity_correction.v
+  lines: 801-805
+  at: "default: begin"
+  kind: illegal-state
+  reason: fsm_state is 3 bits with 7 localparam states; the eighth encoding is reachable only by an upset.
+- file: cam_mux.sv
+  lines: 238-241
+  at: "default: begin"
+  kind: illegal-state
+  reason: The state enum is logic [2:0] (cam_mux.sv:78) with 6 states assigned; 2 encodings are reachable only by an upset.
+- file: axi_read_demux.sv
+  lines: 176-177
+  at: "default: begin"
+  kind: illegal-state
+  reason: wr_sm is 2 bits with 3 states assigned; the fourth encoding is reachable only by an upset.
+
+# ---- unreachable: a default arm after every encoding is a named state
+
+- file: cam_flow_sync.sv
+  lines: 118-121
+  at: "default: begin"
+  kind: unreachable
+  reason: 1-bit state with both values named states, so the case is full.
+- file: cam_flow_sync.sv
+  lines: 146-147
+  at: "default: begin"
+  kind: unreachable
+  reason: Next-state decode of the same 1-bit state, whose case is full.
+- file: wconv_4in_3out.sv
+  lines: 170-171
+  at: "default: begin"
+  kind: unreachable
+  reason: 2-bit state with all 4 encodings named states, so the case is full.
+- file: pps.sv
+  lines: 174-175
+  at: "default: begin"
+  kind: unreachable
+  reason: pps_calc_state is 2 bits with all 4 encodings named states, so the case is full.
+- file: dma_write_recv_ctrl.sv
+  lines: 187-188
+  at: "default: begin"
+  kind: unreachable
+  reason: 2-bit state with all 4 encodings named states, so the case is full.
+- file: divider_with_remainder.sv
+  lines: 71-76
+  at: "quotient_reg   <= '1;"
+  kind: unreachable
+  reason: >
+    Divide by zero. The only instance divides by pps.sv's clock_rate, which
+    resets to the nominal PPS period and is only ever loaded with a value
+    clamped to at least MIN_CLOCK_RATE (pps.sv:111, :164-169).
+
+# ---- outside-flight
+
+- file: frame_xfer_ctrl.sv
+  lines: 328-348
+  at: "if(h_size_beat_eff > MAX_BURST_SIZE) begin"
+  kind: outside-flight
+  reason: >
+    Splits a line into several 256-beat AXI bursts. The flight line is 6784
+    bytes (farsight-avionics-sw Camera/include/camera.h:129, HORIZ_WIDTH_BYTE),
+    212 beats on the 8 GB bank and 106 on the 16 GB bank, so one burst always
+    holds a line.
+- file: frame_xfer_ctrl.sv
+  lines: 420-422
+  at: "if(beat_counter < h_size_beat_eff) begin"
+  kind: outside-flight
+  reason: The next burst of a split line; flight lines are never split (above).
+- file: dma_write_send_ctrl.sv
+  lines: 242-245
+  at: "if ((total_beat + MAX_BURST_SIZE) <= max_chunk_count) begin"
+  kind: outside-flight
+  reason: >
+    Splits a line's write into several 256-beat bursts. A 6784-byte flight
+    line is 106 chunks of 512 bits, so max_chunk_count is 212 on the 8 GB bank
+    (DIN_DOUT_RATIO 2) and 106 on the 16 GB bank, never above 256.
+- file: dma_write_send_ctrl.sv
+  lines: 342-343
+  at: "arb_write_start_addr <= arb_write_start_addr +"
+  kind: outside-flight
+  reason: The next burst of a split write; flight lines are never split (above).
+- file: xcvr_disparity_correction.v
+  lines: 526-526
+  at: "1'b1;"
+  kind: outside-flight
+  reason: The ENABLE_ERM_FIRST_LOCK = 0 arm of a parameter ternary; flight sets the parameter.
+- file: xcvr_disparity_correction.v
+  lines: 533-533
+  at: "1'b0;"
+  kind: outside-flight
+  reason: The ENABLE_ERM_FIRST_LOCK = 0 arm of a parameter ternary; flight sets the parameter.
+- file: xcvr_disparity_correction.v
+  lines: 589-589
+  at: "1'b0;  // Disabled if not ERM mode"
+  kind: outside-flight
+  reason: The ENABLE_ERM_FIRST_LOCK = 0 arm of a parameter ternary; flight sets the parameter.

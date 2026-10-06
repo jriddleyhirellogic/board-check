@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:STEPPER_DRIVER",
+  "definition_digest": "c400f3cb34fc2a4cb104b55e01da18ddc827ceb276878c8086388ef9a33c38c3",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "STEPPER_DRIVER",
+  "sources_digest": "fd98d34c83ecd836c8f344080598d7a9c0c1e64a8c95c788d7ca4bcdf8a72bca"
+}

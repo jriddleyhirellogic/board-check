@@ -1,0 +1,466 @@
+{
+  "source": {
+    "file": "verification/board/CM-03545.json",
+    "sha256": "d7081cef067631d241cf0b1083c67b82f8c3283e3f7ec94c397a31e3b99b4c47",
+    "exportScriptVersion": "2.6.0"
+  },
+  "board": "CM-03545_ASSY, PCB, AVIONICS, FARSIGHT, FLIGHT MODEL.PrjPcb",
+  "device": "U2",
+  "rails": [
+    {
+      "enable_net": "R_15V0_LVDT_EN",
+      "enable_ball": "J22",
+      "regulator": "U55",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "LVDT SIGNAL CHAIN POWER.SchDoc",
+      "pgood_net": "15V0_LVDT_PGOOD",
+      "pgood_ball": "K20",
+      "timing": {
+        "designator": "C485",
+        "part": "GRM1885C1H103JA01D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_1V0A_FPGA_EN",
+      "enable_ball": "N2",
+      "regulator": "U80",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "1V0A_FPGA_PGOOD",
+      "pgood_ball": "R4",
+      "timing": {
+        "designator": "C706",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_1V0_FPGA_EN",
+      "enable_ball": "A9",
+      "regulator": "U75",
+      "part": "TPS7H4003-SEP",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "1V0_FPGA_PGOOD",
+      "pgood_ball": "C4",
+      "timing": {
+        "designator": "C678",
+        "part": "GCM1885C1H332FA16D",
+        "pin": "SS/TR",
+        "picofarads": 3300
+      }
+    },
+    {
+      "enable_net": "R_1V1_IMX_EN",
+      "enable_ball": "J1",
+      "regulator": "U72",
+      "part": "TPS54821RHLT",
+      "sheet": "IMX POWER.SchDoc",
+      "pgood_net": "1V1_IMX_PGOOD",
+      "pgood_ball": "J7",
+      "timing": {
+        "designator": "C644",
+        "part": "C0603C472K5RACAUTO",
+        "pin": "SS/TR",
+        "picofarads": 4700
+      }
+    },
+    {
+      "enable_net": "R_1V25A_FPGA_EN",
+      "enable_ball": "Y2",
+      "regulator": "U78",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "1V25A_FPGA_PGOOD",
+      "pgood_ball": "M2",
+      "timing": {
+        "designator": "C694",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_1V2_16GB_EN",
+      "enable_ball": "B3",
+      "regulator": "U38",
+      "part": "TPS7H4003MDDWSEP",
+      "sheet": "DDR4 16GB ECC POWER.SchDoc",
+      "pgood_net": "1V2_16GB_PGOOD",
+      "pgood_ball": "D8",
+      "timing": {
+        "designator": "C44",
+        "part": "C0603C472K5RACAUTO",
+        "pin": "SS/TR",
+        "picofarads": 4700
+      }
+    },
+    {
+      "enable_net": "R_1V8_FPGA_EN",
+      "enable_ball": "K2",
+      "regulator": "U19",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "1V8_FPGA_PGOOD",
+      "pgood_ball": "L6",
+      "timing": {
+        "designator": "C308",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_1V8_IMX_EN",
+      "enable_ball": "B6",
+      "regulator": "U73",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "IMX POWER.SchDoc",
+      "pgood_net": "1V8_IMX_PGOOD",
+      "pgood_ball": "C2",
+      "timing": {
+        "designator": "C650",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_1V8_IMX_FPGA_EN",
+      "enable_ball": "L1",
+      "regulator": "U77",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "1V8_IMX_FPGA_PGOOD",
+      "pgood_ball": "L8",
+      "timing": {
+        "designator": "C689",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_28V0_PRIM_EN",
+      "enable_ball": "M16",
+      "regulator": "U82",
+      "part": "ADM1270ACPZ-R7",
+      "sheet": "STEPPER MOTOR DRIVERS.SchDoc",
+      "pgood_net": "28V0_PRIM_PGOOD",
+      "pgood_ball": "R17",
+      "timing": null
+    },
+    {
+      "enable_net": "R_28V0_SEC_EN",
+      "enable_ball": "W22",
+      "regulator": "U84",
+      "part": "ADM1270ACPZ-R7",
+      "sheet": "STEPPER MOTOR DRIVERS.SchDoc",
+      "pgood_net": "28V0_SEC_PGOOD",
+      "pgood_ball": "M22",
+      "timing": null
+    },
+    {
+      "enable_net": "R_2V2_REG_EN",
+      "enable_ball": "F1",
+      "regulator": "U87",
+      "part": "TPS54821RHLT",
+      "sheet": "STEP DOWN CONVERTERS.SchDoc",
+      "pgood_net": "2V2_REG_PGOOD",
+      "pgood_ball": "F8",
+      "timing": {
+        "designator": "C784",
+        "part": "GCM155R71H103KA55D",
+        "pin": "SS/TR",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_2V5A_FPGA_EN",
+      "enable_ball": "K1",
+      "regulator": "U76",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "2V5A_FPGA_PGOOD",
+      "pgood_ball": "K7",
+      "timing": {
+        "designator": "C672",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_2V5_16GB_EN",
+      "enable_ball": "E1",
+      "regulator": "U36",
+      "part": "TPS54821RHLT",
+      "sheet": "DDR4 16GB ECC POWER.SchDoc",
+      "pgood_net": "2V5_16GB_PGOOD",
+      "pgood_ball": "E7",
+      "timing": {
+        "designator": "C25",
+        "part": "C0603C472K5RACAUTO",
+        "pin": "SS/TR",
+        "picofarads": 4700
+      }
+    },
+    {
+      "enable_net": "R_2V5_8GB_EN",
+      "enable_ball": "Y20",
+      "regulator": "U39",
+      "part": "TPS54821RHLT",
+      "sheet": "DDR4 8GB ECC POWER.SchDoc",
+      "pgood_net": "2V5_8GB_PGOOD",
+      "pgood_ball": "M21",
+      "timing": {
+        "designator": "C75",
+        "part": "C0603C682F5GACAUTO",
+        "pin": "SS/TR",
+        "picofarads": 6800
+      }
+    },
+    {
+      "enable_net": "R_3V0_REG_EN",
+      "enable_ball": "G1",
+      "regulator": "U86",
+      "part": "TPS54821RHLT",
+      "sheet": "STEP DOWN CONVERTERS.SchDoc",
+      "pgood_net": "3V0_REG_PGOOD",
+      "pgood_ball": "H7",
+      "timing": {
+        "designator": "C770",
+        "part": "GCM1885C1H752JA16D",
+        "pin": "SS/TR",
+        "picofarads": 7500
+      }
+    },
+    {
+      "enable_net": "R_3V3_B4_FPGA_EN",
+      "enable_ball": "N1",
+      "regulator": "U79",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "3V3_B4_FPGA_PGOOD",
+      "pgood_ball": "AB5",
+      "timing": {
+        "designator": "C700",
+        "part": "GCM155R71H223KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 22000
+      }
+    },
+    {
+      "enable_net": "R_3V3_B5_FPGA_EN",
+      "enable_ball": "AB14",
+      "regulator": "U74",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FPGA POWER.SchDoc",
+      "pgood_net": "3V3_B5_FPGA_PGOOD",
+      "pgood_ball": "AA13",
+      "timing": {
+        "designator": "C657",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_3V3_MISC_EN",
+      "enable_ball": "Y21",
+      "regulator": "U62",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "FLASH LVDS RS422.SchDoc",
+      "pgood_net": "3V3_MISC_PGOOD",
+      "pgood_ball": "V22",
+      "timing": {
+        "designator": "C502",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_4V0_REG_EN",
+      "enable_ball": "H6",
+      "regulator": "U85",
+      "part": "TPS54821RHLT",
+      "sheet": "STEP DOWN CONVERTERS.SchDoc",
+      "pgood_net": "4V0_REG_PGOOD",
+      "pgood_ball": "H1",
+      "timing": {
+        "designator": "C754",
+        "part": "GCM1885C1H752JA16D",
+        "pin": "SS/TR",
+        "picofarads": 7500
+      }
+    },
+    {
+      "enable_net": "R_8GB_EN",
+      "enable_ball": "N19",
+      "regulator": "U41",
+      "part": "TPS54821RHLT",
+      "sheet": "DDR4 8GB ECC POWER.SchDoc",
+      "pgood_net": "1V2_8GB_ PGOOD",
+      "pgood_ball": "U19",
+      "timing": {
+        "designator": "C89",
+        "part": "GCM1885C1H202JA16D",
+        "pin": "SS/TR",
+        "picofarads": 2000
+      }
+    },
+    {
+      "enable_net": "R_ETH1_1V0A_EN",
+      "enable_ball": "F22",
+      "regulator": "U45",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH1_1V0A_PGOOD",
+      "pgood_ball": "J19",
+      "timing": {
+        "designator": "C435",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH1_1V0_EN",
+      "enable_ball": "H22",
+      "regulator": "U43",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH1_1V0_PGOOD",
+      "pgood_ball": "K21",
+      "timing": {
+        "designator": "C423",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH1_2V5A_EN",
+      "enable_ball": "F21",
+      "regulator": "U47",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH1_2V5A_PGOOD",
+      "pgood_ball": "G21",
+      "timing": {
+        "designator": "C447",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH1_3V3_EN",
+      "enable_ball": "J21",
+      "regulator": "U49",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH1_3V3_PGOOD",
+      "pgood_ball": "K22",
+      "timing": {
+        "designator": "C459",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH2_1V0A_EN",
+      "enable_ball": "C21",
+      "regulator": "U46",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH2_1V0A_PGOOD",
+      "pgood_ball": "E22",
+      "timing": {
+        "designator": "C436",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH2_1V0_EN",
+      "enable_ball": "D20",
+      "regulator": "U44",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH2_1V0_PGOOD",
+      "pgood_ball": "G20",
+      "timing": {
+        "designator": "C424",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH2_2V5A_EN",
+      "enable_ball": "C20",
+      "regulator": "U48",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH2_2V5A_PGOOD",
+      "pgood_ball": "E21",
+      "timing": {
+        "designator": "C448",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    },
+    {
+      "enable_net": "R_ETH2_3V3_EN",
+      "enable_ball": "D22",
+      "regulator": "U50",
+      "part": "LT3065EDD#TRPBF",
+      "sheet": "ETHERNET POWER.SchDoc",
+      "pgood_net": "ETH2_3V3_PGOOD",
+      "pgood_ball": "G22",
+      "timing": {
+        "designator": "C460",
+        "part": "GCM155R71H103KA55D",
+        "pin": "REF/BYP",
+        "picofarads": 10000
+      }
+    }
+  ],
+  "unpaired": [
+    {
+      "enable_net": "R_2V9_IMX_EN",
+      "enable_ball": "U3",
+      "regulator": null,
+      "part": "",
+      "sheet": "",
+      "pgood_net": null,
+      "pgood_ball": null,
+      "timing": null,
+      "reaches": [
+        "U108 (SN74LVC2G17DBVR) pin 1A on FLASH LVDS RS422.SchDoc",
+        "U2 (A3PE3000L-FG484M) pin IO238NDB6V0 on PA3 BANKS 4,5,6,7.SchDoc"
+      ]
+    },
+    {
+      "enable_net": "R_3V3_IMX_EN",
+      "enable_ball": "T4",
+      "regulator": null,
+      "part": "",
+      "sheet": "",
+      "pgood_net": null,
+      "pgood_ball": null,
+      "timing": null,
+      "reaches": [
+        "U108 (SN74LVC2G17DBVR) pin 2A on FLASH LVDS RS422.SchDoc",
+        "U2 (A3PE3000L-FG484M) pin IO241PDB6V0 on PA3 BANKS 4,5,6,7.SchDoc"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Requirement dispositions: waivers and exceptions (fsverif.dispositions).
+#
+# A waiver accepts a requirement as not met. Its items keep `expect: FAIL`, its
+# tests keep failing, and the requirement reads "waived" instead of "failing".
+#
+#   waivers:
+#     - id: WVR-PF-01
+#       requirement: PF-XXX-01
+#       reason: >
+#         Why the shortfall is accepted, and what it costs.
+#       approved_by: UNASSIGNED     # a name; UNASSIGNED until approved
+#       date: ""                    # YYYY-MM-DD, once approved
+#       reference: ""               # optional: a deviation or waiver number
+#
+# An exception is an instance the requirement itself permits to differ. The
+# test checking the requirement reads it (fsverif.dispositions.check), fails on
+# any instance not listed and on any listed one it no longer finds, and the
+# requirement reads "passing, with exceptions" once its tests pass.
+#
+#   exceptions:
+#     - id: EXC-PF-01
+#       requirement: PF-XXX-02
+#       subjects: [instance_a, instance_b]   # as the test names them
+#       reason: >
+#         Why each may differ, and what makes that safe.
+#       approved_by: UNASSIGNED
+#       date: ""
+#
+# Neither applies until approved_by names someone and date is set.
+
+waivers: []
+exceptions: []

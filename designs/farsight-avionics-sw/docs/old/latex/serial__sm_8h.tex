@@ -1,0 +1,408 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+serial\+\_\+sm.h File Reference}
+\hypertarget{serial__sm_8h}{}\label{serial__sm_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_sm.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_sm.h}}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a2f5ce3983045dcf19897b1337643565b}{SYNC1\+\_\+\+CODE}}~0x1A
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_adf4c7b1c63e624f452dbc8423bc9a73b}{SYNC2\+\_\+\+CODE}}~0x\+CF
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a70a8f18b872e7392d66cfe2748d617ed}{SYNC3\+\_\+\+CODE}}~0x\+FC
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a264257ef3a67b018dd37e426218e40c8}{SYNC4\+\_\+\+CODE}}~0x1D
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a49999be01380f41cc0d0f1f1406fb277}{HEADER\+\_\+\+SIZE}}~12
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a07ab47e2ed266cd713cdd5fc34b91b5c}{SYNC\+\_\+\+LENGTH}}~4
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a3b739c5ac3ba3ca92a3cea35990c88fb}{CRC\+\_\+\+LENGTH}}~4
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a40269eccee35199ba216678b8891ca5a}{RESERVED\+\_\+\+SIZE}}~8
+\item 
+\+\#define \doxymbox{\hyperlink{serial__sm_8h_a17e333794ae761cd55ec6fd6fc0f1bac}{MAX\+\_\+\+MSG\+\_\+\+SIZE}}~64
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8f}{Packet\+\_\+\+Field\+\_\+\+Offset\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa40c6bc659442571c1883074a9c6739d3}{SYNC1\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa204a57de16ca79449b17ba31f0a918fb}{SYNC2\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8faf128b868be9974b3ee0d64935c06c511}{SYNC3\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa8075f47c572af2748dd119c5d58cbd07}{SYNC4\+\_\+\+OFFSET}}
+, \newline
+\doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa918b0e9018af37f0455f3c15ee0773b6}{OPCODE\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa66fe8dc53456d12695530dcb87003731}{ERROR\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa7e1c5dd2670dbc88e98b556b9b80c9db}{SEQUENCE\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa270f0e3d23b1b8ce9e1f581b2bdaf35c}{DATA\+\_\+\+LENGTH\+\_\+\+OFFSET}}
+, \newline
+\doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa55659c75ef620a1800ba02820bc671e6}{RESERVED\+\_\+\+OFFSET}}
+, \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fae81cd8da0c30a1d852eb87d4f16b7899}{DATA\+\_\+\+OFFSET}} = 15
+ \}
+\item 
+enum \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c}{SYNC\+\_\+\+WAIT}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7}{SYNC1}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8}{SYNC2}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75}{SYNC3}}
+, \newline
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479}{SYNC4}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6}{FUNCTION}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664}{ERROR\+\_\+\+CODE}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313}{SEQUENCE}}
+, \newline
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa86b0f02738a3e35cae6724a4d66c1846}{DATA\+\_\+\+COUNT}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b}{RESERVED}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2}{DATA}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57}{CRC1}}
+, \newline
+\doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7}{CRC2}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825}{CRC3}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22}{CRC4}}
+, \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}{SM\+\_\+\+ERROR}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{serial__sm_8h_a318ca21f6a277906e99215773de6db53}{v\+\_\+\+Update\+\_\+\+Serial\+\_\+\+SM}} (uint8\+\_\+t u8\+\_\+\+Received\+\_\+\+Char)
+\item 
+void \doxymbox{\hyperlink{serial__sm_8h_add62247398443f8539532c99b386c595}{Reset\+\_\+\+Serial\+\_\+\+SM}} (void)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{serial__sm_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{serial__sm_8h_a3b739c5ac3ba3ca92a3cea35990c88fb}\index{serial\_sm.h@{serial\_sm.h}!CRC\_LENGTH@{CRC\_LENGTH}}
+\index{CRC\_LENGTH@{CRC\_LENGTH}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{CRC\_LENGTH}{CRC\_LENGTH}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a3b739c5ac3ba3ca92a3cea35990c88fb} 
+\+\#define CRC\+\_\+\+LENGTH~4}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00058}{58}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a49999be01380f41cc0d0f1f1406fb277}\index{serial\_sm.h@{serial\_sm.h}!HEADER\_SIZE@{HEADER\_SIZE}}
+\index{HEADER\_SIZE@{HEADER\_SIZE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{HEADER\_SIZE}{HEADER\_SIZE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a49999be01380f41cc0d0f1f1406fb277} 
+\+\#define HEADER\+\_\+\+SIZE~12}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00056}{56}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a17e333794ae761cd55ec6fd6fc0f1bac}\index{serial\_sm.h@{serial\_sm.h}!MAX\_MSG\_SIZE@{MAX\_MSG\_SIZE}}
+\index{MAX\_MSG\_SIZE@{MAX\_MSG\_SIZE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{MAX\_MSG\_SIZE}{MAX\_MSG\_SIZE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a17e333794ae761cd55ec6fd6fc0f1bac} 
+\+\#define MAX\+\_\+\+MSG\+\_\+\+SIZE~64}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00060}{60}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a40269eccee35199ba216678b8891ca5a}\index{serial\_sm.h@{serial\_sm.h}!RESERVED\_SIZE@{RESERVED\_SIZE}}
+\index{RESERVED\_SIZE@{RESERVED\_SIZE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{RESERVED\_SIZE}{RESERVED\_SIZE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a40269eccee35199ba216678b8891ca5a} 
+\+\#define RESERVED\+\_\+\+SIZE~8}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00059}{59}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a2f5ce3983045dcf19897b1337643565b}\index{serial\_sm.h@{serial\_sm.h}!SYNC1\_CODE@{SYNC1\_CODE}}
+\index{SYNC1\_CODE@{SYNC1\_CODE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{SYNC1\_CODE}{SYNC1\_CODE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a2f5ce3983045dcf19897b1337643565b} 
+\+\#define SYNC1\+\_\+\+CODE~0x1A}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00042}{42}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_adf4c7b1c63e624f452dbc8423bc9a73b}\index{serial\_sm.h@{serial\_sm.h}!SYNC2\_CODE@{SYNC2\_CODE}}
+\index{SYNC2\_CODE@{SYNC2\_CODE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{SYNC2\_CODE}{SYNC2\_CODE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_adf4c7b1c63e624f452dbc8423bc9a73b} 
+\+\#define SYNC2\+\_\+\+CODE~0x\+CF}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00043}{43}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a70a8f18b872e7392d66cfe2748d617ed}\index{serial\_sm.h@{serial\_sm.h}!SYNC3\_CODE@{SYNC3\_CODE}}
+\index{SYNC3\_CODE@{SYNC3\_CODE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{SYNC3\_CODE}{SYNC3\_CODE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a70a8f18b872e7392d66cfe2748d617ed} 
+\+\#define SYNC3\+\_\+\+CODE~0x\+FC}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00044}{44}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a264257ef3a67b018dd37e426218e40c8}\index{serial\_sm.h@{serial\_sm.h}!SYNC4\_CODE@{SYNC4\_CODE}}
+\index{SYNC4\_CODE@{SYNC4\_CODE}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{SYNC4\_CODE}{SYNC4\_CODE}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a264257ef3a67b018dd37e426218e40c8} 
+\+\#define SYNC4\+\_\+\+CODE~0x1D}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00045}{45}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_a07ab47e2ed266cd713cdd5fc34b91b5c}\index{serial\_sm.h@{serial\_sm.h}!SYNC\_LENGTH@{SYNC\_LENGTH}}
+\index{SYNC\_LENGTH@{SYNC\_LENGTH}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{SYNC\_LENGTH}{SYNC\_LENGTH}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a07ab47e2ed266cd713cdd5fc34b91b5c} 
+\+\#define SYNC\+\_\+\+LENGTH~4}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00057}{57}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+
+
+\label{doc-enum-members}
+\Hypertarget{serial__sm_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8f}\index{serial\_sm.h@{serial\_sm.h}!Packet\_Field\_Offset\_t@{Packet\_Field\_Offset\_t}}
+\index{Packet\_Field\_Offset\_t@{Packet\_Field\_Offset\_t}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{Packet\_Field\_Offset\_t}{Packet\_Field\_Offset\_t}}
+{\footnotesize\ttfamily \label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8f} 
+enum \doxymbox{\hyperlink{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8f}{Packet\+\_\+\+Field\+\_\+\+Offset\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC1\_OFFSET@{SYNC1\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC1\_OFFSET@{SYNC1\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa40c6bc659442571c1883074a9c6739d3}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa40c6bc659442571c1883074a9c6739d3} 
+SYNC1\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC2\_OFFSET@{SYNC2\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC2\_OFFSET@{SYNC2\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa204a57de16ca79449b17ba31f0a918fb}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa204a57de16ca79449b17ba31f0a918fb} 
+SYNC2\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC3\_OFFSET@{SYNC3\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC3\_OFFSET@{SYNC3\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8faf128b868be9974b3ee0d64935c06c511}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8faf128b868be9974b3ee0d64935c06c511} 
+SYNC3\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC4\_OFFSET@{SYNC4\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC4\_OFFSET@{SYNC4\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa8075f47c572af2748dd119c5d58cbd07}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa8075f47c572af2748dd119c5d58cbd07} 
+SYNC4\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OPCODE\_OFFSET@{OPCODE\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!OPCODE\_OFFSET@{OPCODE\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa918b0e9018af37f0455f3c15ee0773b6}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa918b0e9018af37f0455f3c15ee0773b6} 
+OPCODE\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ERROR\_OFFSET@{ERROR\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!ERROR\_OFFSET@{ERROR\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa66fe8dc53456d12695530dcb87003731}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa66fe8dc53456d12695530dcb87003731} 
+ERROR\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SEQUENCE\_OFFSET@{SEQUENCE\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SEQUENCE\_OFFSET@{SEQUENCE\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa7e1c5dd2670dbc88e98b556b9b80c9db}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa7e1c5dd2670dbc88e98b556b9b80c9db} 
+SEQUENCE\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DATA\_LENGTH\_OFFSET@{DATA\_LENGTH\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!DATA\_LENGTH\_OFFSET@{DATA\_LENGTH\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa270f0e3d23b1b8ce9e1f581b2bdaf35c}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa270f0e3d23b1b8ce9e1f581b2bdaf35c} 
+DATA\+\_\+\+LENGTH\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESERVED\_OFFSET@{RESERVED\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!RESERVED\_OFFSET@{RESERVED\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa55659c75ef620a1800ba02820bc671e6}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fa55659c75ef620a1800ba02820bc671e6} 
+RESERVED\+\_\+\+OFFSET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DATA\_OFFSET@{DATA\_OFFSET}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!DATA\_OFFSET@{DATA\_OFFSET}}
+}\Hypertarget{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fae81cd8da0c30a1d852eb87d4f16b7899}\label{serial__sm_8h_ab093609b7b26b65cffd5b13d6a429d8fae81cd8da0c30a1d852eb87d4f16b7899} 
+DATA\+\_\+\+OFFSET&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00028}{28}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}\index{serial\_sm.h@{serial\_sm.h}!Serial\_Msg\_State\_t@{Serial\_Msg\_State\_t}}
+\index{Serial\_Msg\_State\_t@{Serial\_Msg\_State\_t}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{Serial\_Msg\_State\_t}{Serial\_Msg\_State\_t}}
+{\footnotesize\ttfamily \label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f} 
+enum \doxymbox{\hyperlink{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41f}{Serial\+\_\+\+Msg\+\_\+\+State\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC\_WAIT@{SYNC\_WAIT}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC\_WAIT@{SYNC\_WAIT}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c} 
+SYNC\+\_\+\+WAIT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC1@{SYNC1}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC1@{SYNC1}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7} 
+SYNC1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC2@{SYNC2}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC2@{SYNC2}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8} 
+SYNC2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC3@{SYNC3}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC3@{SYNC3}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75} 
+SYNC3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYNC4@{SYNC4}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SYNC4@{SYNC4}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479} 
+SYNC4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FUNCTION@{FUNCTION}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!FUNCTION@{FUNCTION}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6} 
+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ERROR\_CODE@{ERROR\_CODE}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!ERROR\_CODE@{ERROR\_CODE}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664} 
+ERROR\+\_\+\+CODE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SEQUENCE@{SEQUENCE}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SEQUENCE@{SEQUENCE}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313} 
+SEQUENCE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DATA\_COUNT@{DATA\_COUNT}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!DATA\_COUNT@{DATA\_COUNT}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa86b0f02738a3e35cae6724a4d66c1846}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa86b0f02738a3e35cae6724a4d66c1846} 
+DATA\+\_\+\+COUNT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESERVED@{RESERVED}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!RESERVED@{RESERVED}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b} 
+RESERVED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DATA@{DATA}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!DATA@{DATA}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2} 
+DATA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CRC1@{CRC1}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!CRC1@{CRC1}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57} 
+CRC1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CRC2@{CRC2}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!CRC2@{CRC2}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7} 
+CRC2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CRC3@{CRC3}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!CRC3@{CRC3}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825} 
+CRC3&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CRC4@{CRC4}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!CRC4@{CRC4}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22} 
+CRC4&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SM\_ERROR@{SM\_ERROR}!serial\_sm.h@{serial\_sm.h}}
+\index{serial\_sm.h@{serial\_sm.h}!SM\_ERROR@{SM\_ERROR}}
+}\Hypertarget{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10}\label{serial__sm_8h_aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10} 
+SM\+\_\+\+ERROR&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8h_source_l00063}{63}} of file \doxymbox{\hyperlink{serial__sm_8h_source}{serial\+\_\+sm.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{serial__sm_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{serial__sm_8h_add62247398443f8539532c99b386c595}\index{serial\_sm.h@{serial\_sm.h}!Reset\_Serial\_SM@{Reset\_Serial\_SM}}
+\index{Reset\_Serial\_SM@{Reset\_Serial\_SM}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{Reset\_Serial\_SM()}{Reset\_Serial\_SM()}}
+{\footnotesize\ttfamily \label{serial__sm_8h_add62247398443f8539532c99b386c595} 
+void Reset\+\_\+\+Serial\+\_\+\+SM (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00228}{228}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8h_add62247398443f8539532c99b386c595_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__sm_8h_a318ca21f6a277906e99215773de6db53}\index{serial\_sm.h@{serial\_sm.h}!v\_Update\_Serial\_SM@{v\_Update\_Serial\_SM}}
+\index{v\_Update\_Serial\_SM@{v\_Update\_Serial\_SM}!serial\_sm.h@{serial\_sm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Update\_Serial\_SM()}{v\_Update\_Serial\_SM()}}
+{\footnotesize\ttfamily \label{serial__sm_8h_a318ca21f6a277906e99215773de6db53} 
+void v\+\_\+\+Update\+\_\+\+Serial\+\_\+\+SM (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Received\+\_\+\+Char}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__sm_8c_source_l00068}{68}} of file \doxymbox{\hyperlink{serial__sm_8c_source}{serial\+\_\+sm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{serial__sm_8h_a318ca21f6a277906e99215773de6db53_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__sm_8h_a318ca21f6a277906e99215773de6db53_icgraph}
+\end{center}
+\end{figure}

@@ -1,0 +1,216 @@
+\doxysection{miv\+\_\+rv32\+\_\+plic.\+h}
+\hypertarget{miv__rv32__plic_8h_source}{}\label{miv__rv32__plic_8h_source}\index{src/miv\_rv32\_hal/miv\_rv32\_plic.h@{src/miv\_rv32\_hal/miv\_rv32\_plic.h}}
+\doxymbox{\hyperlink{miv__rv32__plic_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00002}00002\ \textcolor{comment}{\ *\ Copyright\ 2019-\/2022\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00006}00006\ \textcolor{comment}{\ *\ @file\ miv\_rv32\_plic.h}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00007}00007\ \textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ Mi-\/V\ legacy\ RV32\ soft\ processor\ PLIC\ access\ data\ structures\ and}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00009}00009\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ functions.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00010}00010\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Legacy\ RV32\ soft\ processors\ are\ DEPRICATED.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00011}00011\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ Migrate\ to\ MIV\_RV32\ v3.0\ or\ later.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00012}00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00013}00013\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00014}00014\ \textcolor{preprocessor}{\#ifndef\ RISCV\_PLIC\_H}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00015}00015\ \textcolor{preprocessor}{\#define\ RISCV\_PLIC\_H}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00017}00017\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{miv__rv32__regs_8h}{miv\_rv32\_regs.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00020}00020\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00021}00021\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00022}00022\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00024}00024\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00025}00025\ \textcolor{comment}{\ *\ Interrupt\ numbers:}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00026}00026\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00027}00027\ \textcolor{preprocessor}{\#ifdef\ MIV\_LEGACY\_RV32}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00028}00028\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00029}00029\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00030}00030\ \ \ \ \ NoInterrupt\_IRQn\ =\ 0,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00031}00031\ \ \ \ \ External\_1\_IRQn\ \ =\ 1,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00032}00032\ \ \ \ \ External\_2\_IRQn\ \ =\ 2,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00033}00033\ \ \ \ \ External\_3\_IRQn\ \ =\ 3,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00034}00034\ \ \ \ \ External\_4\_IRQn\ \ =\ 4,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00035}00035\ \ \ \ \ External\_5\_IRQn\ \ =\ 5,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00036}00036\ \ \ \ \ External\_6\_IRQn\ \ =\ 6,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00037}00037\ \ \ \ \ External\_7\_IRQn\ \ =\ 7,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00038}00038\ \ \ \ \ External\_8\_IRQn\ \ =\ 8,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00039}00039\ \ \ \ \ External\_9\_IRQn\ \ =\ 9,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00040}00040\ \ \ \ \ External\_10\_IRQn\ =\ 10,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00041}00041\ \ \ \ \ External\_11\_IRQn\ =\ 11,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00042}00042\ \ \ \ \ External\_12\_IRQn\ =\ 12,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00043}00043\ \ \ \ \ External\_13\_IRQn\ =\ 13,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00044}00044\ \ \ \ \ External\_14\_IRQn\ =\ 14,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00045}00045\ \ \ \ \ External\_15\_IRQn\ =\ 15,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00046}00046\ \ \ \ \ External\_16\_IRQn\ =\ 16,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00047}00047\ \ \ \ \ External\_17\_IRQn\ =\ 17,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00048}00048\ \ \ \ \ External\_18\_IRQn\ =\ 18,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00049}00049\ \ \ \ \ External\_19\_IRQn\ =\ 19,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00050}00050\ \ \ \ \ External\_20\_IRQn\ =\ 20,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00051}00051\ \ \ \ \ External\_21\_IRQn\ =\ 21,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00052}00052\ \ \ \ \ External\_22\_IRQn\ =\ 22,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00053}00053\ \ \ \ \ External\_23\_IRQn\ =\ 23,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00054}00054\ \ \ \ \ External\_24\_IRQn\ =\ 24,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00055}00055\ \ \ \ \ External\_25\_IRQn\ =\ 25,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00056}00056\ \ \ \ \ External\_26\_IRQn\ =\ 26,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00057}00057\ \ \ \ \ External\_27\_IRQn\ =\ 27,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00058}00058\ \ \ \ \ External\_28\_IRQn\ =\ 28,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00059}00059\ \ \ \ \ External\_29\_IRQn\ =\ 29,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00060}00060\ \ \ \ \ External\_30\_IRQn\ =\ 30,}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00061}00061\ \ \ \ \ External\_31\_IRQn\ =\ 31}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00062}00062\ \}\ IRQn\_Type;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00064}00064\ \textcolor{preprocessor}{\#define\ EXT\_INTR\_SOURCES\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 31}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00066}00066\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00067}00067\ \textcolor{comment}{\ *\ PLIC:\ Platform\ Level\ Interrupt\ Controller}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00068}00068\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00069}00069\ \textcolor{preprocessor}{\#define\ PLIC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x40000000UL}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00071}00071\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00072}00072\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00073}00073\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ PRIORITY\_THRESHOLD;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00074}00074\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ CLAIM\_COMPLETE;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00075}00075\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ reserved[1022];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00076}00076\ \}\ IRQ\_Target\_Type;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00078}00078\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00079}00079\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00080}00080\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ ENABLES[32];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00081}00081\ \}\ Target\_Enables\_Type;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00083}00083\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00085}00085\ \ \ \ \ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ Source\ Priority\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00086}00086\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ SOURCE\_PRIORITY[1024];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00087}00087\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00088}00088\ \ \ \ \ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ Pending\ array\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00089}00089\ \ \ \ \ \textcolor{keyword}{volatile}\ \textcolor{keyword}{const}\ uint32\_t\ PENDING\_ARRAY[32];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00090}00090\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ RESERVED1[992];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00091}00091\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00092}00092\ \ \ \ \ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ Target\ enables\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00093}00093\ \ \ \ \ \textcolor{keyword}{volatile}\ Target\_Enables\_Type\ TARGET\_ENABLES[15808];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00095}00095\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ RESERVED2[16384];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00096}00096\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00097}00097\ \ \ \ \ \textcolor{comment}{/*-\/-\/-\/\ Target\ Priority\ threshold\ and\ claim/complete-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00098}00098\ \ \ \ \ IRQ\_Target\_Type\ TARGET[15872];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00099}00099\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00100}00100\ \}\ PLIC\_Type;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00102}00102\ \textcolor{preprocessor}{\#define\ PLIC\ \ \ \ ((PLIC\_Type\ *)PLIC\_BASE\_ADDR)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00104}00104\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00105}00105\ \textcolor{comment}{\ *\ The\ function\ MRV\_PLIC\_init()\ initializes\ the\ PLIC\ controller\ and\ enables}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00106}00106\ \textcolor{comment}{\ *\ the\ global\ external\ interrupt\ bit.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00107}00107\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00108}00108\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ MRV\_PLIC\_init(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00109}00109\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00110}00110\ \ \ \ \ uint32\_t\ inc;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00111}00111\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ hart\_id\ =\ read\_csr(mhartid);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00112}00112\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00113}00113\ \ \ \ \ \textcolor{comment}{/*\ Disable\ all\ interrupts\ for\ the\ current\ hart.\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00114}00114\ \ \ \ \ \textcolor{keywordflow}{for}(inc\ =\ 0;\ inc\ <\ ((EXT\_INTR\_SOURCES\ +\ 32u)\ /\ 32u);\ ++inc)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00115}00115\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00116}00116\ \ \ \ \ \ \ \ \ PLIC-\/>TARGET\_ENABLES[hart\_id].ENABLES[inc]\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00117}00117\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00119}00119\ \ \ \ \ \textcolor{comment}{/*\ Set\ priorities\ to\ zero.\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00120}00120\ \ \ \ \ \textcolor{keywordflow}{for}(inc\ =\ 0;\ inc\ <\ EXT\_INTR\_SOURCES;\ ++inc)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00121}00121\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00122}00122\ \ \ \ \ \ \ \ \ PLIC-\/>SOURCE\_PRIORITY[inc]\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00123}00123\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00125}00125\ \ \ \ \ \textcolor{comment}{/*\ Set\ the\ threshold\ to\ zero.\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00126}00126\ \ \ \ \ PLIC-\/>TARGET[hart\_id].PRIORITY\_THRESHOLD\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00127}00127\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00128}00128\ \ \ \ \ \textcolor{comment}{/*\ Enable\ machine\ external\ interrupts.\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00129}00129\ \ \ \ \ set\_csr(mie,\ \doxymbox{\hyperlink{miv__rv32__regs_8h_aa0b390526aa02e969ae64235b983069a}{MIP\_MEIP}});}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00130}00130\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00132}00132\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00133}00133\ \textcolor{comment}{\ *\ The\ function\ MRV\_PLIC\_enable\_irq()\ enables\ the\ external\ interrupt\ for\ the}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00134}00134\ \textcolor{comment}{\ *\ interrupt\ number\ indicated\ by\ the\ parameter\ IRQn.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00135}00135\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00136}00136\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ MRV\_PLIC\_enable\_irq(IRQn\_Type\ IRQn)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00137}00137\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00138}00138\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ hart\_id\ =\ read\_csr(mhartid);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00139}00139\ \ \ \ \ uint32\_t\ current\ =\ PLIC-\/>TARGET\_ENABLES[hart\_id].ENABLES[IRQn\ /\ 32];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00140}00140\ \ \ \ \ current\ |=\ (uint32\_t)1\ <<\ (IRQn\ \%\ 32);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00141}00141\ \ \ \ \ PLIC-\/>TARGET\_ENABLES[hart\_id].ENABLES[IRQn\ /\ 32]\ =\ current;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00142}00142\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00144}00144\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00145}00145\ \textcolor{comment}{\ *\ The\ function\ MRV\_PLIC\_disable\_irq()\ disables\ the\ external\ interrupt\ for}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00146}00146\ \textcolor{comment}{\ *\ the\ interrupt\ number\ indicated\ by\ the\ parameter\ IRQn.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00147}00147\ \textcolor{comment}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00148}00148\ \textcolor{comment}{\ *\ NOTE:}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00149}00149\ \textcolor{comment}{\ *\ This\ function\ can\ be\ used\ to\ disable\ the\ external\ interrupt\ from\ outside}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00150}00150\ \textcolor{comment}{\ *\ external\ interrupt\ handler\ function.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00151}00151\ \textcolor{comment}{\ *\ This\ function\ MUST\ NOT\ be\ used\ from\ within\ the\ External\ Interrupt\ handler.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00152}00152\ \textcolor{comment}{\ *\ If\ you\ wish\ to\ disable\ the\ external\ interrupt\ while\ the\ interrupt\ handler}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00153}00153\ \textcolor{comment}{\ *\ for\ that\ external\ interrupt\ is\ executing\ then\ you\ must\ use\ the\ return\ value}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00154}00154\ \textcolor{comment}{\ *\ EXT\_IRQ\_DISABLE\ to\ return\ from\ the\ extern\ interrupt\ handler.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00155}00155\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00156}00156\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ MRV\_PLIC\_disable\_irq(IRQn\_Type\ IRQn)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00157}00157\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00158}00158\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ hart\_id\ =\ read\_csr(mhartid);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00159}00159\ \ \ \ \ uint32\_t\ current\ =\ PLIC-\/>TARGET\_ENABLES[hart\_id].ENABLES[IRQn\ /\ 32];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00160}00160\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00161}00161\ \ \ \ \ current\ \&=\ \string~((uint32\_t)1\ <<\ (IRQn\ \%\ 32));}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00163}00163\ \ \ \ \ PLIC-\/>TARGET\_ENABLES[hart\_id].ENABLES[IRQn\ /\ 32]\ =\ current;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00164}00164\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00166}00166\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00167}00167\ \textcolor{comment}{\ *\ The\ function\ MRV\_PLIC\_set\_priority()\ sets\ the\ priority\ for\ the\ external}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00168}00168\ \textcolor{comment}{\ *\ interrupt\ for\ the\ interrupt\ number\ indicated\ by\ the\ parameter\ IRQn.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00169}00169\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00170}00170\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ MRV\_PLIC\_set\_priority(IRQn\_Type\ IRQn,\ uint32\_t\ priority)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00171}00171\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00172}00172\ \ \ \ \ PLIC-\/>SOURCE\_PRIORITY[IRQn]\ =\ priority;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00173}00173\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00175}00175\ \textcolor{comment}{/*==============================================================================}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00176}00176\ \textcolor{comment}{\ *\ The\ function\ MRV\_PLIC\_get\_priority()\ returns\ the\ priority\ for\ the\ external}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00177}00177\ \textcolor{comment}{\ *\ interrupt\ for\ the\ interrupt\ number\ indicated\ by\ the\ parameter\ IRQn.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00178}00178\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00179}00179\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ uint32\_t\ MRV\_PLIC\_get\_priority(IRQn\_Type\ IRQn)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00180}00180\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00181}00181\ \ \ \ \ \textcolor{keywordflow}{return}\ PLIC-\/>SOURCE\_PRIORITY[IRQn];}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00182}00182\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00183}00183\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00184}00184\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00189}00189\ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ MRV\_PLIC\_clear\_pending\_irq(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00190}00190\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00191}00191\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ hart\_id\ =\ read\_csr(mhartid);}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00192}00192\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t\ int\_num\ \ =\ PLIC-\/>TARGET[hart\_id].CLAIM\_COMPLETE;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00193}00193\ \ \ \ \ \textcolor{keyword}{volatile}\ int32\_t\ wait\_possible\_int;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00194}00194\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00195}00195\ \ \ \ \ \textcolor{keywordflow}{while}\ (NoInterrupt\_IRQn\ !=\ int\_num)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00196}00196\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00197}00197\ \ \ \ \ \ \ \ \ PLIC-\/>TARGET[hart\_id].CLAIM\_COMPLETE\ =\ int\_num;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00198}00198\ \ \ \ \ \ \ \ \ wait\_possible\_int\ =\ 0xFU;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00199}00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (wait\_possible\_int)}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00200}00200\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ wait\_possible\_int-\/-\/;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00202}00202\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00203}00203\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00204}00204\ \ \ \ \ \ \ \ \ int\_num\ \ =\ PLIC-\/>TARGET[hart\_id].CLAIM\_COMPLETE;}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00205}00205\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00206}00206\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00207}00207\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00208}00208\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ MIV\_LEGACY\_RV32\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00209}00209\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00210}00210\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00211}00211\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00212}00212\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00213}00213\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__plic_8h_source_l00214}00214\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ RISCV\_PLIC\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

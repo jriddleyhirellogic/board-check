@@ -1,0 +1,424 @@
+   1              		.file	"debug_switches.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_Debug_Switches,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_Debug_Switches
+  13              	v_Init_Debug_Switches:
+  14              	.LFB0:
+  15              		.file 1 "../src/hal/debug_switches.c"
+   1:../src/hal/debug_switches.c **** /*
+   2:../src/hal/debug_switches.c ****  * debug_switches.c
+   3:../src/hal/debug_switches.c ****  *
+   4:../src/hal/debug_switches.c ****  *  Created on: Feb 6, 2026
+   5:../src/hal/debug_switches.c ****  *      Author: iboard
+   6:../src/hal/debug_switches.c ****  */
+   7:../src/hal/debug_switches.c **** #include "mem_map.h"
+   8:../src/hal/debug_switches.c **** #include "core_gpio.h"
+   9:../src/hal/debug_switches.c **** #include "debug_switches.h"
+  10:../src/hal/debug_switches.c **** 
+  11:../src/hal/debug_switches.c **** static gpio_instance_t debug_switches;
+  12:../src/hal/debug_switches.c **** 
+  13:../src/hal/debug_switches.c **** void v_Init_Debug_Switches(void)
+  14:../src/hal/debug_switches.c **** {
+  16              		.loc 1 14 1
+  17              		.cfi_startproc
+  15:../src/hal/debug_switches.c ****     debug_switches.apb_bus_width = GPIO_APB_32_BITS_BUS;
+  18              		.loc 1 15 5
+  19              		.loc 1 15 34 is_stmt 0
+  20 0000 97070000 		lla	a5,.LANCHOR0
+  20      93870700 
+  21 0008 13072000 		li	a4,2
+  22 000c 23A2E700 		sw	a4,4(a5)
+  16:../src/hal/debug_switches.c ****     debug_switches.base_addr = DBG_GPIO_BASE_ADDR;
+  23              		.loc 1 16 5 is_stmt 1
+  24              		.loc 1 16 30 is_stmt 0
+  25 0010 37270170 		li	a4,1879121920
+  26 0014 23A0E700 		sw	a4,0(a5)
+  17:../src/hal/debug_switches.c **** }
+  27              		.loc 1 17 1
+  28 0018 67800000 		ret
+  29              		.cfi_endproc
+  30              	.LFE0:
+  32              		.section	.text.u32_Get_Switch_State,"ax",@progbits
+  33              		.align	2
+  34              		.globl	u32_Get_Switch_State
+  36              	u32_Get_Switch_State:
+  37              	.LFB1:
+  18:../src/hal/debug_switches.c **** 
+  19:../src/hal/debug_switches.c **** uint32_t u32_Get_Switch_State(void)
+  20:../src/hal/debug_switches.c **** {
+  38              		.loc 1 20 1 is_stmt 1
+  39              		.cfi_startproc
+  21:../src/hal/debug_switches.c ****     uint32_t u32_Inputs = GPIO_get_inputs(&debug_switches);
+  40              		.loc 1 21 5
+  20:../src/hal/debug_switches.c ****     uint32_t u32_Inputs = GPIO_get_inputs(&debug_switches);
+  41              		.loc 1 20 1 is_stmt 0
+  42 0000 130101FF 		addi	sp,sp,-16
+  43              		.cfi_def_cfa_offset 16
+  44              		.loc 1 21 27
+  45 0004 17050000 		lla	a0,.LANCHOR0
+  45      13050500 
+  20:../src/hal/debug_switches.c ****     uint32_t u32_Inputs = GPIO_get_inputs(&debug_switches);
+  46              		.loc 1 20 1
+  47 000c 23261100 		sw	ra,12(sp)
+  48              		.cfi_offset 1, -4
+  49              		.loc 1 21 27
+  50 0010 97000000 		call	GPIO_get_inputs
+  50      E7800000 
+  51              	.LVL0:
+  22:../src/hal/debug_switches.c ****     return u32_Inputs & ALL_SWITCHES;
+  52              		.loc 1 22 5 is_stmt 1
+  23:../src/hal/debug_switches.c **** }
+  53              		.loc 1 23 1 is_stmt 0
+  54 0018 8320C100 		lw	ra,12(sp)
+  55              		.cfi_restore 1
+  56 001c B70700C0 		li	a5,-1073741824
+  57 0020 3375F500 		and	a0,a0,a5
+  58              	.LVL1:
+  59 0024 13010101 		addi	sp,sp,16
+  60              		.cfi_def_cfa_offset 0
+  61 0028 67800000 		jr	ra
+  62              		.cfi_endproc
+  63              	.LFE1:
+  65              		.section	.text.u8_Update_Switch_Debounce,"ax",@progbits
+  66              		.align	2
+  67              		.globl	u8_Update_Switch_Debounce
+  69              	u8_Update_Switch_Debounce:
+  70              	.LFB2:
+  24:../src/hal/debug_switches.c **** 
+  25:../src/hal/debug_switches.c **** // Returns debounced state of switch
+  26:../src/hal/debug_switches.c **** uint8_t u8_Update_Switch_Debounce( uint8_t *p_Counter, uint32_t u32_Switch_Mask )
+  27:../src/hal/debug_switches.c **** {
+  71              		.loc 1 27 1 is_stmt 1
+  72              		.cfi_startproc
+  73              	.LVL2:
+  28:../src/hal/debug_switches.c ****     uint32_t u32_Switch_State = u32_Get_Switch_State();
+  74              		.loc 1 28 5
+  27:../src/hal/debug_switches.c ****     uint32_t u32_Switch_State = u32_Get_Switch_State();
+  75              		.loc 1 27 1 is_stmt 0
+  76 0000 130101FE 		addi	sp,sp,-32
+  77              		.cfi_def_cfa_offset 32
+  78 0004 232C8100 		sw	s0,24(sp)
+  79 0008 2326B100 		sw	a1,12(sp)
+  80 000c 232E1100 		sw	ra,28(sp)
+  81              		.cfi_offset 8, -8
+  82              		.cfi_offset 1, -4
+  27:../src/hal/debug_switches.c ****     uint32_t u32_Switch_State = u32_Get_Switch_State();
+  83              		.loc 1 27 1
+  84 0010 13040500 		mv	s0,a0
+  85              		.loc 1 28 33
+  86 0014 97000000 		call	u32_Get_Switch_State
+  86      E7800000 
+  87              	.LVL3:
+  29:../src/hal/debug_switches.c **** 
+  30:../src/hal/debug_switches.c ****     if( (u32_Switch_State & u32_Switch_Mask) == 0  ) // Switch depressed
+  88              		.loc 1 30 5 is_stmt 1
+  89              		.loc 1 30 27 is_stmt 0
+  90 001c 8325C100 		lw	a1,12(sp)
+  91 0020 B375B500 		and	a1,a0,a1
+  31:../src/hal/debug_switches.c ****     {
+  32:../src/hal/debug_switches.c ****        *p_Counter += *p_Counter < DEBOUNCE_THRESHOLD_COUNT ? 1 : 0;
+  33:../src/hal/debug_switches.c ****     }
+  34:../src/hal/debug_switches.c ****     else
+  35:../src/hal/debug_switches.c ****     {
+  36:../src/hal/debug_switches.c ****         *p_Counter = 0;
+  92              		.loc 1 36 20
+  93 0024 13050000 		li	a0,0
+  94              	.LVL4:
+  30:../src/hal/debug_switches.c ****     {
+  95              		.loc 1 30 7
+  96 0028 639A0500 		bne	a1,zero,.L5
+  32:../src/hal/debug_switches.c ****     }
+  97              		.loc 1 32 8 is_stmt 1
+  32:../src/hal/debug_switches.c ****     }
+  98              		.loc 1 32 19 is_stmt 0
+  99 002c 03450400 		lbu	a0,0(s0)
+  32:../src/hal/debug_switches.c ****     }
+ 100              		.loc 1 32 64
+ 101 0030 93379501 		sltiu	a5,a0,25
+  32:../src/hal/debug_switches.c ****     }
+ 102              		.loc 1 32 19
+ 103 0034 3305F500 		add	a0,a0,a5
+ 104 0038 1375F50F 		andi	a0,a0,0xff
+ 105              	.L5:
+ 106 003c 2300A400 		sb	a0,0(s0)
+  37:../src/hal/debug_switches.c ****     }
+  38:../src/hal/debug_switches.c **** 
+  39:../src/hal/debug_switches.c ****     return *p_Counter == DEBOUNCE_THRESHOLD_COUNT;
+ 107              		.loc 1 39 5 is_stmt 1
+  40:../src/hal/debug_switches.c **** }
+ 108              		.loc 1 40 1 is_stmt 0
+ 109 0040 8320C101 		lw	ra,28(sp)
+ 110              		.cfi_restore 1
+ 111 0044 03248101 		lw	s0,24(sp)
+ 112              		.cfi_restore 8
+ 113              	.LVL5:
+  39:../src/hal/debug_switches.c **** }
+ 114              		.loc 1 39 23
+ 115 0048 130575FE 		addi	a0,a0,-25
+ 116              		.loc 1 40 1
+ 117 004c 13351500 		seqz	a0,a0
+ 118 0050 13010102 		addi	sp,sp,32
+ 119              		.cfi_def_cfa_offset 0
+ 120              	.LVL6:
+ 121 0054 67800000 		jr	ra
+ 122              		.cfi_endproc
+ 123              	.LFE2:
+ 125              		.section	.sbss.debug_switches,"aw",@nobits
+ 126              		.align	2
+ 127              		.set	.LANCHOR0,. + 0
+ 130              	debug_switches:
+ 131 0000 00000000 		.zero	8
+ 131      00000000 
+ 132              		.text
+ 133              	.Letext0:
+ 134              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 135              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 136              		.file 4 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 137              		.file 5 "../src/hal/core_gpio.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 debug_switches.c
+<<<<<<< HEAD
+     /tmp/cc9S81BF.s:13     .text.v_Init_Debug_Switches:0000000000000000 v_Init_Debug_Switches
+     /tmp/cc9S81BF.s:17     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:18     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:19     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:20     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:24     .text.v_Init_Debug_Switches:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:25     .text.v_Init_Debug_Switches:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:28     .text.v_Init_Debug_Switches:0000000000000018 .L0 
+     /tmp/cc9S81BF.s:29     .text.v_Init_Debug_Switches:000000000000001c .L0 
+     /tmp/cc9S81BF.s:36     .text.u32_Get_Switch_State:0000000000000000 u32_Get_Switch_State
+     /tmp/cc9S81BF.s:39     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:40     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:41     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:42     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:43     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc9S81BF.s:45     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc9S81BF.s:47     .text.u32_Get_Switch_State:000000000000000c .L0 
+     /tmp/cc9S81BF.s:48     .text.u32_Get_Switch_State:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:50     .text.u32_Get_Switch_State:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:53     .text.u32_Get_Switch_State:0000000000000018 .L0 
+     /tmp/cc9S81BF.s:54     .text.u32_Get_Switch_State:0000000000000018 .L0 
+     /tmp/cc9S81BF.s:55     .text.u32_Get_Switch_State:000000000000001c .L0 
+     /tmp/cc9S81BF.s:60     .text.u32_Get_Switch_State:0000000000000028 .L0 
+     /tmp/cc9S81BF.s:62     .text.u32_Get_Switch_State:000000000000002c .L0 
+     /tmp/cc9S81BF.s:69     .text.u8_Update_Switch_Debounce:0000000000000000 u8_Update_Switch_Debounce
+     /tmp/cc9S81BF.s:72     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:74     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:75     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:76     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:77     .text.u8_Update_Switch_Debounce:0000000000000004 .L0 
+     /tmp/cc9S81BF.s:81     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:82     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:84     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc9S81BF.s:86     .text.u8_Update_Switch_Debounce:0000000000000014 .L0 
+     /tmp/cc9S81BF.s:89     .text.u8_Update_Switch_Debounce:000000000000001c .L0 
+     /tmp/cc9S81BF.s:90     .text.u8_Update_Switch_Debounce:000000000000001c .L0 
+     /tmp/cc9S81BF.s:93     .text.u8_Update_Switch_Debounce:0000000000000024 .L0 
+     /tmp/cc9S81BF.s:96     .text.u8_Update_Switch_Debounce:0000000000000028 .L0 
+     /tmp/cc9S81BF.s:98     .text.u8_Update_Switch_Debounce:000000000000002c .L0 
+     /tmp/cc9S81BF.s:99     .text.u8_Update_Switch_Debounce:000000000000002c .L0 
+     /tmp/cc9S81BF.s:101    .text.u8_Update_Switch_Debounce:0000000000000030 .L0 
+     /tmp/cc9S81BF.s:103    .text.u8_Update_Switch_Debounce:0000000000000034 .L0 
+     /tmp/cc9S81BF.s:108    .text.u8_Update_Switch_Debounce:0000000000000040 .L0 
+     /tmp/cc9S81BF.s:109    .text.u8_Update_Switch_Debounce:0000000000000040 .L0 
+     /tmp/cc9S81BF.s:110    .text.u8_Update_Switch_Debounce:0000000000000044 .L0 
+     /tmp/cc9S81BF.s:112    .text.u8_Update_Switch_Debounce:0000000000000048 .L0 
+     /tmp/cc9S81BF.s:115    .text.u8_Update_Switch_Debounce:0000000000000048 .L0 
+     /tmp/cc9S81BF.s:117    .text.u8_Update_Switch_Debounce:000000000000004c .L0 
+     /tmp/cc9S81BF.s:119    .text.u8_Update_Switch_Debounce:0000000000000054 .L0 
+     /tmp/cc9S81BF.s:122    .text.u8_Update_Switch_Debounce:0000000000000058 .L0 
+     /tmp/cc9S81BF.s:127    .sbss.debug_switches:0000000000000000 .LANCHOR0
+     /tmp/cc9S81BF.s:130    .sbss.debug_switches:0000000000000000 debug_switches
+     /tmp/cc9S81BF.s:32     .text.v_Init_Debug_Switches:000000000000001c .L0 
+     /tmp/cc9S81BF.s:65     .text.u32_Get_Switch_State:000000000000002c .L0 
+     /tmp/cc9S81BF.s:125    .text.u8_Update_Switch_Debounce:0000000000000058 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:20     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc9S81BF.s:45     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc9S81BF.s:105    .text.u8_Update_Switch_Debounce:000000000000003c .L5
+     /tmp/cc9S81BF.s:372    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc9S81BF.s:746    .debug_str:0000000000000056 .LASF29
+     /tmp/cc9S81BF.s:768    .debug_str:00000000000001dc .LASF30
+     /tmp/cc9S81BF.s:750    .debug_str:0000000000000124 .LASF31
+     /tmp/cc9S81BF.s:722    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc9S81BF.s:732    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc9S81BF.s:772    .debug_str:0000000000000206 .LASF0
+     /tmp/cc9S81BF.s:764    .debug_str:00000000000001b8 .LASF5
+     /tmp/cc9S81BF.s:770    .debug_str:00000000000001f8 .LASF1
+     /tmp/cc9S81BF.s:736    .debug_str:0000000000000011 .LASF2
+     /tmp/cc9S81BF.s:780    .debug_str:000000000000023f .LASF3
+     /tmp/cc9S81BF.s:758    .debug_str:000000000000018b .LASF4
+     /tmp/cc9S81BF.s:740    .debug_str:000000000000002b .LASF6
+     /tmp/cc9S81BF.s:792    .debug_str:00000000000002ac .LASF7
+     /tmp/cc9S81BF.s:754    .debug_str:0000000000000162 .LASF8
+     /tmp/cc9S81BF.s:774    .debug_str:0000000000000212 .LASF9
+     /tmp/cc9S81BF.s:778    .debug_str:0000000000000232 .LASF10
+     /tmp/cc9S81BF.s:748    .debug_str:000000000000011c .LASF11
+     /tmp/cc9S81BF.s:776    .debug_str:0000000000000229 .LASF12
+     /tmp/cc9S81BF.s:752    .debug_str:000000000000015b .LASF13
+     /tmp/cc9S81BF.s:782    .debug_str:0000000000000252 .LASF32
+     /tmp/cc9S81BF.s:762    .debug_str:00000000000001a4 .LASF14
+     /tmp/cc9S81BF.s:742    .debug_str:0000000000000036 .LASF15
+     /tmp/cc9S81BF.s:796    .debug_str:00000000000002cc .LASF16
+     /tmp/cc9S81BF.s:756    .debug_str:0000000000000170 .LASF17
+     /tmp/cc9S81BF.s:734    .debug_str:0000000000000000 .LASF18
+     /tmp/cc9S81BF.s:788    .debug_str:0000000000000284 .LASF33
+     /tmp/cc9S81BF.s:784    .debug_str:0000000000000265 .LASF19
+     /tmp/cc9S81BF.s:794    .debug_str:00000000000002be .LASF20
+     /tmp/cc9S81BF.s:738    .debug_str:000000000000001b .LASF21
+     /tmp/cc9S81BF.s:798    .debug_str:00000000000002e1 .LASF24
+     /tmp/cc9S81BF.s:766    .debug_str:00000000000001c2 .LASF26
+     /tmp/cc9S81BF.s:70     .text.u8_Update_Switch_Debounce:0000000000000000 .LFB2
+     /tmp/cc9S81BF.s:123    .text.u8_Update_Switch_Debounce:0000000000000058 .LFE2
+     /tmp/cc9S81BF.s:800    .debug_str:00000000000002f0 .LASF22
+     /tmp/cc9S81BF.s:656    .debug_loc:0000000000000000 .LLST1
+     /tmp/cc9S81BF.s:760    .debug_str:0000000000000194 .LASF23
+     /tmp/cc9S81BF.s:674    .debug_loc:000000000000002c .LLST2
+     /tmp/cc9S81BF.s:804    .debug_str:000000000000030a .LASF25
+     /tmp/cc9S81BF.s:691    .debug_loc:0000000000000057 .LLST3
+     /tmp/cc9S81BF.s:87     .text.u8_Update_Switch_Debounce:000000000000001c .LVL3
+     /tmp/cc9S81BF.s:786    .debug_str:000000000000026f .LASF27
+     /tmp/cc9S81BF.s:37     .text.u32_Get_Switch_State:0000000000000000 .LFB1
+     /tmp/cc9S81BF.s:63     .text.u32_Get_Switch_State:000000000000002c .LFE1
+     /tmp/cc9S81BF.s:744    .debug_str:000000000000004b .LASF28
+     /tmp/cc9S81BF.s:698    .debug_loc:000000000000006a .LLST0
+     /tmp/cc9S81BF.s:51     .text.u32_Get_Switch_State:0000000000000018 .LVL0
+     /tmp/cc9S81BF.s:790    .debug_str:0000000000000296 .LASF34
+     /tmp/cc9S81BF.s:14     .text.v_Init_Debug_Switches:0000000000000000 .LFB0
+     /tmp/cc9S81BF.s:30     .text.v_Init_Debug_Switches:000000000000001c .LFE0
+     /tmp/cc9S81BF.s:802    .debug_str:00000000000002fa .LASF35
+     /tmp/cc9S81BF.s:73     .text.u8_Update_Switch_Debounce:0000000000000000 .LVL2
+     /tmp/cc9S81BF.s:113    .text.u8_Update_Switch_Debounce:0000000000000048 .LVL5
+     /tmp/cc9S81BF.s:120    .text.u8_Update_Switch_Debounce:0000000000000054 .LVL6
+     /tmp/cc9S81BF.s:94     .text.u8_Update_Switch_Debounce:0000000000000028 .LVL4
+     /tmp/cc9S81BF.s:58     .text.u32_Get_Switch_State:0000000000000024 .LVL1
+     /tmp/cc9S81BF.s:139    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cc1ArUUu.s:13     .text.v_Init_Debug_Switches:0000000000000000 v_Init_Debug_Switches
+     /tmp/cc1ArUUu.s:17     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:18     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:19     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:20     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:24     .text.v_Init_Debug_Switches:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:25     .text.v_Init_Debug_Switches:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:28     .text.v_Init_Debug_Switches:0000000000000018 .L0 
+     /tmp/cc1ArUUu.s:29     .text.v_Init_Debug_Switches:000000000000001c .L0 
+     /tmp/cc1ArUUu.s:36     .text.u32_Get_Switch_State:0000000000000000 u32_Get_Switch_State
+     /tmp/cc1ArUUu.s:39     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:40     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:41     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:42     .text.u32_Get_Switch_State:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:43     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc1ArUUu.s:45     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc1ArUUu.s:47     .text.u32_Get_Switch_State:000000000000000c .L0 
+     /tmp/cc1ArUUu.s:48     .text.u32_Get_Switch_State:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:50     .text.u32_Get_Switch_State:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:53     .text.u32_Get_Switch_State:0000000000000018 .L0 
+     /tmp/cc1ArUUu.s:54     .text.u32_Get_Switch_State:0000000000000018 .L0 
+     /tmp/cc1ArUUu.s:55     .text.u32_Get_Switch_State:000000000000001c .L0 
+     /tmp/cc1ArUUu.s:60     .text.u32_Get_Switch_State:0000000000000028 .L0 
+     /tmp/cc1ArUUu.s:62     .text.u32_Get_Switch_State:000000000000002c .L0 
+     /tmp/cc1ArUUu.s:69     .text.u8_Update_Switch_Debounce:0000000000000000 u8_Update_Switch_Debounce
+     /tmp/cc1ArUUu.s:72     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:74     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:75     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:76     .text.u8_Update_Switch_Debounce:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:77     .text.u8_Update_Switch_Debounce:0000000000000004 .L0 
+     /tmp/cc1ArUUu.s:81     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:82     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:84     .text.u8_Update_Switch_Debounce:0000000000000010 .L0 
+     /tmp/cc1ArUUu.s:86     .text.u8_Update_Switch_Debounce:0000000000000014 .L0 
+     /tmp/cc1ArUUu.s:89     .text.u8_Update_Switch_Debounce:000000000000001c .L0 
+     /tmp/cc1ArUUu.s:90     .text.u8_Update_Switch_Debounce:000000000000001c .L0 
+     /tmp/cc1ArUUu.s:93     .text.u8_Update_Switch_Debounce:0000000000000024 .L0 
+     /tmp/cc1ArUUu.s:96     .text.u8_Update_Switch_Debounce:0000000000000028 .L0 
+     /tmp/cc1ArUUu.s:98     .text.u8_Update_Switch_Debounce:000000000000002c .L0 
+     /tmp/cc1ArUUu.s:99     .text.u8_Update_Switch_Debounce:000000000000002c .L0 
+     /tmp/cc1ArUUu.s:101    .text.u8_Update_Switch_Debounce:0000000000000030 .L0 
+     /tmp/cc1ArUUu.s:103    .text.u8_Update_Switch_Debounce:0000000000000034 .L0 
+     /tmp/cc1ArUUu.s:108    .text.u8_Update_Switch_Debounce:0000000000000040 .L0 
+     /tmp/cc1ArUUu.s:109    .text.u8_Update_Switch_Debounce:0000000000000040 .L0 
+     /tmp/cc1ArUUu.s:110    .text.u8_Update_Switch_Debounce:0000000000000044 .L0 
+     /tmp/cc1ArUUu.s:112    .text.u8_Update_Switch_Debounce:0000000000000048 .L0 
+     /tmp/cc1ArUUu.s:115    .text.u8_Update_Switch_Debounce:0000000000000048 .L0 
+     /tmp/cc1ArUUu.s:117    .text.u8_Update_Switch_Debounce:000000000000004c .L0 
+     /tmp/cc1ArUUu.s:119    .text.u8_Update_Switch_Debounce:0000000000000054 .L0 
+     /tmp/cc1ArUUu.s:122    .text.u8_Update_Switch_Debounce:0000000000000058 .L0 
+     /tmp/cc1ArUUu.s:127    .sbss.debug_switches:0000000000000000 .LANCHOR0
+     /tmp/cc1ArUUu.s:130    .sbss.debug_switches:0000000000000000 debug_switches
+     /tmp/cc1ArUUu.s:32     .text.v_Init_Debug_Switches:000000000000001c .L0 
+     /tmp/cc1ArUUu.s:65     .text.u32_Get_Switch_State:000000000000002c .L0 
+     /tmp/cc1ArUUu.s:125    .text.u8_Update_Switch_Debounce:0000000000000058 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:20     .text.v_Init_Debug_Switches:0000000000000000 .L0 
+     /tmp/cc1ArUUu.s:45     .text.u32_Get_Switch_State:0000000000000004 .L0 
+     /tmp/cc1ArUUu.s:105    .text.u8_Update_Switch_Debounce:000000000000003c .L5
+     /tmp/cc1ArUUu.s:372    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc1ArUUu.s:746    .debug_str:0000000000000056 .LASF29
+     /tmp/cc1ArUUu.s:768    .debug_str:00000000000001dc .LASF30
+     /tmp/cc1ArUUu.s:750    .debug_str:0000000000000124 .LASF31
+     /tmp/cc1ArUUu.s:722    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc1ArUUu.s:732    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc1ArUUu.s:772    .debug_str:0000000000000206 .LASF0
+     /tmp/cc1ArUUu.s:764    .debug_str:00000000000001b8 .LASF5
+     /tmp/cc1ArUUu.s:770    .debug_str:00000000000001f8 .LASF1
+     /tmp/cc1ArUUu.s:736    .debug_str:0000000000000011 .LASF2
+     /tmp/cc1ArUUu.s:780    .debug_str:000000000000023f .LASF3
+     /tmp/cc1ArUUu.s:758    .debug_str:000000000000018b .LASF4
+     /tmp/cc1ArUUu.s:740    .debug_str:000000000000002b .LASF6
+     /tmp/cc1ArUUu.s:792    .debug_str:00000000000002ac .LASF7
+     /tmp/cc1ArUUu.s:754    .debug_str:0000000000000162 .LASF8
+     /tmp/cc1ArUUu.s:774    .debug_str:0000000000000212 .LASF9
+     /tmp/cc1ArUUu.s:778    .debug_str:0000000000000232 .LASF10
+     /tmp/cc1ArUUu.s:748    .debug_str:000000000000011c .LASF11
+     /tmp/cc1ArUUu.s:776    .debug_str:0000000000000229 .LASF12
+     /tmp/cc1ArUUu.s:752    .debug_str:000000000000015b .LASF13
+     /tmp/cc1ArUUu.s:782    .debug_str:0000000000000252 .LASF32
+     /tmp/cc1ArUUu.s:762    .debug_str:00000000000001a4 .LASF14
+     /tmp/cc1ArUUu.s:742    .debug_str:0000000000000036 .LASF15
+     /tmp/cc1ArUUu.s:796    .debug_str:00000000000002cc .LASF16
+     /tmp/cc1ArUUu.s:756    .debug_str:0000000000000170 .LASF17
+     /tmp/cc1ArUUu.s:734    .debug_str:0000000000000000 .LASF18
+     /tmp/cc1ArUUu.s:788    .debug_str:0000000000000284 .LASF33
+     /tmp/cc1ArUUu.s:784    .debug_str:0000000000000265 .LASF19
+     /tmp/cc1ArUUu.s:794    .debug_str:00000000000002be .LASF20
+     /tmp/cc1ArUUu.s:738    .debug_str:000000000000001b .LASF21
+     /tmp/cc1ArUUu.s:798    .debug_str:00000000000002e1 .LASF24
+     /tmp/cc1ArUUu.s:766    .debug_str:00000000000001c2 .LASF26
+     /tmp/cc1ArUUu.s:70     .text.u8_Update_Switch_Debounce:0000000000000000 .LFB2
+     /tmp/cc1ArUUu.s:123    .text.u8_Update_Switch_Debounce:0000000000000058 .LFE2
+     /tmp/cc1ArUUu.s:800    .debug_str:00000000000002f0 .LASF22
+     /tmp/cc1ArUUu.s:656    .debug_loc:0000000000000000 .LLST1
+     /tmp/cc1ArUUu.s:760    .debug_str:0000000000000194 .LASF23
+     /tmp/cc1ArUUu.s:674    .debug_loc:000000000000002c .LLST2
+     /tmp/cc1ArUUu.s:804    .debug_str:000000000000030a .LASF25
+     /tmp/cc1ArUUu.s:691    .debug_loc:0000000000000057 .LLST3
+     /tmp/cc1ArUUu.s:87     .text.u8_Update_Switch_Debounce:000000000000001c .LVL3
+     /tmp/cc1ArUUu.s:786    .debug_str:000000000000026f .LASF27
+     /tmp/cc1ArUUu.s:37     .text.u32_Get_Switch_State:0000000000000000 .LFB1
+     /tmp/cc1ArUUu.s:63     .text.u32_Get_Switch_State:000000000000002c .LFE1
+     /tmp/cc1ArUUu.s:744    .debug_str:000000000000004b .LASF28
+     /tmp/cc1ArUUu.s:698    .debug_loc:000000000000006a .LLST0
+     /tmp/cc1ArUUu.s:51     .text.u32_Get_Switch_State:0000000000000018 .LVL0
+     /tmp/cc1ArUUu.s:790    .debug_str:0000000000000296 .LASF34
+     /tmp/cc1ArUUu.s:14     .text.v_Init_Debug_Switches:0000000000000000 .LFB0
+     /tmp/cc1ArUUu.s:30     .text.v_Init_Debug_Switches:000000000000001c .LFE0
+     /tmp/cc1ArUUu.s:802    .debug_str:00000000000002fa .LASF35
+     /tmp/cc1ArUUu.s:73     .text.u8_Update_Switch_Debounce:0000000000000000 .LVL2
+     /tmp/cc1ArUUu.s:113    .text.u8_Update_Switch_Debounce:0000000000000048 .LVL5
+     /tmp/cc1ArUUu.s:120    .text.u8_Update_Switch_Debounce:0000000000000054 .LVL6
+     /tmp/cc1ArUUu.s:94     .text.u8_Update_Switch_Debounce:0000000000000028 .LVL4
+     /tmp/cc1ArUUu.s:58     .text.u32_Get_Switch_State:0000000000000024 .LVL1
+     /tmp/cc1ArUUu.s:139    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+GPIO_get_inputs

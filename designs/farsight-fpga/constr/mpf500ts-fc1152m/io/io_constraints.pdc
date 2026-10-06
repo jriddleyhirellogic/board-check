@@ -1,0 +1,537 @@
+#-------------------------------------------------------------------------------
+# Source utility resources
+#-------------------------------------------------------------------------------
+set base_dir         [file normalize [file dirname [info script]]]
+set pins_file_addr   [file normalize [file join $base_dir "./../../common/pins.tcl"]]
+set constr_util_addr [file normalize [file join $base_dir "./../../common/apply_pin_constr.tcl"]]
+
+source $pins_file_addr
+source $constr_util_addr
+
+#-------------------------------------------------------------------------------
+# IOBANK voltage level settings
+#-------------------------------------------------------------------------------
+set_iobank -bank_name Bank0 -vcci 1.20 -fixed "false" -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank1 -vcci 1.80 -fixed "false" -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank2 -vcci 3.30 -fixed "true"  -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank3 -vcci 3.30 -fixed "true"
+set_iobank -bank_name Bank4 -vcci 3.30 -fixed "true"  -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank5 -vcci 3.30 -fixed "true"  -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank6 -vcci 1.20 -fixed "false" -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+set_iobank -bank_name Bank7 -vcci 1.20 -fixed "false" -auto_calib true -auto_calib_ramp_time 50 -update_iostd false
+
+#-------------------------------------------------------------------------------
+# User Locked I/O settings
+#-------------------------------------------------------------------------------
+set ports {}
+
+# ------------------------------------------------------------------------------
+# System Clock
+# ------------------------------------------------------------------------------
+lappend ports [list {sys_clk_50mhz} {sys_clk_50mhz}]
+
+# ------------------------------------------------------------------------------
+# Cam XCVR Ref Clock
+# ------------------------------------------------------------------------------
+lappend ports [list {ref_clk_148p5mhz_p} {ref_clk_148p5mhz_p}]
+lappend ports [list {ref_clk_148p5mhz_n} {ref_clk_148p5mhz_n}]
+
+# ------------------------------------------------------------------------------
+# PCIE x2 XCVR EXT Ref Clock
+# ------------------------------------------------------------------------------
+lappend ports [list {pcie_ext_ref_clk_p} {pcie_ext_ref_clk_p}]
+lappend ports [list {pcie_ext_ref_clk_n} {pcie_ext_ref_clk_n}]
+
+# ------------------------------------------------------------------------------
+# Resets
+# ------------------------------------------------------------------------------
+# lappend ports [list {proc_rst_n} {proc_rst_n}]
+# lappend ports [list {sys_rst_n}  {sys_rst_n} ]
+
+# SW2
+lappend ports [list {btn0}  {sys_rst_n} ]
+# SW3
+lappend ports [list {btn1} {proc_rst_n}]
+
+# ------------------------------------------------------------------------------
+# JTAG
+# ------------------------------------------------------------------------------
+lappend ports [list {jtag_tck} {jtag_tck}]
+lappend ports [list {jtag_tdi} {jtag_tdi}]
+lappend ports [list {jtag_tdo} {jtag_tdo}]
+lappend ports [list {jtag_tms} {jtag_tms}]
+lappend ports [list {jtag_trstb} {jtag_trstb}]
+
+# ------------------------------------------------------------------------------
+# PF to PA3 Power Enable
+# ------------------------------------------------------------------------------
+lappend ports [list {lvds_pwr_en}        {lvds_pwr_en}        ]
+lappend ports [list {eth1_pwr_en}        {eth1_pwr_en}        ]
+lappend ports [list {eth2_pwr_en}        {eth2_pwr_en}        ]
+lappend ports [list {stepper_pri_pwr_en} {stepper_pri_pwr_en} ]
+lappend ports [list {stepper_sec_pwr_en} {stepper_sec_pwr_en} ]
+lappend ports [list {lvdt_pwr_en}        {lvdt_pwr_en}        ]
+lappend ports [list {cam_pwr_en}         {cam_pwr_en}         ]
+
+# ------------------------------------------------------------------------------
+# PCIE x2
+# ------------------------------------------------------------------------------
+lappend ports [list {pcie0_lane0_txd_p} {pcie0_lane0_txd_p}]
+lappend ports [list {pcie0_lane0_txd_n} {pcie0_lane0_txd_n}]
+lappend ports [list {pcie0_lane0_rxd_p} {pcie0_lane0_rxd_p}]
+lappend ports [list {pcie0_lane0_rxd_n} {pcie0_lane0_rxd_n}]
+lappend ports [list {pcie0_lane1_txd_p} {pcie0_lane1_txd_p}]
+lappend ports [list {pcie0_lane1_txd_n} {pcie0_lane1_txd_n}]
+lappend ports [list {pcie0_lane1_rxd_p} {pcie0_lane1_rxd_p}]
+lappend ports [list {pcie0_lane1_rxd_n} {pcie0_lane1_rxd_n}]
+lappend ports [list {pcie0_perstn}      {pcie0_perstn}     ]
+
+# ------------------------------------------------------------------------------
+# PA3 Power Status
+# ------------------------------------------------------------------------------
+lappend ports [list {stepper_pri_pwr_status} {stepper_pri_pwr_status} ]
+lappend ports [list {stepper_sec_pwr_status} {stepper_sec_pwr_status} ]
+lappend ports [list {pf_pwr_status}          {pf_pwr_status}          ]
+lappend ports [list {step_down_pwr_status}   {step_down_pwr_status}   ]
+lappend ports [list {ddr16gb_pwr_status}     {ddr16gb_pwr_status}     ]
+lappend ports [list {ddr8gb_pwr_status}      {ddr8gb_pwr_status}      ]
+lappend ports [list {eth1_pwr_status}        {eth1_pwr_status}        ]
+lappend ports [list {eth2_pwr_status}        {eth2_pwr_status}        ]
+lappend ports [list {lvdt_pwr_status}        {lvdt_pwr_status}        ]
+lappend ports [list {lvds_pwr_status}        {lvds_pwr_status}        ]
+lappend ports [list {pa3_pwr_status}         {pa3_pwr_status}         ]
+lappend ports [list {cam_pwr_status}         {cam_pwr_status}         ]
+lappend ports [list {pa3_fw_version[0]}      {pa3_fw_version[0]}      ]
+lappend ports [list {pa3_fw_version[1]}      {pa3_fw_version[1]}      ]
+lappend ports [list {pa3_fw_version[2]}      {pa3_fw_version[2]}      ]
+
+# ------------------------------------------------------------------------------
+# Camera Data Out
+# ------------------------------------------------------------------------------
+lappend ports [list {cam_lane0_rxd_p} {cam_lane0_rxd_p}]
+lappend ports [list {cam_lane0_rxd_n} {cam_lane0_rxd_n}]
+lappend ports [list {cam_lane1_rxd_p} {cam_lane1_rxd_p}]
+lappend ports [list {cam_lane1_rxd_n} {cam_lane1_rxd_n}]
+lappend ports [list {cam_lane2_rxd_p} {cam_lane2_rxd_p}]
+lappend ports [list {cam_lane2_rxd_n} {cam_lane2_rxd_n}]
+lappend ports [list {cam_lane3_rxd_p} {cam_lane3_rxd_p}]
+lappend ports [list {cam_lane3_rxd_n} {cam_lane3_rxd_n}]
+lappend ports [list {cam_lane4_rxd_p} {cam_lane4_rxd_p}]
+lappend ports [list {cam_lane4_rxd_n} {cam_lane4_rxd_n}]
+lappend ports [list {cam_lane5_rxd_p} {cam_lane5_rxd_p}]
+lappend ports [list {cam_lane5_rxd_n} {cam_lane5_rxd_n}]
+lappend ports [list {cam_lane6_rxd_p} {cam_lane6_rxd_p}]
+lappend ports [list {cam_lane6_rxd_n} {cam_lane6_rxd_n}]
+lappend ports [list {cam_lane7_rxd_p} {cam_lane7_rxd_p}]
+lappend ports [list {cam_lane7_rxd_n} {cam_lane7_rxd_n}]
+
+# ------------------------------------------------------------------------------
+# Cam Ctrl
+# ------------------------------------------------------------------------------
+lappend ports [list {cam_miso}          {cam_miso}         ]
+lappend ports [list {cam_sck}           {cam_sck}          ]
+lappend ports [list {cam_mosi}          {cam_mosi}         ]
+lappend ports [list {cam_xce_n}         {cam_xce_n}        ]
+lappend ports [list {cam_xclr_n}        {cam_xclr_n}       ]
+lappend ports [list {cam_xtrig_primary} {cam_xtrig_primary}]
+lappend ports [list {cam_tout_primary}  {cam_tout_primary} ]
+lappend ports [list {cam_osc_en}        {cam_osc_en}       ]
+lappend ports [list {cam_buff_en_n}     {cam_buff_en_n}    ]
+
+#-------------------------------------------------------------------------------
+# UART
+#-------------------------------------------------------------------------------
+lappend ports [list {uart0_tx} {uart0_tx}]
+lappend ports [list {uart0_rx} {uart0_rx}]
+
+# ------------------------------------------------------------------------------
+# Stepper Motor Controller 0
+# ------------------------------------------------------------------------------
+lappend ports [list {pri_stp_motor_m0}       {pri_stp_motor_m0}      ]
+lappend ports [list {pri_stp_motor_m1}       {pri_stp_motor_m1}      ]
+lappend ports [list {pri_stp_motor_en}       {pri_stp_motor_en}      ]
+lappend ports [list {pri_stp_motor_decay0}   {pri_stp_motor_decay0}  ]
+lappend ports [list {pri_stp_motor_decay1}   {pri_stp_motor_decay1}  ]
+lappend ports [list {pri_stp_motor_dir}      {pri_stp_motor_dir}     ]
+lappend ports [list {pri_stp_motor_step}     {pri_stp_motor_step}    ]
+lappend ports [list {pri_stp_motor_toff}     {pri_stp_motor_toff}    ]
+lappend ports [list {pri_stp_motor_sleep_n}  {pri_stp_motor_sleep_n} ]
+lappend ports [list {pri_stp_motor_fault_n}  {pri_stp_motor_fault_n} ]
+lappend ports [list {pri_stp_motor_vref_pwm} {pri_stp_motor_vref_pwm}]
+
+# ------------------------------------------------------------------------------
+# Stepper Motor Controller 1
+# ------------------------------------------------------------------------------
+lappend ports [list {sec_stp_motor_m0}       {sec_stp_motor_m0}      ]
+lappend ports [list {sec_stp_motor_m1}       {sec_stp_motor_m1}      ]
+lappend ports [list {sec_stp_motor_en}       {sec_stp_motor_en}      ]
+lappend ports [list {sec_stp_motor_decay0}   {sec_stp_motor_decay0}  ]
+lappend ports [list {sec_stp_motor_decay1}   {sec_stp_motor_decay1}  ]
+lappend ports [list {sec_stp_motor_dir}      {sec_stp_motor_dir}     ]
+lappend ports [list {sec_stp_motor_step}     {sec_stp_motor_step}    ]
+lappend ports [list {sec_stp_motor_toff}     {sec_stp_motor_toff}    ]
+lappend ports [list {sec_stp_motor_sleep_n}  {sec_stp_motor_sleep_n} ]
+lappend ports [list {sec_stp_motor_fault_n}  {sec_stp_motor_fault_n} ]
+lappend ports [list {sec_stp_motor_vref_pwm} {sec_stp_motor_vref_pwm}]
+
+
+# ------------------------------------------------------------------------------
+# LVDT Analog Sig Gain Switch
+# ------------------------------------------------------------------------------
+lappend ports [list {lvdt_gain_switch} {lvdt_gain_switch} ]
+
+# ------------------------------------------------------------------------------
+# LVDT SPI
+# ------------------------------------------------------------------------------
+lappend ports [list {lvdt_adc_spi_cs_n} {lvdt_adc_spi_cs_n}]
+lappend ports [list {lvdt_adc_spi_sclk} {lvdt_adc_spi_sclk}]
+lappend ports [list {lvdt_adc_spi_miso} {lvdt_adc_spi_miso}]
+lappend ports [list {lvdt_adc_spi_mosi} {lvdt_adc_spi_mosi}]
+
+# ------------------------------------------------------------------------------
+# LVDT DAC
+# ------------------------------------------------------------------------------
+lappend ports [list {lvdt_dac_b0} {lvdt_dac_b0}]
+lappend ports [list {lvdt_dac_b1} {lvdt_dac_b1}]
+lappend ports [list {lvdt_dac_b2} {lvdt_dac_b2}]
+lappend ports [list {lvdt_dac_b3} {lvdt_dac_b3}]
+lappend ports [list {lvdt_dac_b4} {lvdt_dac_b4}]
+lappend ports [list {lvdt_dac_b5} {lvdt_dac_b5}]
+lappend ports [list {lvdt_dac_b6} {lvdt_dac_b6}]
+lappend ports [list {lvdt_dac_b7} {lvdt_dac_b7}]
+
+# ------------------------------------------------------------------------------
+# Power Telemtry ADCs SPI
+# ------------------------------------------------------------------------------
+lappend ports [list {tlm_spi_sclk}  {tlm_spi_sclk} ]
+lappend ports [list {tlm_spi_miso}  {tlm_spi_miso} ]
+lappend ports [list {tlm_spi_mosi}  {tlm_spi_mosi} ]
+lappend ports [list {tlm_spi_cs1_n} {tlm_spi_cs1_n}]
+lappend ports [list {tlm_spi_cs2_n} {tlm_spi_cs2_n}]
+lappend ports [list {tlm_spi_cs3_n} {tlm_spi_cs3_n}]
+lappend ports [list {tlm_spi_cs4_n} {tlm_spi_cs4_n}]
+lappend ports [list {tlm_spi_cs5_n} {tlm_spi_cs5_n}]
+lappend ports [list {tlm_spi_cs6_n} {tlm_spi_cs6_n}]
+
+# ------------------------------------------------------------------------------
+# Ethernet Phy 1
+# ------------------------------------------------------------------------------
+lappend ports [list {eth1_phy_mdc}             {eth1_phy_mdc}            ]
+lappend ports [list {eth1_phy_mdio}            {eth1_phy_mdio}           ]
+lappend ports [list {eth1_phy_rst_n}           {eth1_phy_rst_n}          ]
+lappend ports [list {eth1_rgmii_rxc}           {eth1_rgmii_rxc}          ]
+lappend ports [list {eth1_rgmii_rx_ctl}        {eth1_rgmii_rx_ctl}       ]
+lappend ports [list {eth1_rgmii_rxd[3]}        {eth1_rgmii_rxd[3]}       ]
+lappend ports [list {eth1_rgmii_rxd[2]}        {eth1_rgmii_rxd[2]}       ]
+lappend ports [list {eth1_rgmii_rxd[1]}        {eth1_rgmii_rxd[1]}       ]
+lappend ports [list {eth1_rgmii_rxd[0]}        {eth1_rgmii_rxd[0]}       ]
+lappend ports [list {eth1_rgmii_txc}           {eth1_rgmii_txc}          ]
+lappend ports [list {eth1_rgmii_tx_ctl}        {eth1_rgmii_tx_ctl}       ]
+lappend ports [list {eth1_rgmii_txd[3]}        {eth1_rgmii_txd[3]}       ]
+lappend ports [list {eth1_rgmii_txd[2]}        {eth1_rgmii_txd[2]}       ]
+lappend ports [list {eth1_rgmii_txd[1]}        {eth1_rgmii_txd[1]}       ]
+lappend ports [list {eth1_rgmii_txd[0]}        {eth1_rgmii_txd[0]}       ]
+lappend ports [list {eth1_stat_fastlink_fail}  {eth1_stat_fastlink_fail} ]
+lappend ports [list {eth1_stat_mdint}          {eth1_stat_mdint}         ]
+lappend ports [list {eth1_stat_rcvrd_clk}      {eth1_stat_rcvrd_clk}     ]
+lappend ports [list {eth1_stat_clkout}         {eth1_stat_clkout}        ]
+lappend ports [list {eth1_ctrl_clk_squelch_in} {eth1_ctrl_clk_squelch_in}]
+lappend ports [list {eth1_ctrl_comma_mode}     {eth1_ctrl_comma_mode}    ]
+
+# ------------------------------------------------------------------------------
+# Ethernet Phy 2
+# ------------------------------------------------------------------------------
+lappend ports [list {eth2_phy_mdc}             {eth2_phy_mdc}            ]
+lappend ports [list {eth2_phy_rst_n}           {eth2_phy_rst_n}          ]
+lappend ports [list {eth2_ctrl_clk_squelch_in} {eth2_ctrl_clk_squelch_in}]
+lappend ports [list {eth2_ctrl_comma_mode}     {eth2_ctrl_comma_mode}    ]
+
+# ------------------------------------------------------------------------------
+# Avionics GPIO
+# ------------------------------------------------------------------------------
+lappend ports [list {bus_to_fav_pps}  {bus_to_fav_pps} ]
+lappend ports [list {bus_to_fav_trig} {bus_to_fav_trig}]
+lappend ports [list {bus_to_fav_gpi}  {bus_to_fav_gpi}]
+lappend ports [list {fav_to_bus_gpo}  {fav_to_bus_gpo}]
+
+# ------------------------------------------------------------------------------
+# NVM SPI
+# ------------------------------------------------------------------------------
+lappend ports [list {nvm_spi_sio0} {nvm_spi_sio0}]
+lappend ports [list {nvm_spi_sio1} {nvm_spi_sio1}]
+lappend ports [list {nvm_spi_cs_n} {nvm_spi_cs_n}]
+lappend ports [list {nvm_spi_sck}  {nvm_spi_sck} ]
+
+#-------------------------------------------------------------------------------
+# Heartbeat
+#-------------------------------------------------------------------------------
+lappend ports [list {pf_heartbeat} {pf_heartbeat}]
+
+# ------------------------------------------------------------------------------
+# PA3 to PolarFire Misc
+# ------------------------------------------------------------------------------
+lappend ports [list {pa3_to_pf_misc3}  {pa3_to_pf_misc3}  ]
+lappend ports [list {pa3_to_pf_misc4}  {pa3_to_pf_misc4}  ]
+lappend ports [list {pa3_to_pf_misc5}  {pa3_to_pf_misc5}  ]
+lappend ports [list {pa3_to_pf_misc6}  {pa3_to_pf_misc6}  ]
+lappend ports [list {pa3_to_pf_misc7}  {pa3_to_pf_misc7}  ]
+lappend ports [list {pa3_to_pf_misc8}  {pa3_to_pf_misc8}  ]
+lappend ports [list {pa3_to_pf_misc9}  {pa3_to_pf_misc9}  ]
+lappend ports [list {pa3_to_pf_misc10} {pa3_to_pf_misc10} ]
+lappend ports [list {pa3_to_pf_misc11} {pa3_to_pf_misc11} ]
+lappend ports [list {pa3_to_pf_misc12} {pa3_to_pf_misc12} ]
+lappend ports [list {pa3_to_pf_misc13} {pa3_to_pf_misc13} ]
+lappend ports [list {pa3_to_pf_misc14} {pa3_to_pf_misc14} ]
+lappend ports [list {pa3_to_pf_misc15} {pa3_to_pf_misc15} ]
+
+# ------------------------------------------------------------------------------
+# Debug GPIO
+# ------------------------------------------------------------------------------
+lappend ports [list {dbg_gpio0}  {dbg_gpio0} ]
+lappend ports [list {dbg_gpio1}  {dbg_gpio1} ]
+lappend ports [list {dbg_gpio2}  {dbg_gpio2} ]
+lappend ports [list {dbg_gpio3}  {dbg_gpio3} ]
+lappend ports [list {dbg_gpio4}  {dbg_gpio4} ]
+lappend ports [list {dbg_gpio5}  {dbg_gpio5} ]
+lappend ports [list {dbg_gpio6}  {dbg_gpio6} ]
+lappend ports [list {dbg_gpio7}  {dbg_gpio7} ]
+lappend ports [list {dbg_gpio8}  {dbg_gpio8} ]
+lappend ports [list {dbg_gpio9}  {dbg_gpio9} ]
+lappend ports [list {dbg_gpio10} {dbg_gpio10}]
+lappend ports [list {dbg_gpio11} {dbg_gpio11}]
+lappend ports [list {dbg_gpio12} {dbg_gpio12}]
+lappend ports [list {dbg_gpio13} {dbg_gpio13}]
+
+#-------------------------------------------------------------------------------
+# DDR4 R0 16GB ECC NW
+#-------------------------------------------------------------------------------
+lappend ports [list {ddr4_r0_a[0]}     {ddr4_r0_a[0]}    ]
+lappend ports [list {ddr4_r0_a[1]}     {ddr4_r0_a[1]}    ]
+lappend ports [list {ddr4_r0_ck0}      {ddr4_r0_ck0}     ]
+lappend ports [list {ddr4_r0_ck0_n}    {ddr4_r0_ck0_n}   ]
+lappend ports [list {ddr4_r0_a[2]}     {ddr4_r0_a[2]}    ]
+lappend ports [list {ddr4_r0_a[3]}     {ddr4_r0_a[3]}    ]
+lappend ports [list {ddr4_r0_a[4]}     {ddr4_r0_a[4]}    ]
+lappend ports [list {ddr4_r0_a[5]}     {ddr4_r0_a[5]}    ]
+lappend ports [list {ddr4_r0_a[6]}     {ddr4_r0_a[6]}    ]
+lappend ports [list {ddr4_r0_a[7]}     {ddr4_r0_a[7]}    ]
+lappend ports [list {ddr4_r0_a[8]}     {ddr4_r0_a[8]}    ]
+lappend ports [list {ddr4_r0_a[9]}     {ddr4_r0_a[9]}    ]
+lappend ports [list {ddr4_r0_a[10]}    {ddr4_r0_a[10]}   ]
+lappend ports [list {ddr4_r0_a[11]}    {ddr4_r0_a[11]}   ]
+lappend ports [list {ddr4_r0_a[12]}    {ddr4_r0_a[12]}   ]
+lappend ports [list {ddr4_r0_a[13]}    {ddr4_r0_a[13]}   ]
+lappend ports [list {ddr4_r0_we_n}     {ddr4_r0_we_n}    ]
+lappend ports [list {ddr4_r0_cas_n}    {ddr4_r0_cas_n}   ]
+lappend ports [list {ddr4_r0_ras_n}    {ddr4_r0_ras_n}   ]
+lappend ports [list {ddr4_r0_ba[0]}    {ddr4_r0_ba[0]}   ]
+lappend ports [list {ddr4_r0_ba[1]}    {ddr4_r0_ba[1]}   ]
+lappend ports [list {ddr4_r0_act_n}    {ddr4_r0_act_n}   ]
+lappend ports [list {ddr4_r0_bg[0]}    {ddr4_r0_bg[0]}   ]
+lappend ports [list {ddr4_r0_bg[1]}    {ddr4_r0_bg[1]}   ]
+lappend ports [list {ddr4_r0_cs_n}     {ddr4_r0_cs_n}    ]
+lappend ports [list {ddr4_r0_cke}      {ddr4_r0_cke}     ]
+lappend ports [list {ddr4_r0_odt}      {ddr4_r0_odt}     ]
+lappend ports [list {ddr4_r0_reset_n}  {ddr4_r0_reset_n} ]
+lappend ports [list {ddr4_r0_dq[0]}    {ddr4_r0_dq[0]}   ]
+lappend ports [list {ddr4_r0_dq[1]}    {ddr4_r0_dq[1]}   ]
+lappend ports [list {ddr4_r0_dq[2]}    {ddr4_r0_dq[2]}   ]
+lappend ports [list {ddr4_r0_dq[3]}    {ddr4_r0_dq[3]}   ]
+lappend ports [list {ddr4_r0_dqs[0]}   {ddr4_r0_dqs[0]}  ]
+lappend ports [list {ddr4_r0_dqs_n[0]} {ddr4_r0_dqs_n[0]}]
+lappend ports [list {ddr4_r0_dq[4]}    {ddr4_r0_dq[4]}   ]
+lappend ports [list {ddr4_r0_dq[5]}    {ddr4_r0_dq[5]}   ]
+lappend ports [list {ddr4_r0_dq[6]}    {ddr4_r0_dq[6]}   ]
+lappend ports [list {ddr4_r0_dq[7]}    {ddr4_r0_dq[7]}   ]
+lappend ports [list {ddr4_r0_dm_n[0]}  {ddr4_r0_dm_n[0]} ]
+lappend ports [list {ddr4_r0_dq[8]}    {ddr4_r0_dq[8]}   ]
+lappend ports [list {ddr4_r0_dq[9]}    {ddr4_r0_dq[9]}   ]
+lappend ports [list {ddr4_r0_dq[10]}   {ddr4_r0_dq[10]}  ]
+lappend ports [list {ddr4_r0_dq[11]}   {ddr4_r0_dq[11]}  ]
+lappend ports [list {ddr4_r0_dqs[1]}   {ddr4_r0_dqs[1]}  ]
+lappend ports [list {ddr4_r0_dqs_n[1]} {ddr4_r0_dqs_n[1]}]
+lappend ports [list {ddr4_r0_dq[12]}   {ddr4_r0_dq[12]}  ]
+lappend ports [list {ddr4_r0_dq[13]}   {ddr4_r0_dq[13]}  ]
+lappend ports [list {ddr4_r0_dq[14]}   {ddr4_r0_dq[14]}  ]
+lappend ports [list {ddr4_r0_dq[15]}   {ddr4_r0_dq[15]}  ]
+lappend ports [list {ddr4_r0_dm_n[1]}  {ddr4_r0_dm_n[1]} ]
+lappend ports [list {ddr4_r0_dq[16]}   {ddr4_r0_dq[16]}  ]
+lappend ports [list {ddr4_r0_dq[17]}   {ddr4_r0_dq[17]}  ]
+lappend ports [list {ddr4_r0_dq[18]}   {ddr4_r0_dq[18]}  ]
+lappend ports [list {ddr4_r0_dq[19]}   {ddr4_r0_dq[19]}  ]
+lappend ports [list {ddr4_r0_dqs[2]}   {ddr4_r0_dqs[2]}  ]
+lappend ports [list {ddr4_r0_dqs_n[2]} {ddr4_r0_dqs_n[2]}]
+lappend ports [list {ddr4_r0_dq[20]}   {ddr4_r0_dq[20]}  ]
+lappend ports [list {ddr4_r0_dq[21]}   {ddr4_r0_dq[21]}  ]
+lappend ports [list {ddr4_r0_dq[22]}   {ddr4_r0_dq[22]}  ]
+lappend ports [list {ddr4_r0_dq[23]}   {ddr4_r0_dq[23]}  ]
+lappend ports [list {ddr4_r0_dm_n[2]}  {ddr4_r0_dm_n[2]} ]
+lappend ports [list {ddr4_r0_dq[24]}   {ddr4_r0_dq[24]}  ]
+lappend ports [list {ddr4_r0_dq[25]}   {ddr4_r0_dq[25]}  ]
+lappend ports [list {ddr4_r0_dq[26]}   {ddr4_r0_dq[26]}  ]
+lappend ports [list {ddr4_r0_dq[27]}   {ddr4_r0_dq[27]}  ]
+lappend ports [list {ddr4_r0_dqs[3]}   {ddr4_r0_dqs[3]}  ]
+lappend ports [list {ddr4_r0_dqs_n[3]} {ddr4_r0_dqs_n[3]}]
+lappend ports [list {ddr4_r0_dq[28]}   {ddr4_r0_dq[28]}  ]
+lappend ports [list {ddr4_r0_dq[29]}   {ddr4_r0_dq[29]}  ]
+lappend ports [list {ddr4_r0_dq[30]}   {ddr4_r0_dq[30]}  ]
+lappend ports [list {ddr4_r0_dq[31]}   {ddr4_r0_dq[31]}  ]
+lappend ports [list {ddr4_r0_dm_n[3]}  {ddr4_r0_dm_n[3]} ]
+lappend ports [list {ddr4_r0_dq[32]}   {ddr4_r0_dq[32]}  ]
+lappend ports [list {ddr4_r0_dq[33]}   {ddr4_r0_dq[33]}  ]
+lappend ports [list {ddr4_r0_dq[34]}   {ddr4_r0_dq[34]}  ]
+lappend ports [list {ddr4_r0_dq[35]}   {ddr4_r0_dq[35]}  ]
+lappend ports [list {ddr4_r0_dqs[4]}   {ddr4_r0_dqs[4]}  ]
+lappend ports [list {ddr4_r0_dqs_n[4]} {ddr4_r0_dqs_n[4]}]
+lappend ports [list {ddr4_r0_dq[36]}   {ddr4_r0_dq[36]}  ]
+lappend ports [list {ddr4_r0_dq[37]}   {ddr4_r0_dq[37]}  ]
+lappend ports [list {ddr4_r0_dq[38]}   {ddr4_r0_dq[38]}  ]
+lappend ports [list {ddr4_r0_dq[39]}   {ddr4_r0_dq[39]}  ]
+lappend ports [list {ddr4_r0_dm_n[4]}  {ddr4_r0_dm_n[4]} ]
+lappend ports [list {ddr4_r0_dq[40]}   {ddr4_r0_dq[40]}  ]
+lappend ports [list {ddr4_r0_dq[41]}   {ddr4_r0_dq[41]}  ]
+lappend ports [list {ddr4_r0_dq[42]}   {ddr4_r0_dq[42]}  ]
+lappend ports [list {ddr4_r0_dq[43]}   {ddr4_r0_dq[43]}  ]
+lappend ports [list {ddr4_r0_dqs[5]}   {ddr4_r0_dqs[5]}  ]
+lappend ports [list {ddr4_r0_dqs_n[5]} {ddr4_r0_dqs_n[5]}]
+lappend ports [list {ddr4_r0_dq[44]}   {ddr4_r0_dq[44]}  ]
+lappend ports [list {ddr4_r0_dq[45]}   {ddr4_r0_dq[45]}  ]
+lappend ports [list {ddr4_r0_dq[46]}   {ddr4_r0_dq[46]}  ]
+lappend ports [list {ddr4_r0_dq[47]}   {ddr4_r0_dq[47]}  ]
+lappend ports [list {ddr4_r0_dm_n[5]}  {ddr4_r0_dm_n[5]} ]
+lappend ports [list {ddr4_r0_dq[48]}   {ddr4_r0_dq[48]}  ]
+lappend ports [list {ddr4_r0_dq[49]}   {ddr4_r0_dq[49]}  ]
+lappend ports [list {ddr4_r0_dq[50]}   {ddr4_r0_dq[50]}  ]
+lappend ports [list {ddr4_r0_dq[51]}   {ddr4_r0_dq[51]}  ]
+lappend ports [list {ddr4_r0_dqs[6]}   {ddr4_r0_dqs[6]}  ]
+lappend ports [list {ddr4_r0_dqs_n[6]} {ddr4_r0_dqs_n[6]}]
+lappend ports [list {ddr4_r0_dq[52]}   {ddr4_r0_dq[52]}  ]
+lappend ports [list {ddr4_r0_dq[53]}   {ddr4_r0_dq[53]}  ]
+lappend ports [list {ddr4_r0_dq[54]}   {ddr4_r0_dq[54]}  ]
+lappend ports [list {ddr4_r0_dq[55]}   {ddr4_r0_dq[55]}  ]
+lappend ports [list {ddr4_r0_dm_n[6]}  {ddr4_r0_dm_n[6]} ]
+lappend ports [list {ddr4_r0_dq[56]}   {ddr4_r0_dq[56]}  ]
+lappend ports [list {ddr4_r0_dq[57]}   {ddr4_r0_dq[57]}  ]
+lappend ports [list {ddr4_r0_dq[58]}   {ddr4_r0_dq[58]}  ]
+lappend ports [list {ddr4_r0_dq[59]}   {ddr4_r0_dq[59]}  ]
+lappend ports [list {ddr4_r0_dqs[7]}   {ddr4_r0_dqs[7]}  ]
+lappend ports [list {ddr4_r0_dqs_n[7]} {ddr4_r0_dqs_n[7]}]
+lappend ports [list {ddr4_r0_dq[60]}   {ddr4_r0_dq[60]}  ]
+lappend ports [list {ddr4_r0_dq[61]}   {ddr4_r0_dq[61]}  ]
+lappend ports [list {ddr4_r0_dq[62]}   {ddr4_r0_dq[62]}  ]
+lappend ports [list {ddr4_r0_dq[63]}   {ddr4_r0_dq[63]}  ]
+lappend ports [list {ddr4_r0_dm_n[7]}  {ddr4_r0_dm_n[7]} ]
+lappend ports [list {ddr4_r0_dq[64]}   {ddr4_r0_dq[64]}  ]
+lappend ports [list {ddr4_r0_dq[65]}   {ddr4_r0_dq[65]}  ]
+lappend ports [list {ddr4_r0_dq[66]}   {ddr4_r0_dq[66]}  ]
+lappend ports [list {ddr4_r0_dq[67]}   {ddr4_r0_dq[67]}  ]
+lappend ports [list {ddr4_r0_dqs[8]}   {ddr4_r0_dqs[8]}  ]
+lappend ports [list {ddr4_r0_dqs_n[8]} {ddr4_r0_dqs_n[8]}]
+lappend ports [list {ddr4_r0_dq[68]}   {ddr4_r0_dq[68]}  ]
+lappend ports [list {ddr4_r0_dq[69]}   {ddr4_r0_dq[69]}  ]
+lappend ports [list {ddr4_r0_dq[70]}   {ddr4_r0_dq[70]}  ]
+lappend ports [list {ddr4_r0_dq[71]}   {ddr4_r0_dq[71]}  ]
+lappend ports [list {ddr4_r0_dm_n[8]}  {ddr4_r0_dm_n[8]} ]
+lappend ports [list {ddr4_r0_shield0}  {ddr4_r0_shield0} ]
+lappend ports [list {ddr4_r0_shield1}  {ddr4_r0_shield1} ]
+lappend ports [list {ddr4_r0_shield2}  {ddr4_r0_shield2} ]
+lappend ports [list {ddr4_r0_shield3}  {ddr4_r0_shield3} ]
+lappend ports [list {ddr4_r0_shield4}  {ddr4_r0_shield4} ]
+lappend ports [list {ddr4_r0_shield5}  {ddr4_r0_shield5} ]
+lappend ports [list {ddr4_r0_shield6}  {ddr4_r0_shield6} ]
+lappend ports [list {ddr4_r0_shield7}  {ddr4_r0_shield7} ]
+lappend ports [list {ddr4_r0_shield8}  {ddr4_r0_shield8} ]
+
+#-------------------------------------------------------------------------------
+# DDR4 R2 8GB ECC SE
+#-------------------------------------------------------------------------------
+lappend ports [list {ddr4_r2_a[0]}     {ddr4_r2_a[0]}    ]
+lappend ports [list {ddr4_r2_a[1]}     {ddr4_r2_a[1]}    ]
+lappend ports [list {ddr4_r2_ck0}      {ddr4_r2_ck0}     ]
+lappend ports [list {ddr4_r2_ck0_n}    {ddr4_r2_ck0_n}   ]
+lappend ports [list {ddr4_r2_a[2]}     {ddr4_r2_a[2]}    ]
+lappend ports [list {ddr4_r2_a[3]}     {ddr4_r2_a[3]}    ]
+lappend ports [list {ddr4_r2_a[4]}     {ddr4_r2_a[4]}    ]
+lappend ports [list {ddr4_r2_a[5]}     {ddr4_r2_a[5]}    ]
+lappend ports [list {ddr4_r2_a[6]}     {ddr4_r2_a[6]}    ]
+lappend ports [list {ddr4_r2_a[7]}     {ddr4_r2_a[7]}    ]
+lappend ports [list {ddr4_r2_a[8]}     {ddr4_r2_a[8]}    ]
+lappend ports [list {ddr4_r2_a[9]}     {ddr4_r2_a[9]}    ]
+lappend ports [list {ddr4_r2_a[10]}    {ddr4_r2_a[10]}   ]
+lappend ports [list {ddr4_r2_a[11]}    {ddr4_r2_a[11]}   ]
+lappend ports [list {ddr4_r2_a[12]}    {ddr4_r2_a[12]}   ]
+lappend ports [list {ddr4_r2_a[13]}    {ddr4_r2_a[13]}   ]
+lappend ports [list {ddr4_r2_we_n}     {ddr4_r2_we_n}    ]
+lappend ports [list {ddr4_r2_cas_n}    {ddr4_r2_cas_n}   ]
+lappend ports [list {ddr4_r2_ras_n}    {ddr4_r2_ras_n}   ]
+lappend ports [list {ddr4_r2_ba[0]}    {ddr4_r2_ba[0]}   ]
+lappend ports [list {ddr4_r2_ba[1]}    {ddr4_r2_ba[1]}   ]
+lappend ports [list {ddr4_r2_act_n}    {ddr4_r2_act_n}   ]
+lappend ports [list {ddr4_r2_bg[0]}    {ddr4_r2_bg[0]}   ]
+lappend ports [list {ddr4_r2_bg[1]}    {ddr4_r2_bg[1]}   ]
+lappend ports [list {ddr4_r2_cs_n}     {ddr4_r2_cs_n}    ]
+lappend ports [list {ddr4_r2_cke}      {ddr4_r2_cke}     ]
+lappend ports [list {ddr4_r2_odt}      {ddr4_r2_odt}     ]
+lappend ports [list {ddr4_r2_reset_n}  {ddr4_r2_reset_n} ]
+lappend ports [list {ddr4_r2_dq[0]}    {ddr4_r2_dq[0]}   ]
+lappend ports [list {ddr4_r2_dq[1]}    {ddr4_r2_dq[1]}   ]
+lappend ports [list {ddr4_r2_dq[2]}    {ddr4_r2_dq[2]}   ]
+lappend ports [list {ddr4_r2_dq[3]}    {ddr4_r2_dq[3]}   ]
+lappend ports [list {ddr4_r2_dqs[0]}   {ddr4_r2_dqs[0]}  ]
+lappend ports [list {ddr4_r2_dqs_n[0]} {ddr4_r2_dqs_n[0]}]
+lappend ports [list {ddr4_r2_dq[4]}    {ddr4_r2_dq[4]}   ]
+lappend ports [list {ddr4_r2_dq[5]}    {ddr4_r2_dq[5]}   ]
+lappend ports [list {ddr4_r2_dq[6]}    {ddr4_r2_dq[6]}   ]
+lappend ports [list {ddr4_r2_dq[7]}    {ddr4_r2_dq[7]}   ]
+lappend ports [list {ddr4_r2_dm_n[0]}  {ddr4_r2_dm_n[0]} ]
+lappend ports [list {ddr4_r2_dq[8]}    {ddr4_r2_dq[8]}   ]
+lappend ports [list {ddr4_r2_dq[9]}    {ddr4_r2_dq[9]}   ]
+lappend ports [list {ddr4_r2_dq[10]}   {ddr4_r2_dq[10]}  ]
+lappend ports [list {ddr4_r2_dq[11]}   {ddr4_r2_dq[11]}  ]
+lappend ports [list {ddr4_r2_dqs[1]}   {ddr4_r2_dqs[1]}  ]
+lappend ports [list {ddr4_r2_dqs_n[1]} {ddr4_r2_dqs_n[1]}]
+lappend ports [list {ddr4_r2_dq[12]}   {ddr4_r2_dq[12]}  ]
+lappend ports [list {ddr4_r2_dq[13]}   {ddr4_r2_dq[13]}  ]
+lappend ports [list {ddr4_r2_dq[14]}   {ddr4_r2_dq[14]}  ]
+lappend ports [list {ddr4_r2_dq[15]}   {ddr4_r2_dq[15]}  ]
+lappend ports [list {ddr4_r2_dm_n[1]}  {ddr4_r2_dm_n[1]} ]
+lappend ports [list {ddr4_r2_dq[16]}   {ddr4_r2_dq[16]}  ]
+lappend ports [list {ddr4_r2_dq[17]}   {ddr4_r2_dq[17]}  ]
+lappend ports [list {ddr4_r2_dq[18]}   {ddr4_r2_dq[18]}  ]
+lappend ports [list {ddr4_r2_dq[19]}   {ddr4_r2_dq[19]}  ]
+lappend ports [list {ddr4_r2_dqs[2]}   {ddr4_r2_dqs[2]}  ]
+lappend ports [list {ddr4_r2_dqs_n[2]} {ddr4_r2_dqs_n[2]}]
+lappend ports [list {ddr4_r2_dq[20]}   {ddr4_r2_dq[20]}  ]
+lappend ports [list {ddr4_r2_dq[21]}   {ddr4_r2_dq[21]}  ]
+lappend ports [list {ddr4_r2_dq[22]}   {ddr4_r2_dq[22]}  ]
+lappend ports [list {ddr4_r2_dq[23]}   {ddr4_r2_dq[23]}  ]
+lappend ports [list {ddr4_r2_dm_n[2]}  {ddr4_r2_dm_n[2]} ]
+lappend ports [list {ddr4_r2_dq[24]}   {ddr4_r2_dq[24]}  ]
+lappend ports [list {ddr4_r2_dq[25]}   {ddr4_r2_dq[25]}  ]
+lappend ports [list {ddr4_r2_dq[26]}   {ddr4_r2_dq[26]}  ]
+lappend ports [list {ddr4_r2_dq[27]}   {ddr4_r2_dq[27]}  ]
+lappend ports [list {ddr4_r2_dqs[3]}   {ddr4_r2_dqs[3]}  ]
+lappend ports [list {ddr4_r2_dqs_n[3]} {ddr4_r2_dqs_n[3]}]
+lappend ports [list {ddr4_r2_dq[28]}   {ddr4_r2_dq[28]}  ]
+lappend ports [list {ddr4_r2_dq[29]}   {ddr4_r2_dq[29]}  ]
+lappend ports [list {ddr4_r2_dq[30]}   {ddr4_r2_dq[30]}  ]
+lappend ports [list {ddr4_r2_dq[31]}   {ddr4_r2_dq[31]}  ]
+lappend ports [list {ddr4_r2_dm_n[3]}  {ddr4_r2_dm_n[3]} ]
+lappend ports [list {ddr4_r2_dq[32]}   {ddr4_r2_dq[32]}  ]
+lappend ports [list {ddr4_r2_dq[33]}   {ddr4_r2_dq[33]}  ]
+lappend ports [list {ddr4_r2_dq[34]}   {ddr4_r2_dq[34]}  ]
+lappend ports [list {ddr4_r2_dq[35]}   {ddr4_r2_dq[35]}  ]
+lappend ports [list {ddr4_r2_dqs[4]}   {ddr4_r2_dqs[4]}  ]
+lappend ports [list {ddr4_r2_dqs_n[4]} {ddr4_r2_dqs_n[4]}]
+lappend ports [list {ddr4_r2_dq[36]}   {ddr4_r2_dq[36]}  ]
+lappend ports [list {ddr4_r2_dq[37]}   {ddr4_r2_dq[37]}  ]
+lappend ports [list {ddr4_r2_dq[38]}   {ddr4_r2_dq[38]}  ]
+lappend ports [list {ddr4_r2_dq[39]}   {ddr4_r2_dq[39]}  ]
+lappend ports [list {ddr4_r2_dm_n[4]}  {ddr4_r2_dm_n[4]} ]
+lappend ports [list {ddr4_r2_shield0}  {ddr4_r2_shield0} ]
+lappend ports [list {ddr4_r2_shield1}  {ddr4_r2_shield1} ]
+lappend ports [list {ddr4_r2_shield2}  {ddr4_r2_shield2} ]
+lappend ports [list {ddr4_r2_shield3}  {ddr4_r2_shield3} ]
+lappend ports [list {ddr4_r2_shield4}  {ddr4_r2_shield4} ]
+
+apply_pin_constraints $ports $pins

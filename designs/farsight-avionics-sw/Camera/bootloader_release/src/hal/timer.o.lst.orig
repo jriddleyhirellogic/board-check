@@ -1,0 +1,435 @@
+   1              		.file	"timer.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_Timer,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_Timer
+  13              	v_Init_Timer:
+  14              	.LFB0:
+  15              		.file 1 "../src/hal/timer.c"
+   1:../src/hal/timer.c **** /*
+   2:../src/hal/timer.c ****  * timer.c
+   3:../src/hal/timer.c ****  *
+   4:../src/hal/timer.c ****  *  Created on: Nov 24, 2025
+   5:../src/hal/timer.c ****  *      Author: iboard
+   6:../src/hal/timer.c ****  */
+   7:../src/hal/timer.c **** #include <stdint.h>
+   8:../src/hal/timer.c **** #include "mem_map.h"
+   9:../src/hal/timer.c **** #include "timer.h"
+  10:../src/hal/timer.c **** #include "config.h"
+  11:../src/hal/timer.c **** 
+  12:../src/hal/timer.c **** void v_Init_Timer(Timer_Instance_t *p_Instance,  Timer_Init_t *p_Init )
+  13:../src/hal/timer.c **** {
+  16              		.loc 1 13 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  14:../src/hal/timer.c ****     p_Instance->u32_Base_Address = p_Init->u32_Base_Address;
+  19              		.loc 1 14 5
+  20              		.loc 1 14 42 is_stmt 0
+  21 0000 83A70500 		lw	a5,0(a1)
+  22              		.loc 1 14 34
+  23 0004 2320F500 		sw	a5,0(a0)
+  15:../src/hal/timer.c **** 
+  16:../src/hal/timer.c ****     // Set mode and start with timer and irq disabled
+  17:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_CONTROL_OFFSET ) = p_Init->u8_Mode;
+  24              		.loc 1 17 5 is_stmt 1
+  25              		.loc 1 17 90 is_stmt 0
+  26 0008 03C75500 		lbu	a4,5(a1)
+  27              		.loc 1 17 82
+  28 000c 23A4E700 		sw	a4,8(a5)
+  18:../src/hal/timer.c **** 
+  19:../src/hal/timer.c ****     // Set prescale
+  20:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_PRESCALE_OFFSET ) = p_Init->u8_Pres
+  29              		.loc 1 20 5 is_stmt 1
+  30              		.loc 1 20 105 is_stmt 0
+  31 0010 83C74500 		lbu	a5,4(a1)
+  32              		.loc 1 20 57
+  33 0014 03270500 		lw	a4,0(a0)
+  34              		.loc 1 20 105
+  35 0018 93F7F700 		andi	a5,a5,15
+  36              		.loc 1 20 83
+  37 001c 2326F700 		sw	a5,12(a4)
+  21:../src/hal/timer.c **** 
+  22:../src/hal/timer.c ****     // Clear any pending interrupt
+  23:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_IRQ_CLR_OFFSET ) = 1;
+  38              		.loc 1 23 5 is_stmt 1
+  39              		.loc 1 23 57 is_stmt 0
+  40 0020 83270500 		lw	a5,0(a0)
+  41              		.loc 1 23 82
+  42 0024 13071000 		li	a4,1
+  43 0028 23A8E700 		sw	a4,16(a5)
+  24:../src/hal/timer.c **** }
+  44              		.loc 1 24 1
+  45 002c 67800000 		ret
+  46              		.cfi_endproc
+  47              	.LFE0:
+  49              		.section	.text.v_Enable_Timer,"ax",@progbits
+  50              		.align	2
+  51              		.globl	v_Enable_Timer
+  53              	v_Enable_Timer:
+  54              	.LFB1:
+  25:../src/hal/timer.c **** 
+  26:../src/hal/timer.c **** void v_Enable_Timer(Timer_Instance_t *p_Instance, uint8_t b_Enable)
+  27:../src/hal/timer.c **** {
+  55              		.loc 1 27 1 is_stmt 1
+  56              		.cfi_startproc
+  57              	.LVL1:
+  28:../src/hal/timer.c ****     uint32_t u32_Regval = *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_CONTROL_OFFSE
+  58              		.loc 1 28 5
+  59              		.loc 1 28 79 is_stmt 0
+  60 0000 83270500 		lw	a5,0(a0)
+  61              		.loc 1 28 14
+  62 0004 83A68700 		lw	a3,8(a5)
+  63              	.LVL2:
+  29:../src/hal/timer.c **** 
+  30:../src/hal/timer.c ****     if( b_Enable )
+  64              		.loc 1 30 5 is_stmt 1
+  31:../src/hal/timer.c ****     {
+  32:../src/hal/timer.c ****         u32_Regval |= TIMER_ENABLE;
+  33:../src/hal/timer.c **** 
+  34:../src/hal/timer.c ****     }
+  35:../src/hal/timer.c ****     else
+  36:../src/hal/timer.c ****     {
+  37:../src/hal/timer.c ****         u32_Regval &= ~TIMER_ENABLE;
+  65              		.loc 1 37 20 is_stmt 0
+  66 0008 13F7E6FF 		andi	a4,a3,-2
+  30:../src/hal/timer.c ****     {
+  67              		.loc 1 30 7
+  68 000c 63840500 		beq	a1,zero,.L4
+  32:../src/hal/timer.c **** 
+  69              		.loc 1 32 9 is_stmt 1
+  32:../src/hal/timer.c **** 
+  70              		.loc 1 32 20 is_stmt 0
+  71 0010 13E71600 		ori	a4,a3,1
+  72              	.LVL3:
+  73              	.L4:
+  38:../src/hal/timer.c ****     }
+  39:../src/hal/timer.c **** 
+  40:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_CONTROL_OFFSET ) = u32_Regval;
+  74              		.loc 1 40 5 is_stmt 1
+  75              		.loc 1 40 82 is_stmt 0
+  76 0014 23A4E700 		sw	a4,8(a5)
+  41:../src/hal/timer.c **** }
+  77              		.loc 1 41 1
+  78 0018 67800000 		ret
+  79              		.cfi_endproc
+  80              	.LFE1:
+  82              		.section	.text.v_Load_Timer,"ax",@progbits
+  83              		.align	2
+  84              		.globl	v_Load_Timer
+  86              	v_Load_Timer:
+  87              	.LFB2:
+  42:../src/hal/timer.c **** 
+  43:../src/hal/timer.c **** void v_Load_Timer(Timer_Instance_t *p_Instance, uint16_t u16_Timer_Reload_Value )
+  44:../src/hal/timer.c **** {
+  88              		.loc 1 44 1 is_stmt 1
+  89              		.cfi_startproc
+  90              	.LVL4:
+  45:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_LOAD_OFFSET )= u16_Timer_Reload_Val
+  91              		.loc 1 45 5
+  92              		.loc 1 45 6 is_stmt 0
+  93 0000 83270500 		lw	a5,0(a0)
+  94              		.loc 1 45 78
+  95 0004 23A0B700 		sw	a1,0(a5)
+  46:../src/hal/timer.c **** }
+  96              		.loc 1 46 1
+  97 0008 67800000 		ret
+  98              		.cfi_endproc
+  99              	.LFE2:
+ 101              		.section	.text.v_Enable_Timer_IRQ,"ax",@progbits
+ 102              		.align	2
+ 103              		.globl	v_Enable_Timer_IRQ
+ 105              	v_Enable_Timer_IRQ:
+ 106              	.LFB3:
+  47:../src/hal/timer.c **** 
+  48:../src/hal/timer.c **** void v_Enable_Timer_IRQ(Timer_Instance_t *p_Instance, uint8_t b_Enable)
+  49:../src/hal/timer.c **** {
+ 107              		.loc 1 49 1 is_stmt 1
+ 108              		.cfi_startproc
+ 109              	.LVL5:
+  50:../src/hal/timer.c ****     uint32_t u32_Regval = *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_CONTROL_OFFSE
+ 110              		.loc 1 50 5
+ 111              		.loc 1 50 79 is_stmt 0
+ 112 0000 83270500 		lw	a5,0(a0)
+ 113              		.loc 1 50 14
+ 114 0004 83A68700 		lw	a3,8(a5)
+ 115              	.LVL6:
+  51:../src/hal/timer.c **** 
+  52:../src/hal/timer.c ****     if( b_Enable )
+ 116              		.loc 1 52 5 is_stmt 1
+  53:../src/hal/timer.c ****     {
+  54:../src/hal/timer.c ****         u32_Regval |= TIMER_IRQ_ENABLE;
+  55:../src/hal/timer.c **** 
+  56:../src/hal/timer.c ****     }
+  57:../src/hal/timer.c ****     else
+  58:../src/hal/timer.c ****     {
+  59:../src/hal/timer.c ****         u32_Regval &= ~TIMER_IRQ_ENABLE;
+ 117              		.loc 1 59 20 is_stmt 0
+ 118 0008 13F7D6FF 		andi	a4,a3,-3
+  52:../src/hal/timer.c ****     {
+ 119              		.loc 1 52 7
+ 120 000c 63840500 		beq	a1,zero,.L9
+  54:../src/hal/timer.c **** 
+ 121              		.loc 1 54 9 is_stmt 1
+  54:../src/hal/timer.c **** 
+ 122              		.loc 1 54 20 is_stmt 0
+ 123 0010 13E72600 		ori	a4,a3,2
+ 124              	.LVL7:
+ 125              	.L9:
+  60:../src/hal/timer.c ****     }
+  61:../src/hal/timer.c **** 
+  62:../src/hal/timer.c ****     *(volatile uint32_t *)(p_Instance->u32_Base_Address + TIMER_CONTROL_OFFSET ) = u32_Regval;
+ 126              		.loc 1 62 5 is_stmt 1
+ 127              		.loc 1 62 82 is_stmt 0
+ 128 0014 23A4E700 		sw	a4,8(a5)
+  63:../src/hal/timer.c **** 
+  64:../src/hal/timer.c **** }
+ 129              		.loc 1 64 1
+ 130 0018 67800000 		ret
+ 131              		.cfi_endproc
+ 132              	.LFE3:
+ 134              		.text
+ 135              	.Letext0:
+ 136              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 137              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 138              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/timer.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 timer.c
+<<<<<<< HEAD
+     /tmp/cc8XN16G.s:13     .text.v_Init_Timer:0000000000000000 v_Init_Timer
+     /tmp/cc8XN16G.s:17     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:19     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:20     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:21     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:23     .text.v_Init_Timer:0000000000000004 .L0 
+     /tmp/cc8XN16G.s:25     .text.v_Init_Timer:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:26     .text.v_Init_Timer:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:28     .text.v_Init_Timer:000000000000000c .L0 
+     /tmp/cc8XN16G.s:30     .text.v_Init_Timer:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:31     .text.v_Init_Timer:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:33     .text.v_Init_Timer:0000000000000014 .L0 
+     /tmp/cc8XN16G.s:35     .text.v_Init_Timer:0000000000000018 .L0 
+     /tmp/cc8XN16G.s:37     .text.v_Init_Timer:000000000000001c .L0 
+     /tmp/cc8XN16G.s:39     .text.v_Init_Timer:0000000000000020 .L0 
+     /tmp/cc8XN16G.s:40     .text.v_Init_Timer:0000000000000020 .L0 
+     /tmp/cc8XN16G.s:42     .text.v_Init_Timer:0000000000000024 .L0 
+     /tmp/cc8XN16G.s:45     .text.v_Init_Timer:000000000000002c .L0 
+     /tmp/cc8XN16G.s:46     .text.v_Init_Timer:0000000000000030 .L0 
+     /tmp/cc8XN16G.s:53     .text.v_Enable_Timer:0000000000000000 v_Enable_Timer
+     /tmp/cc8XN16G.s:56     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:58     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:59     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:60     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:62     .text.v_Enable_Timer:0000000000000004 .L0 
+     /tmp/cc8XN16G.s:65     .text.v_Enable_Timer:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:66     .text.v_Enable_Timer:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:68     .text.v_Enable_Timer:000000000000000c .L0 
+     /tmp/cc8XN16G.s:70     .text.v_Enable_Timer:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:71     .text.v_Enable_Timer:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:75     .text.v_Enable_Timer:0000000000000014 .L0 
+     /tmp/cc8XN16G.s:76     .text.v_Enable_Timer:0000000000000014 .L0 
+     /tmp/cc8XN16G.s:78     .text.v_Enable_Timer:0000000000000018 .L0 
+     /tmp/cc8XN16G.s:79     .text.v_Enable_Timer:000000000000001c .L0 
+     /tmp/cc8XN16G.s:86     .text.v_Load_Timer:0000000000000000 v_Load_Timer
+     /tmp/cc8XN16G.s:89     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:91     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:92     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:93     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:95     .text.v_Load_Timer:0000000000000004 .L0 
+     /tmp/cc8XN16G.s:97     .text.v_Load_Timer:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:98     .text.v_Load_Timer:000000000000000c .L0 
+     /tmp/cc8XN16G.s:105    .text.v_Enable_Timer_IRQ:0000000000000000 v_Enable_Timer_IRQ
+     /tmp/cc8XN16G.s:108    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:110    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:111    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:112    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:114    .text.v_Enable_Timer_IRQ:0000000000000004 .L0 
+     /tmp/cc8XN16G.s:117    .text.v_Enable_Timer_IRQ:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:118    .text.v_Enable_Timer_IRQ:0000000000000008 .L0 
+     /tmp/cc8XN16G.s:120    .text.v_Enable_Timer_IRQ:000000000000000c .L0 
+     /tmp/cc8XN16G.s:122    .text.v_Enable_Timer_IRQ:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:123    .text.v_Enable_Timer_IRQ:0000000000000010 .L0 
+     /tmp/cc8XN16G.s:127    .text.v_Enable_Timer_IRQ:0000000000000014 .L0 
+     /tmp/cc8XN16G.s:128    .text.v_Enable_Timer_IRQ:0000000000000014 .L0 
+     /tmp/cc8XN16G.s:130    .text.v_Enable_Timer_IRQ:0000000000000018 .L0 
+     /tmp/cc8XN16G.s:131    .text.v_Enable_Timer_IRQ:000000000000001c .L0 
+     /tmp/cc8XN16G.s:49     .text.v_Init_Timer:0000000000000030 .L0 
+     /tmp/cc8XN16G.s:82     .text.v_Enable_Timer:000000000000001c .L0 
+     /tmp/cc8XN16G.s:101    .text.v_Load_Timer:000000000000000c .L0 
+     /tmp/cc8XN16G.s:134    .text.v_Enable_Timer_IRQ:000000000000001c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc8XN16G.s:73     .text.v_Enable_Timer:0000000000000014 .L4
+     /tmp/cc8XN16G.s:125    .text.v_Enable_Timer_IRQ:0000000000000014 .L9
+     /tmp/cc8XN16G.s:413    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc8XN16G.s:630    .debug_str:0000000000000000 .LASF29
+     /tmp/cc8XN16G.s:666    .debug_str:00000000000001b8 .LASF30
+     /tmp/cc8XN16G.s:688    .debug_str:0000000000000236 .LASF31
+     /tmp/cc8XN16G.s:616    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc8XN16G.s:628    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc8XN16G.s:692    .debug_str:000000000000027e .LASF0
+     /tmp/cc8XN16G.s:634    .debug_str:00000000000000d9 .LASF3
+     /tmp/cc8XN16G.s:646    .debug_str:0000000000000129 .LASF1
+     /tmp/cc8XN16G.s:676    .debug_str:00000000000001f9 .LASF2
+     /tmp/cc8XN16G.s:656    .debug_str:0000000000000172 .LASF4
+     /tmp/cc8XN16G.s:650    .debug_str:0000000000000149 .LASF5
+     /tmp/cc8XN16G.s:684    .debug_str:0000000000000220 .LASF6
+     /tmp/cc8XN16G.s:658    .debug_str:000000000000017d .LASF7
+     /tmp/cc8XN16G.s:648    .debug_str:0000000000000137 .LASF8
+     /tmp/cc8XN16G.s:670    .debug_str:00000000000001d2 .LASF9
+     /tmp/cc8XN16G.s:664    .debug_str:00000000000001a1 .LASF10
+     /tmp/cc8XN16G.s:662    .debug_str:0000000000000194 .LASF11
+     /tmp/cc8XN16G.s:636    .debug_str:00000000000000e3 .LASF12
+     /tmp/cc8XN16G.s:678    .debug_str:0000000000000203 .LASF13
+     /tmp/cc8XN16G.s:682    .debug_str:0000000000000217 .LASF14
+     /tmp/cc8XN16G.s:690    .debug_str:000000000000026d .LASF16
+     /tmp/cc8XN16G.s:674    .debug_str:00000000000001e8 .LASF15
+     /tmp/cc8XN16G.s:660    .debug_str:0000000000000188 .LASF17
+     /tmp/cc8XN16G.s:672    .debug_str:00000000000001e0 .LASF18
+     /tmp/cc8XN16G.s:654    .debug_str:0000000000000165 .LASF19
+     /tmp/cc8XN16G.s:632    .debug_str:00000000000000c6 .LASF22
+     /tmp/cc8XN16G.s:106    .text.v_Enable_Timer_IRQ:0000000000000000 .LFB3
+     /tmp/cc8XN16G.s:132    .text.v_Enable_Timer_IRQ:000000000000001c .LFE3
+     /tmp/cc8XN16G.s:680    .debug_str:000000000000020c .LASF20
+     /tmp/cc8XN16G.s:652    .debug_str:000000000000015c .LASF21
+     /tmp/cc8XN16G.s:644    .debug_str:000000000000011e .LASF26
+     /tmp/cc8XN16G.s:575    .debug_loc:0000000000000000 .LLST1
+     /tmp/cc8XN16G.s:686    .debug_str:0000000000000229 .LASF23
+     /tmp/cc8XN16G.s:87     .text.v_Load_Timer:0000000000000000 .LFB2
+     /tmp/cc8XN16G.s:99     .text.v_Load_Timer:000000000000000c .LFE2
+     /tmp/cc8XN16G.s:642    .debug_str:0000000000000107 .LASF24
+     /tmp/cc8XN16G.s:638    .debug_str:00000000000000eb .LASF25
+     /tmp/cc8XN16G.s:54     .text.v_Enable_Timer:0000000000000000 .LFB1
+     /tmp/cc8XN16G.s:80     .text.v_Enable_Timer:000000000000001c .LFE1
+     /tmp/cc8XN16G.s:586    .debug_loc:000000000000001e .LLST0
+     /tmp/cc8XN16G.s:640    .debug_str:00000000000000fa .LASF27
+     /tmp/cc8XN16G.s:14     .text.v_Init_Timer:0000000000000000 .LFB0
+     /tmp/cc8XN16G.s:47     .text.v_Init_Timer:0000000000000030 .LFE0
+     /tmp/cc8XN16G.s:668    .debug_str:00000000000001cb .LASF28
+     /tmp/cc8XN16G.s:115    .text.v_Enable_Timer_IRQ:0000000000000008 .LVL6
+     /tmp/cc8XN16G.s:124    .text.v_Enable_Timer_IRQ:0000000000000014 .LVL7
+     /tmp/cc8XN16G.s:63     .text.v_Enable_Timer:0000000000000008 .LVL2
+     /tmp/cc8XN16G.s:72     .text.v_Enable_Timer:0000000000000014 .LVL3
+     /tmp/cc8XN16G.s:140    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cc884DiN.s:13     .text.v_Init_Timer:0000000000000000 v_Init_Timer
+     /tmp/cc884DiN.s:17     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:19     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:20     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:21     .text.v_Init_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:23     .text.v_Init_Timer:0000000000000004 .L0 
+     /tmp/cc884DiN.s:25     .text.v_Init_Timer:0000000000000008 .L0 
+     /tmp/cc884DiN.s:26     .text.v_Init_Timer:0000000000000008 .L0 
+     /tmp/cc884DiN.s:28     .text.v_Init_Timer:000000000000000c .L0 
+     /tmp/cc884DiN.s:30     .text.v_Init_Timer:0000000000000010 .L0 
+     /tmp/cc884DiN.s:31     .text.v_Init_Timer:0000000000000010 .L0 
+     /tmp/cc884DiN.s:33     .text.v_Init_Timer:0000000000000014 .L0 
+     /tmp/cc884DiN.s:35     .text.v_Init_Timer:0000000000000018 .L0 
+     /tmp/cc884DiN.s:37     .text.v_Init_Timer:000000000000001c .L0 
+     /tmp/cc884DiN.s:39     .text.v_Init_Timer:0000000000000020 .L0 
+     /tmp/cc884DiN.s:40     .text.v_Init_Timer:0000000000000020 .L0 
+     /tmp/cc884DiN.s:42     .text.v_Init_Timer:0000000000000024 .L0 
+     /tmp/cc884DiN.s:45     .text.v_Init_Timer:000000000000002c .L0 
+     /tmp/cc884DiN.s:46     .text.v_Init_Timer:0000000000000030 .L0 
+     /tmp/cc884DiN.s:53     .text.v_Enable_Timer:0000000000000000 v_Enable_Timer
+     /tmp/cc884DiN.s:56     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:58     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:59     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:60     .text.v_Enable_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:62     .text.v_Enable_Timer:0000000000000004 .L0 
+     /tmp/cc884DiN.s:65     .text.v_Enable_Timer:0000000000000008 .L0 
+     /tmp/cc884DiN.s:66     .text.v_Enable_Timer:0000000000000008 .L0 
+     /tmp/cc884DiN.s:68     .text.v_Enable_Timer:000000000000000c .L0 
+     /tmp/cc884DiN.s:70     .text.v_Enable_Timer:0000000000000010 .L0 
+     /tmp/cc884DiN.s:71     .text.v_Enable_Timer:0000000000000010 .L0 
+     /tmp/cc884DiN.s:75     .text.v_Enable_Timer:0000000000000014 .L0 
+     /tmp/cc884DiN.s:76     .text.v_Enable_Timer:0000000000000014 .L0 
+     /tmp/cc884DiN.s:78     .text.v_Enable_Timer:0000000000000018 .L0 
+     /tmp/cc884DiN.s:79     .text.v_Enable_Timer:000000000000001c .L0 
+     /tmp/cc884DiN.s:86     .text.v_Load_Timer:0000000000000000 v_Load_Timer
+     /tmp/cc884DiN.s:89     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:91     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:92     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:93     .text.v_Load_Timer:0000000000000000 .L0 
+     /tmp/cc884DiN.s:95     .text.v_Load_Timer:0000000000000004 .L0 
+     /tmp/cc884DiN.s:97     .text.v_Load_Timer:0000000000000008 .L0 
+     /tmp/cc884DiN.s:98     .text.v_Load_Timer:000000000000000c .L0 
+     /tmp/cc884DiN.s:105    .text.v_Enable_Timer_IRQ:0000000000000000 v_Enable_Timer_IRQ
+     /tmp/cc884DiN.s:108    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc884DiN.s:110    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc884DiN.s:111    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc884DiN.s:112    .text.v_Enable_Timer_IRQ:0000000000000000 .L0 
+     /tmp/cc884DiN.s:114    .text.v_Enable_Timer_IRQ:0000000000000004 .L0 
+     /tmp/cc884DiN.s:117    .text.v_Enable_Timer_IRQ:0000000000000008 .L0 
+     /tmp/cc884DiN.s:118    .text.v_Enable_Timer_IRQ:0000000000000008 .L0 
+     /tmp/cc884DiN.s:120    .text.v_Enable_Timer_IRQ:000000000000000c .L0 
+     /tmp/cc884DiN.s:122    .text.v_Enable_Timer_IRQ:0000000000000010 .L0 
+     /tmp/cc884DiN.s:123    .text.v_Enable_Timer_IRQ:0000000000000010 .L0 
+     /tmp/cc884DiN.s:127    .text.v_Enable_Timer_IRQ:0000000000000014 .L0 
+     /tmp/cc884DiN.s:128    .text.v_Enable_Timer_IRQ:0000000000000014 .L0 
+     /tmp/cc884DiN.s:130    .text.v_Enable_Timer_IRQ:0000000000000018 .L0 
+     /tmp/cc884DiN.s:131    .text.v_Enable_Timer_IRQ:000000000000001c .L0 
+     /tmp/cc884DiN.s:49     .text.v_Init_Timer:0000000000000030 .L0 
+     /tmp/cc884DiN.s:82     .text.v_Enable_Timer:000000000000001c .L0 
+     /tmp/cc884DiN.s:101    .text.v_Load_Timer:000000000000000c .L0 
+     /tmp/cc884DiN.s:134    .text.v_Enable_Timer_IRQ:000000000000001c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc884DiN.s:73     .text.v_Enable_Timer:0000000000000014 .L4
+     /tmp/cc884DiN.s:125    .text.v_Enable_Timer_IRQ:0000000000000014 .L9
+     /tmp/cc884DiN.s:413    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc884DiN.s:630    .debug_str:0000000000000000 .LASF29
+     /tmp/cc884DiN.s:666    .debug_str:00000000000001b8 .LASF30
+     /tmp/cc884DiN.s:688    .debug_str:0000000000000236 .LASF31
+     /tmp/cc884DiN.s:616    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc884DiN.s:628    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc884DiN.s:692    .debug_str:000000000000027e .LASF0
+     /tmp/cc884DiN.s:634    .debug_str:00000000000000d9 .LASF3
+     /tmp/cc884DiN.s:646    .debug_str:0000000000000129 .LASF1
+     /tmp/cc884DiN.s:676    .debug_str:00000000000001f9 .LASF2
+     /tmp/cc884DiN.s:656    .debug_str:0000000000000172 .LASF4
+     /tmp/cc884DiN.s:650    .debug_str:0000000000000149 .LASF5
+     /tmp/cc884DiN.s:684    .debug_str:0000000000000220 .LASF6
+     /tmp/cc884DiN.s:658    .debug_str:000000000000017d .LASF7
+     /tmp/cc884DiN.s:648    .debug_str:0000000000000137 .LASF8
+     /tmp/cc884DiN.s:670    .debug_str:00000000000001d2 .LASF9
+     /tmp/cc884DiN.s:664    .debug_str:00000000000001a1 .LASF10
+     /tmp/cc884DiN.s:662    .debug_str:0000000000000194 .LASF11
+     /tmp/cc884DiN.s:636    .debug_str:00000000000000e3 .LASF12
+     /tmp/cc884DiN.s:678    .debug_str:0000000000000203 .LASF13
+     /tmp/cc884DiN.s:682    .debug_str:0000000000000217 .LASF14
+     /tmp/cc884DiN.s:690    .debug_str:000000000000026d .LASF16
+     /tmp/cc884DiN.s:674    .debug_str:00000000000001e8 .LASF15
+     /tmp/cc884DiN.s:660    .debug_str:0000000000000188 .LASF17
+     /tmp/cc884DiN.s:672    .debug_str:00000000000001e0 .LASF18
+     /tmp/cc884DiN.s:654    .debug_str:0000000000000165 .LASF19
+     /tmp/cc884DiN.s:632    .debug_str:00000000000000c6 .LASF22
+     /tmp/cc884DiN.s:106    .text.v_Enable_Timer_IRQ:0000000000000000 .LFB3
+     /tmp/cc884DiN.s:132    .text.v_Enable_Timer_IRQ:000000000000001c .LFE3
+     /tmp/cc884DiN.s:680    .debug_str:000000000000020c .LASF20
+     /tmp/cc884DiN.s:652    .debug_str:000000000000015c .LASF21
+     /tmp/cc884DiN.s:644    .debug_str:000000000000011e .LASF26
+     /tmp/cc884DiN.s:575    .debug_loc:0000000000000000 .LLST1
+     /tmp/cc884DiN.s:686    .debug_str:0000000000000229 .LASF23
+     /tmp/cc884DiN.s:87     .text.v_Load_Timer:0000000000000000 .LFB2
+     /tmp/cc884DiN.s:99     .text.v_Load_Timer:000000000000000c .LFE2
+     /tmp/cc884DiN.s:642    .debug_str:0000000000000107 .LASF24
+     /tmp/cc884DiN.s:638    .debug_str:00000000000000eb .LASF25
+     /tmp/cc884DiN.s:54     .text.v_Enable_Timer:0000000000000000 .LFB1
+     /tmp/cc884DiN.s:80     .text.v_Enable_Timer:000000000000001c .LFE1
+     /tmp/cc884DiN.s:586    .debug_loc:000000000000001e .LLST0
+     /tmp/cc884DiN.s:640    .debug_str:00000000000000fa .LASF27
+     /tmp/cc884DiN.s:14     .text.v_Init_Timer:0000000000000000 .LFB0
+     /tmp/cc884DiN.s:47     .text.v_Init_Timer:0000000000000030 .LFE0
+     /tmp/cc884DiN.s:668    .debug_str:00000000000001cb .LASF28
+     /tmp/cc884DiN.s:115    .text.v_Enable_Timer_IRQ:0000000000000008 .LVL6
+     /tmp/cc884DiN.s:124    .text.v_Enable_Timer_IRQ:0000000000000014 .LVL7
+     /tmp/cc884DiN.s:63     .text.v_Enable_Timer:0000000000000008 .LVL2
+     /tmp/cc884DiN.s:72     .text.v_Enable_Timer:0000000000000014 .LVL3
+     /tmp/cc884DiN.s:140    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

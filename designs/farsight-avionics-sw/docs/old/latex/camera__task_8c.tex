@@ -1,0 +1,309 @@
+\doxysection{src/\+camera\+\_\+task.c File Reference}
+\hypertarget{camera__task_8c}{}\label{camera__task_8c}\index{src/camera\_task.c@{src/camera\_task.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}queue.\+h"{}}\newline
+{\ttfamily \+\#include "{}timers.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}core\+\_\+spi.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}register.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+Include dependency graph for camera\+\_\+task.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{camera__task_8c_a563b23dacc37d7f9753dff64509dee8d}{v\+\_\+\+Start\+\_\+\+Camera\+\_\+\+Timer}} (\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} ticks)
+\item 
+void \doxymbox{\hyperlink{camera__task_8c_a7f31f1962095d02194aa7bcebfb04242}{v\+\_\+\+Stop\+\_\+\+Camera\+\_\+\+Timer}} (void)
+\item 
+static void \doxymbox{\hyperlink{camera__task_8c_ab77e7ee88eee15a6ec806be0abe6e90e}{Camera\+\_\+\+Timer\+\_\+\+Expiration}} (\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} x\+Timer)
+\item 
+void \doxymbox{\hyperlink{camera__task_8c_a419160974a53b716df1c675a527ecca4}{v\+\_\+\+Camera\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\begin{DoxyCompactList}\small\item\em Thread managing camera -\/ initialization, taking pictures, transferring image data. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{camera__task_8c_a48344ac27a8bc84be9d797d6f6c5c46d}{v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Posts an event to message queue from other threads. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{camera__task_8c_a7bc3c003101fc7b4bb5791c26de2182c}{v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Posts and event to camera thread message queue from interrupt context. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{camera__task_8c_a3f4b7914b4b516517090a5435833a0cd}{Get\+\_\+\+Camera\+\_\+\+State}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}pu32\+\_\+\+State)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{camera__task_8c_a8cff64c2c0b7cab0636bdebff84400e0}{b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Armed\+\_\+\+State}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{camera__task_8c_a9173eace0e0d28a5bfb3ea2f7826d8f7}{b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Busy\+\_\+\+State}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{camera__task_8c_aa9f6d2105b85a0afa2ee0ccb5d23ad63}{b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Idle\+\_\+\+State}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}}
+\item 
+static \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} \doxymbox{\hyperlink{camera__task_8c_a8f11e9293cfa2f45f70110d6bfc4d0a0}{Camera\+\_\+\+Queue}}
+\item 
+static Camera\+\_\+\+Context\+\_\+t \doxymbox{\hyperlink{camera__task_8c_a2c63dd70bea5c332d0098603b236b2c2}{Camera\+\_\+\+Context}}
+\item 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} \doxymbox{\hyperlink{camera__task_8c_ad017abff505baef2ecf35d2a11405c74}{Camera\+\_\+\+Timer}}
+\item 
+static Camera\+\_\+\+Instance\+\_\+t \doxymbox{\hyperlink{camera__task_8c_a1419de7a1596d40d3056bf064b1b48d5}{camera\+\_\+instance}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__task_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__task_8c_a8cff64c2c0b7cab0636bdebff84400e0}\index{camera\_task.c@{camera\_task.c}!b\_Camera\_Is\_In\_Armed\_State@{b\_Camera\_Is\_In\_Armed\_State}}
+\index{b\_Camera\_Is\_In\_Armed\_State@{b\_Camera\_Is\_In\_Armed\_State}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{b\_Camera\_Is\_In\_Armed\_State()}{b\_Camera\_Is\_In\_Armed\_State()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a8cff64c2c0b7cab0636bdebff84400e0} 
+uint8\+\_\+t b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Armed\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00145}{145}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_a8cff64c2c0b7cab0636bdebff84400e0_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_a9173eace0e0d28a5bfb3ea2f7826d8f7}\index{camera\_task.c@{camera\_task.c}!b\_Camera\_Is\_In\_Busy\_State@{b\_Camera\_Is\_In\_Busy\_State}}
+\index{b\_Camera\_Is\_In\_Busy\_State@{b\_Camera\_Is\_In\_Busy\_State}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{b\_Camera\_Is\_In\_Busy\_State()}{b\_Camera\_Is\_In\_Busy\_State()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a9173eace0e0d28a5bfb3ea2f7826d8f7} 
+uint8\+\_\+t b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Busy\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00150}{150}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_a9173eace0e0d28a5bfb3ea2f7826d8f7_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_aa9f6d2105b85a0afa2ee0ccb5d23ad63}\index{camera\_task.c@{camera\_task.c}!b\_Camera\_Is\_In\_Idle\_State@{b\_Camera\_Is\_In\_Idle\_State}}
+\index{b\_Camera\_Is\_In\_Idle\_State@{b\_Camera\_Is\_In\_Idle\_State}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{b\_Camera\_Is\_In\_Idle\_State()}{b\_Camera\_Is\_In\_Idle\_State()}}
+{\footnotesize\ttfamily \label{camera__task_8c_aa9f6d2105b85a0afa2ee0ccb5d23ad63} 
+uint8\+\_\+t b\+\_\+\+Camera\+\_\+\+Is\+\_\+\+In\+\_\+\+Idle\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00155}{155}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_aa9f6d2105b85a0afa2ee0ccb5d23ad63_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_ab77e7ee88eee15a6ec806be0abe6e90e}\index{camera\_task.c@{camera\_task.c}!Camera\_Timer\_Expiration@{Camera\_Timer\_Expiration}}
+\index{Camera\_Timer\_Expiration@{Camera\_Timer\_Expiration}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Timer\_Expiration()}{Camera\_Timer\_Expiration()}}
+{\footnotesize\ttfamily \label{camera__task_8c_ab77e7ee88eee15a6ec806be0abe6e90e} 
+void Camera\+\_\+\+Timer\+\_\+\+Expiration (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}}}]{x\+Timer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00132}{132}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_ab77e7ee88eee15a6ec806be0abe6e90e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_ab77e7ee88eee15a6ec806be0abe6e90e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_a3f4b7914b4b516517090a5435833a0cd}\index{camera\_task.c@{camera\_task.c}!Get\_Camera\_State@{Get\_Camera\_State}}
+\index{Get\_Camera\_State@{Get\_Camera\_State}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Camera\_State()}{Get\_Camera\_State()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a3f4b7914b4b516517090a5435833a0cd} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Camera\+\_\+\+State (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{pu32\+\_\+\+State}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00139}{139}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a419160974a53b716df1c675a527ecca4}\index{camera\_task.c@{camera\_task.c}!v\_Camera\_Task@{v\_Camera\_Task}}
+\index{v\_Camera\_Task@{v\_Camera\_Task}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{v\_Camera\_Task()}{v\_Camera\_Task()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a419160974a53b716df1c675a527ecca4} 
+void v\+\_\+\+Camera\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Thread managing camera -\/ initialization, taking pictures, transferring image data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pv\+Parameters} & Not used yet, but allows params to be passed when thread is created \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00049}{49}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_a419160974a53b716df1c675a527ecca4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=324pt]{camera__task_8c_a419160974a53b716df1c675a527ecca4_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_a48344ac27a8bc84be9d797d6f6c5c46d}\index{camera\_task.c@{camera\_task.c}!v\_Post\_Camera\_Event@{v\_Post\_Camera\_Event}}
+\index{v\_Post\_Camera\_Event@{v\_Post\_Camera\_Event}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Camera\_Event()}{v\_Post\_Camera\_Event()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a48344ac27a8bc84be9d797d6f6c5c46d} 
+void v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Posts an event to message queue from other threads. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00103}{103}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8c_a48344ac27a8bc84be9d797d6f6c5c46d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8c_a7bc3c003101fc7b4bb5791c26de2182c}\index{camera\_task.c@{camera\_task.c}!v\_Post\_Camera\_Event\_ISR@{v\_Post\_Camera\_Event\_ISR}}
+\index{v\_Post\_Camera\_Event\_ISR@{v\_Post\_Camera\_Event\_ISR}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Camera\_Event\_ISR()}{v\_Post\_Camera\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a7bc3c003101fc7b4bb5791c26de2182c} 
+void v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Posts and event to camera thread message queue from interrupt context. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & (message) \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00115}{115}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a563b23dacc37d7f9753dff64509dee8d}\index{camera\_task.c@{camera\_task.c}!v\_Start\_Camera\_Timer@{v\_Start\_Camera\_Timer}}
+\index{v\_Start\_Camera\_Timer@{v\_Start\_Camera\_Timer}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{v\_Start\_Camera\_Timer()}{v\_Start\_Camera\_Timer()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a563b23dacc37d7f9753dff64509dee8d} 
+void v\+\_\+\+Start\+\_\+\+Camera\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}}}]{ticks}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00121}{121}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a7f31f1962095d02194aa7bcebfb04242}\index{camera\_task.c@{camera\_task.c}!v\_Stop\_Camera\_Timer@{v\_Stop\_Camera\_Timer}}
+\index{v\_Stop\_Camera\_Timer@{v\_Stop\_Camera\_Timer}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stop\_Camera\_Timer()}{v\_Stop\_Camera\_Timer()}}
+{\footnotesize\ttfamily \label{camera__task_8c_a7f31f1962095d02194aa7bcebfb04242} 
+void v\+\_\+\+Stop\+\_\+\+Camera\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00127}{127}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+
+
+\label{doc-var-members}
+\Hypertarget{camera__task_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{camera__task_8c_a2c63dd70bea5c332d0098603b236b2c2}\index{camera\_task.c@{camera\_task.c}!Camera\_Context@{Camera\_Context}}
+\index{Camera\_Context@{Camera\_Context}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Context}{Camera\_Context}}
+{\footnotesize\ttfamily \label{camera__task_8c_a2c63dd70bea5c332d0098603b236b2c2} 
+Camera\+\_\+\+Context\+\_\+t Camera\+\_\+\+Context\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00034}{34}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a1419de7a1596d40d3056bf064b1b48d5}\index{camera\_task.c@{camera\_task.c}!camera\_instance@{camera\_instance}}
+\index{camera\_instance@{camera\_instance}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{camera\_instance}{camera\_instance}}
+{\footnotesize\ttfamily \label{camera__task_8c_a1419de7a1596d40d3056bf064b1b48d5} 
+Camera\+\_\+\+Instance\+\_\+t camera\+\_\+instance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00037}{37}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a8f11e9293cfa2f45f70110d6bfc4d0a0}\index{camera\_task.c@{camera\_task.c}!Camera\_Queue@{Camera\_Queue}}
+\index{Camera\_Queue@{Camera\_Queue}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Queue}{Camera\_Queue}}
+{\footnotesize\ttfamily \label{camera__task_8c_a8f11e9293cfa2f45f70110d6bfc4d0a0} 
+\doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} Camera\+\_\+\+Queue\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_ad017abff505baef2ecf35d2a11405c74}\index{camera\_task.c@{camera\_task.c}!Camera\_Timer@{Camera\_Timer}}
+\index{Camera\_Timer@{Camera\_Timer}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Timer}{Camera\_Timer}}
+{\footnotesize\ttfamily \label{camera__task_8c_ad017abff505baef2ecf35d2a11405c74} 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} Camera\+\_\+\+Timer}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00035}{35}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+\Hypertarget{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}\index{camera\_task.c@{camera\_task.c}!initialized@{initialized}}
+\index{initialized@{initialized}!camera\_task.c@{camera\_task.c}}
+\doxysubsubsection{\texorpdfstring{initialized}{initialized}}
+{\footnotesize\ttfamily \label{camera__task_8c_a41bd82d597649cdf060877fea69b23a2} 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} initialized\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{main_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{main_8c_source}{main.\+c}}.
+

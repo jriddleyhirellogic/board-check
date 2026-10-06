@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREUART:5.7.100",
+  "definition_digest": "64fcc8b77eb423c5096dbf31295572a2c2e76c02adf807d2170ec5ffb2ea3ec4",
+  "generated": "2026-09-22T15:51:31Z",
+  "libero": "Libero_v11.9",
+  "name": "UART0",
+  "sources_digest": "cef7504ee3d09f3974266606557e4141c2c0e22ae4673e6c648e929aec1ade9f"
+}

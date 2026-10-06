@@ -1,0 +1,70 @@
+\doxysection{timer.\+c}
+\hypertarget{timer_8c_source}{}\label{timer_8c_source}\index{src/hal/timer.c@{src/hal/timer.c}}
+\doxymbox{\hyperlink{timer_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00002}00002\ \textcolor{comment}{\ *\ timer.c}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Nov\ 24,\ 2025}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}timer.h"{}}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00012}\doxymbox{\hyperlink{timer_8c_a350462105c9e84d1624772a0799dbe86}{00012}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{timer_8c_a350462105c9e84d1624772a0799dbe86}{v\_Init\_Timer}}(Timer\_Instance\_t\ *p\_Instance,\ \ Timer\_Init\_t\ *p\_Init\ )}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00014}00014\ \ \ \ \ p\_Instance-\/>u32\_Base\_Address\ =\ p\_Init-\/>u32\_Base\_Address;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00016}00016\ \ \ \ \ \textcolor{comment}{//\ Set\ mode\ and\ start\ with\ timer\ and\ irq\ disabled}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00017}00017\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_CONTROL\_OFFSET\ )\ =\ p\_Init-\/>u8\_Mode;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00019}00019\ \ \ \ \ \textcolor{comment}{//\ Set\ prescale}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00020}00020\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_PRESCALE\_OFFSET\ )\ =\ p\_Init-\/>u8\_Prescale\ \&\ 0xF;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00022}00022\ \ \ \ \ \textcolor{comment}{//\ Clear\ any\ pending\ interrupt}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00023}00023\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_IRQ\_CLR\_OFFSET\ )\ =\ 1;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00024}00024\ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00026}\doxymbox{\hyperlink{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7}{00026}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7}{v\_Enable\_Timer}}(Timer\_Instance\_t\ *p\_Instance,\ uint8\_t\ b\_Enable)}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00027}00027\ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00028}00028\ \ \ \ \ uint32\_t\ u32\_Regval\ =\ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_CONTROL\_OFFSET\ );}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00030}00030\ \ \ \ \ \textcolor{keywordflow}{if}(\ b\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00031}00031\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00032}00032\ \ \ \ \ \ \ \ \ u32\_Regval\ |=\ TIMER\_ENABLE;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00034}00034\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00035}00035\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00036}00036\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00037}00037\ \ \ \ \ \ \ \ \ u32\_Regval\ \&=\ \string~TIMER\_ENABLE;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00038}00038\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00040}00040\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_CONTROL\_OFFSET\ )\ =\ u32\_Regval;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00041}00041\ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00043}\doxymbox{\hyperlink{timer_8c_a41beb6cbc35beb3e21f64f4723aaf862}{00043}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{timer_8c_a41beb6cbc35beb3e21f64f4723aaf862}{v\_Load\_Timer}}(Timer\_Instance\_t\ *p\_Instance,\ uint16\_t\ u16\_Timer\_Reload\_Value\ )}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00044}00044\ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00045}00045\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_LOAD\_OFFSET\ )=\ u16\_Timer\_Reload\_Value;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00046}00046\ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00048}\doxymbox{\hyperlink{timer_8c_a008f8e4947271fa0c50621f0f746e3da}{00048}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{timer_8c_a008f8e4947271fa0c50621f0f746e3da}{v\_Enable\_Timer\_IRQ}}(Timer\_Instance\_t\ *p\_Instance,\ uint8\_t\ b\_Enable)}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00049}00049\ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00050}00050\ \ \ \ \ uint32\_t\ u32\_Regval\ =\ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_CONTROL\_OFFSET\ );}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{if}(\ b\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00054}00054\ \ \ \ \ \ \ \ \ u32\_Regval\ |=\ TIMER\_IRQ\_ENABLE;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00057}00057\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00058}00058\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00059}00059\ \ \ \ \ \ \ \ \ u32\_Regval\ \&=\ \string~TIMER\_IRQ\_ENABLE;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00060}00060\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00062}00062\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(p\_Instance-\/>u32\_Base\_Address\ +\ TIMER\_CONTROL\_OFFSET\ )\ =\ u32\_Regval;}
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{timer_8c_source_l00064}00064\ \}}
+
+\end{DoxyCode}

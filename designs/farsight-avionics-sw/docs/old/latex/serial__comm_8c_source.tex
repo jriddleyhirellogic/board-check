@@ -1,0 +1,198 @@
+\doxysection{serial\+\_\+comm.\+c}
+\hypertarget{serial__comm_8c_source}{}\label{serial__comm_8c_source}\index{src/hal/serial\_comm.c@{src/hal/serial\_comm.c}}
+\doxymbox{\hyperlink{serial__comm_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00002}00002\ \textcolor{comment}{\ *\ serial\_comm.c}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 3,\ 2025}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{queue_8h}{queue.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal__uart16550_8h}{hal\_uart16550.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}timer.h"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__comm_8h}{serial\_comm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__sm_8h}{serial\_sm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{events_8h}{events.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{command_8h}{command.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00026}00026\ \textcolor{keyword}{extern}\ \doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{EventGroupHandle\_t}}\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00027}\doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{00027}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *\doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00028}\doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{00028}}\ \textcolor{keyword}{static}\ Timer\_Instance\_t\ *\doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00031}\doxymbox{\hyperlink{serial__comm_8c_ad2a1d14b2e042518e96758b6de2390d5}{00031}}\ uint8\_t\ \textcolor{keyword}{static}\ u8\_Response[\doxymbox{\hyperlink{serial__sm_8h_a17e333794ae761cd55ec6fd6fc0f1bac}{MAX\_MSG\_SIZE}}]\ \doxymbox{\hyperlink{serial__comm_8c_ad2a1d14b2e042518e96758b6de2390d5}{\_\_attribute\_\_}}\ ((aligned\ (4)));}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00033}\doxymbox{\hyperlink{serial__comm_8c_affc6ee7f288ffe74ab7f53995c74c837}{00033}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__comm_8c_affc6ee7f288ffe74ab7f53995c74c837}{u8\_Msgs\_Received}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00035}\doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{00035}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{QueueHandle\_t}}\ \doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{Serial\_Comm\_Queue}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00036}00036\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_add62247398443f8539532c99b386c595}{Reset\_Serial\_SM}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00047}\doxymbox{\hyperlink{serial__comm_8c_ad274afb53f96e3260f8c463d70d16a25}{00047}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_ad274afb53f96e3260f8c463d70d16a25}{v\_Serial\_Comm\_Task}}(\textcolor{keywordtype}{void}\ *pvParameters)}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00048}00048\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00049}00049\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{Serial\_Comm\_Queue}}\ =\ xQueueCreate(\ \doxymbox{\hyperlink{config_8h_a4fc265b8003b711992e4c81da771b7cf}{SERIAL\_COMM\_QUEUE\_LENGTH}},}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{unionEvent__t}{Event\_t}})\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00052}00052\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_add62247398443f8539532c99b386c595}{Reset\_Serial\_SM}}();}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00054}00054\ \ \ \ \ \doxymbox{\hyperlink{event__groups_8h_a02d7b3bb55f7e11d9c47116266c5fb2e}{xEventGroupSetBits}}(\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}},\ \ \doxymbox{\hyperlink{config_8h_aede0cf3be6495c9cc71d27415658ebb9}{SERIAL\_COMM\_INITIALIZED}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00055}00055\ \ \ \ \ \doxymbox{\hyperlink{event__groups_8h_aab9d5b405bc57b7624dcabe9a9a503db}{xEventGroupWaitBits}}(\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}},\ \doxymbox{\hyperlink{config_8h_a86be670bc1d1a7442e8f0d578f105307}{ALL\_INITIALIZED}},\ \doxymbox{\hyperlink{projdefs_8h_aa56260e937e7e203026707e5ba944273}{pdFALSE}},\ \doxymbox{\hyperlink{projdefs_8h_af268cf937960eb029256bd9c4d949fbe}{pdTRUE}},\ portMAX\_DELAY\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00057}00057\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_adfd6cea0252971a1ea504856c28db6ac}{v\_Enable\_Serial\_Comm}}();}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00059}00059\ \ \ \ \ \textcolor{keywordflow}{while}(1)}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00060}00060\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00061}00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ b\_Data\_Present;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00062}00062\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ Rcvd\_Event;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00063}00063\ \ \ \ \ \ \ \ \ \ b\_Data\_Present\ =\ \doxymbox{\hyperlink{queue_8h_ae8364d988c6f9b63c771cc2b3dfe5df9}{xQueueReceive}}(}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{Serial\_Comm\_Queue}},}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&Rcvd\_Event,}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ portMAX\_DELAY\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ b\_Data\_Present\ )\ \textcolor{comment}{//\ Event\ received}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ \doxymbox{\hyperlink{command_8c_a81bd11a017cf07a8601ea7a875738256}{u8\_Response\_Length}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ u8\_Retval;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Parse\ the\ received\ packet}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ u8\_Retval\ =\ \doxymbox{\hyperlink{command_8c_a6e59c976789aaef6bf12f1c18be6e97a}{Execute\_Command}}(\ \&Rcvd\_Event.\doxymbox{\hyperlink{unionEvent__t_a4306ba444726f2e614dd9222c2638adc}{serial\_msg}}.\doxymbox{\hyperlink{structEvent__Serial__Msg__Test__t_abbae33d685213af9af33a91cec9ee703}{header}},}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Rcvd\_Event.\doxymbox{\hyperlink{unionEvent__t_a4306ba444726f2e614dd9222c2638adc}{serial\_msg}}.\doxymbox{\hyperlink{structEvent__Serial__Msg__Test__t_a6f183b555714685bf2dfdb2e269e8366}{Data}},}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ u8\_Response,}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\doxymbox{\hyperlink{command_8c_a81bd11a017cf07a8601ea7a875738256}{u8\_Response\_Length}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !u8\_Retval\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a5bba251b9d7e2836fffae5aa927d92b2}{v\_Send\_Serial\_Comm}}(\ u8\_Response,\ \doxymbox{\hyperlink{command_8c_a81bd11a017cf07a8601ea7a875738256}{u8\_Response\_Length}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ ++\doxymbox{\hyperlink{serial__comm_8c_affc6ee7f288ffe74ab7f53995c74c837}{u8\_Msgs\_Received}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ timeout\ or\ something\ wrong}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00088}00088\ \textcolor{preprocessor}{\#ifdef\ \ MEM\_CHECK}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00089}00089\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBaseType\_t}}\ uxHighWaterMark\ =\ uxTaskGetStackHighWaterMark(NULL);\ \textcolor{comment}{//\ Stack\ high\ water\ mark\ -\/\ view\ in\ debugger}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00090}00090\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00092}00092\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00093}00093\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00095}\doxymbox{\hyperlink{serial__comm_8c_ac184fd9d173aaa189206d71f20df8206}{00095}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_ac184fd9d173aaa189206d71f20df8206}{v\_Set\_Serial\_Comm\_Instance}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *p\_Instance\ \ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00096}00096\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00097}00097\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}}\ =\ p\_Instance;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00098}00098\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00100}\doxymbox{\hyperlink{serial__comm_8c_a8f25298ce8f87ad4b70f7bf37ddc588c}{00100}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a8f25298ce8f87ad4b70f7bf37ddc588c}{v\_Set\_Serial\_Timer\_Instance}}(\ Timer\_Instance\_t\ *p\_Instance\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00101}00101\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00102}00102\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}}\ =\ p\_Instance;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00103}00103\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00105}\doxymbox{\hyperlink{serial__comm_8c_adfd6cea0252971a1ea504856c28db6ac}{00105}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_adfd6cea0252971a1ea504856c28db6ac}{v\_Enable\_Serial\_Comm}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00106}00106\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00107}00107\ \ \ \ \ \doxymbox{\hyperlink{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7}{v\_Enable\_Timer}}(\ \doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}},\ 1\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00108}00108\ \ \ \ \ \_\_asm\ \textcolor{keyword}{volatile}\ (\ \textcolor{stringliteral}{"{}csrs\ mie,\ \%0"{}}\ ::\textcolor{stringliteral}{"{}r"{}}\ (\ \doxymbox{\hyperlink{config_8h_a833c8df01544588f5a71e2cbff8aa266}{UART\_IRQ}}\ |\ \doxymbox{\hyperlink{config_8h_a0e16a8a56aba2a3a1f2b6d44e1ee3324}{COMM\_TIMER\_IRQ}}\ )\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00110}00110\ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc}{v\_Enable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}},\ \doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{UART\_ERBFI}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00111}00111\ \ \ \ \ \doxymbox{\hyperlink{timer_8c_a008f8e4947271fa0c50621f0f746e3da}{v\_Enable\_Timer\_IRQ}}(\ \doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}},\ 1\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00112}00112\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00114}\doxymbox{\hyperlink{serial__comm_8c_a73ddd8742cc8e76ca0dfd802693e68dd}{00114}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a73ddd8742cc8e76ca0dfd802693e68dd}{v\_Disable\_Serial\_Comm}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00115}00115\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00116}00116\ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2}{v\_Disable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}},\ \doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{UART\_ERBFI}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00117}00117\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00118}00118\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00120}\doxymbox{\hyperlink{serial__comm_8c_a16f6b153ae467954376c23866665d95d}{00120}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__comm_8c_a16f6b153ae467954376c23866665d95d}{u8\_Rx\_Count}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00121}\doxymbox{\hyperlink{serial__comm_8c_a31c7f1c8c04a12d89bf8e286b5fc64d8}{00121}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__comm_8c_a31c7f1c8c04a12d89bf8e286b5fc64d8}{u8\_Tx\_Buffer}}[\doxymbox{\hyperlink{config_8h_aa49135e066292c54d666ff845ec256b1}{SERIAL\_BUF\_SIZE}}];}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00122}\doxymbox{\hyperlink{serial__comm_8c_a1f9a7786fcbc75d2689b8bdee4c6b7a9}{00122}}\ \textcolor{keyword}{static}\ uint8\_t\ *\doxymbox{\hyperlink{serial__comm_8c_a1f9a7786fcbc75d2689b8bdee4c6b7a9}{p\_Tx\_Ptr}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00123}\doxymbox{\hyperlink{serial__comm_8c_a1d3f88653122ad224d638f264b570aef}{00123}}\ \textcolor{keyword}{static}\ uint8\_t\ \doxymbox{\hyperlink{serial__comm_8c_a1d3f88653122ad224d638f264b570aef}{u8\_Tx\_Count\_Remaining}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00134}\doxymbox{\hyperlink{serial__comm_8c_a3aca99352017ec5c655855d2102648d5}{00134}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a3aca99352017ec5c655855d2102648d5}{v\_UART16550\_Handler}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00135}00135\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00136}00136\ \ \ \ \ uint8\_t\ u8\_Line\_Status\ =\ \doxymbox{\hyperlink{hal__uart16550_8c_a5bd249a324832f64ff82c58c90162ba7}{u8\_Get\_Line\_Status}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00137}00137\ \ \ \ \ uint8\_t\ b\_Rx\_Data\_Present\ =\ (u8\_Line\_Status\ \&\ \doxymbox{\hyperlink{hal__uart16550_8h_a75dfd38761c4da44a7dca25e3a6cf8af}{LINE\_STATUS\_DR}})\ !=\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00138}00138\ \ \ \ \ uint8\_t\ b\_Tx\_Holding\_Reg\_Empty\ =\ (u8\_Line\_Status\ \&\ \doxymbox{\hyperlink{hal__uart16550_8h_a565bf64441f6738f62e5692a60ea7077}{LINE\_STATUS\_THRE}})\ !=\ 0;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00139}00139\ \ \ \ \ uint8\_t\ u8\_IRQ\_Cause\ =\ \doxymbox{\hyperlink{hal__uart16550_8c_aac5c419038bb196768ff8755cdb9431a}{u8\_Get\_Interrupt\_Cause}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00142}00142\ \ \ \ \ \textcolor{keywordflow}{if}(\ (u8\_IRQ\_Cause\ \&\ \doxymbox{\hyperlink{hal__uart16550_8h_ad116c184e6bdd0ca605322802760dd20}{IRQ\_ID\_RX\_DATA\_AVAIL}}\ )\ !=\ 0\ \&\&\ b\_Rx\_Data\_Present\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00143}00143\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00144}00144\ \ \ \ \ \ \ \ \ uint8\_t\ u8\_Data\ =\ \doxymbox{\hyperlink{hal__uart16550_8c_acabccf5837375760e553b7452f3e1b1c}{u8\_Get\_UART\_Rx\_Data}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00145}00145\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__sm_8c_a318ca21f6a277906e99215773de6db53}{v\_Update\_Serial\_SM}}(u8\_Data);}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ reload\ value\ corresponds\ to\ 3\ character\ times\ at\ 115200\ bits/sec}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00148}00148\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a0f49441193afd7eda30acfe83460ce47}{Reload\_Comm\_Timer}}(\ 6510\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00149}00149\ \ \ \ \ \ \ \ \ ++\doxymbox{\hyperlink{serial__comm_8c_a16f6b153ae467954376c23866665d95d}{u8\_Rx\_Count}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00150}00150\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00152}00152\ \ \ \ \ \textcolor{comment}{//\ Transmit}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00153}00153\ \ \ \ \ \textcolor{keywordflow}{if}(\ (u8\_IRQ\_Cause\ \&\ \doxymbox{\hyperlink{hal__uart16550_8h_acc7e4f644bd9c8030731174af411e43f}{IRQ\_TX\_HOLD\_REG\_EMPTY}}\ )\ !=\ 0\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00154}00154\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{serial__comm_8c_a1d3f88653122ad224d638f264b570aef}{u8\_Tx\_Count\_Remaining}}\ !=\ 0\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00156}00156\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_ad3e97d745edb6a2e2ba3c74b7c31ad25}{v\_Write\_UART\_Tx\_Data}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}},\ *\doxymbox{\hyperlink{serial__comm_8c_a1f9a7786fcbc75d2689b8bdee4c6b7a9}{p\_Tx\_Ptr}}++\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ -\/-\/\doxymbox{\hyperlink{serial__comm_8c_a1d3f88653122ad224d638f264b570aef}{u8\_Tx\_Count\_Remaining}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00159}00159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00161}00161\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2}{v\_Disable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}},\ \doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{UART\_ETBEI}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00163}00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00164}00164\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00165}00165\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00166}00166\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00168}\doxymbox{\hyperlink{serial__comm_8c_a8748232d976b36af574876a4b47026f0}{00168}}\ \textcolor{keyword}{static}\ uint32\_t\ \doxymbox{\hyperlink{serial__comm_8c_a8748232d976b36af574876a4b47026f0}{u32\_Comm\_IRQ\_Counter}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00169}00169\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}{v\_Framing\_Timeout}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00176}\doxymbox{\hyperlink{serial__comm_8c_ab09266bc04a0b955b8dbaad0e2e6af5c}{00176}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_ab09266bc04a0b955b8dbaad0e2e6af5c}{v\_Comm\_Timer\_Handler}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00177}00177\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00178}00178\ \ \ \ \ ++\doxymbox{\hyperlink{serial__comm_8c_a8748232d976b36af574876a4b47026f0}{u32\_Comm\_IRQ\_Counter}};}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00179}00179\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00180}00180\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a0e2ace05906b4e931dc3f92238f4d5b9}{v\_Framing\_Timeout}}();}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00181}00181\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00182}00182\ \ \ \ \ \textcolor{comment}{//\ Clear\ interrupt}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00183}00183\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(\doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}}-\/>u32\_Base\_Address\ +\ TIMER\_IRQ\_CLR\_OFFSET\ )\ =\ 1;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00184}00184\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00192}\doxymbox{\hyperlink{serial__comm_8c_a0f49441193afd7eda30acfe83460ce47}{00192}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a0f49441193afd7eda30acfe83460ce47}{Reload\_Comm\_Timer}}(\ uint16\_t\ u16\_Timer\_Reload\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00193}00193\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00194}00194\ \ \ \ \ *(\textcolor{keyword}{volatile}\ uint32\_t\ *)(\doxymbox{\hyperlink{serial__comm_8c_ae97f86753de2f3484f46c6e55bafad74}{p\_Timer\_Instance}}-\/>u32\_Base\_Address\ +\ TIMER\_LOAD\_OFFSET\ )\ =\ u16\_Timer\_Reload;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00195}00195\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00203}\doxymbox{\hyperlink{serial__comm_8c_a5bba251b9d7e2836fffae5aa927d92b2}{00203}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a5bba251b9d7e2836fffae5aa927d92b2}{v\_Send\_Serial\_Comm}}(\ uint8\_t\ *p\_Buffer,\ uint8\_t\ u8\_Length\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00204}00204\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00205}00205\ \ \ \ \ \textcolor{comment}{//assert(\ u8\_Length\ <=\ UART\_BUF\_SIZE\ );}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00206}00206\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00207}00207\ \ \ \ \ \textcolor{comment}{//\ Copy\ to\ buffer}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00208}00208\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{memcpy}}(\ \doxymbox{\hyperlink{serial__comm_8c_a31c7f1c8c04a12d89bf8e286b5fc64d8}{u8\_Tx\_Buffer}},\ p\_Buffer,\ u8\_Length\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00209}00209\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00210}00210\ \ \ \ \ \textcolor{comment}{//\ Initialize\ pointer\ and\ msg\ length}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00211}00211\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a1f9a7786fcbc75d2689b8bdee4c6b7a9}{p\_Tx\_Ptr}}\ =\ \&\doxymbox{\hyperlink{serial__comm_8c_a31c7f1c8c04a12d89bf8e286b5fc64d8}{u8\_Tx\_Buffer}}[0];}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00212}00212\ \ \ \ \ \doxymbox{\hyperlink{serial__comm_8c_a1d3f88653122ad224d638f264b570aef}{u8\_Tx\_Count\_Remaining}}\ =\ u8\_Length;\ \ \textcolor{comment}{//\ This\ kicks\ off\ the\ sending}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00213}00213\ \ \ \ \ \doxymbox{\hyperlink{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc}{v\_Enable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{serial__comm_8c_aac1c1055c4231ff80a1e4da7aac90406}{p\_serial\_comm\_instance}},\ \doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{UART\_ETBEI}}\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00214}00214\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00215}00215\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00223}\doxymbox{\hyperlink{serial__comm_8c_a106faa126ae68b80d3dfd70b92893704}{00223}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a106faa126ae68b80d3dfd70b92893704}{v\_Post\_Serial\_Event}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00224}00224\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00225}00225\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ Ret\_Val;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00226}00226\ \ \ \ \ Ret\_Val\ =\ \doxymbox{\hyperlink{queue_8h_af7eb49d3249351176992950d9185abe9}{xQueueSend}}(\ \doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{Serial\_Comm\_Queue}},\ event,\ 5\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00227}00227\ \}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00228}00228\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00235}\doxymbox{\hyperlink{serial__comm_8c_a57e9130a700d7c3ad9ff0a6609d01b13}{00235}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8c_a57e9130a700d7c3ad9ff0a6609d01b13}{v\_Post\_Serial\_Event\_ISR}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00236}00236\ \{}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00237}00237\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ Ret\_Val;}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00238}00238\ \ \ \ \ Ret\_Val\ =\ \doxymbox{\hyperlink{queue_8h_a21d5919ed26c21d121df4a4debeb643c}{xQueueSendFromISR}}(\ \doxymbox{\hyperlink{serial__comm_8c_a7598e7612b6cba608f362dee22869d92}{Serial\_Comm\_Queue}},\ event,\ NULL\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8c_source_l00239}00239\ \}}
+
+\end{DoxyCode}

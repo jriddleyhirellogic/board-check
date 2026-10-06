@@ -1,0 +1,82 @@
+\doxysection{src/\+\+Focus\+\_\+\+States/\+\+Init\+\_\+\+State.c File Reference}
+\hypertarget{Init__State_8c}{}\label{Init__State_8c}\index{src/Focus\_States/Init\_State.c@{src/Focus\_States/Init\_State.c}}
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus\+\_\+states.\+h$>$}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+{\ttfamily \+\#include "{}path\+\_\+planner.\+h"{}}\newline
+Include dependency graph for Init\+\_\+\+State.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Init__State_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e}{Initial\+\_\+\+State}} (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static const \doxymbox{\hyperlink{structPID__Init__t}{PID\+\_\+\+Init\+\_\+t}} \doxymbox{\hyperlink{Init__State_8c_ac84a722943b2dc34e91e197af5224d61}{PID\+\_\+\+Init}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{Init__State_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e}\index{Init\_State.c@{Init\_State.c}!Initial\_State@{Initial\_State}}
+\index{Initial\_State@{Initial\_State}!Init\_State.c@{Init\_State.c}}
+\doxysubsubsection{\texorpdfstring{Initial\_State()}{Initial\_State()}}
+{\footnotesize\ttfamily \label{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Initial\+\_\+\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{Init__State_8c_source_l00025}{25}} of file \doxymbox{\hyperlink{Init__State_8c_source}{Init\+\_\+\+State.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{Init__State_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{Init__State_8c_ac84a722943b2dc34e91e197af5224d61}\index{Init\_State.c@{Init\_State.c}!PID\_Init@{PID\_Init}}
+\index{PID\_Init@{PID\_Init}!Init\_State.c@{Init\_State.c}}
+\doxysubsubsection{\texorpdfstring{PID\_Init}{PID\_Init}}
+{\footnotesize\ttfamily \label{Init__State_8c_ac84a722943b2dc34e91e197af5224d61} 
+const \doxymbox{\hyperlink{structPID__Init__t}{PID\+\_\+\+Init\+\_\+t}} PID\+\_\+\+Init\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ .k\_p\ =\ 3.0f,}
+\DoxyCodeLine{\ \ \ \ .k\_i\ =\ 0.005f,}
+\DoxyCodeLine{\ \ \ \ .deadband\ =\ 0,}
+\DoxyCodeLine{\ \ \ \ .integral\_deadband\ =\ 1,}
+\DoxyCodeLine{\ \ \ \ .max\_out\ =\ \doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\_V}},}
+\DoxyCodeLine{\ \ \ \ .min\_out\ =\ -\/\doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\_V}}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{Init__State_8c_source_l00014}{14}} of file \doxymbox{\hyperlink{Init__State_8c_source}{Init\+\_\+\+State.\+c}}.
+

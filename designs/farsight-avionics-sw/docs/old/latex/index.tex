@@ -1,0 +1,18 @@
+\chapter{Camera }
+\hypertarget{index}{}\label{index}\index{Camera@{Camera}}
+Example file detailing how the \doxylink{fpga__design__config_8h}{fpga\+\_\+design\+\_\+config.\+h} should be constructed for the Soft\+Console project targeted for Mi-\/V processors.\hypertarget{index_intro_sec}{}\doxysection{\texorpdfstring{Introduction}{Introduction}}\label{index_intro_sec}
+The Soft\+Console project targeted for Mi-\/V processors now have an improved folder structure. Detailed description of the folder structure is available at \href{https://github.com/Mi-V-Soft-RISC-V/miv-rv32-documentation}{\texttt{https:\+/\+/\+github.\+com/\+\+Mi-\/\+V-\/\+Soft-\/\+RISC-\/\+V/\+miv-\/rv32-\/documentation}}.
+
+The \doxylink{fpga__design__config_8h}{fpga\+\_\+design\+\_\+config.\+h} must be stored as shown below \texorpdfstring{$<$}{<}project-\/root\texorpdfstring{$>$}{>}/\+boards/\+\texorpdfstring{$<$}{<}board-\/name\texorpdfstring{$>$}{>}/\+fpga\+\_\+design\+\_\+config.h
+
+Currently this file must be hand crafted when using the Mi-\/V Soft Processor. In future, all the design and soft IP configurations will be automatically generated from the Libero design description data.
+
+You can use this sample file as an example. Rename this file from \doxylink{sample__fpga__design__config_8h}{sample\+\_\+fpga\+\_\+design\+\_\+config.\+h} to \doxylink{fpga__design__config_8h}{fpga\+\_\+design\+\_\+config.\+h} and then customize it per your hardware design.\hypertarget{index_Project}{}\doxysection{\texorpdfstring{configuration Instructions}{configuration Instructions}}\label{index_Project}
+
+\begin{DoxyEnumerate}
+\item Change SYS\+\_\+\+CLK\+\_\+\+FREQ define to frequency of Mi-\/V Soft processor clock 2 Add all the soft IP core BASE addresses
+\item Add the peripheral Core Interrupts to Mi-\/V Soft processor IRQ number mappings
+\item Define MSCC\+\_\+\+STDIO\+\_\+\+UART\+\_\+\+BASE\+\_\+\+ADDR if you want a Core\+UARTapb mapped to STDIO
+
+NOTE\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*} In the legacy folder structures, the file hw\+\_\+config.\+h as was used at the root of the project folder. This file is now depricated. 
+\end{DoxyEnumerate}

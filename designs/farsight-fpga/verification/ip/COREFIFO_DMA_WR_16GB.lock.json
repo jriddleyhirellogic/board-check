@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREFIFO:3.1.101",
+  "definition_digest": "da5b781e8b5f50f1dc054e6eafa24008614ad41fa298ebb4b75b2210cdd3eec9",
+  "generated": "2026-09-25T18:35:23Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "COREFIFO_DMA_WR_16GB",
+  "sources_digest": "fe79af70a1d073059b601bea37b5f32a9326b769eef1bc57d1aa2badfc950e75"
+}

@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREFIFO:3.1.101",
+  "definition_digest": "fc27adee56f394d1ff492e14ff14bf31c4f12fdc6e5df812aaf0e7690dfee23d",
+  "generated": "2026-09-25T16:12:06Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "COREFIFO_METADATA_CDC",
+  "sources_digest": "ccb9ff53f47597603490c0b78c8f285590ccb7c5651fb513a8f21f28289dad13"
+}

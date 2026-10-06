@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:CoreGPIO:3.2.102",
+  "definition_digest": "51b0ff73a98db9b447ae4fb0a7f03b06b4e18dc86bebeb0d5d51d4c5018eb0b7",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "FOCUS_MECH_CoreGPIO_C2",
+  "sources_digest": "c55df0b4bde032e7d0d21590938d890117357e0b6c066a594af5ae213fe26773"
+}

@@ -1,0 +1,512 @@
+   1              		.file	"debug_gpio.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_Debug_GPIO,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_Debug_GPIO
+  13              	v_Init_Debug_GPIO:
+  14              	.LFB0:
+  15              		.file 1 "../src/hal/debug_gpio.c"
+   1:../src/hal/debug_gpio.c **** /*
+   2:../src/hal/debug_gpio.c ****  * debug_gpio.c
+   3:../src/hal/debug_gpio.c ****  *
+   4:../src/hal/debug_gpio.c ****  *  Created on: Sep 27, 2025
+   5:../src/hal/debug_gpio.c ****  *      Author: iboard
+   6:../src/hal/debug_gpio.c ****  */
+   7:../src/hal/debug_gpio.c **** #include <stdint.h>
+   8:../src/hal/debug_gpio.c **** #include "core_gpio.h"
+   9:../src/hal/debug_gpio.c **** #include "debug_gpio.h"
+  10:../src/hal/debug_gpio.c **** #include "mem_map.h"
+  11:../src/hal/debug_gpio.c **** 
+  12:../src/hal/debug_gpio.c **** static gpio_instance_t debug_gpios;
+  13:../src/hal/debug_gpio.c **** static uint32_t u32_Current_Output;
+  14:../src/hal/debug_gpio.c **** 
+  15:../src/hal/debug_gpio.c **** void v_Init_Debug_GPIO(void)
+  16:../src/hal/debug_gpio.c **** {
+  16              		.loc 1 16 1
+  17              		.cfi_startproc
+  17:../src/hal/debug_gpio.c ****     uint8_t u8_N_Pin;
+  18              		.loc 1 17 5
+  18:../src/hal/debug_gpio.c **** 
+  19:../src/hal/debug_gpio.c ****     GPIO_init( &debug_gpios, DBG_GPIO_BASE_ADDR, GPIO_APB_32_BITS_BUS );
+  19              		.loc 1 19 5
+  20 0000 13062000 		li	a2,2
+  21 0004 B7250170 		li	a1,1879121920
+  22 0008 17050000 		lla	a0,.LANCHOR0
+  22      13050500 
+  23 0010 17030000 		tail	GPIO_init
+  23      67000300 
+  24              	.LVL0:
+  25              		.cfi_endproc
+  26              	.LFE0:
+  28              		.section	.text.v_Set_Debug_GPIO,"ax",@progbits
+  29              		.align	2
+  30              		.globl	v_Set_Debug_GPIO
+  32              	v_Set_Debug_GPIO:
+  33              	.LFB1:
+  20:../src/hal/debug_gpio.c **** 
+  21:../src/hal/debug_gpio.c ****     u32_Current_Output = 0;
+  22:../src/hal/debug_gpio.c **** 
+  23:../src/hal/debug_gpio.c **** }
+  24:../src/hal/debug_gpio.c **** 
+  25:../src/hal/debug_gpio.c **** 
+  26:../src/hal/debug_gpio.c **** void v_Set_Debug_GPIO(uint32_t u32_Set, uint32_t u32_Clear )
+  27:../src/hal/debug_gpio.c **** {
+  34              		.loc 1 27 1
+  35              		.cfi_startproc
+  36              	.LVL1:
+  28:../src/hal/debug_gpio.c ****     uint32_t u32_Current_Outputs = GPIO_get_outputs( &debug_gpios );
+  37              		.loc 1 28 5
+  27:../src/hal/debug_gpio.c ****     uint32_t u32_Current_Outputs = GPIO_get_outputs( &debug_gpios );
+  38              		.loc 1 27 1 is_stmt 0
+  39 0000 130101FF 		addi	sp,sp,-16
+  40              		.cfi_def_cfa_offset 16
+  41 0004 23202101 		sw	s2,0(sp)
+  42              		.cfi_offset 18, -16
+  43 0008 13090500 		mv	s2,a0
+  44              		.loc 1 28 36
+  45 000c 17050000 		lla	a0,.LANCHOR0
+  45      13050500 
+  46              	.LVL2:
+  27:../src/hal/debug_gpio.c ****     uint32_t u32_Current_Outputs = GPIO_get_outputs( &debug_gpios );
+  47              		.loc 1 27 1
+  48 0014 23248100 		sw	s0,8(sp)
+  49 0018 23229100 		sw	s1,4(sp)
+  50 001c 23261100 		sw	ra,12(sp)
+  51              		.cfi_offset 8, -8
+  52              		.cfi_offset 9, -12
+  53              		.cfi_offset 1, -4
+  27:../src/hal/debug_gpio.c ****     uint32_t u32_Current_Outputs = GPIO_get_outputs( &debug_gpios );
+  54              		.loc 1 27 1
+  55 0020 93840500 		mv	s1,a1
+  56              		.loc 1 28 36
+  57 0024 97000000 		call	GPIO_get_outputs
+  57      E7800000 
+  58              	.LVL3:
+  59 002c 13040500 		mv	s0,a0
+  60              	.LVL4:
+  29:../src/hal/debug_gpio.c ****     if( u32_Set )
+  61              		.loc 1 29 5 is_stmt 1
+  62              		.loc 1 29 7 is_stmt 0
+  63 0030 630E0900 		beq	s2,zero,.L3
+  30:../src/hal/debug_gpio.c ****     {
+  31:../src/hal/debug_gpio.c ****       u32_Current_Outputs |= u32_Set;
+  64              		.loc 1 31 7 is_stmt 1
+  65              		.loc 1 31 27 is_stmt 0
+  66 0034 33642501 		or	s0,a0,s2
+  67              	.LVL5:
+  32:../src/hal/debug_gpio.c ****       GPIO_set_outputs( &debug_gpios, u32_Current_Outputs );
+  68              		.loc 1 32 7 is_stmt 1
+  69 0038 93050400 		mv	a1,s0
+  70 003c 17050000 		lla	a0,.LANCHOR0
+  70      13050500 
+  71 0044 97000000 		call	GPIO_set_outputs
+  71      E7800000 
+  72              	.LVL6:
+  73              	.L3:
+  33:../src/hal/debug_gpio.c ****     }
+  34:../src/hal/debug_gpio.c ****     if( u32_Clear )
+  74              		.loc 1 34 5
+  75              		.loc 1 34 7 is_stmt 0
+  76 004c 63880402 		beq	s1,zero,.L2
+  35:../src/hal/debug_gpio.c ****     {
+  36:../src/hal/debug_gpio.c ****         u32_Current_Outputs &= ~u32_Clear;
+  77              		.loc 1 36 9 is_stmt 1
+  78              	.LVL7:
+  37:../src/hal/debug_gpio.c ****         GPIO_set_outputs( &debug_gpios, u32_Current_Outputs );
+  79              		.loc 1 37 9
+  36:../src/hal/debug_gpio.c ****         GPIO_set_outputs( &debug_gpios, u32_Current_Outputs );
+  80              		.loc 1 36 32 is_stmt 0
+  81 0050 93C5F4FF 		not	a1,s1
+  82              		.loc 1 37 9
+  83 0054 B3F58500 		and	a1,a1,s0
+  84              	.LVL8:
+  38:../src/hal/debug_gpio.c ****     }
+  39:../src/hal/debug_gpio.c **** }
+  85              		.loc 1 39 1
+  86 0058 03248100 		lw	s0,8(sp)
+  87              		.cfi_remember_state
+  88              		.cfi_restore 8
+  89 005c 8320C100 		lw	ra,12(sp)
+  90              		.cfi_restore 1
+  91 0060 83244100 		lw	s1,4(sp)
+  92              		.cfi_restore 9
+  93              	.LVL9:
+  94 0064 03290100 		lw	s2,0(sp)
+  95              		.cfi_restore 18
+  96              	.LVL10:
+  37:../src/hal/debug_gpio.c ****     }
+  97              		.loc 1 37 9
+  98 0068 17050000 		lla	a0,.LANCHOR0
+  98      13050500 
+  99              		.loc 1 39 1
+ 100 0070 13010101 		addi	sp,sp,16
+ 101              		.cfi_def_cfa_offset 0
+  37:../src/hal/debug_gpio.c ****     }
+ 102              		.loc 1 37 9
+ 103 0074 17030000 		tail	GPIO_set_outputs
+ 103      67000300 
+ 104              	.LVL11:
+ 105              	.L2:
+ 106              		.cfi_restore_state
+ 107              		.loc 1 39 1
+ 108 007c 8320C100 		lw	ra,12(sp)
+ 109              		.cfi_restore 1
+ 110 0080 03248100 		lw	s0,8(sp)
+ 111              		.cfi_restore 8
+ 112              	.LVL12:
+ 113 0084 83244100 		lw	s1,4(sp)
+ 114              		.cfi_restore 9
+ 115              	.LVL13:
+ 116 0088 03290100 		lw	s2,0(sp)
+ 117              		.cfi_restore 18
+ 118              	.LVL14:
+ 119 008c 13010101 		addi	sp,sp,16
+ 120              		.cfi_def_cfa_offset 0
+ 121 0090 67800000 		jr	ra
+ 122              		.cfi_endproc
+ 123              	.LFE1:
+ 125              		.section	.text.v_Set_LED,"ax",@progbits
+ 126              		.align	2
+ 127              		.globl	v_Set_LED
+ 129              	v_Set_LED:
+ 130              	.LFB2:
+  40:../src/hal/debug_gpio.c **** 
+  41:../src/hal/debug_gpio.c **** void v_Set_LED( uint8_t b_On )
+  42:../src/hal/debug_gpio.c **** {
+ 131              		.loc 1 42 1 is_stmt 1
+ 132              		.cfi_startproc
+ 133              	.LVL15:
+  43:../src/hal/debug_gpio.c ****     if( b_On )
+ 134              		.loc 1 43 5
+  44:../src/hal/debug_gpio.c ****         v_Set_Debug_GPIO( LED_PIN, 0 );
+  45:../src/hal/debug_gpio.c ****     else
+  46:../src/hal/debug_gpio.c ****         v_Set_Debug_GPIO( 0, LED_PIN  );
+ 135              		.loc 1 46 9 is_stmt 0
+ 136 0000 93051000 		li	a1,1
+  43:../src/hal/debug_gpio.c ****     if( b_On )
+ 137              		.loc 1 43 7
+ 138 0004 63060500 		beq	a0,zero,.L11
+  44:../src/hal/debug_gpio.c ****         v_Set_Debug_GPIO( LED_PIN, 0 );
+ 139              		.loc 1 44 9 is_stmt 1
+ 140 0008 93050000 		li	a1,0
+ 141 000c 13051000 		li	a0,1
+ 142              	.LVL16:
+ 143              	.L11:
+ 144              		.loc 1 46 9 is_stmt 0
+ 145 0010 17030000 		tail	v_Set_Debug_GPIO
+ 145      67000300 
+ 146              	.LVL17:
+ 147              		.cfi_endproc
+ 148              	.LFE2:
+ 150              		.section	.sbss.debug_gpios,"aw",@nobits
+ 151              		.align	2
+ 152              		.set	.LANCHOR0,. + 0
+ 155              	debug_gpios:
+ 156 0000 00000000 		.zero	8
+ 156      00000000 
+ 157              		.text
+ 158              	.Letext0:
+ 159              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 160              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 161              		.file 4 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 162              		.file 5 "../src/hal/core_gpio.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 debug_gpio.c
+<<<<<<< HEAD
+     /tmp/ccVRT5HS.s:13     .text.v_Init_Debug_GPIO:0000000000000000 v_Init_Debug_GPIO
+     /tmp/ccVRT5HS.s:17     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:18     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:19     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:20     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:25     .text.v_Init_Debug_GPIO:0000000000000018 .L0 
+     /tmp/ccVRT5HS.s:32     .text.v_Set_Debug_GPIO:0000000000000000 v_Set_Debug_GPIO
+     /tmp/ccVRT5HS.s:35     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:37     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:38     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:39     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:40     .text.v_Set_Debug_GPIO:0000000000000004 .L0 
+     /tmp/ccVRT5HS.s:42     .text.v_Set_Debug_GPIO:0000000000000008 .L0 
+     /tmp/ccVRT5HS.s:45     .text.v_Set_Debug_GPIO:000000000000000c .L0 
+     /tmp/ccVRT5HS.s:48     .text.v_Set_Debug_GPIO:0000000000000014 .L0 
+     /tmp/ccVRT5HS.s:51     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/ccVRT5HS.s:52     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/ccVRT5HS.s:53     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/ccVRT5HS.s:55     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/ccVRT5HS.s:57     .text.v_Set_Debug_GPIO:0000000000000024 .L0 
+     /tmp/ccVRT5HS.s:62     .text.v_Set_Debug_GPIO:0000000000000030 .L0 
+     /tmp/ccVRT5HS.s:63     .text.v_Set_Debug_GPIO:0000000000000030 .L0 
+     /tmp/ccVRT5HS.s:65     .text.v_Set_Debug_GPIO:0000000000000034 .L0 
+     /tmp/ccVRT5HS.s:66     .text.v_Set_Debug_GPIO:0000000000000034 .L0 
+     /tmp/ccVRT5HS.s:69     .text.v_Set_Debug_GPIO:0000000000000038 .L0 
+     /tmp/ccVRT5HS.s:75     .text.v_Set_Debug_GPIO:000000000000004c .L0 
+     /tmp/ccVRT5HS.s:76     .text.v_Set_Debug_GPIO:000000000000004c .L0 
+     /tmp/ccVRT5HS.s:79     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/ccVRT5HS.s:80     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/ccVRT5HS.s:81     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/ccVRT5HS.s:83     .text.v_Set_Debug_GPIO:0000000000000054 .L0 
+     /tmp/ccVRT5HS.s:86     .text.v_Set_Debug_GPIO:0000000000000058 .L0 
+     /tmp/ccVRT5HS.s:87     .text.v_Set_Debug_GPIO:000000000000005c .L0 
+     /tmp/ccVRT5HS.s:88     .text.v_Set_Debug_GPIO:000000000000005c .L0 
+     /tmp/ccVRT5HS.s:90     .text.v_Set_Debug_GPIO:0000000000000060 .L0 
+     /tmp/ccVRT5HS.s:92     .text.v_Set_Debug_GPIO:0000000000000064 .L0 
+     /tmp/ccVRT5HS.s:95     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/ccVRT5HS.s:98     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/ccVRT5HS.s:100    .text.v_Set_Debug_GPIO:0000000000000070 .L0 
+     /tmp/ccVRT5HS.s:101    .text.v_Set_Debug_GPIO:0000000000000074 .L0 
+     /tmp/ccVRT5HS.s:103    .text.v_Set_Debug_GPIO:0000000000000074 .L0 
+     /tmp/ccVRT5HS.s:106    .text.v_Set_Debug_GPIO:000000000000007c .L0 
+     /tmp/ccVRT5HS.s:108    .text.v_Set_Debug_GPIO:000000000000007c .L0 
+     /tmp/ccVRT5HS.s:109    .text.v_Set_Debug_GPIO:0000000000000080 .L0 
+     /tmp/ccVRT5HS.s:111    .text.v_Set_Debug_GPIO:0000000000000084 .L0 
+     /tmp/ccVRT5HS.s:114    .text.v_Set_Debug_GPIO:0000000000000088 .L0 
+     /tmp/ccVRT5HS.s:117    .text.v_Set_Debug_GPIO:000000000000008c .L0 
+     /tmp/ccVRT5HS.s:120    .text.v_Set_Debug_GPIO:0000000000000090 .L0 
+     /tmp/ccVRT5HS.s:122    .text.v_Set_Debug_GPIO:0000000000000094 .L0 
+     /tmp/ccVRT5HS.s:129    .text.v_Set_LED:0000000000000000 v_Set_LED
+     /tmp/ccVRT5HS.s:132    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:134    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:135    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:136    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:138    .text.v_Set_LED:0000000000000004 .L0 
+     /tmp/ccVRT5HS.s:140    .text.v_Set_LED:0000000000000008 .L0 
+     /tmp/ccVRT5HS.s:145    .text.v_Set_LED:0000000000000010 .L0 
+     /tmp/ccVRT5HS.s:147    .text.v_Set_LED:0000000000000018 .L0 
+     /tmp/ccVRT5HS.s:152    .sbss.debug_gpios:0000000000000000 .LANCHOR0
+     /tmp/ccVRT5HS.s:155    .sbss.debug_gpios:0000000000000000 debug_gpios
+     /tmp/ccVRT5HS.s:28     .text.v_Init_Debug_GPIO:0000000000000018 .L0 
+     /tmp/ccVRT5HS.s:125    .text.v_Set_Debug_GPIO:0000000000000094 .L0 
+     /tmp/ccVRT5HS.s:150    .text.v_Set_LED:0000000000000018 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccVRT5HS.s:22     .text.v_Init_Debug_GPIO:0000000000000008 .L0 
+     /tmp/ccVRT5HS.s:45     .text.v_Set_Debug_GPIO:000000000000000c .L0 
+     /tmp/ccVRT5HS.s:70     .text.v_Set_Debug_GPIO:000000000000003c .L0 
+     /tmp/ccVRT5HS.s:98     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/ccVRT5HS.s:73     .text.v_Set_Debug_GPIO:000000000000004c .L3
+     /tmp/ccVRT5HS.s:105    .text.v_Set_Debug_GPIO:000000000000007c .L2
+     /tmp/ccVRT5HS.s:143    .text.v_Set_LED:0000000000000010 .L11
+     /tmp/ccVRT5HS.s:467    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccVRT5HS.s:885    .debug_str:000000000000005f .LASF35
+     /tmp/ccVRT5HS.s:933    .debug_str:0000000000000292 .LASF36
+     /tmp/ccVRT5HS.s:893    .debug_str:0000000000000152 .LASF37
+     /tmp/ccVRT5HS.s:859    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccVRT5HS.s:869    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccVRT5HS.s:919    .debug_str:0000000000000230 .LASF0
+     /tmp/ccVRT5HS.s:907    .debug_str:00000000000001e7 .LASF5
+     /tmp/ccVRT5HS.s:915    .debug_str:0000000000000218 .LASF1
+     /tmp/ccVRT5HS.s:873    .debug_str:0000000000000011 .LASF2
+     /tmp/ccVRT5HS.s:931    .debug_str:000000000000027f .LASF3
+     /tmp/ccVRT5HS.s:901    .debug_str:00000000000001b9 .LASF4
+     /tmp/ccVRT5HS.s:881    .debug_str:000000000000003f .LASF6
+     /tmp/ccVRT5HS.s:941    .debug_str:00000000000002d9 .LASF7
+     /tmp/ccVRT5HS.s:897    .debug_str:0000000000000190 .LASF8
+     /tmp/ccVRT5HS.s:923    .debug_str:000000000000024d .LASF9
+     /tmp/ccVRT5HS.s:927    .debug_str:000000000000026d .LASF10
+     /tmp/ccVRT5HS.s:889    .debug_str:0000000000000139 .LASF11
+     /tmp/ccVRT5HS.s:925    .debug_str:0000000000000264 .LASF12
+     /tmp/ccVRT5HS.s:895    .debug_str:0000000000000189 .LASF13
+     /tmp/ccVRT5HS.s:935    .debug_str:00000000000002aa .LASF38
+     /tmp/ccVRT5HS.s:905    .debug_str:00000000000001d3 .LASF14
+     /tmp/ccVRT5HS.s:883    .debug_str:000000000000004a .LASF15
+     /tmp/ccVRT5HS.s:947    .debug_str:0000000000000302 .LASF16
+     /tmp/ccVRT5HS.s:899    .debug_str:000000000000019e .LASF17
+     /tmp/ccVRT5HS.s:871    .debug_str:0000000000000000 .LASF18
+     /tmp/ccVRT5HS.s:939    .debug_str:00000000000002c7 .LASF39
+     /tmp/ccVRT5HS.s:937    .debug_str:00000000000002bd .LASF19
+     /tmp/ccVRT5HS.s:943    .debug_str:00000000000002eb .LASF20
+     /tmp/ccVRT5HS.s:879    .debug_str:000000000000002f .LASF21
+     /tmp/ccVRT5HS.s:875    .debug_str:000000000000001b .LASF27
+     /tmp/ccVRT5HS.s:909    .debug_str:00000000000001f1 .LASF30
+     /tmp/ccVRT5HS.s:913    .debug_str:000000000000020e .LASF22
+     /tmp/ccVRT5HS.s:130    .text.v_Set_LED:0000000000000000 .LFB2
+     /tmp/ccVRT5HS.s:148    .text.v_Set_LED:0000000000000018 .LFE2
+     /tmp/ccVRT5HS.s:929    .debug_str:000000000000027a .LASF24
+     /tmp/ccVRT5HS.s:745    .debug_loc:0000000000000000 .LLST3
+     /tmp/ccVRT5HS.s:146    .text.v_Set_LED:0000000000000018 .LVL17
+     /tmp/ccVRT5HS.s:891    .debug_str:0000000000000141 .LASF23
+     /tmp/ccVRT5HS.s:33     .text.v_Set_Debug_GPIO:0000000000000000 .LFB1
+     /tmp/ccVRT5HS.s:123    .text.v_Set_Debug_GPIO:0000000000000094 .LFE1
+     /tmp/ccVRT5HS.s:877    .debug_str:0000000000000027 .LASF25
+     /tmp/ccVRT5HS.s:759    .debug_loc:0000000000000021 .LLST0
+     /tmp/ccVRT5HS.s:911    .debug_str:0000000000000204 .LASF26
+     /tmp/ccVRT5HS.s:788    .debug_loc:0000000000000066 .LLST1
+     /tmp/ccVRT5HS.s:887    .debug_str:0000000000000125 .LASF28
+     /tmp/ccVRT5HS.s:817    .debug_loc:00000000000000ab .LLST2
+     /tmp/ccVRT5HS.s:58     .text.v_Set_Debug_GPIO:000000000000002c .LVL3
+     /tmp/ccVRT5HS.s:72     .text.v_Set_Debug_GPIO:000000000000004c .LVL6
+     /tmp/ccVRT5HS.s:104    .text.v_Set_Debug_GPIO:000000000000007c .LVL11
+     /tmp/ccVRT5HS.s:949    .debug_str:0000000000000317 .LASF29
+     /tmp/ccVRT5HS.s:14     .text.v_Init_Debug_GPIO:0000000000000000 .LFB0
+     /tmp/ccVRT5HS.s:26     .text.v_Init_Debug_GPIO:0000000000000018 .LFE0
+     /tmp/ccVRT5HS.s:945    .debug_str:00000000000002f9 .LASF31
+     /tmp/ccVRT5HS.s:24     .text.v_Init_Debug_GPIO:0000000000000018 .LVL0
+     /tmp/ccVRT5HS.s:921    .debug_str:000000000000023c .LASF32
+     /tmp/ccVRT5HS.s:903    .debug_str:00000000000001c2 .LASF33
+     /tmp/ccVRT5HS.s:917    .debug_str:0000000000000226 .LASF34
+     /tmp/ccVRT5HS.s:133    .text.v_Set_LED:0000000000000000 .LVL15
+     /tmp/ccVRT5HS.s:142    .text.v_Set_LED:0000000000000010 .LVL16
+     /tmp/ccVRT5HS.s:36     .text.v_Set_Debug_GPIO:0000000000000000 .LVL1
+     /tmp/ccVRT5HS.s:46     .text.v_Set_Debug_GPIO:0000000000000014 .LVL2
+     /tmp/ccVRT5HS.s:96     .text.v_Set_Debug_GPIO:0000000000000068 .LVL10
+     /tmp/ccVRT5HS.s:118    .text.v_Set_Debug_GPIO:000000000000008c .LVL14
+     /tmp/ccVRT5HS.s:93     .text.v_Set_Debug_GPIO:0000000000000064 .LVL9
+     /tmp/ccVRT5HS.s:115    .text.v_Set_Debug_GPIO:0000000000000088 .LVL13
+     /tmp/ccVRT5HS.s:60     .text.v_Set_Debug_GPIO:0000000000000030 .LVL4
+     /tmp/ccVRT5HS.s:78     .text.v_Set_Debug_GPIO:0000000000000050 .LVL7
+     /tmp/ccVRT5HS.s:84     .text.v_Set_Debug_GPIO:0000000000000058 .LVL8
+     /tmp/ccVRT5HS.s:112    .text.v_Set_Debug_GPIO:0000000000000084 .LVL12
+     /tmp/ccVRT5HS.s:164    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cc4ZKg0G.s:13     .text.v_Init_Debug_GPIO:0000000000000000 v_Init_Debug_GPIO
+     /tmp/cc4ZKg0G.s:17     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:18     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:19     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:20     .text.v_Init_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:25     .text.v_Init_Debug_GPIO:0000000000000018 .L0 
+     /tmp/cc4ZKg0G.s:32     .text.v_Set_Debug_GPIO:0000000000000000 v_Set_Debug_GPIO
+     /tmp/cc4ZKg0G.s:35     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:37     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:38     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:39     .text.v_Set_Debug_GPIO:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:40     .text.v_Set_Debug_GPIO:0000000000000004 .L0 
+     /tmp/cc4ZKg0G.s:42     .text.v_Set_Debug_GPIO:0000000000000008 .L0 
+     /tmp/cc4ZKg0G.s:45     .text.v_Set_Debug_GPIO:000000000000000c .L0 
+     /tmp/cc4ZKg0G.s:48     .text.v_Set_Debug_GPIO:0000000000000014 .L0 
+     /tmp/cc4ZKg0G.s:51     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/cc4ZKg0G.s:52     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/cc4ZKg0G.s:53     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/cc4ZKg0G.s:55     .text.v_Set_Debug_GPIO:0000000000000020 .L0 
+     /tmp/cc4ZKg0G.s:57     .text.v_Set_Debug_GPIO:0000000000000024 .L0 
+     /tmp/cc4ZKg0G.s:62     .text.v_Set_Debug_GPIO:0000000000000030 .L0 
+     /tmp/cc4ZKg0G.s:63     .text.v_Set_Debug_GPIO:0000000000000030 .L0 
+     /tmp/cc4ZKg0G.s:65     .text.v_Set_Debug_GPIO:0000000000000034 .L0 
+     /tmp/cc4ZKg0G.s:66     .text.v_Set_Debug_GPIO:0000000000000034 .L0 
+     /tmp/cc4ZKg0G.s:69     .text.v_Set_Debug_GPIO:0000000000000038 .L0 
+     /tmp/cc4ZKg0G.s:75     .text.v_Set_Debug_GPIO:000000000000004c .L0 
+     /tmp/cc4ZKg0G.s:76     .text.v_Set_Debug_GPIO:000000000000004c .L0 
+     /tmp/cc4ZKg0G.s:79     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/cc4ZKg0G.s:80     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/cc4ZKg0G.s:81     .text.v_Set_Debug_GPIO:0000000000000050 .L0 
+     /tmp/cc4ZKg0G.s:83     .text.v_Set_Debug_GPIO:0000000000000054 .L0 
+     /tmp/cc4ZKg0G.s:86     .text.v_Set_Debug_GPIO:0000000000000058 .L0 
+     /tmp/cc4ZKg0G.s:87     .text.v_Set_Debug_GPIO:000000000000005c .L0 
+     /tmp/cc4ZKg0G.s:88     .text.v_Set_Debug_GPIO:000000000000005c .L0 
+     /tmp/cc4ZKg0G.s:90     .text.v_Set_Debug_GPIO:0000000000000060 .L0 
+     /tmp/cc4ZKg0G.s:92     .text.v_Set_Debug_GPIO:0000000000000064 .L0 
+     /tmp/cc4ZKg0G.s:95     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/cc4ZKg0G.s:98     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/cc4ZKg0G.s:100    .text.v_Set_Debug_GPIO:0000000000000070 .L0 
+     /tmp/cc4ZKg0G.s:101    .text.v_Set_Debug_GPIO:0000000000000074 .L0 
+     /tmp/cc4ZKg0G.s:103    .text.v_Set_Debug_GPIO:0000000000000074 .L0 
+     /tmp/cc4ZKg0G.s:106    .text.v_Set_Debug_GPIO:000000000000007c .L0 
+     /tmp/cc4ZKg0G.s:108    .text.v_Set_Debug_GPIO:000000000000007c .L0 
+     /tmp/cc4ZKg0G.s:109    .text.v_Set_Debug_GPIO:0000000000000080 .L0 
+     /tmp/cc4ZKg0G.s:111    .text.v_Set_Debug_GPIO:0000000000000084 .L0 
+     /tmp/cc4ZKg0G.s:114    .text.v_Set_Debug_GPIO:0000000000000088 .L0 
+     /tmp/cc4ZKg0G.s:117    .text.v_Set_Debug_GPIO:000000000000008c .L0 
+     /tmp/cc4ZKg0G.s:120    .text.v_Set_Debug_GPIO:0000000000000090 .L0 
+     /tmp/cc4ZKg0G.s:122    .text.v_Set_Debug_GPIO:0000000000000094 .L0 
+     /tmp/cc4ZKg0G.s:129    .text.v_Set_LED:0000000000000000 v_Set_LED
+     /tmp/cc4ZKg0G.s:132    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:134    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:135    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:136    .text.v_Set_LED:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:138    .text.v_Set_LED:0000000000000004 .L0 
+     /tmp/cc4ZKg0G.s:140    .text.v_Set_LED:0000000000000008 .L0 
+     /tmp/cc4ZKg0G.s:145    .text.v_Set_LED:0000000000000010 .L0 
+     /tmp/cc4ZKg0G.s:147    .text.v_Set_LED:0000000000000018 .L0 
+     /tmp/cc4ZKg0G.s:152    .sbss.debug_gpios:0000000000000000 .LANCHOR0
+     /tmp/cc4ZKg0G.s:155    .sbss.debug_gpios:0000000000000000 debug_gpios
+     /tmp/cc4ZKg0G.s:28     .text.v_Init_Debug_GPIO:0000000000000018 .L0 
+     /tmp/cc4ZKg0G.s:125    .text.v_Set_Debug_GPIO:0000000000000094 .L0 
+     /tmp/cc4ZKg0G.s:150    .text.v_Set_LED:0000000000000018 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc4ZKg0G.s:22     .text.v_Init_Debug_GPIO:0000000000000008 .L0 
+     /tmp/cc4ZKg0G.s:45     .text.v_Set_Debug_GPIO:000000000000000c .L0 
+     /tmp/cc4ZKg0G.s:70     .text.v_Set_Debug_GPIO:000000000000003c .L0 
+     /tmp/cc4ZKg0G.s:98     .text.v_Set_Debug_GPIO:0000000000000068 .L0 
+     /tmp/cc4ZKg0G.s:73     .text.v_Set_Debug_GPIO:000000000000004c .L3
+     /tmp/cc4ZKg0G.s:105    .text.v_Set_Debug_GPIO:000000000000007c .L2
+     /tmp/cc4ZKg0G.s:143    .text.v_Set_LED:0000000000000010 .L11
+     /tmp/cc4ZKg0G.s:467    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc4ZKg0G.s:885    .debug_str:000000000000005f .LASF35
+     /tmp/cc4ZKg0G.s:933    .debug_str:0000000000000292 .LASF36
+     /tmp/cc4ZKg0G.s:893    .debug_str:0000000000000152 .LASF37
+     /tmp/cc4ZKg0G.s:859    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc4ZKg0G.s:869    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc4ZKg0G.s:919    .debug_str:0000000000000230 .LASF0
+     /tmp/cc4ZKg0G.s:907    .debug_str:00000000000001e7 .LASF5
+     /tmp/cc4ZKg0G.s:915    .debug_str:0000000000000218 .LASF1
+     /tmp/cc4ZKg0G.s:873    .debug_str:0000000000000011 .LASF2
+     /tmp/cc4ZKg0G.s:931    .debug_str:000000000000027f .LASF3
+     /tmp/cc4ZKg0G.s:901    .debug_str:00000000000001b9 .LASF4
+     /tmp/cc4ZKg0G.s:881    .debug_str:000000000000003f .LASF6
+     /tmp/cc4ZKg0G.s:941    .debug_str:00000000000002d9 .LASF7
+     /tmp/cc4ZKg0G.s:897    .debug_str:0000000000000190 .LASF8
+     /tmp/cc4ZKg0G.s:923    .debug_str:000000000000024d .LASF9
+     /tmp/cc4ZKg0G.s:927    .debug_str:000000000000026d .LASF10
+     /tmp/cc4ZKg0G.s:889    .debug_str:0000000000000139 .LASF11
+     /tmp/cc4ZKg0G.s:925    .debug_str:0000000000000264 .LASF12
+     /tmp/cc4ZKg0G.s:895    .debug_str:0000000000000189 .LASF13
+     /tmp/cc4ZKg0G.s:935    .debug_str:00000000000002aa .LASF38
+     /tmp/cc4ZKg0G.s:905    .debug_str:00000000000001d3 .LASF14
+     /tmp/cc4ZKg0G.s:883    .debug_str:000000000000004a .LASF15
+     /tmp/cc4ZKg0G.s:947    .debug_str:0000000000000302 .LASF16
+     /tmp/cc4ZKg0G.s:899    .debug_str:000000000000019e .LASF17
+     /tmp/cc4ZKg0G.s:871    .debug_str:0000000000000000 .LASF18
+     /tmp/cc4ZKg0G.s:939    .debug_str:00000000000002c7 .LASF39
+     /tmp/cc4ZKg0G.s:937    .debug_str:00000000000002bd .LASF19
+     /tmp/cc4ZKg0G.s:943    .debug_str:00000000000002eb .LASF20
+     /tmp/cc4ZKg0G.s:879    .debug_str:000000000000002f .LASF21
+     /tmp/cc4ZKg0G.s:875    .debug_str:000000000000001b .LASF27
+     /tmp/cc4ZKg0G.s:909    .debug_str:00000000000001f1 .LASF30
+     /tmp/cc4ZKg0G.s:913    .debug_str:000000000000020e .LASF22
+     /tmp/cc4ZKg0G.s:130    .text.v_Set_LED:0000000000000000 .LFB2
+     /tmp/cc4ZKg0G.s:148    .text.v_Set_LED:0000000000000018 .LFE2
+     /tmp/cc4ZKg0G.s:929    .debug_str:000000000000027a .LASF24
+     /tmp/cc4ZKg0G.s:745    .debug_loc:0000000000000000 .LLST3
+     /tmp/cc4ZKg0G.s:146    .text.v_Set_LED:0000000000000018 .LVL17
+     /tmp/cc4ZKg0G.s:891    .debug_str:0000000000000141 .LASF23
+     /tmp/cc4ZKg0G.s:33     .text.v_Set_Debug_GPIO:0000000000000000 .LFB1
+     /tmp/cc4ZKg0G.s:123    .text.v_Set_Debug_GPIO:0000000000000094 .LFE1
+     /tmp/cc4ZKg0G.s:877    .debug_str:0000000000000027 .LASF25
+     /tmp/cc4ZKg0G.s:759    .debug_loc:0000000000000021 .LLST0
+     /tmp/cc4ZKg0G.s:911    .debug_str:0000000000000204 .LASF26
+     /tmp/cc4ZKg0G.s:788    .debug_loc:0000000000000066 .LLST1
+     /tmp/cc4ZKg0G.s:887    .debug_str:0000000000000125 .LASF28
+     /tmp/cc4ZKg0G.s:817    .debug_loc:00000000000000ab .LLST2
+     /tmp/cc4ZKg0G.s:58     .text.v_Set_Debug_GPIO:000000000000002c .LVL3
+     /tmp/cc4ZKg0G.s:72     .text.v_Set_Debug_GPIO:000000000000004c .LVL6
+     /tmp/cc4ZKg0G.s:104    .text.v_Set_Debug_GPIO:000000000000007c .LVL11
+     /tmp/cc4ZKg0G.s:949    .debug_str:0000000000000317 .LASF29
+     /tmp/cc4ZKg0G.s:14     .text.v_Init_Debug_GPIO:0000000000000000 .LFB0
+     /tmp/cc4ZKg0G.s:26     .text.v_Init_Debug_GPIO:0000000000000018 .LFE0
+     /tmp/cc4ZKg0G.s:945    .debug_str:00000000000002f9 .LASF31
+     /tmp/cc4ZKg0G.s:24     .text.v_Init_Debug_GPIO:0000000000000018 .LVL0
+     /tmp/cc4ZKg0G.s:921    .debug_str:000000000000023c .LASF32
+     /tmp/cc4ZKg0G.s:903    .debug_str:00000000000001c2 .LASF33
+     /tmp/cc4ZKg0G.s:917    .debug_str:0000000000000226 .LASF34
+     /tmp/cc4ZKg0G.s:133    .text.v_Set_LED:0000000000000000 .LVL15
+     /tmp/cc4ZKg0G.s:142    .text.v_Set_LED:0000000000000010 .LVL16
+     /tmp/cc4ZKg0G.s:36     .text.v_Set_Debug_GPIO:0000000000000000 .LVL1
+     /tmp/cc4ZKg0G.s:46     .text.v_Set_Debug_GPIO:0000000000000014 .LVL2
+     /tmp/cc4ZKg0G.s:96     .text.v_Set_Debug_GPIO:0000000000000068 .LVL10
+     /tmp/cc4ZKg0G.s:118    .text.v_Set_Debug_GPIO:000000000000008c .LVL14
+     /tmp/cc4ZKg0G.s:93     .text.v_Set_Debug_GPIO:0000000000000064 .LVL9
+     /tmp/cc4ZKg0G.s:115    .text.v_Set_Debug_GPIO:0000000000000088 .LVL13
+     /tmp/cc4ZKg0G.s:60     .text.v_Set_Debug_GPIO:0000000000000030 .LVL4
+     /tmp/cc4ZKg0G.s:78     .text.v_Set_Debug_GPIO:0000000000000050 .LVL7
+     /tmp/cc4ZKg0G.s:84     .text.v_Set_Debug_GPIO:0000000000000058 .LVL8
+     /tmp/cc4ZKg0G.s:112    .text.v_Set_Debug_GPIO:0000000000000084 .LVL12
+     /tmp/cc4ZKg0G.s:164    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+GPIO_init
+GPIO_get_outputs
+GPIO_set_outputs

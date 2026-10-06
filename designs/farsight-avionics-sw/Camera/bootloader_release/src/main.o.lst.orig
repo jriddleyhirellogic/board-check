@@ -1,0 +1,435 @@
+   1              		.file	"main.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.startup.main,"ax",@progbits
+  10              		.align	2
+  11              		.globl	main
+  13              	main:
+  14              	.LFB0:
+  15              		.file 1 "../src/main.c"
+   1:../src/main.c **** /*
+   2:../src/main.c ****  ============================================================================
+   3:../src/main.c ****  Name        : main.c
+   4:../src/main.c ****  Author      : ian
+   5:../src/main.c ****  Version     :
+   6:../src/main.c ****  Copyright   : Your copyright notice
+   7:../src/main.c ****  Description : Top level for camera control program
+   8:../src/main.c ****  ============================================================================
+   9:../src/main.c ****  */
+  10:../src/main.c **** 
+  11:../src/main.c **** #include <stdint.h>
+  12:../src/main.c **** #include <assert.h>
+  13:../src/main.c **** #include <camera_task.h>
+  14:../src/main.c **** #include <focus.h>
+  15:../src/main.c **** 
+  16:../src/main.c **** #include "FreeRTOSConfig.h"
+  17:../src/main.c **** #include "FreeRTOS.h"
+  18:../src/main.c **** #include "task.h"
+  19:../src/main.c **** #include "event_groups.h"
+  20:../src/main.c **** #include "mem_map.h"
+  21:../src/main.c **** #include "config.h"
+  22:../src/main.c **** #include "hw_version.h"
+  23:../src/main.c **** 
+  24:../src/main.c **** // Synchronization point to make sure all threads are initialized
+  25:../src/main.c **** EventGroupHandle_t initialized;
+  26:../src/main.c **** 
+  27:../src/main.c **** void v_Hw_Init(void);
+  28:../src/main.c **** 
+  29:../src/main.c **** // Tasks
+  30:../src/main.c **** void v_Serial_Comm_Task(void *pvParameters);
+  31:../src/main.c **** void v_System_Task(void *pvParameters);
+  32:../src/main.c **** 
+  33:../src/main.c **** /**
+  34:../src/main.c ****  * @fn int main(void)
+  35:../src/main.c ****  * @brief Low level initialization of hardware, creates threads and starts scheduler
+  36:../src/main.c ****  *
+  37:../src/main.c ****  * @return
+  38:../src/main.c ****  */
+  39:../src/main.c **** void main(void)
+  40:../src/main.c **** {
+  16              		.loc 1 40 1
+  17              		.cfi_startproc
+  41:../src/main.c ****     BaseType_t retval;
+  18              		.loc 1 41 5
+  42:../src/main.c ****     uint32_t u32_HW_Version = u32_Get_HW_Version();  // This should be first
+  19              		.loc 1 42 5
+  40:../src/main.c ****     BaseType_t retval;
+  20              		.loc 1 40 1 is_stmt 0
+  21 0000 130101FF 		addi	sp,sp,-16
+  22              		.cfi_def_cfa_offset 16
+  23 0004 23261100 		sw	ra,12(sp)
+  24              		.cfi_offset 1, -4
+  25              		.loc 1 42 31
+  26 0008 97000000 		call	u32_Get_HW_Version
+  26      E7800000 
+  27              	.LVL0:
+  43:../src/main.c ****     uint32_t u32_Git_Hash = u32_Get_HW_Git_Hash();
+  28              		.loc 1 43 5 is_stmt 1
+  29              		.loc 1 43 29 is_stmt 0
+  30 0010 97000000 		call	u32_Get_HW_Git_Hash
+  30      E7800000 
+  31              	.LVL1:
+  44:../src/main.c ****     uint32_t u32_Timestamp = u32_Get_HW_Build_Time();
+  32              		.loc 1 44 5 is_stmt 1
+  33              		.loc 1 44 30 is_stmt 0
+  34 0018 97000000 		call	u32_Get_HW_Build_Time
+  34      E7800000 
+  35              	.LVL2:
+  45:../src/main.c **** 
+  46:../src/main.c **** 
+  47:../src/main.c ****    initialized =  xEventGroupCreate();
+  36              		.loc 1 47 4 is_stmt 1
+  37              		.loc 1 47 19 is_stmt 0
+  38 0020 97000000 		call	xEventGroupCreate
+  38      E7800000 
+  39              	.LVL3:
+  40              		.loc 1 47 16
+  41 0028 97070000 		sw	a0,initialized,a5
+  41      23A0A700 
+  48:../src/main.c **** 
+  49:../src/main.c ****     v_Hw_Init();
+  42              		.loc 1 49 5 is_stmt 1
+  43 0030 97000000 		call	v_Hw_Init
+  43      E7800000 
+  44              	.LVL4:
+  50:../src/main.c **** 
+  51:../src/main.c ****     retval = xTaskCreate( v_System_Task,                    // System level
+  45              		.loc 1 51 5
+  46              		.loc 1 51 14 is_stmt 0
+  47 0038 93070000 		li	a5,0
+  48 003c 13072000 		li	a4,2
+  49 0040 93060000 		li	a3,0
+  50 0044 1306800C 		li	a2,200
+  51 0048 97050000 		lla	a1,.LC0
+  51      93850500 
+  52 0050 17050000 		lla	a0,v_System_Task
+  52      13050500 
+  53 0058 97000000 		call	xTaskCreate
+  53      E7800000 
+  54              	.LVL5:
+  52:../src/main.c ****                 "System",
+  53:../src/main.c ****                 SYSTEM_STACK_SIZE,
+  54:../src/main.c ****                 NULL,
+  55:../src/main.c ****                 SYSTEM_TASK_PRIORITY,
+  56:../src/main.c ****                 NULL);
+  57:../src/main.c **** 
+  58:../src/main.c ****     retval = xTaskCreate( v_Serial_Comm_Task,               // For handling received messages
+  55              		.loc 1 58 5 is_stmt 1
+  56              		.loc 1 58 14 is_stmt 0
+  57 0060 93070000 		li	a5,0
+  58 0064 13073000 		li	a4,3
+  59 0068 93060000 		li	a3,0
+  60 006c 1306800C 		li	a2,200
+  61 0070 97050000 		lla	a1,.LC1
+  61      93850500 
+  62 0078 17050000 		lla	a0,v_Serial_Comm_Task
+  62      13050500 
+  63 0080 97000000 		call	xTaskCreate
+  63      E7800000 
+  64              	.LVL6:
+  59:../src/main.c ****                 "serial_comm",
+  60:../src/main.c ****                 SERIAL_COMM_STACK_SIZE_WORDS,
+  61:../src/main.c ****                 NULL,
+  62:../src/main.c ****                 COMM_TASK_PRIORITY,
+  63:../src/main.c ****                 NULL);
+  64:../src/main.c **** 
+  65:../src/main.c ****     retval = xTaskCreate( v_Focus_Task,                    // Control updates for stepper
+  65              		.loc 1 65 5 is_stmt 1
+  66              		.loc 1 65 14 is_stmt 0
+  67 0088 93070000 		li	a5,0
+  68 008c 13072000 		li	a4,2
+  69 0090 93060000 		li	a3,0
+  70 0094 13060010 		li	a2,256
+  71 0098 97050000 		lla	a1,.LC2
+  71      93850500 
+  72 00a0 17050000 		lla	a0,v_Focus_Task
+  72      13050500 
+  73 00a8 97000000 		call	xTaskCreate
+  73      E7800000 
+  74              	.LVL7:
+  66:../src/main.c ****                 "control",
+  67:../src/main.c ****                 FOCUS_STACK_SIZE_WORDS,
+  68:../src/main.c ****                 NULL,
+  69:../src/main.c ****                 CONTROL_TASK_PRIORITY,
+  70:../src/main.c ****                 NULL);
+  71:../src/main.c **** 
+  72:../src/main.c **** 
+  73:../src/main.c ****     retval = xTaskCreate( v_Camera_Task,                    // Camera handling
+  75              		.loc 1 73 5 is_stmt 1
+  76              		.loc 1 73 14 is_stmt 0
+  77 00b0 93070000 		li	a5,0
+  78 00b4 13072000 		li	a4,2
+  79 00b8 93060000 		li	a3,0
+  80 00bc 1306800C 		li	a2,200
+  81 00c0 97050000 		lla	a1,.LC3
+  81      93850500 
+  82 00c8 17050000 		lla	a0,v_Camera_Task
+  82      13050500 
+  83 00d0 97000000 		call	xTaskCreate
+  83      E7800000 
+  84              	.LVL8:
+  74:../src/main.c ****                 "camera",
+  75:../src/main.c ****                 CAMERA_STACK_SIZE,
+  76:../src/main.c ****                 NULL,
+  77:../src/main.c ****                 CAMERA_TASK_PRIORITY,
+  78:../src/main.c ****                 NULL);
+  79:../src/main.c **** 
+  80:../src/main.c **** 
+  81:../src/main.c ****     vTaskStartScheduler();
+  85              		.loc 1 81 5 is_stmt 1
+  86 00d8 97000000 		call	vTaskStartScheduler
+  86      E7800000 
+  87              	.LVL9:
+  88              	.L2:
+  82:../src/main.c **** 
+  83:../src/main.c ****     while(1); // Should never reach this point
+  89              		.loc 1 83 5 discriminator 1
+  90              		.loc 1 83 13 discriminator 1
+  91 00e0 6F000000 		j	.L2
+  92              		.cfi_endproc
+  93              	.LFE0:
+  95              		.comm	initialized,4,4
+  96              		.section	.rodata.main.str1.4,"aMS",@progbits,1
+  97              		.align	2
+  98              	.LC0:
+  99 0000 53797374 		.string	"System"
+  99      656D00
+ 100 0007 00       		.zero	1
+ 101              	.LC1:
+ 102 0008 73657269 		.string	"serial_comm"
+ 102      616C5F63 
+ 102      6F6D6D00 
+ 103              	.LC2:
+ 104 0014 636F6E74 		.string	"control"
+ 104      726F6C00 
+ 105              	.LC3:
+ 106 001c 63616D65 		.string	"camera"
+ 106      726100
+ 107              		.text
+ 108              	.Letext0:
+ 109              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 110              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 111              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 112              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 113              		.file 6 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/event_groups.h"
+ 114              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/hw_version.h"
+ 115              		.file 8 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/task.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+<<<<<<< HEAD
+     /tmp/ccSLa2gM.s:13     .text.startup.main:0000000000000000 main
+     /tmp/ccSLa2gM.s:17     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:18     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:19     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:20     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:21     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:22     .text.startup.main:0000000000000004 .L0 
+     /tmp/ccSLa2gM.s:24     .text.startup.main:0000000000000008 .L0 
+     /tmp/ccSLa2gM.s:26     .text.startup.main:0000000000000008 .L0 
+     /tmp/ccSLa2gM.s:29     .text.startup.main:0000000000000010 .L0 
+     /tmp/ccSLa2gM.s:30     .text.startup.main:0000000000000010 .L0 
+     /tmp/ccSLa2gM.s:33     .text.startup.main:0000000000000018 .L0 
+     /tmp/ccSLa2gM.s:34     .text.startup.main:0000000000000018 .L0 
+     /tmp/ccSLa2gM.s:37     .text.startup.main:0000000000000020 .L0 
+     /tmp/ccSLa2gM.s:38     .text.startup.main:0000000000000020 .L0 
+                            *COM*:0000000000000004 initialized
+     /tmp/ccSLa2gM.s:41     .text.startup.main:0000000000000028 .L0 
+     /tmp/ccSLa2gM.s:43     .text.startup.main:0000000000000030 .L0 
+     /tmp/ccSLa2gM.s:46     .text.startup.main:0000000000000038 .L0 
+     /tmp/ccSLa2gM.s:47     .text.startup.main:0000000000000038 .L0 
+     /tmp/ccSLa2gM.s:56     .text.startup.main:0000000000000060 .L0 
+     /tmp/ccSLa2gM.s:57     .text.startup.main:0000000000000060 .L0 
+     /tmp/ccSLa2gM.s:66     .text.startup.main:0000000000000088 .L0 
+     /tmp/ccSLa2gM.s:67     .text.startup.main:0000000000000088 .L0 
+     /tmp/ccSLa2gM.s:76     .text.startup.main:00000000000000b0 .L0 
+     /tmp/ccSLa2gM.s:77     .text.startup.main:00000000000000b0 .L0 
+     /tmp/ccSLa2gM.s:86     .text.startup.main:00000000000000d8 .L0 
+     /tmp/ccSLa2gM.s:90     .text.startup.main:00000000000000e0 .L0 
+     /tmp/ccSLa2gM.s:91     .text.startup.main:00000000000000e0 .L0 
+     /tmp/ccSLa2gM.s:92     .text.startup.main:00000000000000e4 .L0 
+     /tmp/ccSLa2gM.s:96     .text.startup.main:00000000000000e4 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccSLa2gM.s:41     .text.startup.main:0000000000000028 .L0 
+     /tmp/ccSLa2gM.s:98     .rodata.main.str1.4:0000000000000000 .LC0
+     /tmp/ccSLa2gM.s:51     .text.startup.main:0000000000000048 .L0 
+     /tmp/ccSLa2gM.s:52     .text.startup.main:0000000000000050 .L0 
+     /tmp/ccSLa2gM.s:101    .rodata.main.str1.4:0000000000000008 .LC1
+     /tmp/ccSLa2gM.s:61     .text.startup.main:0000000000000070 .L0 
+     /tmp/ccSLa2gM.s:62     .text.startup.main:0000000000000078 .L0 
+     /tmp/ccSLa2gM.s:103    .rodata.main.str1.4:0000000000000014 .LC2
+     /tmp/ccSLa2gM.s:71     .text.startup.main:0000000000000098 .L0 
+     /tmp/ccSLa2gM.s:72     .text.startup.main:00000000000000a0 .L0 
+     /tmp/ccSLa2gM.s:105    .rodata.main.str1.4:000000000000001c .LC3
+     /tmp/ccSLa2gM.s:81     .text.startup.main:00000000000000c0 .L0 
+     /tmp/ccSLa2gM.s:82     .text.startup.main:00000000000000c8 .L0 
+     /tmp/ccSLa2gM.s:88     .text.startup.main:00000000000000e0 .L2
+     /tmp/ccSLa2gM.s:465    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccSLa2gM.s:761    .debug_str:0000000000000169 .LASF31
+     /tmp/ccSLa2gM.s:721    .debug_str:0000000000000053 .LASF32
+     /tmp/ccSLa2gM.s:771    .debug_str:0000000000000261 .LASF33
+     /tmp/ccSLa2gM.s:701    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccSLa2gM.s:707    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccSLa2gM.s:775    .debug_str:00000000000002a4 .LASF0
+     /tmp/ccSLa2gM.s:723    .debug_str:0000000000000061 .LASF1
+     /tmp/ccSLa2gM.s:763    .debug_str:000000000000022f .LASF2
+     /tmp/ccSLa2gM.s:731    .debug_str:0000000000000094 .LASF3
+     /tmp/ccSLa2gM.s:715    .debug_str:0000000000000028 .LASF5
+     /tmp/ccSLa2gM.s:769    .debug_str:0000000000000258 .LASF4
+     /tmp/ccSLa2gM.s:737    .debug_str:00000000000000ca .LASF6
+     /tmp/ccSLa2gM.s:729    .debug_str:0000000000000082 .LASF7
+     /tmp/ccSLa2gM.s:755    .debug_str:0000000000000148 .LASF8
+     /tmp/ccSLa2gM.s:747    .debug_str:0000000000000112 .LASF9
+     /tmp/ccSLa2gM.s:745    .debug_str:0000000000000105 .LASF10
+     /tmp/ccSLa2gM.s:753    .debug_str:0000000000000140 .LASF11
+     /tmp/ccSLa2gM.s:767    .debug_str:000000000000024f .LASF12
+     /tmp/ccSLa2gM.s:711    .debug_str:0000000000000010 .LASF13
+     /tmp/ccSLa2gM.s:773    .debug_str:0000000000000298 .LASF14
+     /tmp/ccSLa2gM.s:777    .debug_str:00000000000002b0 .LASF15
+     /tmp/ccSLa2gM.s:713    .debug_str:0000000000000017 .LASF18
+     /tmp/ccSLa2gM.s:757    .debug_str:0000000000000156 .LASF16
+     /tmp/ccSLa2gM.s:739    .debug_str:00000000000000d5 .LASF17
+     /tmp/ccSLa2gM.s:709    .debug_str:0000000000000000 .LASF34
+     /tmp/ccSLa2gM.s:727    .debug_str:0000000000000076 .LASF19
+     /tmp/ccSLa2gM.s:751    .debug_str:000000000000013b .LASF35
+     /tmp/ccSLa2gM.s:14     .text.startup.main:0000000000000000 .LFB0
+     /tmp/ccSLa2gM.s:93     .text.startup.main:00000000000000e4 .LFE0
+     /tmp/ccSLa2gM.s:725    .debug_str:000000000000006f .LASF20
+     /tmp/ccSLa2gM.s:733    .debug_str:00000000000000a7 .LASF21
+     /tmp/ccSLa2gM.s:719    .debug_str:0000000000000046 .LASF22
+     /tmp/ccSLa2gM.s:759    .debug_str:000000000000015b .LASF23
+     /tmp/ccSLa2gM.s:27     .text.startup.main:0000000000000010 .LVL0
+     /tmp/ccSLa2gM.s:31     .text.startup.main:0000000000000018 .LVL1
+     /tmp/ccSLa2gM.s:35     .text.startup.main:0000000000000020 .LVL2
+     /tmp/ccSLa2gM.s:39     .text.startup.main:0000000000000028 .LVL3
+     /tmp/ccSLa2gM.s:44     .text.startup.main:0000000000000038 .LVL4
+     /tmp/ccSLa2gM.s:54     .text.startup.main:0000000000000060 .LVL5
+     /tmp/ccSLa2gM.s:64     .text.startup.main:0000000000000088 .LVL6
+     /tmp/ccSLa2gM.s:74     .text.startup.main:00000000000000b0 .LVL7
+     /tmp/ccSLa2gM.s:84     .text.startup.main:00000000000000d8 .LVL8
+     /tmp/ccSLa2gM.s:87     .text.startup.main:00000000000000e0 .LVL9
+     /tmp/ccSLa2gM.s:741    .debug_str:00000000000000e8 .LASF24
+     /tmp/ccSLa2gM.s:735    .debug_str:00000000000000b6 .LASF25
+     /tmp/ccSLa2gM.s:765    .debug_str:0000000000000239 .LASF26
+     /tmp/ccSLa2gM.s:749    .debug_str:0000000000000129 .LASF27
+     /tmp/ccSLa2gM.s:743    .debug_str:00000000000000fb .LASF28
+     /tmp/ccSLa2gM.s:779    .debug_str:00000000000002bb .LASF29
+     /tmp/ccSLa2gM.s:717    .debug_str:0000000000000032 .LASF30
+     /tmp/ccSLa2gM.s:117    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccjd0WWz.s:13     .text.startup.main:0000000000000000 main
+     /tmp/ccjd0WWz.s:17     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:18     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:19     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:20     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:21     .text.startup.main:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:22     .text.startup.main:0000000000000004 .L0 
+     /tmp/ccjd0WWz.s:24     .text.startup.main:0000000000000008 .L0 
+     /tmp/ccjd0WWz.s:26     .text.startup.main:0000000000000008 .L0 
+     /tmp/ccjd0WWz.s:29     .text.startup.main:0000000000000010 .L0 
+     /tmp/ccjd0WWz.s:30     .text.startup.main:0000000000000010 .L0 
+     /tmp/ccjd0WWz.s:33     .text.startup.main:0000000000000018 .L0 
+     /tmp/ccjd0WWz.s:34     .text.startup.main:0000000000000018 .L0 
+     /tmp/ccjd0WWz.s:37     .text.startup.main:0000000000000020 .L0 
+     /tmp/ccjd0WWz.s:38     .text.startup.main:0000000000000020 .L0 
+                            *COM*:0000000000000004 initialized
+     /tmp/ccjd0WWz.s:41     .text.startup.main:0000000000000028 .L0 
+     /tmp/ccjd0WWz.s:43     .text.startup.main:0000000000000030 .L0 
+     /tmp/ccjd0WWz.s:46     .text.startup.main:0000000000000038 .L0 
+     /tmp/ccjd0WWz.s:47     .text.startup.main:0000000000000038 .L0 
+     /tmp/ccjd0WWz.s:56     .text.startup.main:0000000000000060 .L0 
+     /tmp/ccjd0WWz.s:57     .text.startup.main:0000000000000060 .L0 
+     /tmp/ccjd0WWz.s:66     .text.startup.main:0000000000000088 .L0 
+     /tmp/ccjd0WWz.s:67     .text.startup.main:0000000000000088 .L0 
+     /tmp/ccjd0WWz.s:76     .text.startup.main:00000000000000b0 .L0 
+     /tmp/ccjd0WWz.s:77     .text.startup.main:00000000000000b0 .L0 
+     /tmp/ccjd0WWz.s:86     .text.startup.main:00000000000000d8 .L0 
+     /tmp/ccjd0WWz.s:90     .text.startup.main:00000000000000e0 .L0 
+     /tmp/ccjd0WWz.s:91     .text.startup.main:00000000000000e0 .L0 
+     /tmp/ccjd0WWz.s:92     .text.startup.main:00000000000000e4 .L0 
+     /tmp/ccjd0WWz.s:96     .text.startup.main:00000000000000e4 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccjd0WWz.s:41     .text.startup.main:0000000000000028 .L0 
+     /tmp/ccjd0WWz.s:98     .rodata.main.str1.4:0000000000000000 .LC0
+     /tmp/ccjd0WWz.s:51     .text.startup.main:0000000000000048 .L0 
+     /tmp/ccjd0WWz.s:52     .text.startup.main:0000000000000050 .L0 
+     /tmp/ccjd0WWz.s:101    .rodata.main.str1.4:0000000000000008 .LC1
+     /tmp/ccjd0WWz.s:61     .text.startup.main:0000000000000070 .L0 
+     /tmp/ccjd0WWz.s:62     .text.startup.main:0000000000000078 .L0 
+     /tmp/ccjd0WWz.s:103    .rodata.main.str1.4:0000000000000014 .LC2
+     /tmp/ccjd0WWz.s:71     .text.startup.main:0000000000000098 .L0 
+     /tmp/ccjd0WWz.s:72     .text.startup.main:00000000000000a0 .L0 
+     /tmp/ccjd0WWz.s:105    .rodata.main.str1.4:000000000000001c .LC3
+     /tmp/ccjd0WWz.s:81     .text.startup.main:00000000000000c0 .L0 
+     /tmp/ccjd0WWz.s:82     .text.startup.main:00000000000000c8 .L0 
+     /tmp/ccjd0WWz.s:88     .text.startup.main:00000000000000e0 .L2
+     /tmp/ccjd0WWz.s:465    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccjd0WWz.s:761    .debug_str:0000000000000169 .LASF31
+     /tmp/ccjd0WWz.s:721    .debug_str:0000000000000053 .LASF32
+     /tmp/ccjd0WWz.s:771    .debug_str:0000000000000261 .LASF33
+     /tmp/ccjd0WWz.s:701    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccjd0WWz.s:707    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccjd0WWz.s:775    .debug_str:00000000000002a4 .LASF0
+     /tmp/ccjd0WWz.s:723    .debug_str:0000000000000061 .LASF1
+     /tmp/ccjd0WWz.s:763    .debug_str:000000000000022f .LASF2
+     /tmp/ccjd0WWz.s:731    .debug_str:0000000000000094 .LASF3
+     /tmp/ccjd0WWz.s:715    .debug_str:0000000000000028 .LASF5
+     /tmp/ccjd0WWz.s:769    .debug_str:0000000000000258 .LASF4
+     /tmp/ccjd0WWz.s:737    .debug_str:00000000000000ca .LASF6
+     /tmp/ccjd0WWz.s:729    .debug_str:0000000000000082 .LASF7
+     /tmp/ccjd0WWz.s:755    .debug_str:0000000000000148 .LASF8
+     /tmp/ccjd0WWz.s:747    .debug_str:0000000000000112 .LASF9
+     /tmp/ccjd0WWz.s:745    .debug_str:0000000000000105 .LASF10
+     /tmp/ccjd0WWz.s:753    .debug_str:0000000000000140 .LASF11
+     /tmp/ccjd0WWz.s:767    .debug_str:000000000000024f .LASF12
+     /tmp/ccjd0WWz.s:711    .debug_str:0000000000000010 .LASF13
+     /tmp/ccjd0WWz.s:773    .debug_str:0000000000000298 .LASF14
+     /tmp/ccjd0WWz.s:777    .debug_str:00000000000002b0 .LASF15
+     /tmp/ccjd0WWz.s:713    .debug_str:0000000000000017 .LASF18
+     /tmp/ccjd0WWz.s:757    .debug_str:0000000000000156 .LASF16
+     /tmp/ccjd0WWz.s:739    .debug_str:00000000000000d5 .LASF17
+     /tmp/ccjd0WWz.s:709    .debug_str:0000000000000000 .LASF34
+     /tmp/ccjd0WWz.s:727    .debug_str:0000000000000076 .LASF19
+     /tmp/ccjd0WWz.s:751    .debug_str:000000000000013b .LASF35
+     /tmp/ccjd0WWz.s:14     .text.startup.main:0000000000000000 .LFB0
+     /tmp/ccjd0WWz.s:93     .text.startup.main:00000000000000e4 .LFE0
+     /tmp/ccjd0WWz.s:725    .debug_str:000000000000006f .LASF20
+     /tmp/ccjd0WWz.s:733    .debug_str:00000000000000a7 .LASF21
+     /tmp/ccjd0WWz.s:719    .debug_str:0000000000000046 .LASF22
+     /tmp/ccjd0WWz.s:759    .debug_str:000000000000015b .LASF23
+     /tmp/ccjd0WWz.s:27     .text.startup.main:0000000000000010 .LVL0
+     /tmp/ccjd0WWz.s:31     .text.startup.main:0000000000000018 .LVL1
+     /tmp/ccjd0WWz.s:35     .text.startup.main:0000000000000020 .LVL2
+     /tmp/ccjd0WWz.s:39     .text.startup.main:0000000000000028 .LVL3
+     /tmp/ccjd0WWz.s:44     .text.startup.main:0000000000000038 .LVL4
+     /tmp/ccjd0WWz.s:54     .text.startup.main:0000000000000060 .LVL5
+     /tmp/ccjd0WWz.s:64     .text.startup.main:0000000000000088 .LVL6
+     /tmp/ccjd0WWz.s:74     .text.startup.main:00000000000000b0 .LVL7
+     /tmp/ccjd0WWz.s:84     .text.startup.main:00000000000000d8 .LVL8
+     /tmp/ccjd0WWz.s:87     .text.startup.main:00000000000000e0 .LVL9
+     /tmp/ccjd0WWz.s:741    .debug_str:00000000000000e8 .LASF24
+     /tmp/ccjd0WWz.s:735    .debug_str:00000000000000b6 .LASF25
+     /tmp/ccjd0WWz.s:765    .debug_str:0000000000000239 .LASF26
+     /tmp/ccjd0WWz.s:749    .debug_str:0000000000000129 .LASF27
+     /tmp/ccjd0WWz.s:743    .debug_str:00000000000000fb .LASF28
+     /tmp/ccjd0WWz.s:779    .debug_str:00000000000002bb .LASF29
+     /tmp/ccjd0WWz.s:717    .debug_str:0000000000000032 .LASF30
+     /tmp/ccjd0WWz.s:117    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+u32_Get_HW_Version
+u32_Get_HW_Git_Hash
+u32_Get_HW_Build_Time
+xEventGroupCreate
+v_Hw_Init
+v_System_Task
+xTaskCreate
+v_Serial_Comm_Task
+v_Focus_Task
+v_Camera_Task
+vTaskStartScheduler

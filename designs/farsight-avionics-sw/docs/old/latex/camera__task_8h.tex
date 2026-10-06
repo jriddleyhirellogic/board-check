@@ -1,0 +1,109 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+camera\+\_\+task.h File Reference}
+\hypertarget{camera__task_8h}{}\label{camera__task_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/camera\_task.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/camera\_task.h}}
+{\ttfamily \+\#include "{}events.\+h"{}}\newline
+Include dependency graph for camera\+\_\+task.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{camera__task_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{camera__task_8h_a419160974a53b716df1c675a527ecca4}{v\+\_\+\+Camera\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\begin{DoxyCompactList}\small\item\em Thread managing camera -\/ initialization, taking pictures, transferring image data. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{camera__task_8h_a48344ac27a8bc84be9d797d6f6c5c46d}{v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Posts an event to message queue from other threads. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{camera__task_8h_a7bc3c003101fc7b4bb5791c26de2182c}{v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Posts and event to camera thread message queue from interrupt context. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__task_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__task_8h_a419160974a53b716df1c675a527ecca4}\index{camera\_task.h@{camera\_task.h}!v\_Camera\_Task@{v\_Camera\_Task}}
+\index{v\_Camera\_Task@{v\_Camera\_Task}!camera\_task.h@{camera\_task.h}}
+\doxysubsubsection{\texorpdfstring{v\_Camera\_Task()}{v\_Camera\_Task()}}
+{\footnotesize\ttfamily \label{camera__task_8h_a419160974a53b716df1c675a527ecca4} 
+void v\+\_\+\+Camera\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Thread managing camera -\/ initialization, taking pictures, transferring image data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pv\+Parameters} & Not used yet, but allows params to be passed when thread is created \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00049}{49}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8h_a419160974a53b716df1c675a527ecca4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=324pt]{camera__task_8h_a419160974a53b716df1c675a527ecca4_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8h_a48344ac27a8bc84be9d797d6f6c5c46d}\index{camera\_task.h@{camera\_task.h}!v\_Post\_Camera\_Event@{v\_Post\_Camera\_Event}}
+\index{v\_Post\_Camera\_Event@{v\_Post\_Camera\_Event}!camera\_task.h@{camera\_task.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Camera\_Event()}{v\_Post\_Camera\_Event()}}
+{\footnotesize\ttfamily \label{camera__task_8h_a48344ac27a8bc84be9d797d6f6c5c46d} 
+void v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Posts an event to message queue from other threads. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00103}{103}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__task_8h_a48344ac27a8bc84be9d797d6f6c5c46d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{camera__task_8h_a7bc3c003101fc7b4bb5791c26de2182c}\index{camera\_task.h@{camera\_task.h}!v\_Post\_Camera\_Event\_ISR@{v\_Post\_Camera\_Event\_ISR}}
+\index{v\_Post\_Camera\_Event\_ISR@{v\_Post\_Camera\_Event\_ISR}!camera\_task.h@{camera\_task.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Camera\_Event\_ISR()}{v\_Post\_Camera\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{camera__task_8h_a7bc3c003101fc7b4bb5791c26de2182c} 
+void v\+\_\+\+Post\+\_\+\+Camera\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Posts and event to camera thread message queue from interrupt context. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & (message) \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{camera__task_8c_source_l00115}{115}} of file \doxymbox{\hyperlink{camera__task_8c_source}{camera\+\_\+task.\+c}}.
+

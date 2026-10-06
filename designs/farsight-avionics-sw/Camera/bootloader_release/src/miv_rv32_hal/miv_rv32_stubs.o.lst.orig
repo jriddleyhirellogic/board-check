@@ -1,0 +1,357 @@
+   1              		.file	"miv_rv32_stubs.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Software_IRQHandler,"ax",@progbits
+  10              		.align	2
+  11              		.weak	Software_IRQHandler
+  13              	Software_IRQHandler:
+  14              	.LFB0:
+  15              		.file 1 "../src/miv_rv32_hal/miv_rv32_stubs.c"
+   1:../src/miv_rv32_hal/miv_rv32_stubs.c **** /*******************************************************************************
+   2:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3:../src/miv_rv32_hal/miv_rv32_stubs.c ****  *
+   4:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * SPDX-License-Identifier: MIT
+   5:../src/miv_rv32_hal/miv_rv32_stubs.c ****  *
+   6:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * @file miv_rv32_stubs.c
+   7:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * @author Microchip FPGA Embedded Systems Solutions
+   8:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * @brief Stubs for the Mi-V soft processor Interrupt handler.
+   9:../src/miv_rv32_hal/miv_rv32_stubs.c ****  *
+  10:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * The functions below will only be linked with the application code if the user
+  11:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * does not provide an implementation for these functions. These functions are
+  12:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * defined with weak linking so that they can be overridden by a function with
+  13:../src/miv_rv32_hal/miv_rv32_stubs.c ****  * same prototype in the user's application code.
+  14:../src/miv_rv32_hal/miv_rv32_stubs.c ****  *
+  15:../src/miv_rv32_hal/miv_rv32_stubs.c ****  */
+  16:../src/miv_rv32_hal/miv_rv32_stubs.c **** #include <unistd.h>
+  17:../src/miv_rv32_hal/miv_rv32_stubs.c **** 
+  18:../src/miv_rv32_hal/miv_rv32_stubs.c **** #ifdef __cplusplus
+  19:../src/miv_rv32_hal/miv_rv32_stubs.c **** extern "C" {
+  20:../src/miv_rv32_hal/miv_rv32_stubs.c **** #endif
+  21:../src/miv_rv32_hal/miv_rv32_stubs.c **** 
+  22:../src/miv_rv32_hal/miv_rv32_stubs.c **** __attribute__((weak)) void Software_IRQHandler(void)
+  23:../src/miv_rv32_hal/miv_rv32_stubs.c **** {
+  16              		.loc 1 23 1
+  17              		.cfi_startproc
+  24:../src/miv_rv32_hal/miv_rv32_stubs.c ****     _exit(10);
+  18              		.loc 1 24 5
+  23:../src/miv_rv32_hal/miv_rv32_stubs.c ****     _exit(10);
+  19              		.loc 1 23 1 is_stmt 0
+  20 0000 130101FF 		addi	sp,sp,-16
+  21              		.cfi_def_cfa_offset 16
+  22              		.loc 1 24 5
+  23 0004 1305A000 		li	a0,10
+  23:../src/miv_rv32_hal/miv_rv32_stubs.c ****     _exit(10);
+  24              		.loc 1 23 1
+  25 0008 23261100 		sw	ra,12(sp)
+  26              		.cfi_offset 1, -4
+  27              		.loc 1 24 5
+  28 000c 97000000 		call	_exit
+  28      E7800000 
+  29              	.LVL0:
+  30              		.cfi_endproc
+  31              	.LFE0:
+  33              		.section	.text.SysTick_Handler,"ax",@progbits
+  34              		.align	2
+  35              		.weak	SysTick_Handler
+  37              	SysTick_Handler:
+  38              	.LFB1:
+  25:../src/miv_rv32_hal/miv_rv32_stubs.c **** }
+  26:../src/miv_rv32_hal/miv_rv32_stubs.c **** 
+  27:../src/miv_rv32_hal/miv_rv32_stubs.c **** __attribute__((weak)) void SysTick_Handler(void)
+  28:../src/miv_rv32_hal/miv_rv32_stubs.c **** {
+  39              		.loc 1 28 1 is_stmt 1
+  40              		.cfi_startproc
+  29:../src/miv_rv32_hal/miv_rv32_stubs.c ****     /* Default handler */
+  30:../src/miv_rv32_hal/miv_rv32_stubs.c **** }
+  41              		.loc 1 30 1
+  42 0000 67800000 		ret
+  43              		.cfi_endproc
+  44              	.LFE1:
+  46              		.section	.text.External_IRQHandler,"ax",@progbits
+  47              		.align	2
+  48              		.weak	External_IRQHandler
+  50              	External_IRQHandler:
+  51              	.LFB13:
+  52              		.cfi_startproc
+  53 0000 67800000 		ret
+  54              		.cfi_endproc
+  55              	.LFE13:
+  57              		.section	.text.MGECI_IRQHandler,"ax",@progbits
+  58              		.align	2
+  59              		.weak	MGECI_IRQHandler
+  61              	MGECI_IRQHandler:
+  62              	.LFB15:
+  63              		.cfi_startproc
+  64 0000 67800000 		ret
+  65              		.cfi_endproc
+  66              	.LFE15:
+  68              		.section	.text.MGEUI_IRQHandler,"ax",@progbits
+  69              		.align	2
+  70              		.weak	MGEUI_IRQHandler
+  72              	MGEUI_IRQHandler:
+  73              	.LFB17:
+  74              		.cfi_startproc
+  75 0000 67800000 		ret
+  76              		.cfi_endproc
+  77              	.LFE17:
+  79              		.section	.text.OPSRV_IRQHandler,"ax",@progbits
+  80              		.align	2
+  81              		.weak	OPSRV_IRQHandler
+  83              	OPSRV_IRQHandler:
+  84              	.LFB19:
+  85              		.cfi_startproc
+  86 0000 67800000 		ret
+  87              		.cfi_endproc
+  88              	.LFE19:
+  90              		.section	.text.MSYS_EI5_IRQHandler,"ax",@progbits
+  91              		.align	2
+  92              		.weak	MSYS_EI5_IRQHandler
+  94              	MSYS_EI5_IRQHandler:
+  95              	.LFB21:
+  96              		.cfi_startproc
+  97 0000 67800000 		ret
+  98              		.cfi_endproc
+  99              	.LFE21:
+ 101              		.section	.text.MSYS_EI4_IRQHandler,"ax",@progbits
+ 102              		.align	2
+ 103              		.weak	MSYS_EI4_IRQHandler
+ 105              	MSYS_EI4_IRQHandler:
+ 106              	.LFB23:
+ 107              		.cfi_startproc
+ 108 0000 67800000 		ret
+ 109              		.cfi_endproc
+ 110              	.LFE23:
+ 112              		.section	.text.MSYS_EI3_IRQHandler,"ax",@progbits
+ 113              		.align	2
+ 114              		.weak	MSYS_EI3_IRQHandler
+ 116              	MSYS_EI3_IRQHandler:
+ 117              	.LFB25:
+ 118              		.cfi_startproc
+ 119 0000 67800000 		ret
+ 120              		.cfi_endproc
+ 121              	.LFE25:
+ 123              		.section	.text.MSYS_EI2_IRQHandler,"ax",@progbits
+ 124              		.align	2
+ 125              		.weak	MSYS_EI2_IRQHandler
+ 127              	MSYS_EI2_IRQHandler:
+ 128              	.LFB27:
+ 129              		.cfi_startproc
+ 130 0000 67800000 		ret
+ 131              		.cfi_endproc
+ 132              	.LFE27:
+ 134              		.section	.text.MSYS_EI1_IRQHandler,"ax",@progbits
+ 135              		.align	2
+ 136              		.weak	MSYS_EI1_IRQHandler
+ 138              	MSYS_EI1_IRQHandler:
+ 139              	.LFB29:
+ 140              		.cfi_startproc
+ 141 0000 67800000 		ret
+ 142              		.cfi_endproc
+ 143              	.LFE29:
+ 145              		.section	.text.MSYS_EI0_IRQHandler,"ax",@progbits
+ 146              		.align	2
+ 147              		.weak	MSYS_EI0_IRQHandler
+ 149              	MSYS_EI0_IRQHandler:
+ 150              	.LFB31:
+ 151              		.cfi_startproc
+ 152 0000 67800000 		ret
+ 153              		.cfi_endproc
+ 154              	.LFE31:
+ 156              		.text
+ 157              	.Letext0:
+ 158              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/unistd.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 miv_rv32_stubs.c
+<<<<<<< HEAD
+     /tmp/ccJcwI30.s:13     .text.Software_IRQHandler:0000000000000000 Software_IRQHandler
+     /tmp/ccJcwI30.s:17     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:18     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:19     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:20     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:21     .text.Software_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:23     .text.Software_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:25     .text.Software_IRQHandler:0000000000000008 .L0 
+     /tmp/ccJcwI30.s:26     .text.Software_IRQHandler:000000000000000c .L0 
+     /tmp/ccJcwI30.s:28     .text.Software_IRQHandler:000000000000000c .L0 
+     /tmp/ccJcwI30.s:30     .text.Software_IRQHandler:0000000000000014 .L0 
+     /tmp/ccJcwI30.s:37     .text.SysTick_Handler:0000000000000000 SysTick_Handler
+     /tmp/ccJcwI30.s:40     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:41     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:42     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:43     .text.SysTick_Handler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:50     .text.External_IRQHandler:0000000000000000 External_IRQHandler
+     /tmp/ccJcwI30.s:52     .text.External_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:54     .text.External_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:61     .text.MGECI_IRQHandler:0000000000000000 MGECI_IRQHandler
+     /tmp/ccJcwI30.s:63     .text.MGECI_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:65     .text.MGECI_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:72     .text.MGEUI_IRQHandler:0000000000000000 MGEUI_IRQHandler
+     /tmp/ccJcwI30.s:74     .text.MGEUI_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:76     .text.MGEUI_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:83     .text.OPSRV_IRQHandler:0000000000000000 OPSRV_IRQHandler
+     /tmp/ccJcwI30.s:85     .text.OPSRV_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:87     .text.OPSRV_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:94     .text.MSYS_EI5_IRQHandler:0000000000000000 MSYS_EI5_IRQHandler
+     /tmp/ccJcwI30.s:96     .text.MSYS_EI5_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:98     .text.MSYS_EI5_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:105    .text.MSYS_EI4_IRQHandler:0000000000000000 MSYS_EI4_IRQHandler
+     /tmp/ccJcwI30.s:107    .text.MSYS_EI4_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:109    .text.MSYS_EI4_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:116    .text.MSYS_EI3_IRQHandler:0000000000000000 MSYS_EI3_IRQHandler
+     /tmp/ccJcwI30.s:118    .text.MSYS_EI3_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:120    .text.MSYS_EI3_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:127    .text.MSYS_EI2_IRQHandler:0000000000000000 MSYS_EI2_IRQHandler
+     /tmp/ccJcwI30.s:129    .text.MSYS_EI2_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:131    .text.MSYS_EI2_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:138    .text.MSYS_EI1_IRQHandler:0000000000000000 MSYS_EI1_IRQHandler
+     /tmp/ccJcwI30.s:140    .text.MSYS_EI1_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:142    .text.MSYS_EI1_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:149    .text.MSYS_EI0_IRQHandler:0000000000000000 MSYS_EI0_IRQHandler
+     /tmp/ccJcwI30.s:151    .text.MSYS_EI0_IRQHandler:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:153    .text.MSYS_EI0_IRQHandler:0000000000000004 .L0 
+     /tmp/ccJcwI30.s:33     .text.Software_IRQHandler:0000000000000014 .L0 
+     /tmp/ccJcwI30.s:46     .text.SysTick_Handler:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccJcwI30.s:353    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccJcwI30.s:576    .debug_str:000000000000002f .LASF27
+     /tmp/ccJcwI30.s:622    .debug_str:000000000000027d .LASF28
+     /tmp/ccJcwI30.s:584    .debug_str:0000000000000131 .LASF29
+     /tmp/ccJcwI30.s:554    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccJcwI30.s:562    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccJcwI30.s:598    .debug_str:00000000000001be .LASF0
+     /tmp/ccJcwI30.s:594    .debug_str:000000000000019f .LASF1
+     /tmp/ccJcwI30.s:572    .debug_str:000000000000001f .LASF2
+     /tmp/ccJcwI30.s:610    .debug_str:000000000000021a .LASF3
+     /tmp/ccJcwI30.s:590    .debug_str:000000000000018a .LASF4
+     /tmp/ccJcwI30.s:620    .debug_str:000000000000026b .LASF5
+     /tmp/ccJcwI30.s:588    .debug_str:000000000000017c .LASF6
+     /tmp/ccJcwI30.s:600    .debug_str:00000000000001ca .LASF7
+     /tmp/ccJcwI30.s:602    .debug_str:00000000000001e1 .LASF8
+     /tmp/ccJcwI30.s:612    .debug_str:000000000000022d .LASF9
+     /tmp/ccJcwI30.s:592    .debug_str:0000000000000193 .LASF10
+     /tmp/ccJcwI30.s:568    .debug_str:000000000000000e .LASF11
+     /tmp/ccJcwI30.s:566    .debug_str:0000000000000007 .LASF12
+     /tmp/ccJcwI30.s:564    .debug_str:0000000000000000 .LASF13
+     /tmp/ccJcwI30.s:606    .debug_str:00000000000001ff .LASF14
+     /tmp/ccJcwI30.s:626    .debug_str:00000000000002b2 .LASF15
+     /tmp/ccJcwI30.s:570    .debug_str:0000000000000016 .LASF16
+     /tmp/ccJcwI30.s:608    .debug_str:0000000000000206 .LASF17
+     /tmp/ccJcwI30.s:582    .debug_str:000000000000011d .LASF18
+     /tmp/ccJcwI30.s:616    .debug_str:0000000000000246 .LASF19
+     /tmp/ccJcwI30.s:578    .debug_str:00000000000000f5 .LASF20
+     /tmp/ccJcwI30.s:580    .debug_str:0000000000000109 .LASF21
+     /tmp/ccJcwI30.s:586    .debug_str:0000000000000168 .LASF22
+     /tmp/ccJcwI30.s:604    .debug_str:00000000000001ee .LASF23
+     /tmp/ccJcwI30.s:596    .debug_str:00000000000001ad .LASF24
+     /tmp/ccJcwI30.s:618    .debug_str:000000000000025a .LASF25
+     /tmp/ccJcwI30.s:628    .debug_str:00000000000002b9 .LASF26
+     /tmp/ccJcwI30.s:624    .debug_str:00000000000002a2 .LASF30
+     /tmp/ccJcwI30.s:614    .debug_str:0000000000000232 .LASF31
+     /tmp/ccJcwI30.s:14     .text.Software_IRQHandler:0000000000000000 .LFB0
+     /tmp/ccJcwI30.s:31     .text.Software_IRQHandler:0000000000000014 .LFE0
+     /tmp/ccJcwI30.s:29     .text.Software_IRQHandler:0000000000000014 .LVL0
+     /tmp/ccJcwI30.s:38     .text.SysTick_Handler:0000000000000000 .LFB1
+     /tmp/ccJcwI30.s:44     .text.SysTick_Handler:0000000000000004 .LFE1
+     /tmp/ccJcwI30.s:574    .debug_str:0000000000000029 .LASF32
+     /tmp/ccJcwI30.s:160    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccZhh6Cu.s:13     .text.Software_IRQHandler:0000000000000000 Software_IRQHandler
+     /tmp/ccZhh6Cu.s:17     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:18     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:19     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:20     .text.Software_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:21     .text.Software_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:23     .text.Software_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:25     .text.Software_IRQHandler:0000000000000008 .L0 
+     /tmp/ccZhh6Cu.s:26     .text.Software_IRQHandler:000000000000000c .L0 
+     /tmp/ccZhh6Cu.s:28     .text.Software_IRQHandler:000000000000000c .L0 
+     /tmp/ccZhh6Cu.s:30     .text.Software_IRQHandler:0000000000000014 .L0 
+     /tmp/ccZhh6Cu.s:37     .text.SysTick_Handler:0000000000000000 SysTick_Handler
+     /tmp/ccZhh6Cu.s:40     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:41     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:42     .text.SysTick_Handler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:43     .text.SysTick_Handler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:50     .text.External_IRQHandler:0000000000000000 External_IRQHandler
+     /tmp/ccZhh6Cu.s:52     .text.External_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:54     .text.External_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:61     .text.MGECI_IRQHandler:0000000000000000 MGECI_IRQHandler
+     /tmp/ccZhh6Cu.s:63     .text.MGECI_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:65     .text.MGECI_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:72     .text.MGEUI_IRQHandler:0000000000000000 MGEUI_IRQHandler
+     /tmp/ccZhh6Cu.s:74     .text.MGEUI_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:76     .text.MGEUI_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:83     .text.OPSRV_IRQHandler:0000000000000000 OPSRV_IRQHandler
+     /tmp/ccZhh6Cu.s:85     .text.OPSRV_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:87     .text.OPSRV_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:94     .text.MSYS_EI5_IRQHandler:0000000000000000 MSYS_EI5_IRQHandler
+     /tmp/ccZhh6Cu.s:96     .text.MSYS_EI5_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:98     .text.MSYS_EI5_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:105    .text.MSYS_EI4_IRQHandler:0000000000000000 MSYS_EI4_IRQHandler
+     /tmp/ccZhh6Cu.s:107    .text.MSYS_EI4_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:109    .text.MSYS_EI4_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:116    .text.MSYS_EI3_IRQHandler:0000000000000000 MSYS_EI3_IRQHandler
+     /tmp/ccZhh6Cu.s:118    .text.MSYS_EI3_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:120    .text.MSYS_EI3_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:127    .text.MSYS_EI2_IRQHandler:0000000000000000 MSYS_EI2_IRQHandler
+     /tmp/ccZhh6Cu.s:129    .text.MSYS_EI2_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:131    .text.MSYS_EI2_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:138    .text.MSYS_EI1_IRQHandler:0000000000000000 MSYS_EI1_IRQHandler
+     /tmp/ccZhh6Cu.s:140    .text.MSYS_EI1_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:142    .text.MSYS_EI1_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:149    .text.MSYS_EI0_IRQHandler:0000000000000000 MSYS_EI0_IRQHandler
+     /tmp/ccZhh6Cu.s:151    .text.MSYS_EI0_IRQHandler:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:153    .text.MSYS_EI0_IRQHandler:0000000000000004 .L0 
+     /tmp/ccZhh6Cu.s:33     .text.Software_IRQHandler:0000000000000014 .L0 
+     /tmp/ccZhh6Cu.s:46     .text.SysTick_Handler:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccZhh6Cu.s:353    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccZhh6Cu.s:576    .debug_str:000000000000002f .LASF27
+     /tmp/ccZhh6Cu.s:622    .debug_str:000000000000027d .LASF28
+     /tmp/ccZhh6Cu.s:584    .debug_str:0000000000000131 .LASF29
+     /tmp/ccZhh6Cu.s:554    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccZhh6Cu.s:562    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccZhh6Cu.s:598    .debug_str:00000000000001be .LASF0
+     /tmp/ccZhh6Cu.s:594    .debug_str:000000000000019f .LASF1
+     /tmp/ccZhh6Cu.s:572    .debug_str:000000000000001f .LASF2
+     /tmp/ccZhh6Cu.s:610    .debug_str:000000000000021a .LASF3
+     /tmp/ccZhh6Cu.s:590    .debug_str:000000000000018a .LASF4
+     /tmp/ccZhh6Cu.s:620    .debug_str:000000000000026b .LASF5
+     /tmp/ccZhh6Cu.s:588    .debug_str:000000000000017c .LASF6
+     /tmp/ccZhh6Cu.s:600    .debug_str:00000000000001ca .LASF7
+     /tmp/ccZhh6Cu.s:602    .debug_str:00000000000001e1 .LASF8
+     /tmp/ccZhh6Cu.s:612    .debug_str:000000000000022d .LASF9
+     /tmp/ccZhh6Cu.s:592    .debug_str:0000000000000193 .LASF10
+     /tmp/ccZhh6Cu.s:568    .debug_str:000000000000000e .LASF11
+     /tmp/ccZhh6Cu.s:566    .debug_str:0000000000000007 .LASF12
+     /tmp/ccZhh6Cu.s:564    .debug_str:0000000000000000 .LASF13
+     /tmp/ccZhh6Cu.s:606    .debug_str:00000000000001ff .LASF14
+     /tmp/ccZhh6Cu.s:626    .debug_str:00000000000002b2 .LASF15
+     /tmp/ccZhh6Cu.s:570    .debug_str:0000000000000016 .LASF16
+     /tmp/ccZhh6Cu.s:608    .debug_str:0000000000000206 .LASF17
+     /tmp/ccZhh6Cu.s:582    .debug_str:000000000000011d .LASF18
+     /tmp/ccZhh6Cu.s:616    .debug_str:0000000000000246 .LASF19
+     /tmp/ccZhh6Cu.s:578    .debug_str:00000000000000f5 .LASF20
+     /tmp/ccZhh6Cu.s:580    .debug_str:0000000000000109 .LASF21
+     /tmp/ccZhh6Cu.s:586    .debug_str:0000000000000168 .LASF22
+     /tmp/ccZhh6Cu.s:604    .debug_str:00000000000001ee .LASF23
+     /tmp/ccZhh6Cu.s:596    .debug_str:00000000000001ad .LASF24
+     /tmp/ccZhh6Cu.s:618    .debug_str:000000000000025a .LASF25
+     /tmp/ccZhh6Cu.s:628    .debug_str:00000000000002b9 .LASF26
+     /tmp/ccZhh6Cu.s:624    .debug_str:00000000000002a2 .LASF30
+     /tmp/ccZhh6Cu.s:614    .debug_str:0000000000000232 .LASF31
+     /tmp/ccZhh6Cu.s:14     .text.Software_IRQHandler:0000000000000000 .LFB0
+     /tmp/ccZhh6Cu.s:31     .text.Software_IRQHandler:0000000000000014 .LFE0
+     /tmp/ccZhh6Cu.s:29     .text.Software_IRQHandler:0000000000000014 .LVL0
+     /tmp/ccZhh6Cu.s:38     .text.SysTick_Handler:0000000000000000 .LFB1
+     /tmp/ccZhh6Cu.s:44     .text.SysTick_Handler:0000000000000004 .LFE1
+     /tmp/ccZhh6Cu.s:574    .debug_str:0000000000000029 .LASF32
+     /tmp/ccZhh6Cu.s:160    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+_exit

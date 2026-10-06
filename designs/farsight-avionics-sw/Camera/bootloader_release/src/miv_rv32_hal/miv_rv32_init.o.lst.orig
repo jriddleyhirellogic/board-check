@@ -1,0 +1,168 @@
+   1              		.file	"miv_rv32_init.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text._init,"ax",@progbits
+  10              		.align	2
+  11              		.globl	_init
+  13              	_init:
+  14              	.LFB0:
+  15              		.file 1 "../src/miv_rv32_hal/miv_rv32_init.c"
+   1:../src/miv_rv32_hal/miv_rv32_init.c **** /*******************************************************************************
+   2:../src/miv_rv32_hal/miv_rv32_init.c ****  * Copyright 2019-2022 Microchip FPGA Embedded Systems Solutions.
+   3:../src/miv_rv32_hal/miv_rv32_init.c ****  *
+   4:../src/miv_rv32_hal/miv_rv32_init.c ****  * SPDX-License-Identifier: MIT
+   5:../src/miv_rv32_hal/miv_rv32_init.c ****  *
+   6:../src/miv_rv32_hal/miv_rv32_init.c ****  * @file miv_rv32_init.c
+   7:../src/miv_rv32_hal/miv_rv32_init.c ****  * @author Microchip FPGA Embedded Systems Solutions
+   8:../src/miv_rv32_hal/miv_rv32_init.c ****  * @brief Mi-V soft processor memory section initializations and start-up code.
+   9:../src/miv_rv32_hal/miv_rv32_init.c ****  *
+  10:../src/miv_rv32_hal/miv_rv32_init.c ****  */
+  11:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  12:../src/miv_rv32_hal/miv_rv32_init.c **** #include <unistd.h>
+  13:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  14:../src/miv_rv32_hal/miv_rv32_init.c **** #ifdef __cplusplus
+  15:../src/miv_rv32_hal/miv_rv32_init.c **** extern "C" {
+  16:../src/miv_rv32_hal/miv_rv32_init.c **** #endif
+  17:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  18:../src/miv_rv32_hal/miv_rv32_init.c **** extern void main(void);
+  19:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  20:../src/miv_rv32_hal/miv_rv32_init.c **** void _init(void)
+  21:../src/miv_rv32_hal/miv_rv32_init.c **** {
+  16              		.loc 1 21 1
+  17              		.cfi_startproc
+  22:../src/miv_rv32_hal/miv_rv32_init.c ****     /* This function is a placeholder for the case where some more hardware
+  23:../src/miv_rv32_hal/miv_rv32_init.c ****      * specific initializations are required before jumping into the application
+  24:../src/miv_rv32_hal/miv_rv32_init.c ****      * code. You can implement it here. */
+  25:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  26:../src/miv_rv32_hal/miv_rv32_init.c ****     /* Jump to the application code after all initializations are completed */
+  27:../src/miv_rv32_hal/miv_rv32_init.c ****     main();
+  18              		.loc 1 27 5
+  19 0000 17030000 		tail	main
+  19      67000300 
+  20              	.LVL0:
+  21              		.cfi_endproc
+  22              	.LFE0:
+  24              		.section	.text._fini,"ax",@progbits
+  25              		.align	2
+  26              		.globl	_fini
+  28              	_fini:
+  29              	.LFB1:
+  28:../src/miv_rv32_hal/miv_rv32_init.c **** }
+  29:../src/miv_rv32_hal/miv_rv32_init.c **** 
+  30:../src/miv_rv32_hal/miv_rv32_init.c **** /* Function called after main() finishes */
+  31:../src/miv_rv32_hal/miv_rv32_init.c **** void
+  32:../src/miv_rv32_hal/miv_rv32_init.c **** _fini(void)
+  33:../src/miv_rv32_hal/miv_rv32_init.c **** {
+  30              		.loc 1 33 1
+  31              		.cfi_startproc
+  34:../src/miv_rv32_hal/miv_rv32_init.c **** }
+  32              		.loc 1 34 1
+  33 0000 67800000 		ret
+  34              		.cfi_endproc
+  35              	.LFE1:
+  37              		.text
+  38              	.Letext0:
+  39              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/unistd.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 miv_rv32_init.c
+<<<<<<< HEAD
+     /tmp/cc0v63C0.s:13     .text._init:0000000000000000 _init
+     /tmp/cc0v63C0.s:17     .text._init:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:18     .text._init:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:19     .text._init:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:21     .text._init:0000000000000008 .L0 
+     /tmp/cc0v63C0.s:28     .text._fini:0000000000000000 _fini
+     /tmp/cc0v63C0.s:31     .text._fini:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:32     .text._fini:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:33     .text._fini:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:34     .text._fini:0000000000000004 .L0 
+     /tmp/cc0v63C0.s:24     .text._init:0000000000000008 .L0 
+     /tmp/cc0v63C0.s:37     .text._fini:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc0v63C0.s:175    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc0v63C0.s:379    .debug_str:00000000000000d5 .LASF17
+     /tmp/cc0v63C0.s:369    .debug_str:0000000000000065 .LASF18
+     /tmp/cc0v63C0.s:371    .debug_str:0000000000000089 .LASF19
+     /tmp/cc0v63C0.s:343    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc0v63C0.s:351    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc0v63C0.s:395    .debug_str:00000000000001e2 .LASF0
+     /tmp/cc0v63C0.s:357    .debug_str:000000000000001b .LASF1
+     /tmp/cc0v63C0.s:391    .debug_str:00000000000001d0 .LASF2
+     /tmp/cc0v63C0.s:383    .debug_str:00000000000001a1 .LASF3
+     /tmp/cc0v63C0.s:375    .debug_str:00000000000000c5 .LASF4
+     /tmp/cc0v63C0.s:361    .debug_str:0000000000000030 .LASF5
+     /tmp/cc0v63C0.s:353    .debug_str:0000000000000000 .LASF6
+     /tmp/cc0v63C0.s:363    .debug_str:0000000000000042 .LASF7
+     /tmp/cc0v63C0.s:355    .debug_str:000000000000000e .LASF8
+     /tmp/cc0v63C0.s:365    .debug_str:0000000000000059 .LASF9
+     /tmp/cc0v63C0.s:387    .debug_str:00000000000001bd .LASF10
+     /tmp/cc0v63C0.s:393    .debug_str:00000000000001da .LASF11
+     /tmp/cc0v63C0.s:389    .debug_str:00000000000001c9 .LASF12
+     /tmp/cc0v63C0.s:359    .debug_str:0000000000000029 .LASF13
+     /tmp/cc0v63C0.s:367    .debug_str:000000000000005e .LASF14
+     /tmp/cc0v63C0.s:377    .debug_str:00000000000000ce .LASF15
+     /tmp/cc0v63C0.s:385    .debug_str:00000000000001b4 .LASF16
+     /tmp/cc0v63C0.s:397    .debug_str:00000000000001ee .LASF20
+     /tmp/cc0v63C0.s:29     .text._fini:0000000000000000 .LFB1
+     /tmp/cc0v63C0.s:35     .text._fini:0000000000000004 .LFE1
+     /tmp/cc0v63C0.s:381    .debug_str:000000000000019b .LASF21
+     /tmp/cc0v63C0.s:14     .text._init:0000000000000000 .LFB0
+     /tmp/cc0v63C0.s:22     .text._init:0000000000000008 .LFE0
+     /tmp/cc0v63C0.s:20     .text._init:0000000000000008 .LVL0
+     /tmp/cc0v63C0.s:373    .debug_str:00000000000000c0 .LASF22
+     /tmp/cc0v63C0.s:41     .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccNsEjuX.s:13     .text._init:0000000000000000 _init
+     /tmp/ccNsEjuX.s:17     .text._init:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:18     .text._init:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:19     .text._init:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:21     .text._init:0000000000000008 .L0 
+     /tmp/ccNsEjuX.s:28     .text._fini:0000000000000000 _fini
+     /tmp/ccNsEjuX.s:31     .text._fini:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:32     .text._fini:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:33     .text._fini:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:34     .text._fini:0000000000000004 .L0 
+     /tmp/ccNsEjuX.s:24     .text._init:0000000000000008 .L0 
+     /tmp/ccNsEjuX.s:37     .text._fini:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccNsEjuX.s:175    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccNsEjuX.s:379    .debug_str:00000000000000d5 .LASF17
+     /tmp/ccNsEjuX.s:369    .debug_str:0000000000000065 .LASF18
+     /tmp/ccNsEjuX.s:371    .debug_str:0000000000000089 .LASF19
+     /tmp/ccNsEjuX.s:343    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccNsEjuX.s:351    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccNsEjuX.s:395    .debug_str:00000000000001e2 .LASF0
+     /tmp/ccNsEjuX.s:357    .debug_str:000000000000001b .LASF1
+     /tmp/ccNsEjuX.s:391    .debug_str:00000000000001d0 .LASF2
+     /tmp/ccNsEjuX.s:383    .debug_str:00000000000001a1 .LASF3
+     /tmp/ccNsEjuX.s:375    .debug_str:00000000000000c5 .LASF4
+     /tmp/ccNsEjuX.s:361    .debug_str:0000000000000030 .LASF5
+     /tmp/ccNsEjuX.s:353    .debug_str:0000000000000000 .LASF6
+     /tmp/ccNsEjuX.s:363    .debug_str:0000000000000042 .LASF7
+     /tmp/ccNsEjuX.s:355    .debug_str:000000000000000e .LASF8
+     /tmp/ccNsEjuX.s:365    .debug_str:0000000000000059 .LASF9
+     /tmp/ccNsEjuX.s:387    .debug_str:00000000000001bd .LASF10
+     /tmp/ccNsEjuX.s:393    .debug_str:00000000000001da .LASF11
+     /tmp/ccNsEjuX.s:389    .debug_str:00000000000001c9 .LASF12
+     /tmp/ccNsEjuX.s:359    .debug_str:0000000000000029 .LASF13
+     /tmp/ccNsEjuX.s:367    .debug_str:000000000000005e .LASF14
+     /tmp/ccNsEjuX.s:377    .debug_str:00000000000000ce .LASF15
+     /tmp/ccNsEjuX.s:385    .debug_str:00000000000001b4 .LASF16
+     /tmp/ccNsEjuX.s:397    .debug_str:00000000000001ee .LASF20
+     /tmp/ccNsEjuX.s:29     .text._fini:0000000000000000 .LFB1
+     /tmp/ccNsEjuX.s:35     .text._fini:0000000000000004 .LFE1
+     /tmp/ccNsEjuX.s:381    .debug_str:000000000000019b .LASF21
+     /tmp/ccNsEjuX.s:14     .text._init:0000000000000000 .LFB0
+     /tmp/ccNsEjuX.s:22     .text._init:0000000000000008 .LFE0
+     /tmp/ccNsEjuX.s:20     .text._init:0000000000000008 .LVL0
+     /tmp/ccNsEjuX.s:373    .debug_str:00000000000000c0 .LASF22
+     /tmp/ccNsEjuX.s:41     .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+main

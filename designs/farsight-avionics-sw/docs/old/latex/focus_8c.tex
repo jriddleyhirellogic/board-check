@@ -1,0 +1,331 @@
+\doxysection{src/\+focus.c File Reference}
+\hypertarget{focus_8c}{}\label{focus_8c}\index{src/focus.c@{src/focus.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus\+\_\+states.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}queue.\+h"{}}\newline
+{\ttfamily \+\#include "{}timers.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+Include dependency graph for focus.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}{Focus\+\_\+\+Timer\+\_\+\+Expiration}} (\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} x\+Timer)
+\item 
+static void \doxymbox{\hyperlink{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}{Focus\+\_\+\+Fault\+\_\+\+Timer\+\_\+\+Expiration}} (\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} x\+Timer)
+\item 
+void \doxymbox{\hyperlink{focus_8c_addba0c0da21d334acceced044449639f}{v\+\_\+\+Focus\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{focus_8c_ad8e07a7a6068315f36c3131a88a164fd}{b\+\_\+\+Is\+\_\+\+Idle}} (void)
+\item 
+void \doxymbox{\hyperlink{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}{v\+\_\+\+Post\+\_\+\+Focus\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{focus_8c_a4547d93eb30111f428e9fcbcc43026bd}{v\+\_\+\+Post\+\_\+\+Focus\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{focus_8c_a685f1bbb2a062544b84507b06233249d}{v\+\_\+\+Start\+\_\+\+Focus\+\_\+\+Timer}} (\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} ticks)
+\item 
+void \doxymbox{\hyperlink{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}{v\+\_\+\+Stop\+\_\+\+Focus\+\_\+\+Timer}} (void)
+\item 
+void \doxymbox{\hyperlink{focus_8c_af422cc23645075d8ec371f62bc98437f}{v\+\_\+\+Start\+\_\+\+Focus\+\_\+\+Fault\+\_\+\+Timer}} (\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} ticks)
+\item 
+void \doxymbox{\hyperlink{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d}{v\+\_\+\+Stop\+\_\+\+Focus\+\_\+\+Fault\+\_\+\+Timer}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} \doxymbox{\hyperlink{focus_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}}
+\item 
+static \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\+\_\+\+Queue}}
+\item 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\+\_\+\+Timer}}
+\item 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} \doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{Focus\+\_\+\+Fault\+\_\+\+Timer}}
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{focus_8c_a65d1d914294159c84cd637820f54a21b}{u32\+\_\+\+Timeout\+\_\+\+Counter}}
+\item 
+static \doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\+\_\+context}}
+\item 
+static \doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \doxymbox{\hyperlink{focus_8c_a168c68ffd6aa22054911c8a036da169b}{PID\+\_\+\+Instance}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{focus_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{focus_8c_ad8e07a7a6068315f36c3131a88a164fd}\index{focus.c@{focus.c}!b\_Is\_Idle@{b\_Is\_Idle}}
+\index{b\_Is\_Idle@{b\_Is\_Idle}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{b\_Is\_Idle()}{b\_Is\_Idle()}}
+{\footnotesize\ttfamily \label{focus_8c_ad8e07a7a6068315f36c3131a88a164fd} 
+uint8\+\_\+t b\+\_\+\+Is\+\_\+\+Idle (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00103}{103}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_ad8e07a7a6068315f36c3131a88a164fd_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}\index{focus.c@{focus.c}!Focus\_Fault\_Timer\_Expiration@{Focus\_Fault\_Timer\_Expiration}}
+\index{Focus\_Fault\_Timer\_Expiration@{Focus\_Fault\_Timer\_Expiration}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{Focus\_Fault\_Timer\_Expiration()}{Focus\_Fault\_Timer\_Expiration()}}
+{\footnotesize\ttfamily \label{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212} 
+void Focus\+\_\+\+Fault\+\_\+\+Timer\+\_\+\+Expiration (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}}}]{x\+Timer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00151}{151}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}\index{focus.c@{focus.c}!Focus\_Timer\_Expiration@{Focus\_Timer\_Expiration}}
+\index{Focus\_Timer\_Expiration@{Focus\_Timer\_Expiration}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{Focus\_Timer\_Expiration()}{Focus\_Timer\_Expiration()}}
+{\footnotesize\ttfamily \label{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d} 
+void Focus\+\_\+\+Timer\+\_\+\+Expiration (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}}}]{x\+Timer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00131}{131}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_addba0c0da21d334acceced044449639f}\index{focus.c@{focus.c}!v\_Focus\_Task@{v\_Focus\_Task}}
+\index{v\_Focus\_Task@{v\_Focus\_Task}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Focus\_Task()}{v\_Focus\_Task()}}
+{\footnotesize\ttfamily \label{focus_8c_addba0c0da21d334acceced044449639f} 
+void v\+\_\+\+Focus\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00042}{42}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_addba0c0da21d334acceced044449639f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=314pt]{focus_8c_addba0c0da21d334acceced044449639f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}\index{focus.c@{focus.c}!v\_Post\_Focus\_Event@{v\_Post\_Focus\_Event}}
+\index{v\_Post\_Focus\_Event@{v\_Post\_Focus\_Event}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Focus\_Event()}{v\_Post\_Focus\_Event()}}
+{\footnotesize\ttfamily \label{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f} 
+void v\+\_\+\+Post\+\_\+\+Focus\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00108}{108}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a4547d93eb30111f428e9fcbcc43026bd}\index{focus.c@{focus.c}!v\_Post\_Focus\_Event\_ISR@{v\_Post\_Focus\_Event\_ISR}}
+\index{v\_Post\_Focus\_Event\_ISR@{v\_Post\_Focus\_Event\_ISR}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Focus\_Event\_ISR()}{v\_Post\_Focus\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{focus_8c_a4547d93eb30111f428e9fcbcc43026bd} 
+void v\+\_\+\+Post\+\_\+\+Focus\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00114}{114}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_af422cc23645075d8ec371f62bc98437f}\index{focus.c@{focus.c}!v\_Start\_Focus\_Fault\_Timer@{v\_Start\_Focus\_Fault\_Timer}}
+\index{v\_Start\_Focus\_Fault\_Timer@{v\_Start\_Focus\_Fault\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Start\_Focus\_Fault\_Timer()}{v\_Start\_Focus\_Fault\_Timer()}}
+{\footnotesize\ttfamily \label{focus_8c_af422cc23645075d8ec371f62bc98437f} 
+void v\+\_\+\+Start\+\_\+\+Focus\+\_\+\+Fault\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}}}]{ticks}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00140}{140}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_af422cc23645075d8ec371f62bc98437f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a685f1bbb2a062544b84507b06233249d}\index{focus.c@{focus.c}!v\_Start\_Focus\_Timer@{v\_Start\_Focus\_Timer}}
+\index{v\_Start\_Focus\_Timer@{v\_Start\_Focus\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Start\_Focus\_Timer()}{v\_Start\_Focus\_Timer()}}
+{\footnotesize\ttfamily \label{focus_8c_a685f1bbb2a062544b84507b06233249d} 
+void v\+\_\+\+Start\+\_\+\+Focus\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}}}]{ticks}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00120}{120}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a685f1bbb2a062544b84507b06233249d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d}\index{focus.c@{focus.c}!v\_Stop\_Focus\_Fault\_Timer@{v\_Stop\_Focus\_Fault\_Timer}}
+\index{v\_Stop\_Focus\_Fault\_Timer@{v\_Stop\_Focus\_Fault\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stop\_Focus\_Fault\_Timer()}{v\_Stop\_Focus\_Fault\_Timer()}}
+{\footnotesize\ttfamily \label{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d} 
+void v\+\_\+\+Stop\+\_\+\+Focus\+\_\+\+Fault\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00146}{146}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}\index{focus.c@{focus.c}!v\_Stop\_Focus\_Timer@{v\_Stop\_Focus\_Timer}}
+\index{v\_Stop\_Focus\_Timer@{v\_Stop\_Focus\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{v\_Stop\_Focus\_Timer()}{v\_Stop\_Focus\_Timer()}}
+{\footnotesize\ttfamily \label{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f} 
+void v\+\_\+\+Stop\+\_\+\+Focus\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00126}{126}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{focus_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}\index{focus.c@{focus.c}!Control\_Queue@{Control\_Queue}}
+\index{Control\_Queue@{Control\_Queue}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{Control\_Queue}{Control\_Queue}}
+{\footnotesize\ttfamily \label{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea} 
+\doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} Control\+\_\+\+Queue\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}\index{focus.c@{focus.c}!focus\_context@{focus\_context}}
+\index{focus\_context@{focus\_context}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{focus\_context}{focus\_context}}
+{\footnotesize\ttfamily \label{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c} 
+\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} focus\+\_\+context\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_a2f69ef85da965e6cd031f6074c21b271}\index{focus.c@{focus.c}!Focus\_Fault\_Timer@{Focus\_Fault\_Timer}}
+\index{Focus\_Fault\_Timer@{Focus\_Fault\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{Focus\_Fault\_Timer}{Focus\_Fault\_Timer}}
+{\footnotesize\ttfamily \label{focus_8c_a2f69ef85da965e6cd031f6074c21b271} 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} Focus\+\_\+\+Fault\+\_\+\+Timer}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}\index{focus.c@{focus.c}!Focus\_Timer@{Focus\_Timer}}
+\index{Focus\_Timer@{Focus\_Timer}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{Focus\_Timer}{Focus\_Timer}}
+{\footnotesize\ttfamily \label{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae} 
+\doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{Timer\+Handle\+\_\+t}} Focus\+\_\+\+Timer}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00032}{32}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_a41bd82d597649cdf060877fea69b23a2}\index{focus.c@{focus.c}!initialized@{initialized}}
+\index{initialized@{initialized}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{initialized}{initialized}}
+{\footnotesize\ttfamily \label{focus_8c_a41bd82d597649cdf060877fea69b23a2} 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} initialized\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{main_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{main_8c_source}{main.\+c}}.
+
+\Hypertarget{focus_8c_a168c68ffd6aa22054911c8a036da169b}\index{focus.c@{focus.c}!PID\_Instance@{PID\_Instance}}
+\index{PID\_Instance@{PID\_Instance}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{PID\_Instance}{PID\_Instance}}
+{\footnotesize\ttfamily \label{focus_8c_a168c68ffd6aa22054911c8a036da169b} 
+\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} PID\+\_\+\+Instance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00040}{40}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+\Hypertarget{focus_8c_a65d1d914294159c84cd637820f54a21b}\index{focus.c@{focus.c}!u32\_Timeout\_Counter@{u32\_Timeout\_Counter}}
+\index{u32\_Timeout\_Counter@{u32\_Timeout\_Counter}!focus.c@{focus.c}}
+\doxysubsubsection{\texorpdfstring{u32\_Timeout\_Counter}{u32\_Timeout\_Counter}}
+{\footnotesize\ttfamily \label{focus_8c_a65d1d914294159c84cd637820f54a21b} 
+uint32\+\_\+t u32\+\_\+\+Timeout\+\_\+\+Counter\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00035}{35}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+

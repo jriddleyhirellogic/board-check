@@ -1,0 +1,23 @@
+\doxysection{status.\+c}
+\hypertarget{status_8c_source}{}\label{status_8c_source}\index{src/status.c@{src/status.c}}
+\doxymbox{\hyperlink{status_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00002}00002\ \textcolor{comment}{\ *\ status.c}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 20,\ 2025}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{status_8h}{status.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}lvdt.h"{}}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}hal\_stepper.h"{}}}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00012}\doxymbox{\hyperlink{status_8c_a5171334d797e3bb0d0bb59cfce45427f}{00012}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{status_8c_a5171334d797e3bb0d0bb59cfce45427f}{v\_Get\_Status}}(\ \doxymbox{\hyperlink{structStatus__t}{Status\_t}}\ *p\_Status\ )}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00014}00014\ \ \ \ \ p\_Status-\/>\doxymbox{\hyperlink{structStatus__t_aae9f9267f55c235645d021821560ba50}{i32\_Velocity}}\ =\ \doxymbox{\hyperlink{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634}{i32\_Get\_Stepper\_Out}}();}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00015}00015\ \ \ \ \ p\_Status-\/>\doxymbox{\hyperlink{structStatus__t_aa96dbcbbb1ae85c2102c93810ad08d8f}{i32\_Position\_Microns}}\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_acc015d5676fd3d2d483edfb3f356c434}{i32\_Get\_Position}}();}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00016}00016\ \ \ \ \ p\_Status-\/>\doxymbox{\hyperlink{structStatus__t_af2b7d74cfecf82d224a8af15815e42e2}{u8\_LVDT\_Gain}}\ =\ (uint8\_t)\doxymbox{\hyperlink{hal__lvdt_8c_a2a97224cb3f6ae5877a98dfc4e531034}{e\_Get\_LVDT\_Gain}}();}
+\DoxyCodeLine{\Hypertarget{status_8c_source_l00017}00017\ \}}
+
+\end{DoxyCode}

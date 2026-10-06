@@ -1,0 +1,88 @@
+\doxysection{reg\+\_\+address.\+h}
+\hypertarget{reg__address_8h_source}{}\label{reg__address_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/reg\_address.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/reg\_address.h}}
+\doxymbox{\hyperlink{reg__address_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00002}00002\ \textcolor{comment}{\ *\ reg\_address.h}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Dec\ 4,\ 2025}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ REG\_ADDRESS\_H\_}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ REG\_ADDRESS\_H\_}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00011}00011\ \textcolor{comment}{//\ CAMERA\ STATUS\ AND\ CONTROL}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00012}\doxymbox{\hyperlink{reg__address_8h_aa8c8fd6b437df224129113610335a8d2}{00012}}\ \textcolor{preprocessor}{\#define\ SENSOR\_STAT\_SYS\_REG\ \ \ \ \ \ \ \ \ \ 0x0}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00013}\doxymbox{\hyperlink{reg__address_8h_a2d2841abbc03b42ea601914c34c610a3}{00013}}\ \textcolor{preprocessor}{\#define\ SENSOR\_FRM\_MOD\_SYS\_REG\ \ \ \ \ \ \ 0x1}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00014}\doxymbox{\hyperlink{reg__address_8h_ad4214d4f164614ab202ea18109b954a2}{00014}}\ \textcolor{preprocessor}{\#define\ SENSOR\_BIT\_DEPTH\_SYS\_REG\ \ \ \ \ 0x2}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00015}\doxymbox{\hyperlink{reg__address_8h_a818ecbefe44887dcd675c02ae3930570}{00015}}\ \textcolor{preprocessor}{\#define\ SENSOR\_GAIN\_SYS\_REG\ \ \ \ \ \ \ \ \ \ 0x3}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00016}\doxymbox{\hyperlink{reg__address_8h_ae7c4bdbdefebe3e16ebdd7d558f782e6}{00016}}\ \textcolor{preprocessor}{\#define\ SENSOR\_BLO\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ 0x5}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00017}\doxymbox{\hyperlink{reg__address_8h_accbe3018fbc826691c53c07d7d8851b6}{00017}}\ \textcolor{preprocessor}{\#define\ SENSOR\_EXPO\_USEC\_SYS\_REG\ \ \ \ \ 0x7}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00018}\doxymbox{\hyperlink{reg__address_8h_a5721999641bc30d2c84e4d0a40d5cca7}{00018}}\ \textcolor{preprocessor}{\#define\ SENSOR\_TEMP\_KEL\_SYS\_REG\ \ \ \ \ \ 0xB}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00019}\doxymbox{\hyperlink{reg__address_8h_a0d32bcf369953e4331d61486942c8f66}{00019}}\ \textcolor{preprocessor}{\#define\ SENSOR\_OVER\_TEMP\_KEL\_SYS\_REG\ 0xD}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00021}00021\ \textcolor{comment}{//SYSTEM}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00022}\doxymbox{\hyperlink{reg__address_8h_ad3938d9ec24faee4aa0b6d330615bc6b}{00022}}\ \textcolor{preprocessor}{\#define\ MODE\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0xF}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00023}\doxymbox{\hyperlink{reg__address_8h_a49617033dfb046ce4e98b94dc65722ef}{00023}}\ \textcolor{preprocessor}{\#define\ LAST\_ERROR\_SYS\_REG\ \ \ \ \ \ \ \ \ 0x10}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00024}\doxymbox{\hyperlink{reg__address_8h_a80802752273df9c494690fd40efa184b}{00024}}\ \textcolor{preprocessor}{\#define\ RST\_REASON\_SYS\_REG\ \ \ \ \ \ \ \ \ 0x11}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00025}\doxymbox{\hyperlink{reg__address_8h_ab2a20782bae0dd8e17d8660e7287deb1}{00025}}\ \textcolor{preprocessor}{\#define\ FPGA\_TEMP\_KEL\_SYS\_REG\ \ \ \ \ \ 0x12}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00026}\doxymbox{\hyperlink{reg__address_8h_a9f8b7a27a16cee130bfae6a606a52670}{00026}}\ \textcolor{preprocessor}{\#define\ FPGA\_VOLTAGE\_SYS\_REG\ \ \ \ \ \ \ 0x14}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00027}\doxymbox{\hyperlink{reg__address_8h_af8ca2acb974da835b03ce1073501885e}{00027}}\ \textcolor{preprocessor}{\#define\ DDR4\_16\_PWR\_STATUS\ \ \ \ \ \ \ \ \ 0x16}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00028}\doxymbox{\hyperlink{reg__address_8h_aca1322fa2b1043b2d452fcb158d5c83d}{00028}}\ \textcolor{preprocessor}{\#define\ DDR4\_8\_PWR\_STATUS\ \ \ \ \ \ \ \ \ \ 0x17}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00029}\doxymbox{\hyperlink{reg__address_8h_af7aa6622de79ccd40ab76a14b4725acf}{00029}}\ \textcolor{preprocessor}{\#define\ LVDS\_PWR\_STATUS\ \ \ \ \ \ \ \ \ \ \ \ 0x18}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00030}\doxymbox{\hyperlink{reg__address_8h_a99b384cd6dc396af2b290efb8208781a}{00030}}\ \textcolor{preprocessor}{\#define\ ETH0\_PWR\_STATUS\ \ \ \ \ \ \ \ \ \ \ \ 0x19}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00031}\doxymbox{\hyperlink{reg__address_8h_a59a9cf55b82d12816bff877eb83a1c32}{00031}}\ \textcolor{preprocessor}{\#define\ ETH1\_PWR\_STATUS\ \ \ \ \ \ \ \ \ \ \ \ 0x1A}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00032}\doxymbox{\hyperlink{reg__address_8h_afbcbade14d181bd8dce283452ada3c53}{00032}}\ \textcolor{preprocessor}{\#define\ FOCUS\_MECH\_PWR\_STATUS\ \ \ \ \ \ 0x1B}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00033}\doxymbox{\hyperlink{reg__address_8h_a02f2307b83cfc18e9cd17edc7ef33f45}{00033}}\ \textcolor{preprocessor}{\#define\ SENSOR\_PWR\_STATUS\ \ \ \ \ \ \ \ \ \ 0x1C}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00034}\doxymbox{\hyperlink{reg__address_8h_a2d8b506e80246230bc1eb28275df634a}{00034}}\ \textcolor{preprocessor}{\#define\ ERROR\_COUNT\_SYS\_REG\ \ \ \ \ \ \ \ 0x1D}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00035}\doxymbox{\hyperlink{reg__address_8h_a06f9ff8eb33de6e480e64189e70aa540}{00035}}\ \textcolor{preprocessor}{\#define\ BOOT\_COUNT\_SYS\_REG\ \ \ \ \ \ \ \ \ 0x21}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00036}\doxymbox{\hyperlink{reg__address_8h_a6c665ed60b1f5a52711aea62e85ae42f}{00036}}\ \textcolor{preprocessor}{\#define\ UPTIME\_MSEC\_SYS\_REG\ \ \ \ \ \ \ \ 0x25}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00037}\doxymbox{\hyperlink{reg__address_8h_aaef0750b990e15afe48fc9fce2a49d2b}{00037}}\ \textcolor{preprocessor}{\#define\ TIMESTAMP\_UNIX\_SYS\_REG\ \ \ \ \ 0x2D}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00038}\doxymbox{\hyperlink{reg__address_8h_a069f40740d9202860d1fa14243e97d42}{00038}}\ \textcolor{preprocessor}{\#define\ WDOG\_TIMEOUT\_MSEC\_SYS\_REG\ \ 0x35}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00039}\doxymbox{\hyperlink{reg__address_8h_a1ffddcaf6f2917b743c98d1ae481fbad}{00039}}\ \textcolor{preprocessor}{\#define\ BUFF\_WRITE\_POLICY\_SYS\_REG\ \ 0x39}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00040}\doxymbox{\hyperlink{reg__address_8h_a4f03fb08ec963095ab8b5ad91133790b}{00040}}\ \textcolor{preprocessor}{\#define\ BUFF\_WRITE\_PTR\_SYS\_REG\ \ \ \ \ 0x41}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00041}\doxymbox{\hyperlink{reg__address_8h_a21902ef34fe28ea6b0d973f6f7700fc6}{00041}}\ \textcolor{preprocessor}{\#define\ BUFF\_BYTES\_AVAIL\_SYS\_REG\ \ \ 0x49}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00042}\doxymbox{\hyperlink{reg__address_8h_a79583af8f52e861a38977d65d5b075f3}{00042}}\ \textcolor{preprocessor}{\#define\ FRAME\_BYTE\_PACKING\_EN\_REG\ \ 0x51}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00044}00044\ \textcolor{comment}{//SYSTEM\ IMAGING}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00045}\doxymbox{\hyperlink{reg__address_8h_a82f63d8f7d05addff6c0c442be5a02fb}{00045}}\ \textcolor{preprocessor}{\#define\ TRIG\_MODE\_SYS\_REG\ \ \ \ \ \ \ \ \ \ 0x52}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00046}\doxymbox{\hyperlink{reg__address_8h_a3473b9c7f0809a6ee2baf70a7b5cbeae}{00046}}\ \textcolor{preprocessor}{\#define\ IMG\_PER\_TRIGGER\_SYS\_REG\ \ \ \ 0x53}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00047}\doxymbox{\hyperlink{reg__address_8h_a4c2e4c98df5bc0d6b2244def554e5667}{00047}}\ \textcolor{preprocessor}{\#define\ FRAMES\_PER\_SEC\_SYS\_REG\ \ \ \ \ 0x55}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00048}\doxymbox{\hyperlink{reg__address_8h_a50b7918162ad6c69c797d5f8a98781b7}{00048}}\ \textcolor{preprocessor}{\#define\ CAP\_START\_DLY\_USEC\_SYS\_REG\ 0x56}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00049}\doxymbox{\hyperlink{reg__address_8h_a0ffea5d93dd6d73cb4d30d48ea2a667e}{00049}}\ \textcolor{preprocessor}{\#define\ FRAME\_COUNT\_SYS\_REG\ \ \ \ \ \ \ \ 0x5A}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00050}\doxymbox{\hyperlink{reg__address_8h_a56bedb6c778a332ed50452cd90cfe8d4}{00050}}\ \textcolor{preprocessor}{\#define\ FOCUS\_REQ\_DIST\_M\_SYS\_REG\ \ \ 0x5E}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00051}\doxymbox{\hyperlink{reg__address_8h_a158cb07b77c5ccb45a75071e97327c4b}{00051}}\ \textcolor{preprocessor}{\#define\ FOCUS\_COMP\_DIST\_M\_SYS\_REG\ \ 0x62}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00052}\doxymbox{\hyperlink{reg__address_8h_a082beb55fabeb4f6503a27b21e8ee35c}{00052}}\ \textcolor{preprocessor}{\#define\ FOCUS\_LVDT\_POS\_NM\_REG\ \ \ \ \ \ 0x66}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00054}00054\ \textcolor{comment}{//SYSTEM\ COMMUNICATION}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00055}\doxymbox{\hyperlink{reg__address_8h_ab33b9b09a006da2aabe6f98159423ab4}{00055}}\ \textcolor{preprocessor}{\#define\ GPO\_CONF\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ \ 0x6A}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00056}\doxymbox{\hyperlink{reg__address_8h_a856e2979badb028c27993f10ba77054e}{00056}}\ \textcolor{preprocessor}{\#define\ GPI\_CONF\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ \ 0x6B}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00057}\doxymbox{\hyperlink{reg__address_8h_aa24a416577b7fa9b48eeef66fb6bb884}{00057}}\ \textcolor{preprocessor}{\#define\ INTR\_PIN\_CONF\_SYS\_REG\ \ \ \ \ \ \ 0x6C}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00058}\doxymbox{\hyperlink{reg__address_8h_ac63ca4449d0e7c489387d8e45e398376}{00058}}\ \textcolor{preprocessor}{\#define\ TRIG\_PIN\_CONF\_SYS\_REG\ \ \ \ \ \ \ 0x6D}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00059}\doxymbox{\hyperlink{reg__address_8h_a2b91bf5e6526b78049e0481b90f18cf9}{00059}}\ \textcolor{preprocessor}{\#define\ TRIG\_DELAY\_USEC\_SYS\_REG\ \ \ \ \ 0x6E}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00060}\doxymbox{\hyperlink{reg__address_8h_a8af7dc66fb9446ce8edc140c8e043d75}{00060}}\ \textcolor{preprocessor}{\#define\ TRIG\_TIMEOUT\_MSEC\_SYS\_REG\ \ \ 0x70}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00061}\doxymbox{\hyperlink{reg__address_8h_aa84e281fd316c15651620a384317aa82}{00061}}\ \textcolor{preprocessor}{\#define\ TMTC\_TIMEOUT\_MSEC\_SYS\_REG\ \ \ 0x74}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00062}\doxymbox{\hyperlink{reg__address_8h_abda69eadfb6299c217f762b91cc10075}{00062}}\ \textcolor{preprocessor}{\#define\ SER\_BAUD\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ \ 0x78}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00063}\doxymbox{\hyperlink{reg__address_8h_a8fc173cf44feda4976b13337e3396b30}{00063}}\ \textcolor{preprocessor}{\#define\ ETH0\_MAC\_ADDRESS\_SYS\_REG\ \ \ \ 0x75}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00064}\doxymbox{\hyperlink{reg__address_8h_a8b0adce2fcabb4c36353695dcd7af329}{00064}}\ \textcolor{preprocessor}{\#define\ ETH1\_MAC\_ADDRESS\_SYS\_REG\ \ \ \ 0x7B}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00065}\doxymbox{\hyperlink{reg__address_8h_a94aeb20268f4baa84dcbc74855ff275e}{00065}}\ \textcolor{preprocessor}{\#define\ ETH0\_IP\_ADDRESS\_SYS\_REG\ \ \ \ \ 0x81}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00066}\doxymbox{\hyperlink{reg__address_8h_a4b583d12ec2afd383d8d0b1b4085bc51}{00066}}\ \textcolor{preprocessor}{\#define\ ETH1\_IP\_ADDRESS\_SYS\_REG\ \ \ \ \ 0x85}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00067}\doxymbox{\hyperlink{reg__address_8h_a2e3ad1940f6c1bdd4b800b0065fa11cd}{00067}}\ \textcolor{preprocessor}{\#define\ GATEWAY\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ \ \ 0x89}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00068}\doxymbox{\hyperlink{reg__address_8h_ad5969ab5bfa777144d9fd62ffd85367d}{00068}}\ \textcolor{preprocessor}{\#define\ SUBNET\_MASK\_SYS\_REG\ \ \ \ \ \ \ \ \ 0x8D}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00069}\doxymbox{\hyperlink{reg__address_8h_acfc4888a2be07f3e66a64e9c7fa1f065}{00069}}\ \textcolor{preprocessor}{\#define\ ETH0\_PORT\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ 0x91}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00070}\doxymbox{\hyperlink{reg__address_8h_ab5cdb0e62b1d917e18df745ec4442df5}{00070}}\ \textcolor{preprocessor}{\#define\ ETH1\_PORT\_SYS\_REG\ \ \ \ \ \ \ \ \ \ \ 0x93}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00072}00072\ \textcolor{comment}{//SYSTEM\ VERSION}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00073}\doxymbox{\hyperlink{reg__address_8h_aacd504dd499f1fe0543373943a025df5}{00073}}\ \textcolor{preprocessor}{\#define\ FAV\_DEVICE\_ID\_SYS\_REG\ 0x95}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00074}\doxymbox{\hyperlink{reg__address_8h_a2fb2fe536492782cf2f9997d4a6ad207}{00074}}\ \textcolor{preprocessor}{\#define\ SENSOR\_ID\_SYS\_REG\ \ \ \ \ 0x97}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00075}\doxymbox{\hyperlink{reg__address_8h_ae3ea60c60086393d369c4b9c2a3bbd8c}{00075}}\ \textcolor{preprocessor}{\#define\ TMTC\_VERS\_SYS\_REG\ \ \ \ \ 0x99}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00076}\doxymbox{\hyperlink{reg__address_8h_aeaacdebb3891b6674014ad85341ff194}{00076}}\ \textcolor{preprocessor}{\#define\ SW\_VERS\_SYS\_REG\ \ \ \ \ \ \ 0x9B}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00077}\doxymbox{\hyperlink{reg__address_8h_a7dc139f954fa62a79d7f0ce828694a4a}{00077}}\ \textcolor{preprocessor}{\#define\ PF\_FW\_VERS\_SYS\_REG\ \ \ \ 0x9D}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00078}\doxymbox{\hyperlink{reg__address_8h_a31b66c57cf087be49461401e369b7b46}{00078}}\ \textcolor{preprocessor}{\#define\ P3\_FW\_VERS\_SYS\_REG\ \ \ \ 0x9F}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00079}\doxymbox{\hyperlink{reg__address_8h_a7ba6ef254e5b6f2cd01818a3186c77fb}{00079}}\ \textcolor{preprocessor}{\#define\ FW\_MD5\_SYS\_REG\ \ \ \ \ \ \ \ 0xA0}}
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{reg__address_8h_source_l00082}00082\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ REG\_ADDRESS\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

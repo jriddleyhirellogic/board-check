@@ -1,0 +1,385 @@
+\doxysection{src/\+hal/\+hal.h File Reference}
+\hypertarget{hal_8h}{}\label{hal_8h}\index{src/hal/hal.h@{src/hal/hal.h}}
+
+
+Hardware abstraction layer functions for peripheral register accesses.  
+
+
+{\ttfamily \+\#include "{}cpu\+\_\+types.\+h"{}}\newline
+{\ttfamily \+\#include "{}hw\+\_\+reg\+\_\+access.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+assert.\+h"{}}\newline
+Include dependency graph for hal.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\+\_\+\+OFFSET}}(FIELD\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\+\_\+\+SHIFT}}(FIELD\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\+\_\+\+MASK}}(FIELD\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\+\_\+set\+\_\+32bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\+\_\+get\+\_\+32bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_aa6c28ab1d317e7f59b0a8d33141ffcdd}{HAL\+\_\+set\+\_\+32bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_aeb00702b2ff71ad62aa9a6e83ccc9a17}{HAL\+\_\+get\+\_\+32bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\+\_\+set\+\_\+16bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\+\_\+get\+\_\+16bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_add246d8af0303c0ab4cd6bbb5be2ef41}{HAL\+\_\+set\+\_\+16bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a67f9c2891aa74a6b7ec5b623acb97b82}{HAL\+\_\+get\+\_\+16bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\+\_\+set\+\_\+8bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\+\_\+get\+\_\+8bit\+\_\+reg}}(BASE\+\_\+\+ADDR,  REG\+\_\+\+NAME)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_a90ecaaf7be5257b546f698cd7e48b075}{HAL\+\_\+set\+\_\+8bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME,  VALUE)
+\item 
+\+\#define \doxymbox{\hyperlink{hal_8h_af46ba807da37be5de5b7dccc81dc9e5f}{HAL\+\_\+get\+\_\+8bit\+\_\+reg\+\_\+field}}(BASE\+\_\+\+ADDR,  FIELD\+\_\+\+NAME)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{hal_8h_a8308aabd47cb412adb3daa0705aac3c0}{HAL\+\_\+enable\+\_\+interrupts}} (void)
+\item 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\+\_\+t}} \doxymbox{\hyperlink{hal_8h_afa288018c44ac7bafe9312b821087ed1}{HAL\+\_\+disable\+\_\+interrupts}} (void)
+\item 
+void \doxymbox{\hyperlink{hal_8h_a75310e76bf81a6195ca657bb89fb39b8}{HAL\+\_\+restore\+\_\+interrupts}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\+\_\+t}} saved\+\_\+psr)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Hardware abstraction layer functions for peripheral register accesses. 
+
+Copyright 2019-\/2022 Microchip FPGA Embedded Systems Solutions.
+
+SPDX-\/\+License-\/\+Identifier:\+ MIT
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "{}\+Software"{}), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/\+or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\+
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "{}\+AS IS"{}, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+\begin{DoxyAuthor}{Author}
+Microchip FPGA Embedded Systems Solutions  
+\end{DoxyAuthor}
+
+
+Definition in file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+
+
+\label{doc-define-members}
+\Hypertarget{hal_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{hal_8h_a3050d68aea75b1073725562f075e551f}\index{hal.h@{hal.h}!FIELD\_MASK@{FIELD\_MASK}}
+\index{FIELD\_MASK@{FIELD\_MASK}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{FIELD\_MASK}{FIELD\_MASK}}
+{\footnotesize\ttfamily \label{hal_8h_a3050d68aea75b1073725562f075e551f} 
+\+\#define FIELD\+\_\+\+MASK(\begin{DoxyParamCaption}\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(FIELD\_NAME\#\#\_MASK)}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00062}{62}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}\index{hal.h@{hal.h}!FIELD\_OFFSET@{FIELD\_OFFSET}}
+\index{FIELD\_OFFSET@{FIELD\_OFFSET}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{FIELD\_OFFSET}{FIELD\_OFFSET}}
+{\footnotesize\ttfamily \label{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d} 
+\+\#define FIELD\+\_\+\+OFFSET(\begin{DoxyParamCaption}\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(FIELD\_NAME\#\#\_OFFSET)}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00060}{60}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}\index{hal.h@{hal.h}!FIELD\_SHIFT@{FIELD\_SHIFT}}
+\index{FIELD\_SHIFT@{FIELD\_SHIFT}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{FIELD\_SHIFT}{FIELD\_SHIFT}}
+{\footnotesize\ttfamily \label{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de} 
+\+\#define FIELD\+\_\+\+SHIFT(\begin{DoxyParamCaption}\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(FIELD\_NAME\#\#\_SHIFT)}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00061}{61}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}\index{hal.h@{hal.h}!HAL\_get\_16bit\_reg@{HAL\_get\_16bit\_reg}}
+\index{HAL\_get\_16bit\_reg@{HAL\_get\_16bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_16bit\_reg}{HAL\_get\_16bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_a14c1ee42b8a003b2509a45b5c39be711} 
+\+\#define HAL\+\_\+get\+\_\+16bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a2723921157643f105b88cc1a2efe096c}{HW\_get\_16bit\_reg}}(\ (BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\+\_\+get\+\_\+16bit\+\_\+reg()} is used to read the value of a 16 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to read. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint16\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00144}{144}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a67f9c2891aa74a6b7ec5b623acb97b82}\index{hal.h@{hal.h}!HAL\_get\_16bit\_reg\_field@{HAL\_get\_16bit\_reg\_field}}
+\index{HAL\_get\_16bit\_reg\_field@{HAL\_get\_16bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_16bit\_reg\_field}{HAL\_get\_16bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_a67f9c2891aa74a6b7ec5b623acb97b82} 
+\+\#define HAL\+\_\+get\+\_\+16bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a6629a67de9a87f9b43412295b4ae8d07}{HW\_get\_16bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME)))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_a67f9c2891aa74a6b7ec5b623acb97b82}{HAL\+\_\+get\+\_\+16bit\+\_\+reg\+\_\+field()} is used to read a register field from within a 8 bit wide peripheral register. The field can be one or more bits.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. FIELD\+\_\+\+NAME:\+ A string identifying the register field to write. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint16\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00174}{174}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}\index{hal.h@{hal.h}!HAL\_get\_32bit\_reg@{HAL\_get\_32bit\_reg}}
+\index{HAL\_get\_32bit\_reg@{HAL\_get\_32bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_32bit\_reg}{HAL\_get\_32bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1} 
+\+\#define HAL\+\_\+get\+\_\+32bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_aa7bda6094c1240b40cd9dc35200e3e98}{HW\_get\_32bit\_reg}}(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET))\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\+\_\+get\+\_\+32bit\+\_\+reg()} is used to read the value of a 32 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to read. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint32\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00086}{86}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_aeb00702b2ff71ad62aa9a6e83ccc9a17}\index{hal.h@{hal.h}!HAL\_get\_32bit\_reg\_field@{HAL\_get\_32bit\_reg\_field}}
+\index{HAL\_get\_32bit\_reg\_field@{HAL\_get\_32bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_32bit\_reg\_field}{HAL\_get\_32bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_aeb00702b2ff71ad62aa9a6e83ccc9a17} 
+\+\#define HAL\+\_\+get\+\_\+32bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a475517dad2bc663cb314bfac8792d91a}{HW\_get\_32bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME)))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_aeb00702b2ff71ad62aa9a6e83ccc9a17}{HAL\+\_\+get\+\_\+32bit\+\_\+reg\+\_\+field()} is used to read a register field from within a 32 bit wide peripheral register. The field can be one or more bits.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. FIELD\+\_\+\+NAME:\+ A string identifying the register field to write. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint32\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00116}{116}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_affa58621ab400955a106ac95d68a0e32}\index{hal.h@{hal.h}!HAL\_get\_8bit\_reg@{HAL\_get\_8bit\_reg}}
+\index{HAL\_get\_8bit\_reg@{HAL\_get\_8bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_8bit\_reg}{HAL\_get\_8bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_affa58621ab400955a106ac95d68a0e32} 
+\+\#define HAL\+\_\+get\+\_\+8bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ (BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\+\_\+get\+\_\+8bit\+\_\+reg()} is used to read the value of a 8 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to read. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint8\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00202}{202}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_af46ba807da37be5de5b7dccc81dc9e5f}\index{hal.h@{hal.h}!HAL\_get\_8bit\_reg\_field@{HAL\_get\_8bit\_reg\_field}}
+\index{HAL\_get\_8bit\_reg\_field@{HAL\_get\_8bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_get\_8bit\_reg\_field}{HAL\_get\_8bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_af46ba807da37be5de5b7dccc81dc9e5f} 
+\+\#define HAL\+\_\+get\+\_\+8bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a3b1b6f4c3d5af8f8c31675f0e0846d4f}{HW\_get\_8bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME)))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_af46ba807da37be5de5b7dccc81dc9e5f}{HAL\+\_\+get\+\_\+8bit\+\_\+reg\+\_\+field()} is used to read a register field from within a 8 bit wide peripheral register. The field can be one or more bits.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. FIELD\+\_\+\+NAME:\+ A string identifying the register field to write. These strings are specified in a header file associated with the peripheral. RETURN:\+ This function-\/like macro returns a uint8\+\_\+t value. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00224}{224}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}\index{hal.h@{hal.h}!HAL\_set\_16bit\_reg@{HAL\_set\_16bit\_reg}}
+\index{HAL\_set\_16bit\_reg@{HAL\_set\_16bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_16bit\_reg}{HAL\_set\_16bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_aa6284289d8ac485378afd4d59d00bfc4} 
+\+\#define HAL\+\_\+set\+\_\+16bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a558cbaaa80633de78f892beaf86eaeff}{HW\_set\_16bit\_reg}}(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\+\_\+set\+\_\+16bit\+\_\+reg()} allows writing a 16 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to write. These strings are specified in a header file associated with the peripheral. VALUE:\+ A variable of type uint\+\_\+fast16\+\_\+t containing the value to write. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00131}{131}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_add246d8af0303c0ab4cd6bbb5be2ef41}\index{hal.h@{hal.h}!HAL\_set\_16bit\_reg\_field@{HAL\_set\_16bit\_reg\_field}}
+\index{HAL\_set\_16bit\_reg\_field@{HAL\_set\_16bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_16bit\_reg\_field}{HAL\_set\_16bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_add246d8af0303c0ab4cd6bbb5be2ef41} 
+\+\#define HAL\+\_\+set\+\_\+16bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a6529c2f761f76afe7f3a7522cecc866e}{HW\_set\_16bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (VALUE)))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_add246d8af0303c0ab4cd6bbb5be2ef41}{HAL\+\_\+set\+\_\+16bit\+\_\+reg\+\_\+field()} is used to write a field within a 16 bits wide register. The field written can be one or more bits.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. FIELD\+\_\+\+NAME:\+ A string identifying the register field to write. These strings are specified in a header file associated with the peripheral. VALUE:\+ A variable of type uint16\+\_\+t containing the field value to write. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00157}{157}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_ac0a3d681af67480f2cef068293a60f2b}\index{hal.h@{hal.h}!HAL\_set\_32bit\_reg@{HAL\_set\_32bit\_reg}}
+\index{HAL\_set\_32bit\_reg@{HAL\_set\_32bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_32bit\_reg}{HAL\_set\_32bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_ac0a3d681af67480f2cef068293a60f2b} 
+\+\#define HAL\+\_\+set\+\_\+32bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_ad663ca85f69c6059f03d81bf0d5bf21c}{HW\_set\_32bit\_reg}}(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\+\_\+set\+\_\+32bit\+\_\+reg()} allows writing a 32 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to write. These strings are specified in a header file associated with the peripheral. VALUE:\+ A variable of type uint32\+\_\+t containing the value to write. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00073}{73}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_aa6c28ab1d317e7f59b0a8d33141ffcdd}\index{hal.h@{hal.h}!HAL\_set\_32bit\_reg\_field@{HAL\_set\_32bit\_reg\_field}}
+\index{HAL\_set\_32bit\_reg\_field@{HAL\_set\_32bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_32bit\_reg\_field}{HAL\_set\_32bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_aa6c28ab1d317e7f59b0a8d33141ffcdd} 
+\+\#define HAL\+\_\+set\+\_\+32bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_ab5e5e14921fd95449666fdf90e7f899a}{HW\_set\_32bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (VALUE)))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_aa6c28ab1d317e7f59b0a8d33141ffcdd}{HAL\+\_\+set\+\_\+32bit\+\_\+reg\+\_\+field()} is used to write a field within a 32 bits wide register. The field written can be one or more bits.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. FIELD\+\_\+\+NAME:\+ A string identifying the register field to write. These strings are specified in a header file associated with the peripheral. VALUE:\+ A variable of type uint32\+\_\+t containing the field value to write. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00099}{99}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}\index{hal.h@{hal.h}!HAL\_set\_8bit\_reg@{HAL\_set\_8bit\_reg}}
+\index{HAL\_set\_8bit\_reg@{HAL\_set\_8bit\_reg}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_8bit\_reg}{HAL\_set\_8bit\_reg}}
+{\footnotesize\ttfamily \label{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc} 
+\+\#define HAL\+\_\+set\+\_\+8bit\+\_\+reg(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{REG\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ ((BASE\_ADDR)\ +\ (REG\_NAME\#\#\_REG\_OFFSET)),\ (VALUE)\ ))}
+
+\end{DoxyCode}
+The macro \doxylink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\+\_\+set\+\_\+8bit\+\_\+reg()} allows writing a 8 bits wide register.
+
+BASE\+\_\+\+ADDR:\+ A variable of type \doxylink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t} specifying the base address of the peripheral containing the register. REG\+\_\+\+NAME:\+ A string identifying the register to write. These strings are specified in a header file associated with the peripheral. VALUE:\+ A variable of type uint\+\_\+fast8\+\_\+t containing the value to write. 
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00189}{189}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+\Hypertarget{hal_8h_a90ecaaf7be5257b546f698cd7e48b075}\index{hal.h@{hal.h}!HAL\_set\_8bit\_reg\_field@{HAL\_set\_8bit\_reg\_field}}
+\index{HAL\_set\_8bit\_reg\_field@{HAL\_set\_8bit\_reg\_field}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_set\_8bit\_reg\_field}{HAL\_set\_8bit\_reg\_field}}
+{\footnotesize\ttfamily \label{hal_8h_a90ecaaf7be5257b546f698cd7e48b075} 
+\+\#define HAL\+\_\+set\+\_\+8bit\+\_\+reg\+\_\+field(\begin{DoxyParamCaption}\item[{}]{BASE\+\_\+\+ADDR}{, }\item[{}]{FIELD\+\_\+\+NAME}{, }\item[{}]{VALUE}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(\doxymbox{\hyperlink{hw__reg__access_8h_a0afc0f16a7a028098a7f91e769108c23}{HW\_set\_8bit\_reg\_field}}(\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (BASE\_ADDR)\ +\ \doxymbox{\hyperlink{hal_8h_ad42b57a3a52ac24235d7c233fc8da51d}{FIELD\_OFFSET}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a8c6a1504f7aab56b157cc0b9c024a6de}{FIELD\_SHIFT}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{hal_8h_a3050d68aea75b1073725562f075e551f}{FIELD\_MASK}}(FIELD\_NAME),\(\backslash\)}
+\DoxyCodeLine{\ \ \ \ (VALUE)))}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{hal_8h_source_l00207}{207}} of file \doxymbox{\hyperlink{hal_8h_source}{hal.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{hal_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal_8h_afa288018c44ac7bafe9312b821087ed1}\index{hal.h@{hal.h}!HAL\_disable\_interrupts@{HAL\_disable\_interrupts}}
+\index{HAL\_disable\_interrupts@{HAL\_disable\_interrupts}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_disable\_interrupts()}{HAL\_disable\_interrupts()}}
+{\footnotesize\ttfamily \label{hal_8h_afa288018c44ac7bafe9312b821087ed1} 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\+\_\+t}} HAL\+\_\+disable\+\_\+interrupts (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+Disable all interrupts at the processor core level. Return the interrupts enable state before disabling occurred so that it can later be restored. \Hypertarget{hal_8h_a8308aabd47cb412adb3daa0705aac3c0}\index{hal.h@{hal.h}!HAL\_enable\_interrupts@{HAL\_enable\_interrupts}}
+\index{HAL\_enable\_interrupts@{HAL\_enable\_interrupts}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_enable\_interrupts()}{HAL\_enable\_interrupts()}}
+{\footnotesize\ttfamily \label{hal_8h_a8308aabd47cb412adb3daa0705aac3c0} 
+void HAL\+\_\+enable\+\_\+interrupts (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+Enable all interrupts at the processor level. \Hypertarget{hal_8h_a75310e76bf81a6195ca657bb89fb39b8}\index{hal.h@{hal.h}!HAL\_restore\_interrupts@{HAL\_restore\_interrupts}}
+\index{HAL\_restore\_interrupts@{HAL\_restore\_interrupts}!hal.h@{hal.h}}
+\doxysubsubsection{\texorpdfstring{HAL\_restore\_interrupts()}{HAL\_restore\_interrupts()}}
+{\footnotesize\ttfamily \label{hal_8h_a75310e76bf81a6195ca657bb89fb39b8} 
+void HAL\+\_\+restore\+\_\+interrupts (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\+\_\+t}}}]{saved\+\_\+psr}{}\end{DoxyParamCaption})}
+
+Restore the interrupts enable state at the processor core level. This function is normally passed the value returned from a previous call to \doxylink{hal_8h_afa288018c44ac7bafe9312b821087ed1}{HAL\+\_\+disable\+\_\+interrupts()}. 

@@ -1,0 +1,2737 @@
+   1              		.file	"eth.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.eth_core_init_regs,"ax",@progbits
+  10              		.align	2
+  11              		.globl	eth_core_init_regs
+  13              	eth_core_init_regs:
+  14              	.LFB0:
+  15              		.file 1 "../src/eth.c"
+   1:../src/eth.c  **** /*******************************************************************************
+   2:../src/eth.c  ****  * @file      eth.c
+   3:../src/eth.c  ****  * @copyright Copyright (c) 2025 Turion Space. All rights reserved.
+   4:../src/eth.c  ****  * @author    Saba Janamian (sjanamian@turionspace.com)
+   5:../src/eth.c  ****  * @date      09/17/2025
+   6:../src/eth.c  ****  * 
+   7:../src/eth.c  ****  * @brief     Etherent MAC and Phy configuration functions
+   8:../src/eth.c  ****  * 
+   9:../src/eth.c  ****  * @section changelog
+  10:../src/eth.c  ****  * - 09/17/2025: Saba Janamian - Initial implementation
+  11:../src/eth.c  ****  * 
+  12:../src/eth.c  **** *******************************************************************************/
+  13:../src/eth.c  **** 
+  14:../src/eth.c  **** #include "eth.h"
+  15:../src/eth.c  **** 
+  16:../src/eth.c  **** //------------------------------------------------------------------------------
+  17:../src/eth.c  **** // Ethernet Core Initialization Function
+  18:../src/eth.c  **** //------------------------------------------------------------------------------
+  19:../src/eth.c  **** void eth_core_init_regs(eth_core_regs_t* regs, uint32_t base_address)
+  20:../src/eth.c  **** {
+  16              		.loc 1 20 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  21:../src/eth.c  ****     regs->mac_config_1_reg =
+  19              		.loc 1 21 5
+  22:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_CONFIG_1_OFFSET);
+  23:../src/eth.c  ****     regs->mac_config_2_reg =
+  24:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_CONFIG_2_OFFSET);
+  20              		.loc 1 24 43 is_stmt 0
+  21 0000 93874500 		addi	a5,a1,4
+  23:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_CONFIG_2_OFFSET);
+  22              		.loc 1 23 28
+  23 0004 232EF500 		sw	a5,28(a0)
+  25:../src/eth.c  ****     regs->mac_max_frame_len_reg =
+  26:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_MAX_FRAME_LEN_OFFSET);
+  24              		.loc 1 26 43
+  25 0008 93870501 		addi	a5,a1,16
+  25:../src/eth.c  ****     regs->mac_max_frame_len_reg =
+  26              		.loc 1 25 33
+  27 000c 2320F502 		sw	a5,32(a0)
+  27:../src/eth.c  ****     regs->mdio_mgmt_config_reg =
+  28:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_CONFIG_OFFSET);
+  28              		.loc 1 28 43
+  29 0010 93870502 		addi	a5,a1,32
+  27:../src/eth.c  ****     regs->mdio_mgmt_config_reg =
+  30              		.loc 1 27 32
+  31 0014 2324F504 		sw	a5,72(a0)
+  29:../src/eth.c  ****     regs->mdio_mgmt_command_reg =
+  30:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_COMMAND_OFFSET);
+  32              		.loc 1 30 43
+  33 0018 93874502 		addi	a5,a1,36
+  29:../src/eth.c  ****     regs->mdio_mgmt_command_reg =
+  34              		.loc 1 29 33
+  35 001c 2322F500 		sw	a5,4(a0)
+  31:../src/eth.c  ****     regs->mdio_mgmt_address_reg =
+  32:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_ADDRESS_OFFSET);
+  36              		.loc 1 32 43
+  37 0020 93878502 		addi	a5,a1,40
+  31:../src/eth.c  ****     regs->mdio_mgmt_address_reg =
+  38              		.loc 1 31 33
+  39 0024 2320F500 		sw	a5,0(a0)
+  33:../src/eth.c  ****     regs->mdio_mgmt_control_reg =
+  34:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_CONTROL_OFFSET);
+  40              		.loc 1 34 43
+  41 0028 9387C502 		addi	a5,a1,44
+  33:../src/eth.c  ****     regs->mdio_mgmt_control_reg =
+  42              		.loc 1 33 33
+  43 002c 2324F500 		sw	a5,8(a0)
+  35:../src/eth.c  ****     regs->mdio_mgmt_status_reg =
+  36:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_STATUS_OFFSET);
+  44              		.loc 1 36 43
+  45 0030 93870503 		addi	a5,a1,48
+  35:../src/eth.c  ****     regs->mdio_mgmt_status_reg =
+  46              		.loc 1 35 32
+  47 0034 2326F500 		sw	a5,12(a0)
+  37:../src/eth.c  ****     regs->mdio_mgmt_indicators_reg =
+  38:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_INDICATORS_OFFSET);
+  48              		.loc 1 38 43
+  49 0038 93874503 		addi	a5,a1,52
+  37:../src/eth.c  ****     regs->mdio_mgmt_indicators_reg =
+  50              		.loc 1 37 36
+  51 003c 2328F500 		sw	a5,16(a0)
+  39:../src/eth.c  ****     regs->interface_control_reg =
+  40:../src/eth.c  ****         (volatile uint32_t*)(base_address + INTERFACE_CONTROL_OFFSET);
+  52              		.loc 1 40 43
+  53 0040 93878503 		addi	a5,a1,56
+  39:../src/eth.c  ****     regs->interface_control_reg =
+  54              		.loc 1 39 33
+  55 0044 2326F504 		sw	a5,76(a0)
+  41:../src/eth.c  ****     regs->station_address_lower_reg =
+  42:../src/eth.c  ****         (volatile uint32_t*)(base_address + STATION_ADDRESS_LOWER_OFFSET);
+  56              		.loc 1 42 43
+  57 0048 93870504 		addi	a5,a1,64
+  41:../src/eth.c  ****     regs->station_address_lower_reg =
+  58              		.loc 1 41 37
+  59 004c 2322F502 		sw	a5,36(a0)
+  43:../src/eth.c  ****     regs->station_address_higher_reg =
+  44:../src/eth.c  ****         (volatile uint32_t*)(base_address + STATION_ADDRESS_HIGHER_OFFSET);
+  60              		.loc 1 44 43
+  61 0050 93874504 		addi	a5,a1,68
+  43:../src/eth.c  ****     regs->station_address_higher_reg =
+  62              		.loc 1 43 38
+  63 0054 2324F502 		sw	a5,40(a0)
+  45:../src/eth.c  ****     regs->mac_fifo_config_reg0 =
+  46:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_0_OFFSET);
+  64              		.loc 1 46 43
+  65 0058 93878504 		addi	a5,a1,72
+  45:../src/eth.c  ****     regs->mac_fifo_config_reg0 =
+  66              		.loc 1 45 32
+  67 005c 2326F502 		sw	a5,44(a0)
+  47:../src/eth.c  ****     regs->mac_fifo_config_reg1 =
+  48:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_1_OFFSET);
+  68              		.loc 1 48 43
+  69 0060 9387C504 		addi	a5,a1,76
+  47:../src/eth.c  ****     regs->mac_fifo_config_reg1 =
+  70              		.loc 1 47 32
+  71 0064 2328F502 		sw	a5,48(a0)
+  49:../src/eth.c  ****     regs->mac_fifo_config_reg2 =
+  50:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_2_OFFSET);
+  72              		.loc 1 50 43
+  73 0068 93870505 		addi	a5,a1,80
+  49:../src/eth.c  ****     regs->mac_fifo_config_reg2 =
+  74              		.loc 1 49 32
+  75 006c 232AF502 		sw	a5,52(a0)
+  51:../src/eth.c  ****     regs->mac_fifo_config_reg3 =
+  52:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_3_OFFSET);
+  76              		.loc 1 52 43
+  77 0070 93874505 		addi	a5,a1,84
+  51:../src/eth.c  ****     regs->mac_fifo_config_reg3 =
+  78              		.loc 1 51 32
+  79 0074 232CF502 		sw	a5,56(a0)
+  53:../src/eth.c  ****     regs->mac_fifo_config_reg4 =
+  54:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_4_OFFSET);
+  80              		.loc 1 54 43
+  81 0078 93878505 		addi	a5,a1,88
+  21:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_CONFIG_1_OFFSET);
+  82              		.loc 1 21 28
+  83 007c 232CB500 		sw	a1,24(a0)
+  23:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_CONFIG_2_OFFSET);
+  84              		.loc 1 23 5 is_stmt 1
+  25:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_MAX_FRAME_LEN_OFFSET);
+  85              		.loc 1 25 5
+  27:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_CONFIG_OFFSET);
+  86              		.loc 1 27 5
+  29:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_COMMAND_OFFSET);
+  87              		.loc 1 29 5
+  31:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_ADDRESS_OFFSET);
+  88              		.loc 1 31 5
+  33:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_CONTROL_OFFSET);
+  89              		.loc 1 33 5
+  35:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_STATUS_OFFSET);
+  90              		.loc 1 35 5
+  37:../src/eth.c  ****         (volatile uint32_t*)(base_address + MDIO_MGMT_INDICATORS_OFFSET);
+  91              		.loc 1 37 5
+  39:../src/eth.c  ****         (volatile uint32_t*)(base_address + INTERFACE_CONTROL_OFFSET);
+  92              		.loc 1 39 5
+  41:../src/eth.c  ****         (volatile uint32_t*)(base_address + STATION_ADDRESS_LOWER_OFFSET);
+  93              		.loc 1 41 5
+  43:../src/eth.c  ****         (volatile uint32_t*)(base_address + STATION_ADDRESS_HIGHER_OFFSET);
+  94              		.loc 1 43 5
+  45:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_0_OFFSET);
+  95              		.loc 1 45 5
+  47:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_1_OFFSET);
+  96              		.loc 1 47 5
+  49:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_2_OFFSET);
+  97              		.loc 1 49 5
+  51:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_3_OFFSET);
+  98              		.loc 1 51 5
+  53:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_4_OFFSET);
+  99              		.loc 1 53 5
+  53:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_4_OFFSET);
+ 100              		.loc 1 53 32 is_stmt 0
+ 101 0080 232EF502 		sw	a5,60(a0)
+  55:../src/eth.c  ****     regs->mac_fifo_config_reg5 =
+ 102              		.loc 1 55 5 is_stmt 1
+  56:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_5_OFFSET);
+ 103              		.loc 1 56 43 is_stmt 0
+ 104 0084 9387C505 		addi	a5,a1,92
+  57:../src/eth.c  ****     regs->frame_control_filter_reg =
+  58:../src/eth.c  ****         (volatile uint32_t*)(base_address + FRAME_CONTROL_FILTER_OFFSET);
+ 105              		.loc 1 58 43
+ 106 0088 9385051C 		addi	a1,a1,448
+ 107              	.LVL1:
+  55:../src/eth.c  ****         (volatile uint32_t*)(base_address + MAC_FIFO_CONFIG_5_OFFSET);
+ 108              		.loc 1 55 32
+ 109 008c 2320F504 		sw	a5,64(a0)
+  57:../src/eth.c  ****     regs->frame_control_filter_reg =
+ 110              		.loc 1 57 5 is_stmt 1
+  57:../src/eth.c  ****     regs->frame_control_filter_reg =
+ 111              		.loc 1 57 36 is_stmt 0
+ 112 0090 2322B504 		sw	a1,68(a0)
+  59:../src/eth.c  ****     regs->mac_fifo_config_reg =
+ 113              		.loc 1 59 5 is_stmt 1
+ 114              		.loc 1 59 31 is_stmt 0
+ 115 0094 232AF500 		sw	a5,20(a0)
+  60:../src/eth.c  ****         regs->mac_fifo_config_reg5;  // Alias for backward compatibility
+  61:../src/eth.c  **** }
+ 116              		.loc 1 61 1
+ 117 0098 67800000 		ret
+ 118              		.cfi_endproc
+ 119              	.LFE0:
+ 121              		.section	.text.phy_advertise,"ax",@progbits
+ 122              		.align	2
+ 123              		.globl	phy_advertise
+ 125              	phy_advertise:
+ 126              	.LFB1:
+  62:../src/eth.c  **** 
+  63:../src/eth.c  **** //------------------------------------------------------------------------------
+  64:../src/eth.c  **** // Eth PHY setup functions
+  65:../src/eth.c  **** //------------------------------------------------------------------------------
+  66:../src/eth.c  **** void phy_advertise(eth_core_regs_t* regs)
+  67:../src/eth.c  **** {
+ 127              		.loc 1 67 1 is_stmt 1
+ 128              		.cfi_startproc
+ 129              	.LVL2:
+  68:../src/eth.c  ****     uint32_t phy_reg = 0xFFFF;
+ 130              		.loc 1 68 5
+  69:../src/eth.c  **** 
+  70:../src/eth.c  ****     // Device Auto-Negotiation Advertisement, Address 4 (0x04)
+  71:../src/eth.c  ****     // The bits in address 4 in the main registers space control the ability to
+  72:../src/eth.c  ****     // notify other devices of the status of
+  73:../src/eth.c  ****     // its auto-negotiation feature.
+  74:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0004;
+ 131              		.loc 1 74 5
+ 132              		.loc 1 74 11 is_stmt 0
+ 133 0000 83260500 		lw	a3,0(a0)
+  75:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 134              		.loc 1 75 11
+ 135 0004 03278500 		lw	a4,8(a0)
+  74:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 136              		.loc 1 74 36
+ 137 0008 93074000 		li	a5,4
+ 138 000c 23A0F600 		sw	a5,0(a3)
+ 139              		.loc 1 75 5 is_stmt 1
+ 140              		.loc 1 75 36 is_stmt 0
+ 141 0010 93071000 		li	a5,1
+ 142 0014 2320F700 		sw	a5,0(a4)
+  76:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 143              		.loc 1 76 5 is_stmt 1
+ 144              		.loc 1 76 18 is_stmt 0
+ 145 0018 83270501 		lw	a5,16(a0)
+ 146              	.L3:
+  77:../src/eth.c  ****         ;
+ 147              		.loc 1 77 9 is_stmt 1 discriminator 1
+  76:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 148              		.loc 1 76 12 is_stmt 0 discriminator 1
+ 149 001c 03A60700 		lw	a2,0(a5)
+  76:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 150              		.loc 1 76 11 discriminator 1
+ 151 0020 E31E06FE 		bne	a2,zero,.L3
+  78:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 152              		.loc 1 78 5 is_stmt 1
+ 153              		.loc 1 78 11 is_stmt 0
+ 154 0024 03264500 		lw	a2,4(a0)
+ 155              		.loc 1 78 36
+ 156 0028 93051000 		li	a1,1
+ 157 002c 2320B600 		sw	a1,0(a2)
+  79:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 158              		.loc 1 79 5 is_stmt 1
+ 159              	.L4:
+  80:../src/eth.c  ****         ;
+ 160              		.loc 1 80 9 discriminator 1
+  79:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 161              		.loc 1 79 12 is_stmt 0 discriminator 1
+ 162 0030 83A50700 		lw	a1,0(a5)
+  79:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 163              		.loc 1 79 11 discriminator 1
+ 164 0034 E39E05FE 		bne	a1,zero,.L4
+  81:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 165              		.loc 1 81 5 is_stmt 1
+ 166              		.loc 1 81 44 is_stmt 0
+ 167 0038 0325C500 		lw	a0,12(a0)
+ 168              	.LVL3:
+  82:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+  83:../src/eth.c  **** 
+  84:../src/eth.c  ****     phy_reg &= ~(0x1E);  // 0b11100001
+  85:../src/eth.c  **** 
+  86:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0004;
+ 169              		.loc 1 86 36
+ 170 003c 13084000 		li	a6,4
+  81:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 171              		.loc 1 81 36
+ 172 0040 83250500 		lw	a1,0(a0)
+ 173              	.LVL4:
+  82:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 174              		.loc 1 82 5 is_stmt 1
+  82:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 175              		.loc 1 82 36 is_stmt 0
+ 176 0044 23200600 		sw	zero,0(a2)
+  84:../src/eth.c  **** 
+ 177              		.loc 1 84 5 is_stmt 1
+ 178              		.loc 1 86 36 is_stmt 0
+ 179 0048 23A00601 		sw	a6,0(a3)
+  84:../src/eth.c  **** 
+ 180              		.loc 1 84 13
+ 181 004c 93F515FE 		andi	a1,a1,-31
+ 182              	.LVL5:
+ 183              		.loc 1 86 5 is_stmt 1
+  87:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = phy_reg;
+ 184              		.loc 1 87 5
+ 185              		.loc 1 87 36 is_stmt 0
+ 186 0050 2320B700 		sw	a1,0(a4)
+  88:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 187              		.loc 1 88 5 is_stmt 1
+ 188              	.LVL6:
+ 189              	.L5:
+  89:../src/eth.c  ****         ;
+ 190              		.loc 1 89 9 discriminator 1
+  88:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 191              		.loc 1 88 12 is_stmt 0 discriminator 1
+ 192 0054 83A50700 		lw	a1,0(a5)
+  88:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 193              		.loc 1 88 11 discriminator 1
+ 194 0058 E39E05FE 		bne	a1,zero,.L5
+  90:../src/eth.c  **** 
+  91:../src/eth.c  ****     // 1000BASE-T Control, Address 9 (0x09)
+  92:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0009;
+ 195              		.loc 1 92 5 is_stmt 1
+ 196              		.loc 1 92 36 is_stmt 0
+ 197 005c 93059000 		li	a1,9
+ 198 0060 23A0B600 		sw	a1,0(a3)
+ 199              	.LVL7:
+  93:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 200              		.loc 1 93 5 is_stmt 1
+ 201              		.loc 1 93 36 is_stmt 0
+ 202 0064 93051000 		li	a1,1
+ 203 0068 2320B700 		sw	a1,0(a4)
+  94:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 204              		.loc 1 94 5 is_stmt 1
+ 205              	.L6:
+  95:../src/eth.c  ****         ;
+ 206              		.loc 1 95 9 discriminator 1
+  94:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 207              		.loc 1 94 12 is_stmt 0 discriminator 1
+ 208 006c 83A50700 		lw	a1,0(a5)
+  94:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 209              		.loc 1 94 11 discriminator 1
+ 210 0070 E39E05FE 		bne	a1,zero,.L6
+  96:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 211              		.loc 1 96 5 is_stmt 1
+ 212              		.loc 1 96 36 is_stmt 0
+ 213 0074 93051000 		li	a1,1
+ 214 0078 2320B600 		sw	a1,0(a2)
+  97:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 215              		.loc 1 97 5 is_stmt 1
+ 216              	.L7:
+  98:../src/eth.c  ****         ;
+ 217              		.loc 1 98 9 discriminator 1
+  97:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 218              		.loc 1 97 12 is_stmt 0 discriminator 1
+ 219 007c 83A50700 		lw	a1,0(a5)
+  97:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 220              		.loc 1 97 11 discriminator 1
+ 221 0080 E39E05FE 		bne	a1,zero,.L7
+  99:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 222              		.loc 1 99 5 is_stmt 1
+ 223              		.loc 1 99 36 is_stmt 0
+ 224 0084 83250500 		lw	a1,0(a0)
+ 225              	.LVL8:
+ 100:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 226              		.loc 1 100 5 is_stmt 1
+ 227              		.loc 1 100 36 is_stmt 0
+ 228 0088 23200600 		sw	zero,0(a2)
+ 101:../src/eth.c  **** 
+ 102:../src/eth.c  ****     // Enable PHY is 1000BASE-T Full Duplex capable.
+ 103:../src/eth.c  ****     phy_reg |= 0x200;  // 0b001000000000
+ 229              		.loc 1 103 5 is_stmt 1
+ 230              		.loc 1 103 13 is_stmt 0
+ 231 008c 13E60520 		ori	a2,a1,512
+ 232              	.LVL9:
+ 104:../src/eth.c  **** 
+ 105:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0009;
+ 233              		.loc 1 105 5 is_stmt 1
+ 234              		.loc 1 105 36 is_stmt 0
+ 235 0090 93059000 		li	a1,9
+ 236 0094 23A0B600 		sw	a1,0(a3)
+ 106:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = phy_reg;
+ 237              		.loc 1 106 5 is_stmt 1
+ 238              		.loc 1 106 36 is_stmt 0
+ 239 0098 2320C700 		sw	a2,0(a4)
+ 107:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 240              		.loc 1 107 5 is_stmt 1
+ 241              	.L8:
+ 108:../src/eth.c  ****         ;
+ 242              		.loc 1 108 9 discriminator 1
+ 107:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 243              		.loc 1 107 12 is_stmt 0 discriminator 1
+ 244 009c 03A70700 		lw	a4,0(a5)
+ 107:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 245              		.loc 1 107 11 discriminator 1
+ 246 00a0 E31E07FE 		bne	a4,zero,.L8
+ 109:../src/eth.c  **** }
+ 247              		.loc 1 109 1
+ 248 00a4 67800000 		ret
+ 249              		.cfi_endproc
+ 250              	.LFE1:
+ 252              		.section	.text.phy_autonegotiation,"ax",@progbits
+ 253              		.align	2
+ 254              		.globl	phy_autonegotiation
+ 256              	phy_autonegotiation:
+ 257              	.LFB2:
+ 110:../src/eth.c  **** 
+ 111:../src/eth.c  **** void phy_autonegotiation(eth_core_regs_t* regs)
+ 112:../src/eth.c  **** {
+ 258              		.loc 1 112 1 is_stmt 1
+ 259              		.cfi_startproc
+ 260              	.LVL10:
+ 113:../src/eth.c  ****     uint32_t          phy_reg = 0xFFFF;
+ 261              		.loc 1 113 5
+ 114:../src/eth.c  ****     uint16_t          autoneg_complete;
+ 262              		.loc 1 114 5
+ 115:../src/eth.c  ****     volatile uint32_t copper_aneg_timeout = 1000000u;
+ 263              		.loc 1 115 5
+ 264              		.loc 1 115 23 is_stmt 0
+ 265 0000 B7470F00 		li	a5,999424
+ 112:../src/eth.c  ****     uint32_t          phy_reg = 0xFFFF;
+ 266              		.loc 1 112 1
+ 267 0004 130101FF 		addi	sp,sp,-16
+ 268              		.cfi_def_cfa_offset 16
+ 269              		.loc 1 115 23
+ 270 0008 93870724 		addi	a5,a5,576
+ 271 000c 2322F100 		sw	a5,4(sp)
+ 116:../src/eth.c  ****     volatile uint32_t sgmii_aneg_timeout  = 100000u;
+ 272              		.loc 1 116 5 is_stmt 1
+ 117:../src/eth.c  ****     uint8_t           copper_link_up;
+ 118:../src/eth.c  **** 
+ 119:../src/eth.c  ****     // Extended/GPIO Register Page Access, Address 31 (0x1F)
+ 120:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001F;
+ 273              		.loc 1 120 11 is_stmt 0
+ 274 0010 03260500 		lw	a2,0(a0)
+ 116:../src/eth.c  ****     volatile uint32_t sgmii_aneg_timeout  = 100000u;
+ 275              		.loc 1 116 23
+ 276 0014 B7870100 		li	a5,98304
+ 277 0018 9387076A 		addi	a5,a5,1696
+ 121:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 278              		.loc 1 121 11
+ 279 001c 83268500 		lw	a3,8(a0)
+ 116:../src/eth.c  ****     volatile uint32_t sgmii_aneg_timeout  = 100000u;
+ 280              		.loc 1 116 23
+ 281 0020 2324F100 		sw	a5,8(sp)
+ 117:../src/eth.c  ****     uint8_t           copper_link_up;
+ 282              		.loc 1 117 5 is_stmt 1
+ 120:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 283              		.loc 1 120 5
+ 120:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 284              		.loc 1 120 36 is_stmt 0
+ 285 0024 9307F001 		li	a5,31
+ 286 0028 2320F600 		sw	a5,0(a2)
+ 287              		.loc 1 121 5 is_stmt 1
+ 288              		.loc 1 121 36 is_stmt 0
+ 289 002c 93071000 		li	a5,1
+ 290 0030 23A0F600 		sw	a5,0(a3)
+ 122:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 291              		.loc 1 122 5 is_stmt 1
+ 292              		.loc 1 122 18 is_stmt 0
+ 293 0034 83270501 		lw	a5,16(a0)
+ 294              	.L16:
+ 123:../src/eth.c  ****         ;
+ 295              		.loc 1 123 9 is_stmt 1 discriminator 1
+ 122:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 296              		.loc 1 122 12 is_stmt 0 discriminator 1
+ 297 0038 03A70700 		lw	a4,0(a5)
+ 122:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 298              		.loc 1 122 11 discriminator 1
+ 299 003c E31E07FE 		bne	a4,zero,.L16
+ 124:../src/eth.c  **** 
+ 125:../src/eth.c  ****     // Registers 0–15 are not affected by the state of the extended page
+ 126:../src/eth.c  ****     // register access. (see VSC8540-05 section 4.3)
+ 127:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0000;  // Mode Control
+ 300              		.loc 1 127 5 is_stmt 1
+ 301              		.loc 1 127 36 is_stmt 0
+ 302 0040 23200600 		sw	zero,0(a2)
+ 128:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 303              		.loc 1 128 5 is_stmt 1
+ 304              		.loc 1 128 36 is_stmt 0
+ 305 0044 13071000 		li	a4,1
+ 306 0048 23A0E600 		sw	a4,0(a3)
+ 129:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 307              		.loc 1 129 5 is_stmt 1
+ 308              	.L17:
+ 130:../src/eth.c  ****         ;
+ 309              		.loc 1 130 9 discriminator 1
+ 129:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 310              		.loc 1 129 12 is_stmt 0 discriminator 1
+ 311 004c 03A70700 		lw	a4,0(a5)
+ 129:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 312              		.loc 1 129 11 discriminator 1
+ 313 0050 E31E07FE 		bne	a4,zero,.L17
+ 131:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 314              		.loc 1 131 5 is_stmt 1
+ 315              		.loc 1 131 11 is_stmt 0
+ 316 0054 03274500 		lw	a4,4(a0)
+ 317              		.loc 1 131 36
+ 318 0058 93051000 		li	a1,1
+ 319 005c 2320B700 		sw	a1,0(a4)
+ 132:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 320              		.loc 1 132 5 is_stmt 1
+ 321              	.L18:
+ 133:../src/eth.c  ****         ;
+ 322              		.loc 1 133 9 discriminator 1
+ 132:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 323              		.loc 1 132 12 is_stmt 0 discriminator 1
+ 324 0060 83A50700 		lw	a1,0(a5)
+ 132:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 325              		.loc 1 132 11 discriminator 1
+ 326 0064 E39E05FE 		bne	a1,zero,.L18
+ 134:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 327              		.loc 1 134 5 is_stmt 1
+ 328              		.loc 1 134 44 is_stmt 0
+ 329 0068 8325C500 		lw	a1,12(a0)
+ 135:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 136:../src/eth.c  **** 
+ 137:../src/eth.c  ****     phy_reg |= 0x1200;  // 0b0001001000000000
+ 330              		.loc 1 137 13
+ 331 006c 37180000 		li	a6,4096
+ 332 0070 13080820 		addi	a6,a6,512
+ 134:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 333              		.loc 1 134 36
+ 334 0074 03A50500 		lw	a0,0(a1)
+ 335              	.LVL11:
+ 135:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 336              		.loc 1 135 5 is_stmt 1
+ 135:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 337              		.loc 1 135 36 is_stmt 0
+ 338 0078 23200700 		sw	zero,0(a4)
+ 339              		.loc 1 137 5 is_stmt 1
+ 138:../src/eth.c  ****     // Bit 9: Restart autonegotiation
+ 139:../src/eth.c  ****     // Bit 12: Autonegotiation enable
+ 140:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0000;  // Mode Control
+ 340              		.loc 1 140 36 is_stmt 0
+ 341 007c 23200600 		sw	zero,0(a2)
+ 137:../src/eth.c  ****     // Bit 9: Restart autonegotiation
+ 342              		.loc 1 137 13
+ 343 0080 33650501 		or	a0,a0,a6
+ 344              	.LVL12:
+ 345              		.loc 1 140 5 is_stmt 1
+ 141:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = phy_reg;
+ 346              		.loc 1 141 5
+ 347              		.loc 1 141 36 is_stmt 0
+ 348 0084 23A0A600 		sw	a0,0(a3)
+ 142:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 349              		.loc 1 142 5 is_stmt 1
+ 350              	.LVL13:
+ 351              	.L19:
+ 143:../src/eth.c  ****         ;
+ 352              		.loc 1 143 9 discriminator 1
+ 142:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 353              		.loc 1 142 12 is_stmt 0 discriminator 1
+ 354 0088 03A50700 		lw	a0,0(a5)
+ 142:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 355              		.loc 1 142 11 discriminator 1
+ 356 008c E31E05FE 		bne	a0,zero,.L19
+ 144:../src/eth.c  **** 
+ 145:../src/eth.c  ****     do {
+ 146:../src/eth.c  ****         // Mode Status, Address 1 (0x01)
+ 147:../src/eth.c  ****         *(regs->mdio_mgmt_address_reg) = 0x0001;
+ 357              		.loc 1 147 40
+ 358 0090 13051000 		li	a0,1
+ 359              	.LVL14:
+ 360              	.L23:
+ 145:../src/eth.c  ****         // Mode Status, Address 1 (0x01)
+ 361              		.loc 1 145 5 is_stmt 1
+ 362              		.loc 1 147 9
+ 363              		.loc 1 147 40 is_stmt 0
+ 364 0094 2320A600 		sw	a0,0(a2)
+ 148:../src/eth.c  ****         *(regs->mdio_mgmt_control_reg) = 0x1;
+ 365              		.loc 1 148 9 is_stmt 1
+ 366              		.loc 1 148 40 is_stmt 0
+ 367 0098 23A0A600 		sw	a0,0(a3)
+ 149:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 368              		.loc 1 149 9 is_stmt 1
+ 369              	.L20:
+ 150:../src/eth.c  ****             ;
+ 370              		.loc 1 150 13 discriminator 1
+ 149:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 371              		.loc 1 149 16 is_stmt 0 discriminator 1
+ 372 009c 03A80700 		lw	a6,0(a5)
+ 149:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 373              		.loc 1 149 15 discriminator 1
+ 374 00a0 E31E08FE 		bne	a6,zero,.L20
+ 151:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x1;
+ 375              		.loc 1 151 9 is_stmt 1
+ 376              		.loc 1 151 40 is_stmt 0
+ 377 00a4 2320A700 		sw	a0,0(a4)
+ 152:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 378              		.loc 1 152 9 is_stmt 1
+ 379              	.L21:
+ 153:../src/eth.c  ****             ;
+ 380              		.loc 1 153 13 discriminator 1
+ 152:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 381              		.loc 1 152 16 is_stmt 0 discriminator 1
+ 382 00a8 03A80700 		lw	a6,0(a5)
+ 152:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 383              		.loc 1 152 15 discriminator 1
+ 384 00ac E31E08FE 		bne	a6,zero,.L21
+ 154:../src/eth.c  ****         phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 385              		.loc 1 154 9 is_stmt 1
+ 386              		.loc 1 154 40 is_stmt 0
+ 387 00b0 03A80500 		lw	a6,0(a1)
+ 388              	.LVL15:
+ 155:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x0;
+ 389              		.loc 1 155 9 is_stmt 1
+ 390              		.loc 1 155 40 is_stmt 0
+ 391 00b4 23200700 		sw	zero,0(a4)
+ 156:../src/eth.c  ****         autoneg_complete               = phy_reg & 0x0020u;
+ 392              		.loc 1 156 9 is_stmt 1
+ 393              	.LVL16:
+ 157:../src/eth.c  ****         --copper_aneg_timeout;
+ 394              		.loc 1 157 9
+ 395 00b8 83284100 		lw	a7,4(sp)
+ 158:../src/eth.c  ****     } while (!autoneg_complete && (copper_aneg_timeout != 0u));
+ 396              		.loc 1 158 5 is_stmt 0
+ 397 00bc 13780802 		andi	a6,a6,32
+ 398              	.LVL17:
+ 157:../src/eth.c  ****         --copper_aneg_timeout;
+ 399              		.loc 1 157 9
+ 400 00c0 9388F8FF 		addi	a7,a7,-1
+ 401 00c4 23221101 		sw	a7,4(sp)
+ 402              		.loc 1 158 5
+ 403 00c8 63160800 		bne	a6,zero,.L22
+ 404              		.loc 1 158 56 discriminator 1
+ 405 00cc 03284100 		lw	a6,4(sp)
+ 406              		.loc 1 158 32 discriminator 1
+ 407 00d0 E31208FC 		bne	a6,zero,.L23
+ 408              	.L22:
+ 159:../src/eth.c  **** 
+ 160:../src/eth.c  ****     for (volatile uint32_t i = 0; i < 100000; i++)
+ 409              		.loc 1 160 5 is_stmt 1
+ 410              	.LBB2:
+ 411              		.loc 1 160 10
+ 412              		.loc 1 160 5 is_stmt 0
+ 413 00d4 37850100 		li	a0,98304
+ 414              		.loc 1 160 28
+ 415 00d8 23260100 		sw	zero,12(sp)
+ 416              		.loc 1 160 5
+ 417 00dc 1305F569 		addi	a0,a0,1695
+ 418              	.L24:
+ 419              		.loc 1 160 37 discriminator 1
+ 420 00e0 0328C100 		lw	a6,12(sp)
+ 421              		.loc 1 160 5 discriminator 1
+ 422 00e4 637C0503 		bleu	a6,a0,.L25
+ 423              	.LBE2:
+ 161:../src/eth.c  ****         ;
+ 162:../src/eth.c  **** 
+ 163:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0001;
+ 424              		.loc 1 163 5 is_stmt 1
+ 425              		.loc 1 163 36 is_stmt 0
+ 426 00e8 13051000 		li	a0,1
+ 427 00ec 2320A600 		sw	a0,0(a2)
+ 164:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x1;
+ 428              		.loc 1 164 5 is_stmt 1
+ 429              		.loc 1 164 36 is_stmt 0
+ 430 00f0 23A0A600 		sw	a0,0(a3)
+ 165:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 431              		.loc 1 165 5 is_stmt 1
+ 432              	.L26:
+ 166:../src/eth.c  ****         ;
+ 433              		.loc 1 166 9 discriminator 1
+ 165:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 434              		.loc 1 165 12 is_stmt 0 discriminator 1
+ 435 00f4 83A60700 		lw	a3,0(a5)
+ 165:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 436              		.loc 1 165 11 discriminator 1
+ 437 00f8 E39E06FE 		bne	a3,zero,.L26
+ 167:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 438              		.loc 1 167 5 is_stmt 1
+ 439              		.loc 1 167 36 is_stmt 0
+ 440 00fc 93061000 		li	a3,1
+ 441 0100 2320D700 		sw	a3,0(a4)
+ 168:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 442              		.loc 1 168 5 is_stmt 1
+ 443              	.L27:
+ 169:../src/eth.c  ****         ;
+ 444              		.loc 1 169 9 discriminator 1
+ 168:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 445              		.loc 1 168 12 is_stmt 0 discriminator 1
+ 446 0104 83A60700 		lw	a3,0(a5)
+ 168:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 447              		.loc 1 168 11 discriminator 1
+ 448 0108 E39E06FE 		bne	a3,zero,.L27
+ 170:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 449              		.loc 1 170 5 is_stmt 1
+ 450              		.loc 1 170 36 is_stmt 0
+ 451 010c 83A70500 		lw	a5,0(a1)
+ 171:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 452              		.loc 1 171 5 is_stmt 1
+ 453              		.loc 1 171 36 is_stmt 0
+ 454 0110 23200700 		sw	zero,0(a4)
+ 172:../src/eth.c  **** 
+ 173:../src/eth.c  ****     copper_link_up = phy_reg & 0x0004;  // Link status
+ 455              		.loc 1 173 5 is_stmt 1
+ 456              	.LVL18:
+ 174:../src/eth.c  **** }
+ 457              		.loc 1 174 1 is_stmt 0
+ 458 0114 13010101 		addi	sp,sp,16
+ 459              		.cfi_remember_state
+ 460              		.cfi_def_cfa_offset 0
+ 461 0118 67800000 		jr	ra
+ 462              	.L25:
+ 463              		.cfi_restore_state
+ 464              	.LBB3:
+ 161:../src/eth.c  **** 
+ 465              		.loc 1 161 9 is_stmt 1 discriminator 3
+ 160:../src/eth.c  ****         ;
+ 466              		.loc 1 160 48 is_stmt 0 discriminator 3
+ 467 011c 0328C100 		lw	a6,12(sp)
+ 468 0120 13081800 		addi	a6,a6,1
+ 469 0124 23260101 		sw	a6,12(sp)
+ 470 0128 6FF09FFB 		j	.L24
+ 471              	.LBE3:
+ 472              		.cfi_endproc
+ 473              	.LFE2:
+ 475              		.section	.text.phy_init,"ax",@progbits
+ 476              		.align	2
+ 477              		.globl	phy_init
+ 479              	phy_init:
+ 480              	.LFB3:
+ 175:../src/eth.c  **** 
+ 176:../src/eth.c  **** void phy_init(eth_core_regs_t* regs)
+ 177:../src/eth.c  **** {
+ 481              		.loc 1 177 1 is_stmt 1
+ 482              		.cfi_startproc
+ 483              	.LVL19:
+ 178:../src/eth.c  ****     volatile uint32_t phy_reg  = 0xFFFF;
+ 484              		.loc 1 178 5
+ 485              		.loc 1 178 23 is_stmt 0
+ 486 0000 B7070100 		li	a5,65536
+ 177:../src/eth.c  ****     volatile uint32_t phy_reg  = 0xFFFF;
+ 487              		.loc 1 177 1
+ 488 0004 130101FF 		addi	sp,sp,-16
+ 489              		.cfi_def_cfa_offset 16
+ 490              		.loc 1 178 23
+ 491 0008 9387F7FF 		addi	a5,a5,-1
+ 492 000c 2324F100 		sw	a5,8(sp)
+ 179:../src/eth.c  ****     volatile uint32_t temp_reg = 0xFFFF;
+ 493              		.loc 1 179 5 is_stmt 1
+ 494              		.loc 1 179 23 is_stmt 0
+ 495 0010 2326F100 		sw	a5,12(sp)
+ 180:../src/eth.c  ****     volatile uint16_t id1      = 0;
+ 496              		.loc 1 180 5 is_stmt 1
+ 181:../src/eth.c  ****     volatile uint16_t id2      = 0;
+ 182:../src/eth.c  **** 
+ 183:../src/eth.c  ****     // Select page 0
+ 184:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001F;
+ 497              		.loc 1 184 11 is_stmt 0
+ 498 0014 83260500 		lw	a3,0(a0)
+ 180:../src/eth.c  ****     volatile uint16_t id1      = 0;
+ 499              		.loc 1 180 23
+ 500 0018 23120100 		sh	zero,4(sp)
+ 181:../src/eth.c  ****     volatile uint16_t id2      = 0;
+ 501              		.loc 1 181 5 is_stmt 1
+ 181:../src/eth.c  ****     volatile uint16_t id2      = 0;
+ 502              		.loc 1 181 23 is_stmt 0
+ 503 001c 23130100 		sh	zero,6(sp)
+ 504              		.loc 1 184 5 is_stmt 1
+ 505              		.loc 1 184 36 is_stmt 0
+ 506 0020 9307F001 		li	a5,31
+ 185:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0000;
+ 507              		.loc 1 185 11
+ 508 0024 83258500 		lw	a1,8(a0)
+ 184:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0000;
+ 509              		.loc 1 184 36
+ 510 0028 23A0F600 		sw	a5,0(a3)
+ 511              		.loc 1 185 5 is_stmt 1
+ 186:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 512              		.loc 1 186 18 is_stmt 0
+ 513 002c 83270501 		lw	a5,16(a0)
+ 185:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0000;
+ 514              		.loc 1 185 36
+ 515 0030 23A00500 		sw	zero,0(a1)
+ 516              		.loc 1 186 5 is_stmt 1
+ 517              	.L39:
+ 187:../src/eth.c  ****         ;
+ 518              		.loc 1 187 9 discriminator 1
+ 186:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 519              		.loc 1 186 12 is_stmt 0 discriminator 1
+ 520 0034 03A70700 		lw	a4,0(a5)
+ 186:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 521              		.loc 1 186 11 discriminator 1
+ 522 0038 E31E07FE 		bne	a4,zero,.L39
+ 188:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 523              		.loc 1 188 5 is_stmt 1
+ 524              		.loc 1 188 11 is_stmt 0
+ 525 003c 03274500 		lw	a4,4(a0)
+ 526              		.loc 1 188 36
+ 527 0040 13061000 		li	a2,1
+ 528 0044 2320C700 		sw	a2,0(a4)
+ 189:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 529              		.loc 1 189 5 is_stmt 1
+ 530              	.L40:
+ 190:../src/eth.c  ****         ;
+ 531              		.loc 1 190 9 discriminator 1
+ 189:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 532              		.loc 1 189 12 is_stmt 0 discriminator 1
+ 533 0048 03A60700 		lw	a2,0(a5)
+ 189:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 534              		.loc 1 189 11 discriminator 1
+ 535 004c E31E06FE 		bne	a2,zero,.L40
+ 191:../src/eth.c  ****     temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 536              		.loc 1 191 5 is_stmt 1
+ 537              		.loc 1 191 44 is_stmt 0
+ 538 0050 0326C500 		lw	a2,12(a0)
+ 539              		.loc 1 191 38
+ 540 0054 03250600 		lw	a0,0(a2)
+ 541              	.LVL20:
+ 542              		.loc 1 191 36
+ 543 0058 2326A100 		sw	a0,12(sp)
+ 192:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 544              		.loc 1 192 5 is_stmt 1
+ 545              		.loc 1 192 36 is_stmt 0
+ 546 005c 23200700 		sw	zero,0(a4)
+ 193:../src/eth.c  **** 
+ 194:../src/eth.c  ****     // Read PHY ID
+ 195:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0002;
+ 547              		.loc 1 195 5 is_stmt 1
+ 548              		.loc 1 195 36 is_stmt 0
+ 549 0060 13052000 		li	a0,2
+ 550 0064 23A0A600 		sw	a0,0(a3)
+ 196:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 551              		.loc 1 196 5 is_stmt 1
+ 552              	.L41:
+ 197:../src/eth.c  ****         ;
+ 553              		.loc 1 197 9 discriminator 1
+ 196:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 554              		.loc 1 196 12 is_stmt 0 discriminator 1
+ 555 0068 03A50700 		lw	a0,0(a5)
+ 196:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 556              		.loc 1 196 11 discriminator 1
+ 557 006c E31E05FE 		bne	a0,zero,.L41
+ 198:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 558              		.loc 1 198 5 is_stmt 1
+ 559              		.loc 1 198 36 is_stmt 0
+ 560 0070 13051000 		li	a0,1
+ 561 0074 2320A700 		sw	a0,0(a4)
+ 199:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 562              		.loc 1 199 5 is_stmt 1
+ 563              	.L42:
+ 200:../src/eth.c  ****         ;
+ 564              		.loc 1 200 9 discriminator 1
+ 199:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 565              		.loc 1 199 12 is_stmt 0 discriminator 1
+ 566 0078 03A50700 		lw	a0,0(a5)
+ 199:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 567              		.loc 1 199 11 discriminator 1
+ 568 007c E31E05FE 		bne	a0,zero,.L42
+ 201:../src/eth.c  ****     id1                            = *(regs->mdio_mgmt_status_reg);
+ 569              		.loc 1 201 5 is_stmt 1
+ 570              		.loc 1 201 38 is_stmt 0
+ 571 0080 03250600 		lw	a0,0(a2)
+ 572              		.loc 1 201 36
+ 573 0084 13150501 		slli	a0,a0,16
+ 574 0088 13550501 		srli	a0,a0,16
+ 575 008c 2312A100 		sh	a0,4(sp)
+ 202:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 576              		.loc 1 202 5 is_stmt 1
+ 577              		.loc 1 202 36 is_stmt 0
+ 578 0090 23200700 		sw	zero,0(a4)
+ 203:../src/eth.c  **** 
+ 204:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0003;
+ 579              		.loc 1 204 5 is_stmt 1
+ 580              		.loc 1 204 36 is_stmt 0
+ 581 0094 13053000 		li	a0,3
+ 582 0098 23A0A600 		sw	a0,0(a3)
+ 205:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 583              		.loc 1 205 5 is_stmt 1
+ 584              	.L43:
+ 206:../src/eth.c  ****         ;
+ 585              		.loc 1 206 9 discriminator 1
+ 205:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 586              		.loc 1 205 12 is_stmt 0 discriminator 1
+ 587 009c 03A50700 		lw	a0,0(a5)
+ 205:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 588              		.loc 1 205 11 discriminator 1
+ 589 00a0 E31E05FE 		bne	a0,zero,.L43
+ 207:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 590              		.loc 1 207 5 is_stmt 1
+ 591              		.loc 1 207 36 is_stmt 0
+ 592 00a4 13051000 		li	a0,1
+ 593 00a8 2320A700 		sw	a0,0(a4)
+ 208:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 594              		.loc 1 208 5 is_stmt 1
+ 595              	.L44:
+ 209:../src/eth.c  ****         ;
+ 596              		.loc 1 209 9 discriminator 1
+ 208:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 597              		.loc 1 208 12 is_stmt 0 discriminator 1
+ 598 00ac 03A50700 		lw	a0,0(a5)
+ 208:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 599              		.loc 1 208 11 discriminator 1
+ 600 00b0 E31E05FE 		bne	a0,zero,.L44
+ 210:../src/eth.c  ****     id2                            = *(regs->mdio_mgmt_status_reg);
+ 601              		.loc 1 210 5 is_stmt 1
+ 602              		.loc 1 210 38 is_stmt 0
+ 603 00b4 03250600 		lw	a0,0(a2)
+ 604              		.loc 1 210 36
+ 605 00b8 13150501 		slli	a0,a0,16
+ 606 00bc 13550501 		srli	a0,a0,16
+ 607 00c0 2313A100 		sh	a0,6(sp)
+ 211:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 608              		.loc 1 211 5 is_stmt 1
+ 609              		.loc 1 211 36 is_stmt 0
+ 610 00c4 23200700 		sw	zero,0(a4)
+ 212:../src/eth.c  **** 
+ 213:../src/eth.c  ****     // Select page 0
+ 214:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001F;
+ 611              		.loc 1 214 5 is_stmt 1
+ 612              		.loc 1 214 36 is_stmt 0
+ 613 00c8 1305F001 		li	a0,31
+ 614 00cc 23A0A600 		sw	a0,0(a3)
+ 215:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0000;
+ 615              		.loc 1 215 5 is_stmt 1
+ 616              		.loc 1 215 36 is_stmt 0
+ 617 00d0 23A00500 		sw	zero,0(a1)
+ 216:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 618              		.loc 1 216 5 is_stmt 1
+ 619              	.L45:
+ 217:../src/eth.c  ****         ;
+ 620              		.loc 1 217 9 discriminator 1
+ 216:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 621              		.loc 1 216 12 is_stmt 0 discriminator 1
+ 622 00d4 03A50700 		lw	a0,0(a5)
+ 216:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 623              		.loc 1 216 11 discriminator 1
+ 624 00d8 E31E05FE 		bne	a0,zero,.L45
+ 218:../src/eth.c  **** 
+ 219:../src/eth.c  ****     // Extended PHY Control 1, Address 23 (0x17)
+ 220:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0017;
+ 625              		.loc 1 220 5 is_stmt 1
+ 626              		.loc 1 220 36 is_stmt 0
+ 627 00dc 13057001 		li	a0,23
+ 628 00e0 23A0A600 		sw	a0,0(a3)
+ 221:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) =
+ 629              		.loc 1 221 5 is_stmt 1
+ 630              		.loc 1 221 36 is_stmt 0
+ 631 00e4 37150000 		li	a0,4096
+ 632 00e8 23A0A500 		sw	a0,0(a1)
+ 222:../src/eth.c  ****         0x1000;  // MAC interface selection to RGMII
+ 223:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 633              		.loc 1 223 5 is_stmt 1
+ 634              	.L46:
+ 224:../src/eth.c  ****         ;
+ 635              		.loc 1 224 9 discriminator 1
+ 223:../src/eth.c  ****         ;
+ 636              		.loc 1 223 12 is_stmt 0 discriminator 1
+ 637 00ec 03A50700 		lw	a0,0(a5)
+ 223:../src/eth.c  ****         ;
+ 638              		.loc 1 223 11 discriminator 1
+ 639 00f0 E31E05FE 		bne	a0,zero,.L46
+ 225:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 640              		.loc 1 225 5 is_stmt 1
+ 641              		.loc 1 225 36 is_stmt 0
+ 642 00f4 13051000 		li	a0,1
+ 643 00f8 2320A700 		sw	a0,0(a4)
+ 226:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 644              		.loc 1 226 5 is_stmt 1
+ 645              	.L47:
+ 227:../src/eth.c  ****         ;
+ 646              		.loc 1 227 9 discriminator 1
+ 226:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 647              		.loc 1 226 12 is_stmt 0 discriminator 1
+ 648 00fc 03A50700 		lw	a0,0(a5)
+ 226:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 649              		.loc 1 226 11 discriminator 1
+ 650 0100 E31E05FE 		bne	a0,zero,.L47
+ 228:../src/eth.c  ****     temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 651              		.loc 1 228 5 is_stmt 1
+ 652              		.loc 1 228 38 is_stmt 0
+ 653 0104 03250600 		lw	a0,0(a2)
+ 654              		.loc 1 228 36
+ 655 0108 2326A100 		sw	a0,12(sp)
+ 229:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 656              		.loc 1 229 5 is_stmt 1
+ 657              		.loc 1 229 36 is_stmt 0
+ 658 010c 23200700 		sw	zero,0(a4)
+ 230:../src/eth.c  **** 
+ 231:../src/eth.c  ****     // // Extended PHY Control 1, Address 24 (0x18)
+ 232:../src/eth.c  ****     // *(regs->mdio_mgmt_address_reg) = 0x0017;
+ 233:../src/eth.c  ****     // *(regs->mdio_mgmt_control_reg) = 0x10;  // Enable Jumno Frame
+ 234:../src/eth.c  ****     // while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 235:../src/eth.c  ****     //     ;
+ 236:../src/eth.c  ****     // *(regs->mdio_mgmt_command_reg) = 0x1;
+ 237:../src/eth.c  ****     // while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 238:../src/eth.c  ****     //     ;
+ 239:../src/eth.c  ****     // temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 240:../src/eth.c  ****     // *(regs->mdio_mgmt_command_reg) = 0x0;
+ 241:../src/eth.c  **** 
+ 242:../src/eth.c  ****     // Mode Control, Address 0 (0x00)
+ 243:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0000;
+ 659              		.loc 1 243 5 is_stmt 1
+ 660              		.loc 1 243 36 is_stmt 0
+ 661 0110 23A00600 		sw	zero,0(a3)
+ 244:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 662              		.loc 1 244 5 is_stmt 1
+ 663              		.loc 1 244 36 is_stmt 0
+ 664 0114 13051000 		li	a0,1
+ 665 0118 2320A700 		sw	a0,0(a4)
+ 245:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 666              		.loc 1 245 5 is_stmt 1
+ 667              	.L48:
+ 246:../src/eth.c  ****         ;
+ 668              		.loc 1 246 9 discriminator 1
+ 245:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 669              		.loc 1 245 12 is_stmt 0 discriminator 1
+ 670 011c 03A50700 		lw	a0,0(a5)
+ 245:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 671              		.loc 1 245 11 discriminator 1
+ 672 0120 E31E05FE 		bne	a0,zero,.L48
+ 247:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 673              		.loc 1 247 5 is_stmt 1
+ 674              		.loc 1 247 38 is_stmt 0
+ 675 0124 03250600 		lw	a0,0(a2)
+ 248:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 249:../src/eth.c  **** 
+ 250:../src/eth.c  ****     // SW reset
+ 251:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0000;
+ 252:../src/eth.c  ****     phy_reg                        = phy_reg | 0x8000;
+ 676              		.loc 1 252 46
+ 677 0128 37880000 		li	a6,32768
+ 247:../src/eth.c  ****     phy_reg                        = *(regs->mdio_mgmt_status_reg);
+ 678              		.loc 1 247 36
+ 679 012c 2324A100 		sw	a0,8(sp)
+ 248:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 680              		.loc 1 248 5 is_stmt 1
+ 248:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 681              		.loc 1 248 36 is_stmt 0
+ 682 0130 23200700 		sw	zero,0(a4)
+ 251:../src/eth.c  ****     phy_reg                        = phy_reg | 0x8000;
+ 683              		.loc 1 251 5 is_stmt 1
+ 251:../src/eth.c  ****     phy_reg                        = phy_reg | 0x8000;
+ 684              		.loc 1 251 36 is_stmt 0
+ 685 0134 23A00600 		sw	zero,0(a3)
+ 686              		.loc 1 252 5 is_stmt 1
+ 687              		.loc 1 252 46 is_stmt 0
+ 688 0138 03258100 		lw	a0,8(sp)
+ 689 013c 33650501 		or	a0,a0,a6
+ 690              		.loc 1 252 36
+ 691 0140 2324A100 		sw	a0,8(sp)
+ 253:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = phy_reg;
+ 692              		.loc 1 253 5 is_stmt 1
+ 693              		.loc 1 253 36 is_stmt 0
+ 694 0144 03258100 		lw	a0,8(sp)
+ 695 0148 23A0A500 		sw	a0,0(a1)
+ 254:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 696              		.loc 1 254 5 is_stmt 1
+ 697              	.L49:
+ 255:../src/eth.c  ****         ;
+ 698              		.loc 1 255 9 discriminator 1
+ 254:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 699              		.loc 1 254 12 is_stmt 0 discriminator 1
+ 700 014c 03A50700 		lw	a0,0(a5)
+ 254:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 701              		.loc 1 254 11 discriminator 1
+ 702 0150 E31E05FE 		bne	a0,zero,.L49
+ 256:../src/eth.c  **** 
+ 257:../src/eth.c  ****     // Wait for soft reset to complete
+ 258:../src/eth.c  ****     do {
+ 259:../src/eth.c  ****         *(regs->mdio_mgmt_address_reg) = 0x0000;
+ 260:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x1;
+ 703              		.loc 1 260 40
+ 704 0154 13081000 		li	a6,1
+ 705              	.L51:
+ 258:../src/eth.c  ****         *(regs->mdio_mgmt_address_reg) = 0x0000;
+ 706              		.loc 1 258 5 is_stmt 1
+ 259:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x1;
+ 707              		.loc 1 259 9
+ 259:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x1;
+ 708              		.loc 1 259 40 is_stmt 0
+ 709 0158 23A00600 		sw	zero,0(a3)
+ 710              		.loc 1 260 9 is_stmt 1
+ 711              		.loc 1 260 40 is_stmt 0
+ 712 015c 23200701 		sw	a6,0(a4)
+ 261:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 713              		.loc 1 261 9 is_stmt 1
+ 714              	.L50:
+ 262:../src/eth.c  ****             ;
+ 715              		.loc 1 262 13 discriminator 1
+ 261:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 716              		.loc 1 261 16 is_stmt 0 discriminator 1
+ 717 0160 03A50700 		lw	a0,0(a5)
+ 261:../src/eth.c  ****         while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 718              		.loc 1 261 15 discriminator 1
+ 719 0164 E31E05FE 		bne	a0,zero,.L50
+ 263:../src/eth.c  ****         temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 720              		.loc 1 263 9 is_stmt 1
+ 721              		.loc 1 263 42 is_stmt 0
+ 722 0168 03250600 		lw	a0,0(a2)
+ 723              		.loc 1 263 40
+ 724 016c 2326A100 		sw	a0,12(sp)
+ 264:../src/eth.c  ****         *(regs->mdio_mgmt_command_reg) = 0x0;
+ 725              		.loc 1 264 9 is_stmt 1
+ 726              		.loc 1 264 40 is_stmt 0
+ 727 0170 23200700 		sw	zero,0(a4)
+ 265:../src/eth.c  ****     } while (0 != (temp_reg & 0x8000U));
+ 728              		.loc 1 265 29
+ 729 0174 0325C100 		lw	a0,12(sp)
+ 730              		.loc 1 265 5
+ 731 0178 93180501 		slli	a7,a0,16
+ 732 017c E3CE08FC 		blt	a7,zero,.L51
+ 266:../src/eth.c  **** 
+ 267:../src/eth.c  ****     // For RGMII mode: configure register 20E2 (to access register 20E2,
+ 268:../src/eth.c  ****     // register 31 must be set to 2).
+ 269:../src/eth.c  ****     // Set bit 11 to 0 and set RX_CLK delay and TX_CLK delay accordingly
+ 270:../src/eth.c  ****     // through bit [6:4] and/or bit [2:0]
+ 271:../src/eth.c  ****     // respectively.
+ 272:../src/eth.c  **** 
+ 273:../src/eth.c  ****     // Select page 2
+ 274:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001F;
+ 733              		.loc 1 274 5 is_stmt 1
+ 734              		.loc 1 274 36 is_stmt 0
+ 735 0180 1305F001 		li	a0,31
+ 736 0184 23A0A600 		sw	a0,0(a3)
+ 275:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0002;
+ 737              		.loc 1 275 5 is_stmt 1
+ 738              		.loc 1 275 36 is_stmt 0
+ 739 0188 13052000 		li	a0,2
+ 740 018c 23A0A500 		sw	a0,0(a1)
+ 276:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 741              		.loc 1 276 5 is_stmt 1
+ 742              	.L52:
+ 277:../src/eth.c  ****         ;
+ 743              		.loc 1 277 9 discriminator 1
+ 276:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 744              		.loc 1 276 12 is_stmt 0 discriminator 1
+ 745 0190 03A50700 		lw	a0,0(a5)
+ 276:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 746              		.loc 1 276 11 discriminator 1
+ 747 0194 E31E05FE 		bne	a0,zero,.L52
+ 278:../src/eth.c  **** 
+ 279:../src/eth.c  ****     // Adjust MAC interface slew rate - default is 111 but recommended for
+ 280:../src/eth.c  ****     // 3.3V i/o is 100. this is an extra step that is being done for the RTPF
+ 281:../src/eth.c  ****     // evaluation kit, as this uses 3.3V pins (bank 4 : ethernet phy pins)
+ 282:../src/eth.c  ****     // Adjust MAC interface slew rate
+ 283:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001B;
+ 748              		.loc 1 283 5 is_stmt 1
+ 749              		.loc 1 283 36 is_stmt 0
+ 750 0198 1305B001 		li	a0,27
+ 751 019c 23A0A600 		sw	a0,0(a3)
+ 284:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 752              		.loc 1 284 5 is_stmt 1
+ 753              		.loc 1 284 36 is_stmt 0
+ 754 01a0 13051000 		li	a0,1
+ 755 01a4 2320A700 		sw	a0,0(a4)
+ 285:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 756              		.loc 1 285 5 is_stmt 1
+ 757              	.L53:
+ 286:../src/eth.c  ****         ;
+ 758              		.loc 1 286 9 discriminator 1
+ 285:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 759              		.loc 1 285 12 is_stmt 0 discriminator 1
+ 760 01a8 03A50700 		lw	a0,0(a5)
+ 285:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 761              		.loc 1 285 11 discriminator 1
+ 762 01ac E31E05FE 		bne	a0,zero,.L53
+ 287:../src/eth.c  ****     temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 763              		.loc 1 287 5 is_stmt 1
+ 764              		.loc 1 287 38 is_stmt 0
+ 765 01b0 03250600 		lw	a0,0(a2)
+ 288:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 289:../src/eth.c  **** 
+ 290:../src/eth.c  ****     temp_reg = temp_reg & 0xFF1FU;
+ 766              		.loc 1 290 25
+ 767 01b4 37080100 		li	a6,65536
+ 768 01b8 1308F8F1 		addi	a6,a6,-225
+ 287:../src/eth.c  ****     temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 769              		.loc 1 287 36
+ 770 01bc 2326A100 		sw	a0,12(sp)
+ 288:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 771              		.loc 1 288 5 is_stmt 1
+ 288:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 772              		.loc 1 288 36 is_stmt 0
+ 773 01c0 23200700 		sw	zero,0(a4)
+ 774              		.loc 1 290 5 is_stmt 1
+ 775              		.loc 1 290 25 is_stmt 0
+ 776 01c4 0325C100 		lw	a0,12(sp)
+ 777 01c8 33750501 		and	a0,a0,a6
+ 778              		.loc 1 290 14
+ 779 01cc 2326A100 		sw	a0,12(sp)
+ 291:../src/eth.c  ****     temp_reg = temp_reg | 0x0080U;
+ 780              		.loc 1 291 5 is_stmt 1
+ 781              		.loc 1 291 25 is_stmt 0
+ 782 01d0 0325C100 		lw	a0,12(sp)
+ 783 01d4 13650508 		ori	a0,a0,128
+ 784              		.loc 1 291 14
+ 785 01d8 2326A100 		sw	a0,12(sp)
+ 292:../src/eth.c  **** 
+ 293:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001B;
+ 786              		.loc 1 293 5 is_stmt 1
+ 787              		.loc 1 293 36 is_stmt 0
+ 788 01dc 1305B001 		li	a0,27
+ 789 01e0 23A0A600 		sw	a0,0(a3)
+ 294:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = temp_reg;
+ 790              		.loc 1 294 5 is_stmt 1
+ 791              		.loc 1 294 36 is_stmt 0
+ 792 01e4 0325C100 		lw	a0,12(sp)
+ 793 01e8 23A0A500 		sw	a0,0(a1)
+ 295:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 794              		.loc 1 295 5 is_stmt 1
+ 795              	.L54:
+ 296:../src/eth.c  ****         ;
+ 796              		.loc 1 296 9 discriminator 1
+ 295:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 797              		.loc 1 295 12 is_stmt 0 discriminator 1
+ 798 01ec 03A50700 		lw	a0,0(a5)
+ 295:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 799              		.loc 1 295 11 discriminator 1
+ 800 01f0 E31E05FE 		bne	a0,zero,.L54
+ 297:../src/eth.c  **** 
+ 298:../src/eth.c  ****     // Select back page 0
+ 299:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x001F;
+ 801              		.loc 1 299 5 is_stmt 1
+ 802              		.loc 1 299 36 is_stmt 0
+ 803 01f4 1305F001 		li	a0,31
+ 804 01f8 23A0A600 		sw	a0,0(a3)
+ 300:../src/eth.c  ****     *(regs->mdio_mgmt_control_reg) = 0x0000;
+ 805              		.loc 1 300 5 is_stmt 1
+ 806              		.loc 1 300 36 is_stmt 0
+ 807 01fc 23A00500 		sw	zero,0(a1)
+ 301:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 808              		.loc 1 301 5 is_stmt 1
+ 809              	.L55:
+ 302:../src/eth.c  ****         ;
+ 810              		.loc 1 302 9 discriminator 1
+ 301:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 811              		.loc 1 301 12 is_stmt 0 discriminator 1
+ 812 0200 83A50700 		lw	a1,0(a5)
+ 301:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 813              		.loc 1 301 11 discriminator 1
+ 814 0204 E39E05FE 		bne	a1,zero,.L55
+ 303:../src/eth.c  **** 
+ 304:../src/eth.c  ****     *(regs->mdio_mgmt_address_reg) = 0x0001;
+ 815              		.loc 1 304 5 is_stmt 1
+ 816              		.loc 1 304 36 is_stmt 0
+ 817 0208 93051000 		li	a1,1
+ 818 020c 23A0B600 		sw	a1,0(a3)
+ 305:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 819              		.loc 1 305 5 is_stmt 1
+ 820              	.L56:
+ 306:../src/eth.c  ****         ;
+ 821              		.loc 1 306 9 discriminator 1
+ 305:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 822              		.loc 1 305 12 is_stmt 0 discriminator 1
+ 823 0210 83A60700 		lw	a3,0(a5)
+ 305:../src/eth.c  ****     while (*(regs->mdio_mgmt_indicators_reg) != 0)
+ 824              		.loc 1 305 11 discriminator 1
+ 825 0214 E39E06FE 		bne	a3,zero,.L56
+ 307:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x1;
+ 826              		.loc 1 307 5 is_stmt 1
+ 827              		.loc 1 307 36 is_stmt 0
+ 828 0218 93071000 		li	a5,1
+ 829 021c 2320F700 		sw	a5,0(a4)
+ 308:../src/eth.c  ****     temp_reg                       = *(regs->mdio_mgmt_status_reg);
+ 830              		.loc 1 308 5 is_stmt 1
+ 831              		.loc 1 308 38 is_stmt 0
+ 832 0220 83270600 		lw	a5,0(a2)
+ 833              		.loc 1 308 36
+ 834 0224 2326F100 		sw	a5,12(sp)
+ 309:../src/eth.c  ****     *(regs->mdio_mgmt_command_reg) = 0x0;
+ 835              		.loc 1 309 5 is_stmt 1
+ 836              		.loc 1 309 36 is_stmt 0
+ 837 0228 23200700 		sw	zero,0(a4)
+ 310:../src/eth.c  **** }
+ 838              		.loc 1 310 1
+ 839 022c 13010101 		addi	sp,sp,16
+ 840              		.cfi_def_cfa_offset 0
+ 841 0230 67800000 		jr	ra
+ 842              		.cfi_endproc
+ 843              	.LFE3:
+ 845              		.section	.text.tse_init,"ax",@progbits
+ 846              		.align	2
+ 847              		.globl	tse_init
+ 849              	tse_init:
+ 850              	.LFB4:
+ 311:../src/eth.c  **** 
+ 312:../src/eth.c  **** //------------------------------------------------------------------------------
+ 313:../src/eth.c  **** // Microchip CoreTSE IP Initialization
+ 314:../src/eth.c  **** //------------------------------------------------------------------------------
+ 315:../src/eth.c  **** void tse_init(eth_core_regs_t* regs)
+ 316:../src/eth.c  **** {
+ 851              		.loc 1 316 1 is_stmt 1
+ 852              		.cfi_startproc
+ 853              	.LVL21:
+ 317:../src/eth.c  ****     uint32_t tse_reg = 0xFFFF;
+ 854              		.loc 1 317 5
+ 318:../src/eth.c  ****     uint32_t phy_reg = 0x0;
+ 855              		.loc 1 318 5
+ 319:../src/eth.c  ****     uint32_t temp    = 0x0;
+ 856              		.loc 1 319 5
+ 320:../src/eth.c  **** 
+ 321:../src/eth.c  ****     tse_reg = *(regs->mac_fifo_config_reg);
+ 857              		.loc 1 321 5
+ 858              		.loc 1 321 21 is_stmt 0
+ 859 0000 83274501 		lw	a5,20(a0)
+ 322:../src/eth.c  **** 
+ 323:../src/eth.c  ****     *(regs->mac_config_1_reg) = 0x80000000;  // Soft Reset
+ 860              		.loc 1 323 31
+ 861 0004 37070080 		li	a4,-2147483648
+ 321:../src/eth.c  **** 
+ 862              		.loc 1 321 13
+ 863 0008 83A70700 		lw	a5,0(a5)
+ 864              	.LVL22:
+ 865              		.loc 1 323 5 is_stmt 1
+ 866              		.loc 1 323 11 is_stmt 0
+ 867 000c 83278501 		lw	a5,24(a0)
+ 868              		.loc 1 323 31
+ 869 0010 23A0E700 		sw	a4,0(a5)
+ 324:../src/eth.c  ****     *(regs->mac_config_1_reg) = 0x00000005;  // Tx and Rx enable
+ 870              		.loc 1 324 5 is_stmt 1
+ 871              		.loc 1 324 31 is_stmt 0
+ 872 0014 13075000 		li	a4,5
+ 873 0018 23A0E700 		sw	a4,0(a5)
+ 325:../src/eth.c  ****     *(regs->mac_config_2_reg) =
+ 874              		.loc 1 325 5 is_stmt 1
+ 875              		.loc 1 325 11 is_stmt 0
+ 876 001c 0327C501 		lw	a4,28(a0)
+ 877              		.loc 1 325 31
+ 878 0020 B7770000 		li	a5,28672
+ 879 0024 93877721 		addi	a5,a5,535
+ 880 0028 2320F700 		sw	a5,0(a4)
+ 326:../src/eth.c  ****         0x00007217;  // Full Duplex, CRC, len checking, enable zero padding
+ 327:../src/eth.c  ****     // *(regs->mac_config_2_reg) =
+ 328:../src/eth.c  ****     //     0x00007233;  // Full Duplex, CRC, len checking, Huge Frame
+ 329:../src/eth.c  ****     *(regs->mac_max_frame_len_reg) = 0x00001000;  // Maximum frame size
+ 881              		.loc 1 329 5 is_stmt 1
+ 882              		.loc 1 329 11 is_stmt 0
+ 883 002c 83270502 		lw	a5,32(a0)
+ 884              		.loc 1 329 36
+ 885 0030 37170000 		li	a4,4096
+ 886 0034 23A0E700 		sw	a4,0(a5)
+ 330:../src/eth.c  ****     *(regs->station_address_lower_reg) =
+ 887              		.loc 1 330 5 is_stmt 1
+ 888              		.loc 1 330 11 is_stmt 0
+ 889 0038 03274502 		lw	a4,36(a0)
+ 890              		.loc 1 330 40
+ 891 003c B7676060 		li	a5,1616928768
+ 892 0040 9387C703 		addi	a5,a5,60
+ 893 0044 2320F700 		sw	a5,0(a4)
+ 331:../src/eth.c  ****         0x6060603C;  // Destination address lower
+ 332:../src/eth.c  ****     *(regs->station_address_higher_reg) =
+ 894              		.loc 1 332 5 is_stmt 1
+ 895              		.loc 1 332 11 is_stmt 0
+ 896 0048 83278502 		lw	a5,40(a0)
+ 897              		.loc 1 332 41
+ 898 004c 3707C0B1 		li	a4,-1312817152
+ 899 0050 23A0E700 		sw	a4,0(a5)
+ 333:../src/eth.c  ****         0xB1C00000;  // Destination address higher
+ 334:../src/eth.c  ****     *(regs->mac_fifo_config_reg0)     = 0x0000FF00;
+ 900              		.loc 1 334 5 is_stmt 1
+ 901              		.loc 1 334 11 is_stmt 0
+ 902 0054 0327C502 		lw	a4,44(a0)
+ 903              		.loc 1 334 39
+ 904 0058 B7070100 		li	a5,65536
+ 905 005c 938707F0 		addi	a5,a5,-256
+ 906 0060 2320F700 		sw	a5,0(a4)
+ 335:../src/eth.c  ****     *(regs->mac_fifo_config_reg1)     = 0x0FFF0000;
+ 907              		.loc 1 335 5 is_stmt 1
+ 908              		.loc 1 335 11 is_stmt 0
+ 909 0064 83270503 		lw	a5,48(a0)
+ 910              		.loc 1 335 39
+ 911 0068 3707FF0F 		li	a4,268369920
+ 912 006c 23A0E700 		sw	a4,0(a5)
+ 336:../src/eth.c  ****     *(regs->mac_fifo_config_reg2)     = 0x04000180;
+ 913              		.loc 1 336 5 is_stmt 1
+ 914              		.loc 1 336 11 is_stmt 0
+ 915 0070 03274503 		lw	a4,52(a0)
+ 916              		.loc 1 336 39
+ 917 0074 B7070004 		li	a5,67108864
+ 918 0078 93870718 		addi	a5,a5,384
+ 919 007c 2320F700 		sw	a5,0(a4)
+ 337:../src/eth.c  ****     *(regs->mac_fifo_config_reg3)     = 0x0680FFFF;
+ 920              		.loc 1 337 5 is_stmt 1
+ 921              		.loc 1 337 11 is_stmt 0
+ 922 0080 03278503 		lw	a4,56(a0)
+ 923              		.loc 1 337 39
+ 924 0084 B7078106 		li	a5,109117440
+ 925 0088 9387F7FF 		addi	a5,a5,-1
+ 926 008c 2320F700 		sw	a5,0(a4)
+ 338:../src/eth.c  ****     *(regs->mac_fifo_config_reg4)     = 0x00000000;
+ 927              		.loc 1 338 5 is_stmt 1
+ 928              		.loc 1 338 11 is_stmt 0
+ 929 0090 8327C503 		lw	a5,60(a0)
+ 339:../src/eth.c  ****     *(regs->mac_fifo_config_reg5)     = 0x0003FFFF;
+ 930              		.loc 1 339 11
+ 931 0094 03270504 		lw	a4,64(a0)
+ 338:../src/eth.c  ****     *(regs->mac_fifo_config_reg4)     = 0x00000000;
+ 932              		.loc 1 338 39
+ 933 0098 23A00700 		sw	zero,0(a5)
+ 934              		.loc 1 339 5 is_stmt 1
+ 935              		.loc 1 339 39 is_stmt 0
+ 936 009c B7070400 		li	a5,262144
+ 937 00a0 9387F7FF 		addi	a5,a5,-1
+ 938 00a4 2320F700 		sw	a5,0(a4)
+ 340:../src/eth.c  ****     *(regs->frame_control_filter_reg) = 0x0000000F;
+ 939              		.loc 1 340 5 is_stmt 1
+ 940              		.loc 1 340 11 is_stmt 0
+ 941 00a8 83274504 		lw	a5,68(a0)
+ 942              		.loc 1 340 39
+ 943 00ac 1307F000 		li	a4,15
+ 944 00b0 23A0E700 		sw	a4,0(a5)
+ 341:../src/eth.c  ****     *(regs->mdio_mgmt_config_reg)     = 0x0007;  // Source clock divided by 28
+ 945              		.loc 1 341 5 is_stmt 1
+ 946              		.loc 1 341 11 is_stmt 0
+ 947 00b4 83278504 		lw	a5,72(a0)
+ 948              		.loc 1 341 39
+ 949 00b8 13077000 		li	a4,7
+ 950 00bc 23A0E700 		sw	a4,0(a5)
+ 342:../src/eth.c  ****     *(regs->interface_control_reg)    = 0x4;     // Clear all MDIO counters
+ 951              		.loc 1 342 5 is_stmt 1
+ 952              		.loc 1 342 11 is_stmt 0
+ 953 00c0 8327C504 		lw	a5,76(a0)
+ 954              		.loc 1 342 39
+ 955 00c4 13074000 		li	a4,4
+ 956 00c8 23A0E700 		sw	a4,0(a5)
+ 343:../src/eth.c  **** }
+ 957              		.loc 1 343 1
+ 958 00cc 67800000 		ret
+ 959              		.cfi_endproc
+ 960              	.LFE4:
+ 962              		.text
+ 963              	.Letext0:
+ 964              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 965              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 966              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/eth.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 eth.c
+<<<<<<< HEAD
+     /tmp/cc26C0JP.s:13     .text.eth_core_init_regs:0000000000000000 eth_core_init_regs
+     /tmp/cc26C0JP.s:17     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:19     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:20     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:21     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:23     .text.eth_core_init_regs:0000000000000004 .L0 
+     /tmp/cc26C0JP.s:25     .text.eth_core_init_regs:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:27     .text.eth_core_init_regs:000000000000000c .L0 
+     /tmp/cc26C0JP.s:29     .text.eth_core_init_regs:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:31     .text.eth_core_init_regs:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:33     .text.eth_core_init_regs:0000000000000018 .L0 
+     /tmp/cc26C0JP.s:35     .text.eth_core_init_regs:000000000000001c .L0 
+     /tmp/cc26C0JP.s:37     .text.eth_core_init_regs:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:39     .text.eth_core_init_regs:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:41     .text.eth_core_init_regs:0000000000000028 .L0 
+     /tmp/cc26C0JP.s:43     .text.eth_core_init_regs:000000000000002c .L0 
+     /tmp/cc26C0JP.s:45     .text.eth_core_init_regs:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:47     .text.eth_core_init_regs:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:49     .text.eth_core_init_regs:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:51     .text.eth_core_init_regs:000000000000003c .L0 
+     /tmp/cc26C0JP.s:53     .text.eth_core_init_regs:0000000000000040 .L0 
+     /tmp/cc26C0JP.s:55     .text.eth_core_init_regs:0000000000000044 .L0 
+     /tmp/cc26C0JP.s:57     .text.eth_core_init_regs:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:59     .text.eth_core_init_regs:000000000000004c .L0 
+     /tmp/cc26C0JP.s:61     .text.eth_core_init_regs:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:63     .text.eth_core_init_regs:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:65     .text.eth_core_init_regs:0000000000000058 .L0 
+     /tmp/cc26C0JP.s:67     .text.eth_core_init_regs:000000000000005c .L0 
+     /tmp/cc26C0JP.s:69     .text.eth_core_init_regs:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:71     .text.eth_core_init_regs:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:73     .text.eth_core_init_regs:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:75     .text.eth_core_init_regs:000000000000006c .L0 
+     /tmp/cc26C0JP.s:77     .text.eth_core_init_regs:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:79     .text.eth_core_init_regs:0000000000000074 .L0 
+     /tmp/cc26C0JP.s:81     .text.eth_core_init_regs:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:83     .text.eth_core_init_regs:000000000000007c .L0 
+     /tmp/cc26C0JP.s:85     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:86     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:87     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:88     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:89     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:90     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:91     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:92     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:93     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:94     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:95     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:96     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:97     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:98     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:99     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:100    .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:101    .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:103    .text.eth_core_init_regs:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:104    .text.eth_core_init_regs:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:106    .text.eth_core_init_regs:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:109    .text.eth_core_init_regs:000000000000008c .L0 
+     /tmp/cc26C0JP.s:111    .text.eth_core_init_regs:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:112    .text.eth_core_init_regs:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:114    .text.eth_core_init_regs:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:115    .text.eth_core_init_regs:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:117    .text.eth_core_init_regs:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:118    .text.eth_core_init_regs:000000000000009c .L0 
+     /tmp/cc26C0JP.s:125    .text.phy_advertise:0000000000000000 phy_advertise
+     /tmp/cc26C0JP.s:128    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:130    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:131    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:132    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:133    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:135    .text.phy_advertise:0000000000000004 .L0 
+     /tmp/cc26C0JP.s:137    .text.phy_advertise:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:140    .text.phy_advertise:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:141    .text.phy_advertise:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:144    .text.phy_advertise:0000000000000018 .L0 
+     /tmp/cc26C0JP.s:145    .text.phy_advertise:0000000000000018 .L0 
+     /tmp/cc26C0JP.s:148    .text.phy_advertise:000000000000001c .L0 
+     /tmp/cc26C0JP.s:149    .text.phy_advertise:000000000000001c .L0 
+     /tmp/cc26C0JP.s:151    .text.phy_advertise:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:153    .text.phy_advertise:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:154    .text.phy_advertise:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:156    .text.phy_advertise:0000000000000028 .L0 
+     /tmp/cc26C0JP.s:160    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:161    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:162    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:164    .text.phy_advertise:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:166    .text.phy_advertise:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:167    .text.phy_advertise:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:170    .text.phy_advertise:000000000000003c .L0 
+     /tmp/cc26C0JP.s:172    .text.phy_advertise:0000000000000040 .L0 
+     /tmp/cc26C0JP.s:175    .text.phy_advertise:0000000000000044 .L0 
+     /tmp/cc26C0JP.s:176    .text.phy_advertise:0000000000000044 .L0 
+     /tmp/cc26C0JP.s:178    .text.phy_advertise:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:179    .text.phy_advertise:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:181    .text.phy_advertise:000000000000004c .L0 
+     /tmp/cc26C0JP.s:184    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:185    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:186    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:190    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:191    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:192    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:194    .text.phy_advertise:0000000000000058 .L0 
+     /tmp/cc26C0JP.s:196    .text.phy_advertise:000000000000005c .L0 
+     /tmp/cc26C0JP.s:197    .text.phy_advertise:000000000000005c .L0 
+     /tmp/cc26C0JP.s:201    .text.phy_advertise:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:202    .text.phy_advertise:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:206    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc26C0JP.s:207    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc26C0JP.s:208    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc26C0JP.s:210    .text.phy_advertise:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:212    .text.phy_advertise:0000000000000074 .L0 
+     /tmp/cc26C0JP.s:213    .text.phy_advertise:0000000000000074 .L0 
+     /tmp/cc26C0JP.s:217    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc26C0JP.s:218    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc26C0JP.s:219    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc26C0JP.s:221    .text.phy_advertise:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:223    .text.phy_advertise:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:224    .text.phy_advertise:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:227    .text.phy_advertise:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:228    .text.phy_advertise:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:230    .text.phy_advertise:000000000000008c .L0 
+     /tmp/cc26C0JP.s:231    .text.phy_advertise:000000000000008c .L0 
+     /tmp/cc26C0JP.s:234    .text.phy_advertise:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:235    .text.phy_advertise:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:238    .text.phy_advertise:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:239    .text.phy_advertise:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:242    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc26C0JP.s:243    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc26C0JP.s:244    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc26C0JP.s:246    .text.phy_advertise:00000000000000a0 .L0 
+     /tmp/cc26C0JP.s:248    .text.phy_advertise:00000000000000a4 .L0 
+     /tmp/cc26C0JP.s:249    .text.phy_advertise:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:256    .text.phy_autonegotiation:0000000000000000 phy_autonegotiation
+     /tmp/cc26C0JP.s:259    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:261    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:262    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:263    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:264    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:265    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:267    .text.phy_autonegotiation:0000000000000004 .L0 
+     /tmp/cc26C0JP.s:268    .text.phy_autonegotiation:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:270    .text.phy_autonegotiation:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:273    .text.phy_autonegotiation:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:274    .text.phy_autonegotiation:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:276    .text.phy_autonegotiation:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:279    .text.phy_autonegotiation:000000000000001c .L0 
+     /tmp/cc26C0JP.s:281    .text.phy_autonegotiation:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:283    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:284    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:285    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:288    .text.phy_autonegotiation:000000000000002c .L0 
+     /tmp/cc26C0JP.s:289    .text.phy_autonegotiation:000000000000002c .L0 
+     /tmp/cc26C0JP.s:292    .text.phy_autonegotiation:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:293    .text.phy_autonegotiation:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:296    .text.phy_autonegotiation:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:297    .text.phy_autonegotiation:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:299    .text.phy_autonegotiation:000000000000003c .L0 
+     /tmp/cc26C0JP.s:301    .text.phy_autonegotiation:0000000000000040 .L0 
+     /tmp/cc26C0JP.s:302    .text.phy_autonegotiation:0000000000000040 .L0 
+     /tmp/cc26C0JP.s:304    .text.phy_autonegotiation:0000000000000044 .L0 
+     /tmp/cc26C0JP.s:305    .text.phy_autonegotiation:0000000000000044 .L0 
+     /tmp/cc26C0JP.s:309    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc26C0JP.s:310    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc26C0JP.s:311    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc26C0JP.s:313    .text.phy_autonegotiation:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:315    .text.phy_autonegotiation:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:316    .text.phy_autonegotiation:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:318    .text.phy_autonegotiation:0000000000000058 .L0 
+     /tmp/cc26C0JP.s:322    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:323    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:324    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:326    .text.phy_autonegotiation:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:328    .text.phy_autonegotiation:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:329    .text.phy_autonegotiation:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:331    .text.phy_autonegotiation:000000000000006c .L0 
+     /tmp/cc26C0JP.s:334    .text.phy_autonegotiation:0000000000000074 .L0 
+     /tmp/cc26C0JP.s:337    .text.phy_autonegotiation:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:338    .text.phy_autonegotiation:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:340    .text.phy_autonegotiation:000000000000007c .L0 
+     /tmp/cc26C0JP.s:341    .text.phy_autonegotiation:000000000000007c .L0 
+     /tmp/cc26C0JP.s:343    .text.phy_autonegotiation:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:346    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:347    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:348    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:352    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:353    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:354    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc26C0JP.s:356    .text.phy_autonegotiation:000000000000008c .L0 
+     /tmp/cc26C0JP.s:358    .text.phy_autonegotiation:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:362    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:363    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:364    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:366    .text.phy_autonegotiation:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:367    .text.phy_autonegotiation:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:370    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc26C0JP.s:371    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc26C0JP.s:372    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc26C0JP.s:374    .text.phy_autonegotiation:00000000000000a0 .L0 
+     /tmp/cc26C0JP.s:376    .text.phy_autonegotiation:00000000000000a4 .L0 
+     /tmp/cc26C0JP.s:377    .text.phy_autonegotiation:00000000000000a4 .L0 
+     /tmp/cc26C0JP.s:380    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:381    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:382    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:384    .text.phy_autonegotiation:00000000000000ac .L0 
+     /tmp/cc26C0JP.s:386    .text.phy_autonegotiation:00000000000000b0 .L0 
+     /tmp/cc26C0JP.s:387    .text.phy_autonegotiation:00000000000000b0 .L0 
+     /tmp/cc26C0JP.s:390    .text.phy_autonegotiation:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:391    .text.phy_autonegotiation:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:394    .text.phy_autonegotiation:00000000000000b8 .L0 
+     /tmp/cc26C0JP.s:395    .text.phy_autonegotiation:00000000000000b8 .L0 
+     /tmp/cc26C0JP.s:397    .text.phy_autonegotiation:00000000000000bc .L0 
+     /tmp/cc26C0JP.s:400    .text.phy_autonegotiation:00000000000000c0 .L0 
+     /tmp/cc26C0JP.s:403    .text.phy_autonegotiation:00000000000000c8 .L0 
+     /tmp/cc26C0JP.s:405    .text.phy_autonegotiation:00000000000000cc .L0 
+     /tmp/cc26C0JP.s:407    .text.phy_autonegotiation:00000000000000d0 .L0 
+     /tmp/cc26C0JP.s:411    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:412    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:413    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:415    .text.phy_autonegotiation:00000000000000d8 .L0 
+     /tmp/cc26C0JP.s:417    .text.phy_autonegotiation:00000000000000dc .L0 
+     /tmp/cc26C0JP.s:420    .text.phy_autonegotiation:00000000000000e0 .L0 
+     /tmp/cc26C0JP.s:422    .text.phy_autonegotiation:00000000000000e4 .L0 
+     /tmp/cc26C0JP.s:425    .text.phy_autonegotiation:00000000000000e8 .L0 
+     /tmp/cc26C0JP.s:426    .text.phy_autonegotiation:00000000000000e8 .L0 
+     /tmp/cc26C0JP.s:429    .text.phy_autonegotiation:00000000000000f0 .L0 
+     /tmp/cc26C0JP.s:430    .text.phy_autonegotiation:00000000000000f0 .L0 
+     /tmp/cc26C0JP.s:433    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc26C0JP.s:434    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc26C0JP.s:435    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc26C0JP.s:437    .text.phy_autonegotiation:00000000000000f8 .L0 
+     /tmp/cc26C0JP.s:439    .text.phy_autonegotiation:00000000000000fc .L0 
+     /tmp/cc26C0JP.s:440    .text.phy_autonegotiation:00000000000000fc .L0 
+     /tmp/cc26C0JP.s:444    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc26C0JP.s:445    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc26C0JP.s:446    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc26C0JP.s:448    .text.phy_autonegotiation:0000000000000108 .L0 
+     /tmp/cc26C0JP.s:450    .text.phy_autonegotiation:000000000000010c .L0 
+     /tmp/cc26C0JP.s:451    .text.phy_autonegotiation:000000000000010c .L0 
+     /tmp/cc26C0JP.s:453    .text.phy_autonegotiation:0000000000000110 .L0 
+     /tmp/cc26C0JP.s:454    .text.phy_autonegotiation:0000000000000110 .L0 
+     /tmp/cc26C0JP.s:457    .text.phy_autonegotiation:0000000000000114 .L0 
+     /tmp/cc26C0JP.s:458    .text.phy_autonegotiation:0000000000000114 .L0 
+     /tmp/cc26C0JP.s:459    .text.phy_autonegotiation:0000000000000118 .L0 
+     /tmp/cc26C0JP.s:460    .text.phy_autonegotiation:0000000000000118 .L0 
+     /tmp/cc26C0JP.s:463    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc26C0JP.s:466    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc26C0JP.s:467    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc26C0JP.s:472    .text.phy_autonegotiation:000000000000012c .L0 
+     /tmp/cc26C0JP.s:479    .text.phy_init:0000000000000000 phy_init
+     /tmp/cc26C0JP.s:482    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:484    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:485    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:486    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:488    .text.phy_init:0000000000000004 .L0 
+     /tmp/cc26C0JP.s:489    .text.phy_init:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:491    .text.phy_init:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:494    .text.phy_init:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:495    .text.phy_init:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:497    .text.phy_init:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:498    .text.phy_init:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:500    .text.phy_init:0000000000000018 .L0 
+     /tmp/cc26C0JP.s:502    .text.phy_init:000000000000001c .L0 
+     /tmp/cc26C0JP.s:503    .text.phy_init:000000000000001c .L0 
+     /tmp/cc26C0JP.s:505    .text.phy_init:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:506    .text.phy_init:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:508    .text.phy_init:0000000000000024 .L0 
+     /tmp/cc26C0JP.s:510    .text.phy_init:0000000000000028 .L0 
+     /tmp/cc26C0JP.s:512    .text.phy_init:000000000000002c .L0 
+     /tmp/cc26C0JP.s:513    .text.phy_init:000000000000002c .L0 
+     /tmp/cc26C0JP.s:515    .text.phy_init:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:518    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:519    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:520    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc26C0JP.s:522    .text.phy_init:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:524    .text.phy_init:000000000000003c .L0 
+     /tmp/cc26C0JP.s:525    .text.phy_init:000000000000003c .L0 
+     /tmp/cc26C0JP.s:527    .text.phy_init:0000000000000040 .L0 
+     /tmp/cc26C0JP.s:531    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:532    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:533    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:535    .text.phy_init:000000000000004c .L0 
+     /tmp/cc26C0JP.s:537    .text.phy_init:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:538    .text.phy_init:0000000000000050 .L0 
+     /tmp/cc26C0JP.s:540    .text.phy_init:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:543    .text.phy_init:0000000000000058 .L0 
+     /tmp/cc26C0JP.s:545    .text.phy_init:000000000000005c .L0 
+     /tmp/cc26C0JP.s:546    .text.phy_init:000000000000005c .L0 
+     /tmp/cc26C0JP.s:548    .text.phy_init:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:549    .text.phy_init:0000000000000060 .L0 
+     /tmp/cc26C0JP.s:553    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:554    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:555    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:557    .text.phy_init:000000000000006c .L0 
+     /tmp/cc26C0JP.s:559    .text.phy_init:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:560    .text.phy_init:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:564    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:565    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:566    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc26C0JP.s:568    .text.phy_init:000000000000007c .L0 
+     /tmp/cc26C0JP.s:570    .text.phy_init:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:571    .text.phy_init:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:573    .text.phy_init:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:577    .text.phy_init:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:578    .text.phy_init:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:580    .text.phy_init:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:581    .text.phy_init:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:585    .text.phy_init:000000000000009c .L0 
+     /tmp/cc26C0JP.s:586    .text.phy_init:000000000000009c .L0 
+     /tmp/cc26C0JP.s:587    .text.phy_init:000000000000009c .L0 
+     /tmp/cc26C0JP.s:589    .text.phy_init:00000000000000a0 .L0 
+     /tmp/cc26C0JP.s:591    .text.phy_init:00000000000000a4 .L0 
+     /tmp/cc26C0JP.s:592    .text.phy_init:00000000000000a4 .L0 
+     /tmp/cc26C0JP.s:596    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc26C0JP.s:597    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc26C0JP.s:598    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc26C0JP.s:600    .text.phy_init:00000000000000b0 .L0 
+     /tmp/cc26C0JP.s:602    .text.phy_init:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:603    .text.phy_init:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:605    .text.phy_init:00000000000000b8 .L0 
+     /tmp/cc26C0JP.s:609    .text.phy_init:00000000000000c4 .L0 
+     /tmp/cc26C0JP.s:610    .text.phy_init:00000000000000c4 .L0 
+     /tmp/cc26C0JP.s:612    .text.phy_init:00000000000000c8 .L0 
+     /tmp/cc26C0JP.s:613    .text.phy_init:00000000000000c8 .L0 
+     /tmp/cc26C0JP.s:616    .text.phy_init:00000000000000d0 .L0 
+     /tmp/cc26C0JP.s:617    .text.phy_init:00000000000000d0 .L0 
+     /tmp/cc26C0JP.s:620    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:621    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:622    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc26C0JP.s:624    .text.phy_init:00000000000000d8 .L0 
+     /tmp/cc26C0JP.s:626    .text.phy_init:00000000000000dc .L0 
+     /tmp/cc26C0JP.s:627    .text.phy_init:00000000000000dc .L0 
+     /tmp/cc26C0JP.s:630    .text.phy_init:00000000000000e4 .L0 
+     /tmp/cc26C0JP.s:631    .text.phy_init:00000000000000e4 .L0 
+     /tmp/cc26C0JP.s:635    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc26C0JP.s:636    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc26C0JP.s:637    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc26C0JP.s:639    .text.phy_init:00000000000000f0 .L0 
+     /tmp/cc26C0JP.s:641    .text.phy_init:00000000000000f4 .L0 
+     /tmp/cc26C0JP.s:642    .text.phy_init:00000000000000f4 .L0 
+     /tmp/cc26C0JP.s:646    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc26C0JP.s:647    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc26C0JP.s:648    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc26C0JP.s:650    .text.phy_init:0000000000000100 .L0 
+     /tmp/cc26C0JP.s:652    .text.phy_init:0000000000000104 .L0 
+     /tmp/cc26C0JP.s:653    .text.phy_init:0000000000000104 .L0 
+     /tmp/cc26C0JP.s:655    .text.phy_init:0000000000000108 .L0 
+     /tmp/cc26C0JP.s:657    .text.phy_init:000000000000010c .L0 
+     /tmp/cc26C0JP.s:658    .text.phy_init:000000000000010c .L0 
+     /tmp/cc26C0JP.s:660    .text.phy_init:0000000000000110 .L0 
+     /tmp/cc26C0JP.s:661    .text.phy_init:0000000000000110 .L0 
+     /tmp/cc26C0JP.s:663    .text.phy_init:0000000000000114 .L0 
+     /tmp/cc26C0JP.s:664    .text.phy_init:0000000000000114 .L0 
+     /tmp/cc26C0JP.s:668    .text.phy_init:000000000000011c .L0 
+     /tmp/cc26C0JP.s:669    .text.phy_init:000000000000011c .L0 
+     /tmp/cc26C0JP.s:670    .text.phy_init:000000000000011c .L0 
+     /tmp/cc26C0JP.s:672    .text.phy_init:0000000000000120 .L0 
+     /tmp/cc26C0JP.s:674    .text.phy_init:0000000000000124 .L0 
+     /tmp/cc26C0JP.s:675    .text.phy_init:0000000000000124 .L0 
+     /tmp/cc26C0JP.s:677    .text.phy_init:0000000000000128 .L0 
+     /tmp/cc26C0JP.s:679    .text.phy_init:000000000000012c .L0 
+     /tmp/cc26C0JP.s:681    .text.phy_init:0000000000000130 .L0 
+     /tmp/cc26C0JP.s:682    .text.phy_init:0000000000000130 .L0 
+     /tmp/cc26C0JP.s:684    .text.phy_init:0000000000000134 .L0 
+     /tmp/cc26C0JP.s:685    .text.phy_init:0000000000000134 .L0 
+     /tmp/cc26C0JP.s:687    .text.phy_init:0000000000000138 .L0 
+     /tmp/cc26C0JP.s:688    .text.phy_init:0000000000000138 .L0 
+     /tmp/cc26C0JP.s:691    .text.phy_init:0000000000000140 .L0 
+     /tmp/cc26C0JP.s:693    .text.phy_init:0000000000000144 .L0 
+     /tmp/cc26C0JP.s:694    .text.phy_init:0000000000000144 .L0 
+     /tmp/cc26C0JP.s:698    .text.phy_init:000000000000014c .L0 
+     /tmp/cc26C0JP.s:699    .text.phy_init:000000000000014c .L0 
+     /tmp/cc26C0JP.s:700    .text.phy_init:000000000000014c .L0 
+     /tmp/cc26C0JP.s:702    .text.phy_init:0000000000000150 .L0 
+     /tmp/cc26C0JP.s:704    .text.phy_init:0000000000000154 .L0 
+     /tmp/cc26C0JP.s:707    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc26C0JP.s:708    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc26C0JP.s:709    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc26C0JP.s:711    .text.phy_init:000000000000015c .L0 
+     /tmp/cc26C0JP.s:712    .text.phy_init:000000000000015c .L0 
+     /tmp/cc26C0JP.s:715    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc26C0JP.s:716    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc26C0JP.s:717    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc26C0JP.s:719    .text.phy_init:0000000000000164 .L0 
+     /tmp/cc26C0JP.s:721    .text.phy_init:0000000000000168 .L0 
+     /tmp/cc26C0JP.s:722    .text.phy_init:0000000000000168 .L0 
+     /tmp/cc26C0JP.s:724    .text.phy_init:000000000000016c .L0 
+     /tmp/cc26C0JP.s:726    .text.phy_init:0000000000000170 .L0 
+     /tmp/cc26C0JP.s:727    .text.phy_init:0000000000000170 .L0 
+     /tmp/cc26C0JP.s:729    .text.phy_init:0000000000000174 .L0 
+     /tmp/cc26C0JP.s:731    .text.phy_init:0000000000000178 .L0 
+     /tmp/cc26C0JP.s:734    .text.phy_init:0000000000000180 .L0 
+     /tmp/cc26C0JP.s:735    .text.phy_init:0000000000000180 .L0 
+     /tmp/cc26C0JP.s:738    .text.phy_init:0000000000000188 .L0 
+     /tmp/cc26C0JP.s:739    .text.phy_init:0000000000000188 .L0 
+     /tmp/cc26C0JP.s:743    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc26C0JP.s:744    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc26C0JP.s:745    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc26C0JP.s:747    .text.phy_init:0000000000000194 .L0 
+     /tmp/cc26C0JP.s:749    .text.phy_init:0000000000000198 .L0 
+     /tmp/cc26C0JP.s:750    .text.phy_init:0000000000000198 .L0 
+     /tmp/cc26C0JP.s:753    .text.phy_init:00000000000001a0 .L0 
+     /tmp/cc26C0JP.s:754    .text.phy_init:00000000000001a0 .L0 
+     /tmp/cc26C0JP.s:758    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc26C0JP.s:759    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc26C0JP.s:760    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc26C0JP.s:762    .text.phy_init:00000000000001ac .L0 
+     /tmp/cc26C0JP.s:764    .text.phy_init:00000000000001b0 .L0 
+     /tmp/cc26C0JP.s:765    .text.phy_init:00000000000001b0 .L0 
+     /tmp/cc26C0JP.s:767    .text.phy_init:00000000000001b4 .L0 
+     /tmp/cc26C0JP.s:770    .text.phy_init:00000000000001bc .L0 
+     /tmp/cc26C0JP.s:772    .text.phy_init:00000000000001c0 .L0 
+     /tmp/cc26C0JP.s:773    .text.phy_init:00000000000001c0 .L0 
+     /tmp/cc26C0JP.s:775    .text.phy_init:00000000000001c4 .L0 
+     /tmp/cc26C0JP.s:776    .text.phy_init:00000000000001c4 .L0 
+     /tmp/cc26C0JP.s:779    .text.phy_init:00000000000001cc .L0 
+     /tmp/cc26C0JP.s:781    .text.phy_init:00000000000001d0 .L0 
+     /tmp/cc26C0JP.s:782    .text.phy_init:00000000000001d0 .L0 
+     /tmp/cc26C0JP.s:785    .text.phy_init:00000000000001d8 .L0 
+     /tmp/cc26C0JP.s:787    .text.phy_init:00000000000001dc .L0 
+     /tmp/cc26C0JP.s:788    .text.phy_init:00000000000001dc .L0 
+     /tmp/cc26C0JP.s:791    .text.phy_init:00000000000001e4 .L0 
+     /tmp/cc26C0JP.s:792    .text.phy_init:00000000000001e4 .L0 
+     /tmp/cc26C0JP.s:796    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc26C0JP.s:797    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc26C0JP.s:798    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc26C0JP.s:800    .text.phy_init:00000000000001f0 .L0 
+     /tmp/cc26C0JP.s:802    .text.phy_init:00000000000001f4 .L0 
+     /tmp/cc26C0JP.s:803    .text.phy_init:00000000000001f4 .L0 
+     /tmp/cc26C0JP.s:806    .text.phy_init:00000000000001fc .L0 
+     /tmp/cc26C0JP.s:807    .text.phy_init:00000000000001fc .L0 
+     /tmp/cc26C0JP.s:810    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc26C0JP.s:811    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc26C0JP.s:812    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc26C0JP.s:814    .text.phy_init:0000000000000204 .L0 
+     /tmp/cc26C0JP.s:816    .text.phy_init:0000000000000208 .L0 
+     /tmp/cc26C0JP.s:817    .text.phy_init:0000000000000208 .L0 
+     /tmp/cc26C0JP.s:821    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc26C0JP.s:822    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc26C0JP.s:823    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc26C0JP.s:825    .text.phy_init:0000000000000214 .L0 
+     /tmp/cc26C0JP.s:827    .text.phy_init:0000000000000218 .L0 
+     /tmp/cc26C0JP.s:828    .text.phy_init:0000000000000218 .L0 
+     /tmp/cc26C0JP.s:831    .text.phy_init:0000000000000220 .L0 
+     /tmp/cc26C0JP.s:832    .text.phy_init:0000000000000220 .L0 
+     /tmp/cc26C0JP.s:834    .text.phy_init:0000000000000224 .L0 
+     /tmp/cc26C0JP.s:836    .text.phy_init:0000000000000228 .L0 
+     /tmp/cc26C0JP.s:837    .text.phy_init:0000000000000228 .L0 
+     /tmp/cc26C0JP.s:839    .text.phy_init:000000000000022c .L0 
+     /tmp/cc26C0JP.s:840    .text.phy_init:0000000000000230 .L0 
+     /tmp/cc26C0JP.s:842    .text.phy_init:0000000000000234 .L0 
+     /tmp/cc26C0JP.s:849    .text.tse_init:0000000000000000 tse_init
+     /tmp/cc26C0JP.s:852    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:854    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:855    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:856    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:857    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:858    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:859    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:861    .text.tse_init:0000000000000004 .L0 
+     /tmp/cc26C0JP.s:863    .text.tse_init:0000000000000008 .L0 
+     /tmp/cc26C0JP.s:866    .text.tse_init:000000000000000c .L0 
+     /tmp/cc26C0JP.s:867    .text.tse_init:000000000000000c .L0 
+     /tmp/cc26C0JP.s:869    .text.tse_init:0000000000000010 .L0 
+     /tmp/cc26C0JP.s:871    .text.tse_init:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:872    .text.tse_init:0000000000000014 .L0 
+     /tmp/cc26C0JP.s:875    .text.tse_init:000000000000001c .L0 
+     /tmp/cc26C0JP.s:876    .text.tse_init:000000000000001c .L0 
+     /tmp/cc26C0JP.s:878    .text.tse_init:0000000000000020 .L0 
+     /tmp/cc26C0JP.s:882    .text.tse_init:000000000000002c .L0 
+     /tmp/cc26C0JP.s:883    .text.tse_init:000000000000002c .L0 
+     /tmp/cc26C0JP.s:885    .text.tse_init:0000000000000030 .L0 
+     /tmp/cc26C0JP.s:888    .text.tse_init:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:889    .text.tse_init:0000000000000038 .L0 
+     /tmp/cc26C0JP.s:891    .text.tse_init:000000000000003c .L0 
+     /tmp/cc26C0JP.s:895    .text.tse_init:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:896    .text.tse_init:0000000000000048 .L0 
+     /tmp/cc26C0JP.s:898    .text.tse_init:000000000000004c .L0 
+     /tmp/cc26C0JP.s:901    .text.tse_init:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:902    .text.tse_init:0000000000000054 .L0 
+     /tmp/cc26C0JP.s:904    .text.tse_init:0000000000000058 .L0 
+     /tmp/cc26C0JP.s:908    .text.tse_init:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:909    .text.tse_init:0000000000000064 .L0 
+     /tmp/cc26C0JP.s:911    .text.tse_init:0000000000000068 .L0 
+     /tmp/cc26C0JP.s:914    .text.tse_init:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:915    .text.tse_init:0000000000000070 .L0 
+     /tmp/cc26C0JP.s:917    .text.tse_init:0000000000000074 .L0 
+     /tmp/cc26C0JP.s:921    .text.tse_init:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:922    .text.tse_init:0000000000000080 .L0 
+     /tmp/cc26C0JP.s:924    .text.tse_init:0000000000000084 .L0 
+     /tmp/cc26C0JP.s:928    .text.tse_init:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:929    .text.tse_init:0000000000000090 .L0 
+     /tmp/cc26C0JP.s:931    .text.tse_init:0000000000000094 .L0 
+     /tmp/cc26C0JP.s:933    .text.tse_init:0000000000000098 .L0 
+     /tmp/cc26C0JP.s:935    .text.tse_init:000000000000009c .L0 
+     /tmp/cc26C0JP.s:936    .text.tse_init:000000000000009c .L0 
+     /tmp/cc26C0JP.s:940    .text.tse_init:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:941    .text.tse_init:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:943    .text.tse_init:00000000000000ac .L0 
+     /tmp/cc26C0JP.s:946    .text.tse_init:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:947    .text.tse_init:00000000000000b4 .L0 
+     /tmp/cc26C0JP.s:949    .text.tse_init:00000000000000b8 .L0 
+     /tmp/cc26C0JP.s:952    .text.tse_init:00000000000000c0 .L0 
+     /tmp/cc26C0JP.s:953    .text.tse_init:00000000000000c0 .L0 
+     /tmp/cc26C0JP.s:955    .text.tse_init:00000000000000c4 .L0 
+     /tmp/cc26C0JP.s:958    .text.tse_init:00000000000000cc .L0 
+     /tmp/cc26C0JP.s:959    .text.tse_init:00000000000000d0 .L0 
+     /tmp/cc26C0JP.s:121    .text.eth_core_init_regs:000000000000009c .L0 
+     /tmp/cc26C0JP.s:252    .text.phy_advertise:00000000000000a8 .L0 
+     /tmp/cc26C0JP.s:475    .text.phy_autonegotiation:000000000000012c .L0 
+     /tmp/cc26C0JP.s:845    .text.phy_init:0000000000000234 .L0 
+     /tmp/cc26C0JP.s:962    .text.tse_init:00000000000000d0 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc26C0JP.s:146    .text.phy_advertise:000000000000001c .L3
+     /tmp/cc26C0JP.s:159    .text.phy_advertise:0000000000000030 .L4
+     /tmp/cc26C0JP.s:189    .text.phy_advertise:0000000000000054 .L5
+     /tmp/cc26C0JP.s:205    .text.phy_advertise:000000000000006c .L6
+     /tmp/cc26C0JP.s:216    .text.phy_advertise:000000000000007c .L7
+     /tmp/cc26C0JP.s:241    .text.phy_advertise:000000000000009c .L8
+     /tmp/cc26C0JP.s:294    .text.phy_autonegotiation:0000000000000038 .L16
+     /tmp/cc26C0JP.s:308    .text.phy_autonegotiation:000000000000004c .L17
+     /tmp/cc26C0JP.s:321    .text.phy_autonegotiation:0000000000000060 .L18
+     /tmp/cc26C0JP.s:351    .text.phy_autonegotiation:0000000000000088 .L19
+     /tmp/cc26C0JP.s:369    .text.phy_autonegotiation:000000000000009c .L20
+     /tmp/cc26C0JP.s:379    .text.phy_autonegotiation:00000000000000a8 .L21
+     /tmp/cc26C0JP.s:408    .text.phy_autonegotiation:00000000000000d4 .L22
+     /tmp/cc26C0JP.s:360    .text.phy_autonegotiation:0000000000000094 .L23
+     /tmp/cc26C0JP.s:462    .text.phy_autonegotiation:000000000000011c .L25
+     /tmp/cc26C0JP.s:432    .text.phy_autonegotiation:00000000000000f4 .L26
+     /tmp/cc26C0JP.s:443    .text.phy_autonegotiation:0000000000000104 .L27
+     /tmp/cc26C0JP.s:418    .text.phy_autonegotiation:00000000000000e0 .L24
+     /tmp/cc26C0JP.s:517    .text.phy_init:0000000000000034 .L39
+     /tmp/cc26C0JP.s:530    .text.phy_init:0000000000000048 .L40
+     /tmp/cc26C0JP.s:552    .text.phy_init:0000000000000068 .L41
+     /tmp/cc26C0JP.s:563    .text.phy_init:0000000000000078 .L42
+     /tmp/cc26C0JP.s:584    .text.phy_init:000000000000009c .L43
+     /tmp/cc26C0JP.s:595    .text.phy_init:00000000000000ac .L44
+     /tmp/cc26C0JP.s:619    .text.phy_init:00000000000000d4 .L45
+     /tmp/cc26C0JP.s:634    .text.phy_init:00000000000000ec .L46
+     /tmp/cc26C0JP.s:645    .text.phy_init:00000000000000fc .L47
+     /tmp/cc26C0JP.s:667    .text.phy_init:000000000000011c .L48
+     /tmp/cc26C0JP.s:697    .text.phy_init:000000000000014c .L49
+     /tmp/cc26C0JP.s:714    .text.phy_init:0000000000000160 .L50
+     /tmp/cc26C0JP.s:705    .text.phy_init:0000000000000158 .L51
+     /tmp/cc26C0JP.s:742    .text.phy_init:0000000000000190 .L52
+     /tmp/cc26C0JP.s:757    .text.phy_init:00000000000001a8 .L53
+     /tmp/cc26C0JP.s:795    .text.phy_init:00000000000001ec .L54
+     /tmp/cc26C0JP.s:809    .text.phy_init:0000000000000200 .L55
+     /tmp/cc26C0JP.s:820    .text.phy_init:0000000000000210 .L56
+     /tmp/cc26C0JP.s:1434   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc26C0JP.s:1963   .debug_str:0000000000000097 .LASF49
+     /tmp/cc26C0JP.s:2013   .debug_str:00000000000002dd .LASF50
+     /tmp/cc26C0JP.s:1977   .debug_str:00000000000001c6 .LASF51
+     /tmp/cc26C0JP.s:1923   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc26C0JP.s:1943   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc26C0JP.s:2001   .debug_str:0000000000000288 .LASF0
+     /tmp/cc26C0JP.s:1993   .debug_str:0000000000000251 .LASF3
+     /tmp/cc26C0JP.s:1999   .debug_str:000000000000027a .LASF1
+     /tmp/cc26C0JP.s:1951   .debug_str:0000000000000032 .LASF2
+     /tmp/cc26C0JP.s:1965   .debug_str:000000000000015d .LASF4
+     /tmp/cc26C0JP.s:2011   .debug_str:00000000000002ca .LASF5
+     /tmp/cc26C0JP.s:1989   .debug_str:0000000000000240 .LASF6
+     /tmp/cc26C0JP.s:1955   .debug_str:000000000000004d .LASF7
+     /tmp/cc26C0JP.s:2027   .debug_str:0000000000000352 .LASF8
+     /tmp/cc26C0JP.s:1987   .debug_str:0000000000000232 .LASF9
+     /tmp/cc26C0JP.s:2003   .debug_str:0000000000000294 .LASF10
+     /tmp/cc26C0JP.s:2007   .debug_str:00000000000002b4 .LASF11
+     /tmp/cc26C0JP.s:1973   .debug_str:00000000000001ad .LASF12
+     /tmp/cc26C0JP.s:2009   .debug_str:00000000000002c1 .LASF13
+     /tmp/cc26C0JP.s:2005   .debug_str:00000000000002ab .LASF14
+     /tmp/cc26C0JP.s:2037   .debug_str:00000000000003b4 .LASF15
+     /tmp/cc26C0JP.s:1971   .debug_str:0000000000000197 .LASF16
+     /tmp/cc26C0JP.s:1967   .debug_str:0000000000000168 .LASF17
+     /tmp/cc26C0JP.s:2047   .debug_str:0000000000000420 .LASF18
+     /tmp/cc26C0JP.s:1969   .debug_str:000000000000017e .LASF19
+     /tmp/cc26C0JP.s:1947   .debug_str:0000000000000009 .LASF20
+     /tmp/cc26C0JP.s:2043   .debug_str:00000000000003f5 .LASF21
+     /tmp/cc26C0JP.s:1975   .debug_str:00000000000001b5 .LASF22
+     /tmp/cc26C0JP.s:2023   .debug_str:0000000000000323 .LASF23
+     /tmp/cc26C0JP.s:2045   .debug_str:0000000000000406 .LASF24
+     /tmp/cc26C0JP.s:2041   .debug_str:00000000000003da .LASF25
+     /tmp/cc26C0JP.s:2021   .debug_str:000000000000030e .LASF26
+     /tmp/cc26C0JP.s:1957   .debug_str:0000000000000058 .LASF27
+     /tmp/cc26C0JP.s:1959   .debug_str:000000000000006d .LASF28
+     /tmp/cc26C0JP.s:1961   .debug_str:0000000000000082 .LASF29
+     /tmp/cc26C0JP.s:2029   .debug_str:0000000000000364 .LASF30
+     /tmp/cc26C0JP.s:2031   .debug_str:0000000000000379 .LASF31
+     /tmp/cc26C0JP.s:2025   .debug_str:0000000000000339 .LASF32
+     /tmp/cc26C0JP.s:1949   .debug_str:000000000000001d .LASF33
+     /tmp/cc26C0JP.s:1995   .debug_str:000000000000025b .LASF34
+     /tmp/cc26C0JP.s:2039   .debug_str:00000000000003ca .LASF35
+     /tmp/cc26C0JP.s:1945   .debug_str:0000000000000000 .LASF39
+     /tmp/cc26C0JP.s:850    .text.tse_init:0000000000000000 .LFB4
+     /tmp/cc26C0JP.s:960    .text.tse_init:00000000000000d0 .LFE4
+     /tmp/cc26C0JP.s:2051   .debug_str:0000000000000444 .LASF41
+     /tmp/cc26C0JP.s:1991   .debug_str:0000000000000249 .LASF36
+     /tmp/cc26C0JP.s:1779   .debug_loc:0000000000000000 .LLST7
+     /tmp/cc26C0JP.s:1983   .debug_str:0000000000000225 .LASF37
+     /tmp/cc26C0JP.s:1985   .debug_str:000000000000022d .LASF38
+     /tmp/cc26C0JP.s:1997   .debug_str:0000000000000271 .LASF40
+     /tmp/cc26C0JP.s:480    .text.phy_init:0000000000000000 .LFB3
+     /tmp/cc26C0JP.s:843    .text.phy_init:0000000000000234 .LFE3
+     /tmp/cc26C0JP.s:1788   .debug_loc:0000000000000016 .LLST6
+     /tmp/cc26C0JP.s:2017   .debug_str:00000000000002f7 .LASF42
+     /tmp/cc26C0JP.s:1981   .debug_str:0000000000000211 .LASF43
+     /tmp/cc26C0JP.s:257    .text.phy_autonegotiation:0000000000000000 .LFB2
+     /tmp/cc26C0JP.s:473    .text.phy_autonegotiation:000000000000012c .LFE2
+     /tmp/cc26C0JP.s:1802   .debug_loc:0000000000000037 .LLST3
+     /tmp/cc26C0JP.s:1816   .debug_loc:0000000000000058 .LLST4
+     /tmp/cc26C0JP.s:1953   .debug_str:000000000000003c .LASF44
+     /tmp/cc26C0JP.s:1838   .debug_loc:0000000000000090 .LLST5
+     /tmp/cc26C0JP.s:1979   .debug_str:00000000000001fd .LASF45
+     /tmp/cc26C0JP.s:2033   .debug_str:000000000000038e .LASF46
+     /tmp/cc26C0JP.s:2049   .debug_str:0000000000000435 .LASF52
+     /tmp/cc26C0JP.s:2019   .debug_str:0000000000000300 .LASF47
+     /tmp/cc26C0JP.s:126    .text.phy_advertise:0000000000000000 .LFB1
+     /tmp/cc26C0JP.s:250    .text.phy_advertise:00000000000000a8 .LFE1
+     /tmp/cc26C0JP.s:1850   .debug_loc:00000000000000a8 .LLST1
+     /tmp/cc26C0JP.s:1864   .debug_loc:00000000000000c9 .LLST2
+     /tmp/cc26C0JP.s:2035   .debug_str:00000000000003a1 .LASF53
+     /tmp/cc26C0JP.s:14     .text.eth_core_init_regs:0000000000000000 .LFB0
+     /tmp/cc26C0JP.s:119    .text.eth_core_init_regs:000000000000009c .LFE0
+     /tmp/cc26C0JP.s:2015   .debug_str:00000000000002ea .LASF48
+     /tmp/cc26C0JP.s:1890   .debug_loc:000000000000010c .LLST0
+     /tmp/cc26C0JP.s:853    .text.tse_init:0000000000000000 .LVL21
+     /tmp/cc26C0JP.s:864    .text.tse_init:000000000000000c .LVL22
+     /tmp/cc26C0JP.s:483    .text.phy_init:0000000000000000 .LVL19
+     /tmp/cc26C0JP.s:541    .text.phy_init:0000000000000058 .LVL20
+     /tmp/cc26C0JP.s:260    .text.phy_autonegotiation:0000000000000000 .LVL10
+     /tmp/cc26C0JP.s:335    .text.phy_autonegotiation:0000000000000078 .LVL11
+     /tmp/cc26C0JP.s:350    .text.phy_autonegotiation:0000000000000088 .LVL13
+     /tmp/cc26C0JP.s:359    .text.phy_autonegotiation:0000000000000094 .LVL14
+     /tmp/cc26C0JP.s:388    .text.phy_autonegotiation:00000000000000b4 .LVL15
+     /tmp/cc26C0JP.s:398    .text.phy_autonegotiation:00000000000000c0 .LVL17
+     /tmp/cc26C0JP.s:393    .text.phy_autonegotiation:00000000000000b8 .LVL16
+     /tmp/cc26C0JP.s:129    .text.phy_advertise:0000000000000000 .LVL2
+     /tmp/cc26C0JP.s:168    .text.phy_advertise:000000000000003c .LVL3
+     /tmp/cc26C0JP.s:173    .text.phy_advertise:0000000000000044 .LVL4
+     /tmp/cc26C0JP.s:188    .text.phy_advertise:0000000000000054 .LVL6
+     /tmp/cc26C0JP.s:199    .text.phy_advertise:0000000000000064 .LVL7
+     /tmp/cc26C0JP.s:225    .text.phy_advertise:0000000000000088 .LVL8
+     /tmp/cc26C0JP.s:232    .text.phy_advertise:0000000000000090 .LVL9
+     /tmp/cc26C0JP.s:18     .text.eth_core_init_regs:0000000000000000 .LVL0
+     /tmp/cc26C0JP.s:107    .text.eth_core_init_regs:000000000000008c .LVL1
+     /tmp/cc26C0JP.s:968    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cc26C0JP.s:410    .text.phy_autonegotiation:00000000000000d4 .LBB2
+     /tmp/cc26C0JP.s:423    .text.phy_autonegotiation:00000000000000e8 .LBE2
+     /tmp/cc26C0JP.s:464    .text.phy_autonegotiation:000000000000011c .LBB3
+     /tmp/cc26C0JP.s:471    .text.phy_autonegotiation:000000000000012c .LBE3
+=======
+     /tmp/cc4K6Ra6.s:13     .text.eth_core_init_regs:0000000000000000 eth_core_init_regs
+     /tmp/cc4K6Ra6.s:17     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:19     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:20     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:21     .text.eth_core_init_regs:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:23     .text.eth_core_init_regs:0000000000000004 .L0 
+     /tmp/cc4K6Ra6.s:25     .text.eth_core_init_regs:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:27     .text.eth_core_init_regs:000000000000000c .L0 
+     /tmp/cc4K6Ra6.s:29     .text.eth_core_init_regs:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:31     .text.eth_core_init_regs:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:33     .text.eth_core_init_regs:0000000000000018 .L0 
+     /tmp/cc4K6Ra6.s:35     .text.eth_core_init_regs:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:37     .text.eth_core_init_regs:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:39     .text.eth_core_init_regs:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:41     .text.eth_core_init_regs:0000000000000028 .L0 
+     /tmp/cc4K6Ra6.s:43     .text.eth_core_init_regs:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:45     .text.eth_core_init_regs:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:47     .text.eth_core_init_regs:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:49     .text.eth_core_init_regs:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:51     .text.eth_core_init_regs:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:53     .text.eth_core_init_regs:0000000000000040 .L0 
+     /tmp/cc4K6Ra6.s:55     .text.eth_core_init_regs:0000000000000044 .L0 
+     /tmp/cc4K6Ra6.s:57     .text.eth_core_init_regs:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:59     .text.eth_core_init_regs:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:61     .text.eth_core_init_regs:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:63     .text.eth_core_init_regs:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:65     .text.eth_core_init_regs:0000000000000058 .L0 
+     /tmp/cc4K6Ra6.s:67     .text.eth_core_init_regs:000000000000005c .L0 
+     /tmp/cc4K6Ra6.s:69     .text.eth_core_init_regs:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:71     .text.eth_core_init_regs:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:73     .text.eth_core_init_regs:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:75     .text.eth_core_init_regs:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:77     .text.eth_core_init_regs:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:79     .text.eth_core_init_regs:0000000000000074 .L0 
+     /tmp/cc4K6Ra6.s:81     .text.eth_core_init_regs:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:83     .text.eth_core_init_regs:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:85     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:86     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:87     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:88     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:89     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:90     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:91     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:92     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:93     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:94     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:95     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:96     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:97     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:98     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:99     .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:100    .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:101    .text.eth_core_init_regs:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:103    .text.eth_core_init_regs:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:104    .text.eth_core_init_regs:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:106    .text.eth_core_init_regs:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:109    .text.eth_core_init_regs:000000000000008c .L0 
+     /tmp/cc4K6Ra6.s:111    .text.eth_core_init_regs:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:112    .text.eth_core_init_regs:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:114    .text.eth_core_init_regs:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:115    .text.eth_core_init_regs:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:117    .text.eth_core_init_regs:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:118    .text.eth_core_init_regs:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:125    .text.phy_advertise:0000000000000000 phy_advertise
+     /tmp/cc4K6Ra6.s:128    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:130    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:131    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:132    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:133    .text.phy_advertise:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:135    .text.phy_advertise:0000000000000004 .L0 
+     /tmp/cc4K6Ra6.s:137    .text.phy_advertise:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:140    .text.phy_advertise:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:141    .text.phy_advertise:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:144    .text.phy_advertise:0000000000000018 .L0 
+     /tmp/cc4K6Ra6.s:145    .text.phy_advertise:0000000000000018 .L0 
+     /tmp/cc4K6Ra6.s:148    .text.phy_advertise:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:149    .text.phy_advertise:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:151    .text.phy_advertise:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:153    .text.phy_advertise:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:154    .text.phy_advertise:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:156    .text.phy_advertise:0000000000000028 .L0 
+     /tmp/cc4K6Ra6.s:160    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:161    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:162    .text.phy_advertise:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:164    .text.phy_advertise:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:166    .text.phy_advertise:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:167    .text.phy_advertise:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:170    .text.phy_advertise:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:172    .text.phy_advertise:0000000000000040 .L0 
+     /tmp/cc4K6Ra6.s:175    .text.phy_advertise:0000000000000044 .L0 
+     /tmp/cc4K6Ra6.s:176    .text.phy_advertise:0000000000000044 .L0 
+     /tmp/cc4K6Ra6.s:178    .text.phy_advertise:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:179    .text.phy_advertise:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:181    .text.phy_advertise:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:184    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:185    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:186    .text.phy_advertise:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:190    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:191    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:192    .text.phy_advertise:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:194    .text.phy_advertise:0000000000000058 .L0 
+     /tmp/cc4K6Ra6.s:196    .text.phy_advertise:000000000000005c .L0 
+     /tmp/cc4K6Ra6.s:197    .text.phy_advertise:000000000000005c .L0 
+     /tmp/cc4K6Ra6.s:201    .text.phy_advertise:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:202    .text.phy_advertise:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:206    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:207    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:208    .text.phy_advertise:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:210    .text.phy_advertise:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:212    .text.phy_advertise:0000000000000074 .L0 
+     /tmp/cc4K6Ra6.s:213    .text.phy_advertise:0000000000000074 .L0 
+     /tmp/cc4K6Ra6.s:217    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:218    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:219    .text.phy_advertise:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:221    .text.phy_advertise:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:223    .text.phy_advertise:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:224    .text.phy_advertise:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:227    .text.phy_advertise:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:228    .text.phy_advertise:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:230    .text.phy_advertise:000000000000008c .L0 
+     /tmp/cc4K6Ra6.s:231    .text.phy_advertise:000000000000008c .L0 
+     /tmp/cc4K6Ra6.s:234    .text.phy_advertise:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:235    .text.phy_advertise:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:238    .text.phy_advertise:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:239    .text.phy_advertise:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:242    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:243    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:244    .text.phy_advertise:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:246    .text.phy_advertise:00000000000000a0 .L0 
+     /tmp/cc4K6Ra6.s:248    .text.phy_advertise:00000000000000a4 .L0 
+     /tmp/cc4K6Ra6.s:249    .text.phy_advertise:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:256    .text.phy_autonegotiation:0000000000000000 phy_autonegotiation
+     /tmp/cc4K6Ra6.s:259    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:261    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:262    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:263    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:264    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:265    .text.phy_autonegotiation:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:267    .text.phy_autonegotiation:0000000000000004 .L0 
+     /tmp/cc4K6Ra6.s:268    .text.phy_autonegotiation:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:270    .text.phy_autonegotiation:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:273    .text.phy_autonegotiation:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:274    .text.phy_autonegotiation:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:276    .text.phy_autonegotiation:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:279    .text.phy_autonegotiation:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:281    .text.phy_autonegotiation:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:283    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:284    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:285    .text.phy_autonegotiation:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:288    .text.phy_autonegotiation:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:289    .text.phy_autonegotiation:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:292    .text.phy_autonegotiation:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:293    .text.phy_autonegotiation:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:296    .text.phy_autonegotiation:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:297    .text.phy_autonegotiation:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:299    .text.phy_autonegotiation:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:301    .text.phy_autonegotiation:0000000000000040 .L0 
+     /tmp/cc4K6Ra6.s:302    .text.phy_autonegotiation:0000000000000040 .L0 
+     /tmp/cc4K6Ra6.s:304    .text.phy_autonegotiation:0000000000000044 .L0 
+     /tmp/cc4K6Ra6.s:305    .text.phy_autonegotiation:0000000000000044 .L0 
+     /tmp/cc4K6Ra6.s:309    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:310    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:311    .text.phy_autonegotiation:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:313    .text.phy_autonegotiation:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:315    .text.phy_autonegotiation:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:316    .text.phy_autonegotiation:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:318    .text.phy_autonegotiation:0000000000000058 .L0 
+     /tmp/cc4K6Ra6.s:322    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:323    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:324    .text.phy_autonegotiation:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:326    .text.phy_autonegotiation:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:328    .text.phy_autonegotiation:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:329    .text.phy_autonegotiation:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:331    .text.phy_autonegotiation:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:334    .text.phy_autonegotiation:0000000000000074 .L0 
+     /tmp/cc4K6Ra6.s:337    .text.phy_autonegotiation:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:338    .text.phy_autonegotiation:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:340    .text.phy_autonegotiation:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:341    .text.phy_autonegotiation:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:343    .text.phy_autonegotiation:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:346    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:347    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:348    .text.phy_autonegotiation:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:352    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:353    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:354    .text.phy_autonegotiation:0000000000000088 .L0 
+     /tmp/cc4K6Ra6.s:356    .text.phy_autonegotiation:000000000000008c .L0 
+     /tmp/cc4K6Ra6.s:358    .text.phy_autonegotiation:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:362    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:363    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:364    .text.phy_autonegotiation:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:366    .text.phy_autonegotiation:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:367    .text.phy_autonegotiation:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:370    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:371    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:372    .text.phy_autonegotiation:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:374    .text.phy_autonegotiation:00000000000000a0 .L0 
+     /tmp/cc4K6Ra6.s:376    .text.phy_autonegotiation:00000000000000a4 .L0 
+     /tmp/cc4K6Ra6.s:377    .text.phy_autonegotiation:00000000000000a4 .L0 
+     /tmp/cc4K6Ra6.s:380    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:381    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:382    .text.phy_autonegotiation:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:384    .text.phy_autonegotiation:00000000000000ac .L0 
+     /tmp/cc4K6Ra6.s:386    .text.phy_autonegotiation:00000000000000b0 .L0 
+     /tmp/cc4K6Ra6.s:387    .text.phy_autonegotiation:00000000000000b0 .L0 
+     /tmp/cc4K6Ra6.s:390    .text.phy_autonegotiation:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:391    .text.phy_autonegotiation:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:394    .text.phy_autonegotiation:00000000000000b8 .L0 
+     /tmp/cc4K6Ra6.s:395    .text.phy_autonegotiation:00000000000000b8 .L0 
+     /tmp/cc4K6Ra6.s:397    .text.phy_autonegotiation:00000000000000bc .L0 
+     /tmp/cc4K6Ra6.s:400    .text.phy_autonegotiation:00000000000000c0 .L0 
+     /tmp/cc4K6Ra6.s:403    .text.phy_autonegotiation:00000000000000c8 .L0 
+     /tmp/cc4K6Ra6.s:405    .text.phy_autonegotiation:00000000000000cc .L0 
+     /tmp/cc4K6Ra6.s:407    .text.phy_autonegotiation:00000000000000d0 .L0 
+     /tmp/cc4K6Ra6.s:411    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:412    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:413    .text.phy_autonegotiation:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:415    .text.phy_autonegotiation:00000000000000d8 .L0 
+     /tmp/cc4K6Ra6.s:417    .text.phy_autonegotiation:00000000000000dc .L0 
+     /tmp/cc4K6Ra6.s:420    .text.phy_autonegotiation:00000000000000e0 .L0 
+     /tmp/cc4K6Ra6.s:422    .text.phy_autonegotiation:00000000000000e4 .L0 
+     /tmp/cc4K6Ra6.s:425    .text.phy_autonegotiation:00000000000000e8 .L0 
+     /tmp/cc4K6Ra6.s:426    .text.phy_autonegotiation:00000000000000e8 .L0 
+     /tmp/cc4K6Ra6.s:429    .text.phy_autonegotiation:00000000000000f0 .L0 
+     /tmp/cc4K6Ra6.s:430    .text.phy_autonegotiation:00000000000000f0 .L0 
+     /tmp/cc4K6Ra6.s:433    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc4K6Ra6.s:434    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc4K6Ra6.s:435    .text.phy_autonegotiation:00000000000000f4 .L0 
+     /tmp/cc4K6Ra6.s:437    .text.phy_autonegotiation:00000000000000f8 .L0 
+     /tmp/cc4K6Ra6.s:439    .text.phy_autonegotiation:00000000000000fc .L0 
+     /tmp/cc4K6Ra6.s:440    .text.phy_autonegotiation:00000000000000fc .L0 
+     /tmp/cc4K6Ra6.s:444    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc4K6Ra6.s:445    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc4K6Ra6.s:446    .text.phy_autonegotiation:0000000000000104 .L0 
+     /tmp/cc4K6Ra6.s:448    .text.phy_autonegotiation:0000000000000108 .L0 
+     /tmp/cc4K6Ra6.s:450    .text.phy_autonegotiation:000000000000010c .L0 
+     /tmp/cc4K6Ra6.s:451    .text.phy_autonegotiation:000000000000010c .L0 
+     /tmp/cc4K6Ra6.s:453    .text.phy_autonegotiation:0000000000000110 .L0 
+     /tmp/cc4K6Ra6.s:454    .text.phy_autonegotiation:0000000000000110 .L0 
+     /tmp/cc4K6Ra6.s:457    .text.phy_autonegotiation:0000000000000114 .L0 
+     /tmp/cc4K6Ra6.s:458    .text.phy_autonegotiation:0000000000000114 .L0 
+     /tmp/cc4K6Ra6.s:459    .text.phy_autonegotiation:0000000000000118 .L0 
+     /tmp/cc4K6Ra6.s:460    .text.phy_autonegotiation:0000000000000118 .L0 
+     /tmp/cc4K6Ra6.s:463    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:466    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:467    .text.phy_autonegotiation:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:472    .text.phy_autonegotiation:000000000000012c .L0 
+     /tmp/cc4K6Ra6.s:479    .text.phy_init:0000000000000000 phy_init
+     /tmp/cc4K6Ra6.s:482    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:484    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:485    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:486    .text.phy_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:488    .text.phy_init:0000000000000004 .L0 
+     /tmp/cc4K6Ra6.s:489    .text.phy_init:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:491    .text.phy_init:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:494    .text.phy_init:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:495    .text.phy_init:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:497    .text.phy_init:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:498    .text.phy_init:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:500    .text.phy_init:0000000000000018 .L0 
+     /tmp/cc4K6Ra6.s:502    .text.phy_init:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:503    .text.phy_init:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:505    .text.phy_init:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:506    .text.phy_init:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:508    .text.phy_init:0000000000000024 .L0 
+     /tmp/cc4K6Ra6.s:510    .text.phy_init:0000000000000028 .L0 
+     /tmp/cc4K6Ra6.s:512    .text.phy_init:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:513    .text.phy_init:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:515    .text.phy_init:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:518    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:519    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:520    .text.phy_init:0000000000000034 .L0 
+     /tmp/cc4K6Ra6.s:522    .text.phy_init:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:524    .text.phy_init:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:525    .text.phy_init:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:527    .text.phy_init:0000000000000040 .L0 
+     /tmp/cc4K6Ra6.s:531    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:532    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:533    .text.phy_init:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:535    .text.phy_init:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:537    .text.phy_init:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:538    .text.phy_init:0000000000000050 .L0 
+     /tmp/cc4K6Ra6.s:540    .text.phy_init:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:543    .text.phy_init:0000000000000058 .L0 
+     /tmp/cc4K6Ra6.s:545    .text.phy_init:000000000000005c .L0 
+     /tmp/cc4K6Ra6.s:546    .text.phy_init:000000000000005c .L0 
+     /tmp/cc4K6Ra6.s:548    .text.phy_init:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:549    .text.phy_init:0000000000000060 .L0 
+     /tmp/cc4K6Ra6.s:553    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:554    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:555    .text.phy_init:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:557    .text.phy_init:000000000000006c .L0 
+     /tmp/cc4K6Ra6.s:559    .text.phy_init:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:560    .text.phy_init:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:564    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:565    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:566    .text.phy_init:0000000000000078 .L0 
+     /tmp/cc4K6Ra6.s:568    .text.phy_init:000000000000007c .L0 
+     /tmp/cc4K6Ra6.s:570    .text.phy_init:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:571    .text.phy_init:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:573    .text.phy_init:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:577    .text.phy_init:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:578    .text.phy_init:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:580    .text.phy_init:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:581    .text.phy_init:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:585    .text.phy_init:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:586    .text.phy_init:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:587    .text.phy_init:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:589    .text.phy_init:00000000000000a0 .L0 
+     /tmp/cc4K6Ra6.s:591    .text.phy_init:00000000000000a4 .L0 
+     /tmp/cc4K6Ra6.s:592    .text.phy_init:00000000000000a4 .L0 
+     /tmp/cc4K6Ra6.s:596    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc4K6Ra6.s:597    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc4K6Ra6.s:598    .text.phy_init:00000000000000ac .L0 
+     /tmp/cc4K6Ra6.s:600    .text.phy_init:00000000000000b0 .L0 
+     /tmp/cc4K6Ra6.s:602    .text.phy_init:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:603    .text.phy_init:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:605    .text.phy_init:00000000000000b8 .L0 
+     /tmp/cc4K6Ra6.s:609    .text.phy_init:00000000000000c4 .L0 
+     /tmp/cc4K6Ra6.s:610    .text.phy_init:00000000000000c4 .L0 
+     /tmp/cc4K6Ra6.s:612    .text.phy_init:00000000000000c8 .L0 
+     /tmp/cc4K6Ra6.s:613    .text.phy_init:00000000000000c8 .L0 
+     /tmp/cc4K6Ra6.s:616    .text.phy_init:00000000000000d0 .L0 
+     /tmp/cc4K6Ra6.s:617    .text.phy_init:00000000000000d0 .L0 
+     /tmp/cc4K6Ra6.s:620    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:621    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:622    .text.phy_init:00000000000000d4 .L0 
+     /tmp/cc4K6Ra6.s:624    .text.phy_init:00000000000000d8 .L0 
+     /tmp/cc4K6Ra6.s:626    .text.phy_init:00000000000000dc .L0 
+     /tmp/cc4K6Ra6.s:627    .text.phy_init:00000000000000dc .L0 
+     /tmp/cc4K6Ra6.s:630    .text.phy_init:00000000000000e4 .L0 
+     /tmp/cc4K6Ra6.s:631    .text.phy_init:00000000000000e4 .L0 
+     /tmp/cc4K6Ra6.s:635    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc4K6Ra6.s:636    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc4K6Ra6.s:637    .text.phy_init:00000000000000ec .L0 
+     /tmp/cc4K6Ra6.s:639    .text.phy_init:00000000000000f0 .L0 
+     /tmp/cc4K6Ra6.s:641    .text.phy_init:00000000000000f4 .L0 
+     /tmp/cc4K6Ra6.s:642    .text.phy_init:00000000000000f4 .L0 
+     /tmp/cc4K6Ra6.s:646    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc4K6Ra6.s:647    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc4K6Ra6.s:648    .text.phy_init:00000000000000fc .L0 
+     /tmp/cc4K6Ra6.s:650    .text.phy_init:0000000000000100 .L0 
+     /tmp/cc4K6Ra6.s:652    .text.phy_init:0000000000000104 .L0 
+     /tmp/cc4K6Ra6.s:653    .text.phy_init:0000000000000104 .L0 
+     /tmp/cc4K6Ra6.s:655    .text.phy_init:0000000000000108 .L0 
+     /tmp/cc4K6Ra6.s:657    .text.phy_init:000000000000010c .L0 
+     /tmp/cc4K6Ra6.s:658    .text.phy_init:000000000000010c .L0 
+     /tmp/cc4K6Ra6.s:660    .text.phy_init:0000000000000110 .L0 
+     /tmp/cc4K6Ra6.s:661    .text.phy_init:0000000000000110 .L0 
+     /tmp/cc4K6Ra6.s:663    .text.phy_init:0000000000000114 .L0 
+     /tmp/cc4K6Ra6.s:664    .text.phy_init:0000000000000114 .L0 
+     /tmp/cc4K6Ra6.s:668    .text.phy_init:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:669    .text.phy_init:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:670    .text.phy_init:000000000000011c .L0 
+     /tmp/cc4K6Ra6.s:672    .text.phy_init:0000000000000120 .L0 
+     /tmp/cc4K6Ra6.s:674    .text.phy_init:0000000000000124 .L0 
+     /tmp/cc4K6Ra6.s:675    .text.phy_init:0000000000000124 .L0 
+     /tmp/cc4K6Ra6.s:677    .text.phy_init:0000000000000128 .L0 
+     /tmp/cc4K6Ra6.s:679    .text.phy_init:000000000000012c .L0 
+     /tmp/cc4K6Ra6.s:681    .text.phy_init:0000000000000130 .L0 
+     /tmp/cc4K6Ra6.s:682    .text.phy_init:0000000000000130 .L0 
+     /tmp/cc4K6Ra6.s:684    .text.phy_init:0000000000000134 .L0 
+     /tmp/cc4K6Ra6.s:685    .text.phy_init:0000000000000134 .L0 
+     /tmp/cc4K6Ra6.s:687    .text.phy_init:0000000000000138 .L0 
+     /tmp/cc4K6Ra6.s:688    .text.phy_init:0000000000000138 .L0 
+     /tmp/cc4K6Ra6.s:691    .text.phy_init:0000000000000140 .L0 
+     /tmp/cc4K6Ra6.s:693    .text.phy_init:0000000000000144 .L0 
+     /tmp/cc4K6Ra6.s:694    .text.phy_init:0000000000000144 .L0 
+     /tmp/cc4K6Ra6.s:698    .text.phy_init:000000000000014c .L0 
+     /tmp/cc4K6Ra6.s:699    .text.phy_init:000000000000014c .L0 
+     /tmp/cc4K6Ra6.s:700    .text.phy_init:000000000000014c .L0 
+     /tmp/cc4K6Ra6.s:702    .text.phy_init:0000000000000150 .L0 
+     /tmp/cc4K6Ra6.s:704    .text.phy_init:0000000000000154 .L0 
+     /tmp/cc4K6Ra6.s:707    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc4K6Ra6.s:708    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc4K6Ra6.s:709    .text.phy_init:0000000000000158 .L0 
+     /tmp/cc4K6Ra6.s:711    .text.phy_init:000000000000015c .L0 
+     /tmp/cc4K6Ra6.s:712    .text.phy_init:000000000000015c .L0 
+     /tmp/cc4K6Ra6.s:715    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc4K6Ra6.s:716    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc4K6Ra6.s:717    .text.phy_init:0000000000000160 .L0 
+     /tmp/cc4K6Ra6.s:719    .text.phy_init:0000000000000164 .L0 
+     /tmp/cc4K6Ra6.s:721    .text.phy_init:0000000000000168 .L0 
+     /tmp/cc4K6Ra6.s:722    .text.phy_init:0000000000000168 .L0 
+     /tmp/cc4K6Ra6.s:724    .text.phy_init:000000000000016c .L0 
+     /tmp/cc4K6Ra6.s:726    .text.phy_init:0000000000000170 .L0 
+     /tmp/cc4K6Ra6.s:727    .text.phy_init:0000000000000170 .L0 
+     /tmp/cc4K6Ra6.s:729    .text.phy_init:0000000000000174 .L0 
+     /tmp/cc4K6Ra6.s:731    .text.phy_init:0000000000000178 .L0 
+     /tmp/cc4K6Ra6.s:734    .text.phy_init:0000000000000180 .L0 
+     /tmp/cc4K6Ra6.s:735    .text.phy_init:0000000000000180 .L0 
+     /tmp/cc4K6Ra6.s:738    .text.phy_init:0000000000000188 .L0 
+     /tmp/cc4K6Ra6.s:739    .text.phy_init:0000000000000188 .L0 
+     /tmp/cc4K6Ra6.s:743    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc4K6Ra6.s:744    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc4K6Ra6.s:745    .text.phy_init:0000000000000190 .L0 
+     /tmp/cc4K6Ra6.s:747    .text.phy_init:0000000000000194 .L0 
+     /tmp/cc4K6Ra6.s:749    .text.phy_init:0000000000000198 .L0 
+     /tmp/cc4K6Ra6.s:750    .text.phy_init:0000000000000198 .L0 
+     /tmp/cc4K6Ra6.s:753    .text.phy_init:00000000000001a0 .L0 
+     /tmp/cc4K6Ra6.s:754    .text.phy_init:00000000000001a0 .L0 
+     /tmp/cc4K6Ra6.s:758    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc4K6Ra6.s:759    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc4K6Ra6.s:760    .text.phy_init:00000000000001a8 .L0 
+     /tmp/cc4K6Ra6.s:762    .text.phy_init:00000000000001ac .L0 
+     /tmp/cc4K6Ra6.s:764    .text.phy_init:00000000000001b0 .L0 
+     /tmp/cc4K6Ra6.s:765    .text.phy_init:00000000000001b0 .L0 
+     /tmp/cc4K6Ra6.s:767    .text.phy_init:00000000000001b4 .L0 
+     /tmp/cc4K6Ra6.s:770    .text.phy_init:00000000000001bc .L0 
+     /tmp/cc4K6Ra6.s:772    .text.phy_init:00000000000001c0 .L0 
+     /tmp/cc4K6Ra6.s:773    .text.phy_init:00000000000001c0 .L0 
+     /tmp/cc4K6Ra6.s:775    .text.phy_init:00000000000001c4 .L0 
+     /tmp/cc4K6Ra6.s:776    .text.phy_init:00000000000001c4 .L0 
+     /tmp/cc4K6Ra6.s:779    .text.phy_init:00000000000001cc .L0 
+     /tmp/cc4K6Ra6.s:781    .text.phy_init:00000000000001d0 .L0 
+     /tmp/cc4K6Ra6.s:782    .text.phy_init:00000000000001d0 .L0 
+     /tmp/cc4K6Ra6.s:785    .text.phy_init:00000000000001d8 .L0 
+     /tmp/cc4K6Ra6.s:787    .text.phy_init:00000000000001dc .L0 
+     /tmp/cc4K6Ra6.s:788    .text.phy_init:00000000000001dc .L0 
+     /tmp/cc4K6Ra6.s:791    .text.phy_init:00000000000001e4 .L0 
+     /tmp/cc4K6Ra6.s:792    .text.phy_init:00000000000001e4 .L0 
+     /tmp/cc4K6Ra6.s:796    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc4K6Ra6.s:797    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc4K6Ra6.s:798    .text.phy_init:00000000000001ec .L0 
+     /tmp/cc4K6Ra6.s:800    .text.phy_init:00000000000001f0 .L0 
+     /tmp/cc4K6Ra6.s:802    .text.phy_init:00000000000001f4 .L0 
+     /tmp/cc4K6Ra6.s:803    .text.phy_init:00000000000001f4 .L0 
+     /tmp/cc4K6Ra6.s:806    .text.phy_init:00000000000001fc .L0 
+     /tmp/cc4K6Ra6.s:807    .text.phy_init:00000000000001fc .L0 
+     /tmp/cc4K6Ra6.s:810    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc4K6Ra6.s:811    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc4K6Ra6.s:812    .text.phy_init:0000000000000200 .L0 
+     /tmp/cc4K6Ra6.s:814    .text.phy_init:0000000000000204 .L0 
+     /tmp/cc4K6Ra6.s:816    .text.phy_init:0000000000000208 .L0 
+     /tmp/cc4K6Ra6.s:817    .text.phy_init:0000000000000208 .L0 
+     /tmp/cc4K6Ra6.s:821    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc4K6Ra6.s:822    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc4K6Ra6.s:823    .text.phy_init:0000000000000210 .L0 
+     /tmp/cc4K6Ra6.s:825    .text.phy_init:0000000000000214 .L0 
+     /tmp/cc4K6Ra6.s:827    .text.phy_init:0000000000000218 .L0 
+     /tmp/cc4K6Ra6.s:828    .text.phy_init:0000000000000218 .L0 
+     /tmp/cc4K6Ra6.s:831    .text.phy_init:0000000000000220 .L0 
+     /tmp/cc4K6Ra6.s:832    .text.phy_init:0000000000000220 .L0 
+     /tmp/cc4K6Ra6.s:834    .text.phy_init:0000000000000224 .L0 
+     /tmp/cc4K6Ra6.s:836    .text.phy_init:0000000000000228 .L0 
+     /tmp/cc4K6Ra6.s:837    .text.phy_init:0000000000000228 .L0 
+     /tmp/cc4K6Ra6.s:839    .text.phy_init:000000000000022c .L0 
+     /tmp/cc4K6Ra6.s:840    .text.phy_init:0000000000000230 .L0 
+     /tmp/cc4K6Ra6.s:842    .text.phy_init:0000000000000234 .L0 
+     /tmp/cc4K6Ra6.s:849    .text.tse_init:0000000000000000 tse_init
+     /tmp/cc4K6Ra6.s:852    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:854    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:855    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:856    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:857    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:858    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:859    .text.tse_init:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:861    .text.tse_init:0000000000000004 .L0 
+     /tmp/cc4K6Ra6.s:863    .text.tse_init:0000000000000008 .L0 
+     /tmp/cc4K6Ra6.s:866    .text.tse_init:000000000000000c .L0 
+     /tmp/cc4K6Ra6.s:867    .text.tse_init:000000000000000c .L0 
+     /tmp/cc4K6Ra6.s:869    .text.tse_init:0000000000000010 .L0 
+     /tmp/cc4K6Ra6.s:871    .text.tse_init:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:872    .text.tse_init:0000000000000014 .L0 
+     /tmp/cc4K6Ra6.s:875    .text.tse_init:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:876    .text.tse_init:000000000000001c .L0 
+     /tmp/cc4K6Ra6.s:878    .text.tse_init:0000000000000020 .L0 
+     /tmp/cc4K6Ra6.s:882    .text.tse_init:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:883    .text.tse_init:000000000000002c .L0 
+     /tmp/cc4K6Ra6.s:885    .text.tse_init:0000000000000030 .L0 
+     /tmp/cc4K6Ra6.s:888    .text.tse_init:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:889    .text.tse_init:0000000000000038 .L0 
+     /tmp/cc4K6Ra6.s:891    .text.tse_init:000000000000003c .L0 
+     /tmp/cc4K6Ra6.s:895    .text.tse_init:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:896    .text.tse_init:0000000000000048 .L0 
+     /tmp/cc4K6Ra6.s:898    .text.tse_init:000000000000004c .L0 
+     /tmp/cc4K6Ra6.s:901    .text.tse_init:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:902    .text.tse_init:0000000000000054 .L0 
+     /tmp/cc4K6Ra6.s:904    .text.tse_init:0000000000000058 .L0 
+     /tmp/cc4K6Ra6.s:908    .text.tse_init:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:909    .text.tse_init:0000000000000064 .L0 
+     /tmp/cc4K6Ra6.s:911    .text.tse_init:0000000000000068 .L0 
+     /tmp/cc4K6Ra6.s:914    .text.tse_init:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:915    .text.tse_init:0000000000000070 .L0 
+     /tmp/cc4K6Ra6.s:917    .text.tse_init:0000000000000074 .L0 
+     /tmp/cc4K6Ra6.s:921    .text.tse_init:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:922    .text.tse_init:0000000000000080 .L0 
+     /tmp/cc4K6Ra6.s:924    .text.tse_init:0000000000000084 .L0 
+     /tmp/cc4K6Ra6.s:928    .text.tse_init:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:929    .text.tse_init:0000000000000090 .L0 
+     /tmp/cc4K6Ra6.s:931    .text.tse_init:0000000000000094 .L0 
+     /tmp/cc4K6Ra6.s:933    .text.tse_init:0000000000000098 .L0 
+     /tmp/cc4K6Ra6.s:935    .text.tse_init:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:936    .text.tse_init:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:940    .text.tse_init:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:941    .text.tse_init:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:943    .text.tse_init:00000000000000ac .L0 
+     /tmp/cc4K6Ra6.s:946    .text.tse_init:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:947    .text.tse_init:00000000000000b4 .L0 
+     /tmp/cc4K6Ra6.s:949    .text.tse_init:00000000000000b8 .L0 
+     /tmp/cc4K6Ra6.s:952    .text.tse_init:00000000000000c0 .L0 
+     /tmp/cc4K6Ra6.s:953    .text.tse_init:00000000000000c0 .L0 
+     /tmp/cc4K6Ra6.s:955    .text.tse_init:00000000000000c4 .L0 
+     /tmp/cc4K6Ra6.s:958    .text.tse_init:00000000000000cc .L0 
+     /tmp/cc4K6Ra6.s:959    .text.tse_init:00000000000000d0 .L0 
+     /tmp/cc4K6Ra6.s:121    .text.eth_core_init_regs:000000000000009c .L0 
+     /tmp/cc4K6Ra6.s:252    .text.phy_advertise:00000000000000a8 .L0 
+     /tmp/cc4K6Ra6.s:475    .text.phy_autonegotiation:000000000000012c .L0 
+     /tmp/cc4K6Ra6.s:845    .text.phy_init:0000000000000234 .L0 
+     /tmp/cc4K6Ra6.s:962    .text.tse_init:00000000000000d0 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc4K6Ra6.s:146    .text.phy_advertise:000000000000001c .L3
+     /tmp/cc4K6Ra6.s:159    .text.phy_advertise:0000000000000030 .L4
+     /tmp/cc4K6Ra6.s:189    .text.phy_advertise:0000000000000054 .L5
+     /tmp/cc4K6Ra6.s:205    .text.phy_advertise:000000000000006c .L6
+     /tmp/cc4K6Ra6.s:216    .text.phy_advertise:000000000000007c .L7
+     /tmp/cc4K6Ra6.s:241    .text.phy_advertise:000000000000009c .L8
+     /tmp/cc4K6Ra6.s:294    .text.phy_autonegotiation:0000000000000038 .L16
+     /tmp/cc4K6Ra6.s:308    .text.phy_autonegotiation:000000000000004c .L17
+     /tmp/cc4K6Ra6.s:321    .text.phy_autonegotiation:0000000000000060 .L18
+     /tmp/cc4K6Ra6.s:351    .text.phy_autonegotiation:0000000000000088 .L19
+     /tmp/cc4K6Ra6.s:369    .text.phy_autonegotiation:000000000000009c .L20
+     /tmp/cc4K6Ra6.s:379    .text.phy_autonegotiation:00000000000000a8 .L21
+     /tmp/cc4K6Ra6.s:408    .text.phy_autonegotiation:00000000000000d4 .L22
+     /tmp/cc4K6Ra6.s:360    .text.phy_autonegotiation:0000000000000094 .L23
+     /tmp/cc4K6Ra6.s:462    .text.phy_autonegotiation:000000000000011c .L25
+     /tmp/cc4K6Ra6.s:432    .text.phy_autonegotiation:00000000000000f4 .L26
+     /tmp/cc4K6Ra6.s:443    .text.phy_autonegotiation:0000000000000104 .L27
+     /tmp/cc4K6Ra6.s:418    .text.phy_autonegotiation:00000000000000e0 .L24
+     /tmp/cc4K6Ra6.s:517    .text.phy_init:0000000000000034 .L39
+     /tmp/cc4K6Ra6.s:530    .text.phy_init:0000000000000048 .L40
+     /tmp/cc4K6Ra6.s:552    .text.phy_init:0000000000000068 .L41
+     /tmp/cc4K6Ra6.s:563    .text.phy_init:0000000000000078 .L42
+     /tmp/cc4K6Ra6.s:584    .text.phy_init:000000000000009c .L43
+     /tmp/cc4K6Ra6.s:595    .text.phy_init:00000000000000ac .L44
+     /tmp/cc4K6Ra6.s:619    .text.phy_init:00000000000000d4 .L45
+     /tmp/cc4K6Ra6.s:634    .text.phy_init:00000000000000ec .L46
+     /tmp/cc4K6Ra6.s:645    .text.phy_init:00000000000000fc .L47
+     /tmp/cc4K6Ra6.s:667    .text.phy_init:000000000000011c .L48
+     /tmp/cc4K6Ra6.s:697    .text.phy_init:000000000000014c .L49
+     /tmp/cc4K6Ra6.s:714    .text.phy_init:0000000000000160 .L50
+     /tmp/cc4K6Ra6.s:705    .text.phy_init:0000000000000158 .L51
+     /tmp/cc4K6Ra6.s:742    .text.phy_init:0000000000000190 .L52
+     /tmp/cc4K6Ra6.s:757    .text.phy_init:00000000000001a8 .L53
+     /tmp/cc4K6Ra6.s:795    .text.phy_init:00000000000001ec .L54
+     /tmp/cc4K6Ra6.s:809    .text.phy_init:0000000000000200 .L55
+     /tmp/cc4K6Ra6.s:820    .text.phy_init:0000000000000210 .L56
+     /tmp/cc4K6Ra6.s:1434   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc4K6Ra6.s:1963   .debug_str:0000000000000097 .LASF49
+     /tmp/cc4K6Ra6.s:2013   .debug_str:00000000000002dd .LASF50
+     /tmp/cc4K6Ra6.s:1977   .debug_str:00000000000001c6 .LASF51
+     /tmp/cc4K6Ra6.s:1923   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc4K6Ra6.s:1943   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc4K6Ra6.s:2001   .debug_str:0000000000000288 .LASF0
+     /tmp/cc4K6Ra6.s:1993   .debug_str:0000000000000251 .LASF3
+     /tmp/cc4K6Ra6.s:1999   .debug_str:000000000000027a .LASF1
+     /tmp/cc4K6Ra6.s:1951   .debug_str:0000000000000032 .LASF2
+     /tmp/cc4K6Ra6.s:1965   .debug_str:000000000000015d .LASF4
+     /tmp/cc4K6Ra6.s:2011   .debug_str:00000000000002ca .LASF5
+     /tmp/cc4K6Ra6.s:1989   .debug_str:0000000000000240 .LASF6
+     /tmp/cc4K6Ra6.s:1955   .debug_str:000000000000004d .LASF7
+     /tmp/cc4K6Ra6.s:2027   .debug_str:0000000000000352 .LASF8
+     /tmp/cc4K6Ra6.s:1987   .debug_str:0000000000000232 .LASF9
+     /tmp/cc4K6Ra6.s:2003   .debug_str:0000000000000294 .LASF10
+     /tmp/cc4K6Ra6.s:2007   .debug_str:00000000000002b4 .LASF11
+     /tmp/cc4K6Ra6.s:1973   .debug_str:00000000000001ad .LASF12
+     /tmp/cc4K6Ra6.s:2009   .debug_str:00000000000002c1 .LASF13
+     /tmp/cc4K6Ra6.s:2005   .debug_str:00000000000002ab .LASF14
+     /tmp/cc4K6Ra6.s:2037   .debug_str:00000000000003b4 .LASF15
+     /tmp/cc4K6Ra6.s:1971   .debug_str:0000000000000197 .LASF16
+     /tmp/cc4K6Ra6.s:1967   .debug_str:0000000000000168 .LASF17
+     /tmp/cc4K6Ra6.s:2047   .debug_str:0000000000000420 .LASF18
+     /tmp/cc4K6Ra6.s:1969   .debug_str:000000000000017e .LASF19
+     /tmp/cc4K6Ra6.s:1947   .debug_str:0000000000000009 .LASF20
+     /tmp/cc4K6Ra6.s:2043   .debug_str:00000000000003f5 .LASF21
+     /tmp/cc4K6Ra6.s:1975   .debug_str:00000000000001b5 .LASF22
+     /tmp/cc4K6Ra6.s:2023   .debug_str:0000000000000323 .LASF23
+     /tmp/cc4K6Ra6.s:2045   .debug_str:0000000000000406 .LASF24
+     /tmp/cc4K6Ra6.s:2041   .debug_str:00000000000003da .LASF25
+     /tmp/cc4K6Ra6.s:2021   .debug_str:000000000000030e .LASF26
+     /tmp/cc4K6Ra6.s:1957   .debug_str:0000000000000058 .LASF27
+     /tmp/cc4K6Ra6.s:1959   .debug_str:000000000000006d .LASF28
+     /tmp/cc4K6Ra6.s:1961   .debug_str:0000000000000082 .LASF29
+     /tmp/cc4K6Ra6.s:2029   .debug_str:0000000000000364 .LASF30
+     /tmp/cc4K6Ra6.s:2031   .debug_str:0000000000000379 .LASF31
+     /tmp/cc4K6Ra6.s:2025   .debug_str:0000000000000339 .LASF32
+     /tmp/cc4K6Ra6.s:1949   .debug_str:000000000000001d .LASF33
+     /tmp/cc4K6Ra6.s:1995   .debug_str:000000000000025b .LASF34
+     /tmp/cc4K6Ra6.s:2039   .debug_str:00000000000003ca .LASF35
+     /tmp/cc4K6Ra6.s:1945   .debug_str:0000000000000000 .LASF39
+     /tmp/cc4K6Ra6.s:850    .text.tse_init:0000000000000000 .LFB4
+     /tmp/cc4K6Ra6.s:960    .text.tse_init:00000000000000d0 .LFE4
+     /tmp/cc4K6Ra6.s:2051   .debug_str:0000000000000444 .LASF41
+     /tmp/cc4K6Ra6.s:1991   .debug_str:0000000000000249 .LASF36
+     /tmp/cc4K6Ra6.s:1779   .debug_loc:0000000000000000 .LLST7
+     /tmp/cc4K6Ra6.s:1983   .debug_str:0000000000000225 .LASF37
+     /tmp/cc4K6Ra6.s:1985   .debug_str:000000000000022d .LASF38
+     /tmp/cc4K6Ra6.s:1997   .debug_str:0000000000000271 .LASF40
+     /tmp/cc4K6Ra6.s:480    .text.phy_init:0000000000000000 .LFB3
+     /tmp/cc4K6Ra6.s:843    .text.phy_init:0000000000000234 .LFE3
+     /tmp/cc4K6Ra6.s:1788   .debug_loc:0000000000000016 .LLST6
+     /tmp/cc4K6Ra6.s:2017   .debug_str:00000000000002f7 .LASF42
+     /tmp/cc4K6Ra6.s:1981   .debug_str:0000000000000211 .LASF43
+     /tmp/cc4K6Ra6.s:257    .text.phy_autonegotiation:0000000000000000 .LFB2
+     /tmp/cc4K6Ra6.s:473    .text.phy_autonegotiation:000000000000012c .LFE2
+     /tmp/cc4K6Ra6.s:1802   .debug_loc:0000000000000037 .LLST3
+     /tmp/cc4K6Ra6.s:1816   .debug_loc:0000000000000058 .LLST4
+     /tmp/cc4K6Ra6.s:1953   .debug_str:000000000000003c .LASF44
+     /tmp/cc4K6Ra6.s:1838   .debug_loc:0000000000000090 .LLST5
+     /tmp/cc4K6Ra6.s:1979   .debug_str:00000000000001fd .LASF45
+     /tmp/cc4K6Ra6.s:2033   .debug_str:000000000000038e .LASF46
+     /tmp/cc4K6Ra6.s:2049   .debug_str:0000000000000435 .LASF52
+     /tmp/cc4K6Ra6.s:2019   .debug_str:0000000000000300 .LASF47
+     /tmp/cc4K6Ra6.s:126    .text.phy_advertise:0000000000000000 .LFB1
+     /tmp/cc4K6Ra6.s:250    .text.phy_advertise:00000000000000a8 .LFE1
+     /tmp/cc4K6Ra6.s:1850   .debug_loc:00000000000000a8 .LLST1
+     /tmp/cc4K6Ra6.s:1864   .debug_loc:00000000000000c9 .LLST2
+     /tmp/cc4K6Ra6.s:2035   .debug_str:00000000000003a1 .LASF53
+     /tmp/cc4K6Ra6.s:14     .text.eth_core_init_regs:0000000000000000 .LFB0
+     /tmp/cc4K6Ra6.s:119    .text.eth_core_init_regs:000000000000009c .LFE0
+     /tmp/cc4K6Ra6.s:2015   .debug_str:00000000000002ea .LASF48
+     /tmp/cc4K6Ra6.s:1890   .debug_loc:000000000000010c .LLST0
+     /tmp/cc4K6Ra6.s:853    .text.tse_init:0000000000000000 .LVL21
+     /tmp/cc4K6Ra6.s:864    .text.tse_init:000000000000000c .LVL22
+     /tmp/cc4K6Ra6.s:483    .text.phy_init:0000000000000000 .LVL19
+     /tmp/cc4K6Ra6.s:541    .text.phy_init:0000000000000058 .LVL20
+     /tmp/cc4K6Ra6.s:260    .text.phy_autonegotiation:0000000000000000 .LVL10
+     /tmp/cc4K6Ra6.s:335    .text.phy_autonegotiation:0000000000000078 .LVL11
+     /tmp/cc4K6Ra6.s:350    .text.phy_autonegotiation:0000000000000088 .LVL13
+     /tmp/cc4K6Ra6.s:359    .text.phy_autonegotiation:0000000000000094 .LVL14
+     /tmp/cc4K6Ra6.s:388    .text.phy_autonegotiation:00000000000000b4 .LVL15
+     /tmp/cc4K6Ra6.s:398    .text.phy_autonegotiation:00000000000000c0 .LVL17
+     /tmp/cc4K6Ra6.s:393    .text.phy_autonegotiation:00000000000000b8 .LVL16
+     /tmp/cc4K6Ra6.s:129    .text.phy_advertise:0000000000000000 .LVL2
+     /tmp/cc4K6Ra6.s:168    .text.phy_advertise:000000000000003c .LVL3
+     /tmp/cc4K6Ra6.s:173    .text.phy_advertise:0000000000000044 .LVL4
+     /tmp/cc4K6Ra6.s:188    .text.phy_advertise:0000000000000054 .LVL6
+     /tmp/cc4K6Ra6.s:199    .text.phy_advertise:0000000000000064 .LVL7
+     /tmp/cc4K6Ra6.s:225    .text.phy_advertise:0000000000000088 .LVL8
+     /tmp/cc4K6Ra6.s:232    .text.phy_advertise:0000000000000090 .LVL9
+     /tmp/cc4K6Ra6.s:18     .text.eth_core_init_regs:0000000000000000 .LVL0
+     /tmp/cc4K6Ra6.s:107    .text.eth_core_init_regs:000000000000008c .LVL1
+     /tmp/cc4K6Ra6.s:968    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cc4K6Ra6.s:410    .text.phy_autonegotiation:00000000000000d4 .LBB2
+     /tmp/cc4K6Ra6.s:423    .text.phy_autonegotiation:00000000000000e8 .LBE2
+     /tmp/cc4K6Ra6.s:464    .text.phy_autonegotiation:000000000000011c .LBB3
+     /tmp/cc4K6Ra6.s:471    .text.phy_autonegotiation:000000000000012c .LBE3
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

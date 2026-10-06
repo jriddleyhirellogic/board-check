@@ -1,0 +1,59 @@
+#-------------------------------------------------------------------------------
+# Core cell constraints
+#-------------------------------------------------------------------------------
+
+# XCVR
+set_location -inst_name cam_xcvr_ref_clk_inst/PF_XCVR_REF_CLK_C0_0/I_IO -fixed true -x 2754 -y 533
+set_location -inst_name cam_rx_inst/xcvr_rx_inst0/I_XCVR/LANE0 -fixed true -x 2748 -y 533
+set_location -inst_name cam_rx_inst/xcvr_rx_inst0/I_XCVR/LANE1 -fixed true -x 2749 -y 506
+set_location -inst_name cam_rx_inst/xcvr_rx_inst0/I_XCVR/LANE2 -fixed true -x 2748 -y 506
+set_location -inst_name cam_rx_inst/xcvr_rx_inst0/I_XCVR/LANE3 -fixed true -x 2748 -y 479
+set_location -inst_name cam_rx_inst/xcvr_rx_inst1/I_XCVR/LANE0 -fixed true -x 2748 -y 452
+set_location -inst_name cam_rx_inst/xcvr_rx_inst1/I_XCVR/LANE1 -fixed true -x 2749 -y 425
+set_location -inst_name cam_rx_inst/xcvr_rx_inst1/I_XCVR/LANE2 -fixed true -x 2748 -y 425
+set_location -inst_name cam_rx_inst/xcvr_rx_inst1/I_XCVR/LANE3 -fixed true -x 2748 -y 398
+
+# PCIe
+set_location -inst_name pcie_hier_inst/PF_XCVR_REF_CLK_C1_0/PF_XCVR_REF_CLK_C1_0/I_IO -fixed true -x 2756 -y 317
+set_location -inst_name pcie_hier_inst/PCIe_TX_PLL_0/PCIe_TX_PLL_0/txpll_isnt_0 -fixed true -x 2754 -y 320
+set_location -inst_name pcie_hier_inst/PF_PCIE_C0_0/PF_PCIE_C0_0/PCIE_0 -fixed true -x 2748 -y 281
+set_location -inst_name pcie_hier_inst/PF_PCIE_C0_0/PF_PCIE_C0_0/PCIESS_LANE0_Pipe_AXI0 -fixed true -x 2748 -y 317
+set_location -inst_name pcie_hier_inst/PF_PCIE_C0_0/PF_PCIE_C0_0/PCIESS_LANE1_Pipe_AXI1 -fixed true -x 2748 -y 290
+
+# DDR4 8GB
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/CCC_0/pll_inst_0 -fixed true -x 2749 -y 5
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DLL_0/dll_inst_0 -fixed true -x 2751 -y 5
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/IOD_BCLK_TRAINING/I_IOD_0 -fixed true -x 2676 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_0_CTRL/I_LANECTRL -fixed true -x 2255 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_1_CTRL/I_LANECTRL -fixed true -x 2111 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_2_CTRL/I_LANECTRL -fixed true -x 1955 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_3_CTRL/I_LANECTRL -fixed true -x 1811 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_4_CTRL/I_LANECTRL -fixed true -x 1667 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_0_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 2244 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_1_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 2100 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_2_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1944 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_3_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1800 -y 0
+set_location -inst_name ddr4_8gb_group_hier_inst/ddr4_8gb_hier_inst/ddr4_inst2_se/DDRPHY_BLK_0/LANE_4_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1656 -y 0
+
+# DDR4 16GB
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/CCC_0/pll_inst_0 -fixed true -x 1 -y 539
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DLL_0/dll_inst_0 -fixed true -x 3 -y 539
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/IOD_BCLK_TRAINING/I_IOD_0 -fixed true -x 84 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_0_CTRL/I_LANECTRL -fixed true -x 503 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_1_CTRL/I_LANECTRL -fixed true -x 659 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_2_CTRL/I_LANECTRL -fixed true -x 803 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_3_CTRL/I_LANECTRL -fixed true -x 947 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_4_CTRL/I_LANECTRL -fixed true -x 1091 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_5_CTRL/I_LANECTRL -fixed true -x 1235 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_6_CTRL/I_LANECTRL -fixed true -x 1379 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_7_CTRL/I_LANECTRL -fixed true -x 1523 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_8_CTRL/I_LANECTRL -fixed true -x 1667 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_0_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 492 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_1_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 648 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_2_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 792 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_3_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 936 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_4_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1080 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_5_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1224 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_6_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1368 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_7_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1512 -y 540
+set_location -inst_name ddr4_16gb_group_hier_inst/ddr4_16gb_hier_inst/ddr4_inst0_nw/DDRPHY_BLK_0/LANE_8_IOD_READ_TRAINING/I_IOD_0 -fixed true -x 1656 -y 540

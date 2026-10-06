@@ -1,0 +1,190 @@
+\doxysection{path\+\_\+planner.\+c}
+\hypertarget{path__planner_8c_source}{}\label{path__planner_8c_source}\index{src/path\_planner.c@{src/path\_planner.c}}
+\doxymbox{\hyperlink{path__planner_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00002}00002\ \textcolor{comment}{\ *\ path\_planner.c}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Nov\ 6,\ 2025}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00009}00009\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00010}00010\ \textcolor{comment}{\ ============================================================================}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00011}00011\ \textcolor{comment}{\ Name\ \ \ \ \ \ \ \ :\ path\_sm.c}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00012}00012\ \textcolor{comment}{\ Author\ \ \ \ \ \ :\ ian}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00013}00013\ \textcolor{comment}{\ Version\ \ \ \ \ :}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00014}00014\ \textcolor{comment}{\ Copyright\ \ \ :\ Your\ copyright\ notice}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00015}00015\ \textcolor{comment}{\ Description\ :\ Hello\ World\ in\ C,\ Ansi-\/style}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00016}00016\ \textcolor{comment}{\ ============================================================================}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00017}00017\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ <stdlib.h>}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ <math.h>}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00025}00025\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{path__planner_8h}{path\_planner.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00027}\doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{00027}}\ \textcolor{preprocessor}{\#define\ ABS(x)\ \ (((x)\ >=\ 0)\ ?\ (x):-\/(x))}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00028}\doxymbox{\hyperlink{path__planner_8c_a95ed41486ca0ed53262e4b8934d4afac}{00028}}\ \textcolor{preprocessor}{\#define\ SGN(x)\ \ \ (((x)\ >=\ 0)?\ 1\ :\ -\/1)}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00030}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{00030}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00031}00031\ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00032}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}{00032}}\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}{INIT}},}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00033}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{00033}}\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{ACCELERATE}},}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00034}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{00034}}\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{CONSTANT\_V}},}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00035}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{00035}}\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{DECELERATE}},}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00036}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{00036}}\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{DONE}}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00037}00037\ \}\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\_State\_t}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00039}\doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{00039}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\_State\_t}}\ \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}},\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00041}00041\ \textcolor{comment}{//\ converts\ integer\ velocity\ as\ input\ to\ stepper\ counter\ to\ actual\ lead\ screw\ velocity}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00042}\doxymbox{\hyperlink{path__planner_8c_a79e358c170d45dbe306c9e472932951f}{00042}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a79e358c170d45dbe306c9e472932951f}{v\_base}}\ =\ 0.1f;\ \ \textcolor{comment}{//\ microns/sec}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00044}00044\ \textcolor{comment}{//\ Time\ per\ tick}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00045}\doxymbox{\hyperlink{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}{00045}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}{T}}\ =\ 10.0e-\/3;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00047}\doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{00047}}\ \textcolor{keyword}{static}\ \ int32\_t\ \doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00048}\doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{00048}}\ \textcolor{keyword}{static}\ \ int32\_t\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00050}\doxymbox{\hyperlink{path__planner_8c_ab9054d31b679638b68cbf36e9169c127}{00050}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_ab9054d31b679638b68cbf36e9169c127}{f\_Tolerance\_microns}}\ =\ 0.5;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00051}00051\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00052}\doxymbox{\hyperlink{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}{00052}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}{i32\_Current\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00053}\doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{00053}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00055}\doxymbox{\hyperlink{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5}{00055}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5}{f\_Elapsed\_Time\_sec}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00056}\doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{00056}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{f\_Ramp\_Distance\_microns}};\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Distance\ travelled\ during\ initial\ acceleration}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00057}\doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{00057}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\_Total\_Distance\_microns}};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Total\ path\ distance}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00059}\doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{00059}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00060}\doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{00060}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{f\_Distance\_Remaining\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00061}00061\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00062}\doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{00062}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structMotion__Params__t}{Motion\_Params\_t}}\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00064}\doxymbox{\hyperlink{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22}{00064}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22}{v\_Init\_Path\_Planner}}(\ int32\_t\ i32\_Start,\ int32\_t\ i32\_Final\ )}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00066}00066\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}{INIT}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00068}00068\ \ \ \ \ \textcolor{comment}{//\ Motionamic\ characteristics\ of\ motor}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00069}00069\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.a\ =\ \doxymbox{\hyperlink{path__planner_8h_a3fa2d9e8a3ff5bc7ac576fda26265b44}{ACCELERATION}};\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ acceleration}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00070}00070\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_max\ =\ \doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\_V}};\ \ \ \ \ \ \textcolor{comment}{//\ max\ vel\ -\/\ x\ base\ freq\ of\ steps\ (262\ Hz),\ (x\ 0.1\ microns/sec)}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00071}00071\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_min\ =\ \doxymbox{\hyperlink{path__planner_8h_a4984fd061a61ac75f177729a16e7d734}{MIN\_V}};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ min\ "{}}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00073}00073\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}}\ =\ i32\_Start;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00074}00074\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}}\ =\ i32\_Final;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00075}00075\ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00077}00077\ \textcolor{comment}{//\ This\ supplies\ a\ target\ setpoint\ path\ to\ the\ PI\ controller\ to\ follow\ with\ each\ time\ tick}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00078}\doxymbox{\hyperlink{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05}{00078}}\ int32\_t\ \doxymbox{\hyperlink{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05}{i32\_\_Update\_Path\_SM}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00079}00079\ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00080}00080\ \ \ \ \ int32\_t\ i32\_V\_Temp;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00081}00081\ \ \ \ \ \textcolor{keywordtype}{float}\ f\_Interval\_Distance\_Travelled;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00082}00082\ \ \ \ \ int32\_t\ i32\_Setpoint;\ \textcolor{comment}{//\ Output\ to\ PI\ controller}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00083}00083\ \ \ \ \ int32\_t\ i32\_Acceleration\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00084}00084\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00085}00085\ \ \ \ \ \textcolor{comment}{//\ Direction\ from\ the\ start\ displacement\ to\ end}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00086}00086\ \ \ \ \ int32\_t\ i32\_Direction\ =\ (\doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}}\ -\/\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}})\ >=\ 0\ ?\ 1\ :\ -\/1;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00088}00088\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5}{f\_Elapsed\_Time\_sec}}\ +=\ \doxymbox{\hyperlink{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}{T}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00089}00089\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00090}00090\ \ \ \ \ \textcolor{keywordflow}{switch}(\doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}})}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00091}00091\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00092}00092\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}{INIT}}:}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00093}00093\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{ACCELERATE}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00094}00094\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}{i32\_Current\_Position\_microns}}\ =\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00095}00095\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ =\ 0.0f;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00096}00096\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\_Total\_Distance\_microns}}\ =\ (float)\doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}((\doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}}\ -\/\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}}));}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00097}00097\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00100}00100\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{ACCELERATE}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Accelerating\ -\/\ hasn't\ reached\ halfway\ point\ yet}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00101}00101\ \ \ \ \ \ \ \ \ i32\_Acceleration\ =\ i32\_Direction\ *\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.a;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00103}00103\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ if\ velocity\ after\ acceleration\ will\ exceed\ max\ or\ min}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00104}00104\ \ \ \ \ \ \ \ \ i32\_V\_Temp\ =\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ +\ i32\_Acceleration;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00105}00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ i32\_V\_Temp\ \ >\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_max\ )}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00106}00106\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ i32\_V\_Temp\ =\ \ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_max;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{f\_Ramp\_Distance\_microns}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ i32\_Acceleration\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{CONSTANT\_V}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00112}00112\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ i32\_V\_Temp\ \ <\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_min\ )}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00114}00114\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ i32\_V\_Temp\ =\ \ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_min;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{f\_Ramp\_Distance\_microns}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ i32\_Acceleration\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{CONSTANT\_V}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00120}00120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00122}00122\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ gone\ at\ least\ halfway,\ then\ triangular\ profile,\ start\ decelerating}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ >=\ \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\_Total\_Distance\_microns}}/2.0f\ )}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00124}00124\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{DECELERATE}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00126}00126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00127}00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00129}00129\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{CONSTANT\_V}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Constant\ Velocity\ -\/\ velocity\ has\ hit\ max,\ but\ not\ halfway\ yet}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00130}00130\ \ \ \ \ \ \ \ \ i32\_Acceleration\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00131}00131\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00132}00132\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{f\_Distance\_Remaining\_microns}}\ <=\ \doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{f\_Ramp\_Distance\_microns}})}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00133}00133\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{DECELERATE}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00135}00135\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00138}00138\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{DECELERATE}}:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Decelerating}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00139}00139\ \ \ \ \ \ \ \ \ i32\_Acceleration\ =\ -\/i32\_Direction\ *\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.a;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00140}00140\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00141}00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}(\doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{f\_Distance\_Remaining\_microns}})\ <=\ \doxymbox{\hyperlink{path__planner_8c_ab9054d31b679638b68cbf36e9169c127}{f\_Tolerance\_microns}}\ )}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00142}00142\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{DONE}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00144}00144\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00145}00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00147}00147\ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{DONE}}:}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Assumption\ is\ that\ PI\ controller\ will\ drive\ it\ the\ rest\ of\ the\ way\ and\ only\ uses\ the\ setpoint}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00149}00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00151}00151\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00153}00153\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00154}00154\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00155}00155\ \ \ \ \ \textcolor{comment}{//\ Update\ velocity\ and\ bound}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00156}00156\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ +\ \ i32\_Acceleration;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00157}00157\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ <\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_min\ ?\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_min\ :\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00158}00158\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ >\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_max\ ?\ \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}.v\_max\ :\ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00160}00160\ \ \ \ \ f\_Interval\_Distance\_Travelled\ =\ fabs(\ \doxymbox{\hyperlink{path__planner_8c_a79e358c170d45dbe306c9e472932951f}{v\_base}}\ *\ \doxymbox{\hyperlink{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}{T}}\ *\ (\ (\textcolor{keywordtype}{float})(\doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ +\ (\textcolor{keywordtype}{float})i32\_Acceleration/2.0f\ ))\ );}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00161}00161\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00162}00162\ \ \ \ \ assert(\ !isnan(f\_Interval\_Distance\_Travelled\ ));}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00163}00163\ \ \ \ \ assert(\ !isnan(\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ ));}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00164}00164\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00165}00165\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ +=\ f\_Interval\_Distance\_Travelled;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00166}00166\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{f\_Distance\_Remaining\_microns}}\ =\ fabs(\ \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\_Total\_Distance\_microns}}\ -\/\ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ );}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00167}00167\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00169}00169\ \ \ \ \ i32\_Setpoint\ =\ \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}}\ !=\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{DONE}}\ ?\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}}\ +\ (int32\_t)\doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ *\ i32\_Direction\ :}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00172}00172\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00173}00173\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00174}00174\ \ \ \ \ \textcolor{keywordflow}{return}\ i32\_Setpoint;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00175}00175\ \}}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00176}00176\ }
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00177}\doxymbox{\hyperlink{path__planner_8c_a794af90614053846b1535622ff70960c}{00177}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{path__planner_8c_a794af90614053846b1535622ff70960c}{v\_Reset\_Path}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00178}00178\ \{}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00179}00179\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\_state}}\ =\ \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{ACCELERATE}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00180}00180\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}{i32\_Current\_Position\_microns}}\ =\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}};}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00181}00181\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\_Current\_Distance\_Travelled\_microns}}\ =\ 0.0f;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00182}00182\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\_Total\_Distance\_microns}}\ =\ (float)\doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}((\doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\_Final\_Position\_microns}}\ -\/\ \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\_Start\_Position\_microns}}));}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00183}00183\ \ \ \ \ \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\_Current\_Velocity}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{path__planner_8c_source_l00184}00184\ \}}
+
+\end{DoxyCode}

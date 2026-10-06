@@ -1,0 +1,83 @@
+#ifndef GPIO_PIN_DEF_H
+#define GPIO_PIN_DEF_H
+
+// Cam ctrl
+#define CAM_XCLR_N        GPIO_0
+#define CAM_XTRIG_PRIMARY GPIO_1
+
+// Eth PCIe sel
+#define ETH_PCIE_SEL GPIO_0
+
+// Async DDR4 rst
+#define ASYNC_DDR4_RST GPIO_0
+
+// Eth1 ctrl
+#define ETH1_PHY_RST_N            GPIO_0
+#define ETH1_CTRL_COMMA_MODE      GPIO_1
+#define ETH1_CTRL_CLK_SQUELCH_IN  GPIO_2
+
+// Eth1 status
+#define ETH1_STAT_FASTLINK_FAIL GPIO_0
+#define ETH1_STAT_MDINT         GPIO_1
+#define ETH1_STAT_RCVRD_CLK     GPIO_2
+#define ETH1_STAT_CLKOUT        GPIO_3
+
+// Eth2 ctrl
+#define ETH2_PHY_RST_N             GPIO_0
+#define ETH2_CTRL_COMMA_MODE       GPIO_1
+#define ETH2_CTRL_CLK_SQUELCH_IN   GPIO_2
+
+// Eth2 status
+#define ETH2_STAT_FASTLINK_FAIL GPIO_0
+#define ETH2_STAT_MDINT         GPIO_1
+#define ETH2_STAT_RCVRD_CLK     GPIO_2
+#define ETH2_STAT_CLKOUT        GPIO_3
+
+// PWR Enable
+#define LVDS_PWR_EN        GPIO_0
+#define ETH1_PWR_EN        GPIO_1
+#define ETH2_PWR_EN        GPIO_2
+#define STEPPER_PRI_PWR_EN GPIO_3
+#define STEPPER_SEC_PWR_EN GPIO_4
+#define LVDT_PWR_EN        GPIO_5
+#define CAM_PWR_EN         GPIO_6
+#define CAM_OSC_EN         GPIO_7
+
+// PWR Status
+#define PA3_PWR_STATUS         GPIO_0
+#define STEP_DOWN_PWR_STATUS   GPIO_1
+#define DDR8GB_PWR_STATUS      GPIO_2
+#define DDR16GB_PWR_STATUS     GPIO_3
+#define PF_PWR_STATUS          GPIO_4
+#define LVDS_PWR_STATUS        GPIO_5
+#define ETH1_PWR_STATUS        GPIO_6
+#define ETH2_PWR_STATUS        GPIO_7
+#define STEPPER_PRI_PWR_STATUS GPIO_8
+#define STEPPER_SEC_PWR_STATUS GPIO_9
+#define LVDT_PWR_STATUS GPIO_10
+#define CAM_PWR_STATUS GPIO_11
+
+// The power status bits of the housekeeping status GPIO, reported by PWR_STATUS_REG
+#define PWR_STATUS_MASK 0x00000FFFu
+#define PA3_TO_PF_MISC0 GPIO_12
+#define PA3_TO_PF_MISC1 GPIO_13
+#define PA3_TO_PF_MISC2 GPIO_14
+#define PA3_TO_PF_MISC3 GPIO_15
+#define PA3_TO_PF_MISC4 GPIO_16
+#define PA3_TO_PF_MISC5 GPIO_17
+#define PA3_TO_PF_MISC6 GPIO_18
+#define PA3_TO_PF_MISC7 GPIO_19
+#define PA3_TO_PF_MISC8 GPIO_20
+#define PA3_TO_PF_MISC9 GPIO_21
+#define PA3_TO_PF_MISC10 GPIO_22
+#define PA3_TO_PF_MISC11 GPIO_23
+#define PA3_TO_PF_MISC12 GPIO_24
+#define PA3_TO_PF_MISC13 GPIO_25
+#define PA3_TO_PF_MISC14 GPIO_26
+#define PA3_TO_PF_MISC15 GPIO_27
+#define HK_GPI_UNUSED GPIO_28
+#define PA3_FW_VERSION_0 GPIO_29
+#define PA3_FW_VERSION_1 GPIO_30
+#define PA3_FW_VERSION_2 GPIO_31
+
+#endif

@@ -1,0 +1,163 @@
+\doxysection{src/\+\+Focus\+\_\+\+States/\+\+Focus\+\_\+\+State.c File Reference}
+\hypertarget{Focus__State_8c}{}\label{Focus__State_8c}\index{src/Focus\_States/Focus\_State.c@{src/Focus\_States/Focus\_State.c}}
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus\+\_\+states.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+stepper.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc\+\_\+math.\+h"{}}\newline
+{\ttfamily \+\#include "{}path.\+h"{}}\newline
+{\ttfamily \+\#include "{}path\+\_\+planner.\+h"{}}\newline
+Include dependency graph for Focus\+\_\+\+State.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Focus__State_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{Focus__State_8c_a4e8e7d6fdd1f5c6f8a0f341e4b61f025}{UPDATE\+\_\+\+PERIOD\+\_\+\+MS}}~10
+\item 
+\+\#define \doxymbox{\hyperlink{Focus__State_8c_aefca6d8d13f4f75b3e5b50d52fd5ed2d}{FAULT\+\_\+\+TIMEOUT\+\_\+\+TICKS}}~100000
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54}{Focus\+\_\+\+State}} (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{Focus__State_8c_a9e7990d4c5b8b4420932c895aa26ae93}{v\+\_\+\+Set\+\_\+\+Focus\+\_\+\+Destination}} (int32\+\_\+t i32\+\_\+\+Destination)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{Focus__State_8c_a00a1cc463fbb7416e8ca824f90ef53d6}{DB\+\_\+\+Count}}
+\item 
+static \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} \doxymbox{\hyperlink{Focus__State_8c_a606a40241f8ed305e0617566a4ba348d}{Ticks\+\_\+\+So\+\_\+\+Far}}
+\item 
+\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} \doxymbox{\hyperlink{Focus__State_8c_ace6c43b7184ad102e2af1a9552be3e95}{Update\+\_\+\+Period\+\_\+\+Ticks}}
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{Focus__State_8c_afb2d69b42f0589e0245d5a835bde1994}{i32\+\_\+\+Final\+\_\+\+Destination}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{Focus__State_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{Focus__State_8c_aefca6d8d13f4f75b3e5b50d52fd5ed2d}\index{Focus\_State.c@{Focus\_State.c}!FAULT\_TIMEOUT\_TICKS@{FAULT\_TIMEOUT\_TICKS}}
+\index{FAULT\_TIMEOUT\_TICKS@{FAULT\_TIMEOUT\_TICKS}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{FAULT\_TIMEOUT\_TICKS}{FAULT\_TIMEOUT\_TICKS}}
+{\footnotesize\ttfamily \label{Focus__State_8c_aefca6d8d13f4f75b3e5b50d52fd5ed2d} 
+\+\#define FAULT\+\_\+\+TIMEOUT\+\_\+\+TICKS~100000}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+\Hypertarget{Focus__State_8c_a4e8e7d6fdd1f5c6f8a0f341e4b61f025}\index{Focus\_State.c@{Focus\_State.c}!UPDATE\_PERIOD\_MS@{UPDATE\_PERIOD\_MS}}
+\index{UPDATE\_PERIOD\_MS@{UPDATE\_PERIOD\_MS}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{UPDATE\_PERIOD\_MS}{UPDATE\_PERIOD\_MS}}
+{\footnotesize\ttfamily \label{Focus__State_8c_a4e8e7d6fdd1f5c6f8a0f341e4b61f025} 
+\+\#define UPDATE\+\_\+\+PERIOD\+\_\+\+MS~10}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{Focus__State_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54}\index{Focus\_State.c@{Focus\_State.c}!Focus\_State@{Focus\_State}}
+\index{Focus\_State@{Focus\_State}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{Focus\_State()}{Focus\_State()}}
+{\footnotesize\ttfamily \label{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Focus\+\_\+\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00035}{35}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Focus__State_8c_ad77b431f9ab230024dee2f0e1c24ac54_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{Focus__State_8c_a9e7990d4c5b8b4420932c895aa26ae93}\index{Focus\_State.c@{Focus\_State.c}!v\_Set\_Focus\_Destination@{v\_Set\_Focus\_Destination}}
+\index{v\_Set\_Focus\_Destination@{v\_Set\_Focus\_Destination}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Focus\_Destination()}{v\_Set\_Focus\_Destination()}}
+{\footnotesize\ttfamily \label{Focus__State_8c_a9e7990d4c5b8b4420932c895aa26ae93} 
+void v\+\_\+\+Set\+\_\+\+Focus\+\_\+\+Destination (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{i32\+\_\+\+Destination}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00109}{109}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Focus__State_8c_a9e7990d4c5b8b4420932c895aa26ae93_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{Focus__State_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{Focus__State_8c_a00a1cc463fbb7416e8ca824f90ef53d6}\index{Focus\_State.c@{Focus\_State.c}!DB\_Count@{DB\_Count}}
+\index{DB\_Count@{DB\_Count}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{DB\_Count}{DB\_Count}}
+{\footnotesize\ttfamily \label{Focus__State_8c_a00a1cc463fbb7416e8ca824f90ef53d6} 
+uint8\+\_\+t DB\+\_\+\+Count\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00026}{26}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+\Hypertarget{Focus__State_8c_afb2d69b42f0589e0245d5a835bde1994}\index{Focus\_State.c@{Focus\_State.c}!i32\_Final\_Destination@{i32\_Final\_Destination}}
+\index{i32\_Final\_Destination@{i32\_Final\_Destination}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Final\_Destination}{i32\_Final\_Destination}}
+{\footnotesize\ttfamily \label{Focus__State_8c_afb2d69b42f0589e0245d5a835bde1994} 
+int32\+\_\+t i32\+\_\+\+Final\+\_\+\+Destination\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00032}{32}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+\Hypertarget{Focus__State_8c_a606a40241f8ed305e0617566a4ba348d}\index{Focus\_State.c@{Focus\_State.c}!Ticks\_So\_Far@{Ticks\_So\_Far}}
+\index{Ticks\_So\_Far@{Ticks\_So\_Far}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{Ticks\_So\_Far}{Ticks\_So\_Far}}
+{\footnotesize\ttfamily \label{Focus__State_8c_a606a40241f8ed305e0617566a4ba348d} 
+\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} Ticks\+\_\+\+So\+\_\+\+Far\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00028}{28}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+
+\Hypertarget{Focus__State_8c_ace6c43b7184ad102e2af1a9552be3e95}\index{Focus\_State.c@{Focus\_State.c}!Update\_Period\_Ticks@{Update\_Period\_Ticks}}
+\index{Update\_Period\_Ticks@{Update\_Period\_Ticks}!Focus\_State.c@{Focus\_State.c}}
+\doxysubsubsection{\texorpdfstring{Update\_Period\_Ticks}{Update\_Period\_Ticks}}
+{\footnotesize\ttfamily \label{Focus__State_8c_ace6c43b7184ad102e2af1a9552be3e95} 
+\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} Update\+\_\+\+Period\+\_\+\+Ticks}
+
+
+
+Definition at line \doxymbox{\hyperlink{Focus__State_8c_source_l00030}{30}} of file \doxymbox{\hyperlink{Focus__State_8c_source}{Focus\+\_\+\+State.\+c}}.
+

@@ -1,0 +1,1143 @@
+   1              		.file	"list.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.vListInitialise,"ax",@progbits
+  10              		.align	2
+  11              		.globl	vListInitialise
+  13              	vListInitialise:
+  14              	.LFB0:
+  15              		.file 1 "../src/FreeRTOS/list.c"
+   1:../src/FreeRTOS/list.c **** /*
+   2:../src/FreeRTOS/list.c ****  * FreeRTOS Kernel V11.2.0
+   3:../src/FreeRTOS/list.c ****  * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+   4:../src/FreeRTOS/list.c ****  *
+   5:../src/FreeRTOS/list.c ****  * SPDX-License-Identifier: MIT
+   6:../src/FreeRTOS/list.c ****  *
+   7:../src/FreeRTOS/list.c ****  * Permission is hereby granted, free of charge, to any person obtaining a copy of
+   8:../src/FreeRTOS/list.c ****  * this software and associated documentation files (the "Software"), to deal in
+   9:../src/FreeRTOS/list.c ****  * the Software without restriction, including without limitation the rights to
+  10:../src/FreeRTOS/list.c ****  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+  11:../src/FreeRTOS/list.c ****  * the Software, and to permit persons to whom the Software is furnished to do so,
+  12:../src/FreeRTOS/list.c ****  * subject to the following conditions:
+  13:../src/FreeRTOS/list.c ****  *
+  14:../src/FreeRTOS/list.c ****  * The above copyright notice and this permission notice shall be included in all
+  15:../src/FreeRTOS/list.c ****  * copies or substantial portions of the Software.
+  16:../src/FreeRTOS/list.c ****  *
+  17:../src/FreeRTOS/list.c ****  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  18:../src/FreeRTOS/list.c ****  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+  19:../src/FreeRTOS/list.c ****  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  20:../src/FreeRTOS/list.c ****  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  21:../src/FreeRTOS/list.c ****  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  22:../src/FreeRTOS/list.c ****  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  23:../src/FreeRTOS/list.c ****  *
+  24:../src/FreeRTOS/list.c ****  * https://www.FreeRTOS.org
+  25:../src/FreeRTOS/list.c ****  * https://github.com/FreeRTOS
+  26:../src/FreeRTOS/list.c ****  *
+  27:../src/FreeRTOS/list.c ****  */
+  28:../src/FreeRTOS/list.c **** 
+  29:../src/FreeRTOS/list.c **** 
+  30:../src/FreeRTOS/list.c **** #include <stdlib.h>
+  31:../src/FreeRTOS/list.c **** 
+  32:../src/FreeRTOS/list.c **** /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
+  33:../src/FreeRTOS/list.c ****  * all the API functions to use the MPU wrappers.  That should only be done when
+  34:../src/FreeRTOS/list.c ****  * task.h is included from an application file. */
+  35:../src/FreeRTOS/list.c **** #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  36:../src/FreeRTOS/list.c **** 
+  37:../src/FreeRTOS/list.c **** #include "FreeRTOS.h"
+  38:../src/FreeRTOS/list.c **** #include "list.h"
+  39:../src/FreeRTOS/list.c **** 
+  40:../src/FreeRTOS/list.c **** /* The MPU ports require MPU_WRAPPERS_INCLUDED_FROM_API_FILE to be
+  41:../src/FreeRTOS/list.c ****  * defined for the header files above, but not in this file, in order to
+  42:../src/FreeRTOS/list.c ****  * generate the correct privileged Vs unprivileged linkage and placement. */
+  43:../src/FreeRTOS/list.c **** #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
+  44:../src/FreeRTOS/list.c **** 
+  45:../src/FreeRTOS/list.c **** /*-----------------------------------------------------------
+  46:../src/FreeRTOS/list.c **** * PUBLIC LIST API documented in list.h
+  47:../src/FreeRTOS/list.c **** *----------------------------------------------------------*/
+  48:../src/FreeRTOS/list.c **** 
+  49:../src/FreeRTOS/list.c **** void vListInitialise( List_t * const pxList )
+  50:../src/FreeRTOS/list.c **** {
+  16              		.loc 1 50 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  51:../src/FreeRTOS/list.c ****     traceENTER_vListInitialise( pxList );
+  19              		.loc 1 51 41
+  52:../src/FreeRTOS/list.c **** 
+  53:../src/FreeRTOS/list.c ****     /* The list structure contains a list item which is used to mark the
+  54:../src/FreeRTOS/list.c ****      * end of the list.  To initialise the list the list end is inserted
+  55:../src/FreeRTOS/list.c ****      * as the only list entry. */
+  56:../src/FreeRTOS/list.c ****     pxList->pxIndex = ( ListItem_t * ) &( pxList->xListEnd );
+  20              		.loc 1 56 5
+  21              		.loc 1 56 40 is_stmt 0
+  22 0000 93078500 		addi	a5,a0,8
+  57:../src/FreeRTOS/list.c **** 
+  58:../src/FreeRTOS/list.c ****     listSET_FIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE( &( pxList->xListEnd ) );
+  59:../src/FreeRTOS/list.c **** 
+  60:../src/FreeRTOS/list.c ****     /* The list end value is the highest possible value in the list to
+  61:../src/FreeRTOS/list.c ****      * ensure it remains at the end of the list. */
+  62:../src/FreeRTOS/list.c ****     pxList->xListEnd.xItemValue = portMAX_DELAY;
+  23              		.loc 1 62 33
+  24 0004 1307F0FF 		li	a4,-1
+  56:../src/FreeRTOS/list.c **** 
+  25              		.loc 1 56 21
+  26 0008 2322F500 		sw	a5,4(a0)
+  58:../src/FreeRTOS/list.c **** 
+  27              		.loc 1 58 75 is_stmt 1
+  28              		.loc 1 62 5
+  29              		.loc 1 62 33 is_stmt 0
+  30 000c 2324E500 		sw	a4,8(a0)
+  63:../src/FreeRTOS/list.c **** 
+  64:../src/FreeRTOS/list.c ****     /* The list end next and previous pointers point to itself so we know
+  65:../src/FreeRTOS/list.c ****      * when the list is empty. */
+  66:../src/FreeRTOS/list.c ****     pxList->xListEnd.pxNext = ( ListItem_t * ) &( pxList->xListEnd );
+  31              		.loc 1 66 5 is_stmt 1
+  32              		.loc 1 66 29 is_stmt 0
+  33 0010 2326F500 		sw	a5,12(a0)
+  67:../src/FreeRTOS/list.c ****     pxList->xListEnd.pxPrevious = ( ListItem_t * ) &( pxList->xListEnd );
+  34              		.loc 1 67 5 is_stmt 1
+  35              		.loc 1 67 33 is_stmt 0
+  36 0014 2328F500 		sw	a5,16(a0)
+  68:../src/FreeRTOS/list.c **** 
+  69:../src/FreeRTOS/list.c ****     /* Initialize the remaining fields of xListEnd when it is a proper ListItem_t */
+  70:../src/FreeRTOS/list.c ****     #if ( configUSE_MINI_LIST_ITEM == 0 )
+  71:../src/FreeRTOS/list.c ****     {
+  72:../src/FreeRTOS/list.c ****         pxList->xListEnd.pvOwner = NULL;
+  73:../src/FreeRTOS/list.c ****         pxList->xListEnd.pxContainer = NULL;
+  74:../src/FreeRTOS/list.c ****         listSET_SECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE( &( pxList->xListEnd ) );
+  75:../src/FreeRTOS/list.c ****     }
+  76:../src/FreeRTOS/list.c ****     #endif
+  77:../src/FreeRTOS/list.c **** 
+  78:../src/FreeRTOS/list.c ****     pxList->uxNumberOfItems = ( UBaseType_t ) 0U;
+  37              		.loc 1 78 5 is_stmt 1
+  38              		.loc 1 78 29 is_stmt 0
+  39 0018 23200500 		sw	zero,0(a0)
+  79:../src/FreeRTOS/list.c **** 
+  80:../src/FreeRTOS/list.c ****     /* Write known values into the list if
+  81:../src/FreeRTOS/list.c ****      * configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
+  82:../src/FreeRTOS/list.c ****     listSET_LIST_INTEGRITY_CHECK_1_VALUE( pxList );
+  40              		.loc 1 82 51 is_stmt 1
+  83:../src/FreeRTOS/list.c ****     listSET_LIST_INTEGRITY_CHECK_2_VALUE( pxList );
+  41              		.loc 1 83 51
+  84:../src/FreeRTOS/list.c **** 
+  85:../src/FreeRTOS/list.c ****     traceRETURN_vListInitialise();
+  42              		.loc 1 85 34
+  86:../src/FreeRTOS/list.c **** }
+  43              		.loc 1 86 1 is_stmt 0
+  44 001c 67800000 		ret
+  45              		.cfi_endproc
+  46              	.LFE0:
+  48              		.section	.text.vListInitialiseItem,"ax",@progbits
+  49              		.align	2
+  50              		.globl	vListInitialiseItem
+  52              	vListInitialiseItem:
+  53              	.LFB1:
+  87:../src/FreeRTOS/list.c **** /*-----------------------------------------------------------*/
+  88:../src/FreeRTOS/list.c **** 
+  89:../src/FreeRTOS/list.c **** void vListInitialiseItem( ListItem_t * const pxItem )
+  90:../src/FreeRTOS/list.c **** {
+  54              		.loc 1 90 1 is_stmt 1
+  55              		.cfi_startproc
+  56              	.LVL1:
+  91:../src/FreeRTOS/list.c ****     traceENTER_vListInitialiseItem( pxItem );
+  57              		.loc 1 91 45
+  92:../src/FreeRTOS/list.c **** 
+  93:../src/FreeRTOS/list.c ****     /* Make sure the list item is not recorded as being on a list. */
+  94:../src/FreeRTOS/list.c ****     pxItem->pxContainer = NULL;
+  58              		.loc 1 94 5
+  59              		.loc 1 94 25 is_stmt 0
+  60 0000 23280500 		sw	zero,16(a0)
+  95:../src/FreeRTOS/list.c **** 
+  96:../src/FreeRTOS/list.c ****     /* Write known values into the list item if
+  97:../src/FreeRTOS/list.c ****      * configUSE_LIST_DATA_INTEGRITY_CHECK_BYTES is set to 1. */
+  98:../src/FreeRTOS/list.c ****     listSET_FIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE( pxItem );
+  61              		.loc 1 98 60 is_stmt 1
+  99:../src/FreeRTOS/list.c ****     listSET_SECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE( pxItem );
+  62              		.loc 1 99 61
+ 100:../src/FreeRTOS/list.c **** 
+ 101:../src/FreeRTOS/list.c ****     traceRETURN_vListInitialiseItem();
+  63              		.loc 1 101 38
+ 102:../src/FreeRTOS/list.c **** }
+  64              		.loc 1 102 1 is_stmt 0
+  65 0004 67800000 		ret
+  66              		.cfi_endproc
+  67              	.LFE1:
+  69              		.section	.text.vListInsertEnd,"ax",@progbits
+  70              		.align	2
+  71              		.globl	vListInsertEnd
+  73              	vListInsertEnd:
+  74              	.LFB2:
+ 103:../src/FreeRTOS/list.c **** /*-----------------------------------------------------------*/
+ 104:../src/FreeRTOS/list.c **** 
+ 105:../src/FreeRTOS/list.c **** void vListInsertEnd( List_t * const pxList,
+ 106:../src/FreeRTOS/list.c ****                      ListItem_t * const pxNewListItem )
+ 107:../src/FreeRTOS/list.c **** {
+  75              		.loc 1 107 1 is_stmt 1
+  76              		.cfi_startproc
+  77              	.LVL2:
+ 108:../src/FreeRTOS/list.c ****     ListItem_t * const pxIndex = pxList->pxIndex;
+  78              		.loc 1 108 5
+  79              		.loc 1 108 24 is_stmt 0
+  80 0000 83274500 		lw	a5,4(a0)
+  81              	.LVL3:
+ 109:../src/FreeRTOS/list.c **** 
+ 110:../src/FreeRTOS/list.c ****     traceENTER_vListInsertEnd( pxList, pxNewListItem );
+  82              		.loc 1 110 55 is_stmt 1
+ 111:../src/FreeRTOS/list.c **** 
+ 112:../src/FreeRTOS/list.c ****     /* Only effective when configASSERT() is also defined, these tests may catch
+ 113:../src/FreeRTOS/list.c ****      * the list data structures being overwritten in memory.  They will not catch
+ 114:../src/FreeRTOS/list.c ****      * data errors caused by incorrect configuration or use of FreeRTOS. */
+ 115:../src/FreeRTOS/list.c ****     listTEST_LIST_INTEGRITY( pxList );
+  83              		.loc 1 115 38
+ 116:../src/FreeRTOS/list.c ****     listTEST_LIST_ITEM_INTEGRITY( pxNewListItem );
+  84              		.loc 1 116 50
+ 117:../src/FreeRTOS/list.c **** 
+ 118:../src/FreeRTOS/list.c ****     /* Insert a new list item into pxList, but rather than sort the list,
+ 119:../src/FreeRTOS/list.c ****      * makes the new list item the last item to be removed by a call to
+ 120:../src/FreeRTOS/list.c ****      * listGET_OWNER_OF_NEXT_ENTRY(). */
+ 121:../src/FreeRTOS/list.c ****     pxNewListItem->pxNext = pxIndex;
+  85              		.loc 1 121 5
+ 122:../src/FreeRTOS/list.c ****     pxNewListItem->pxPrevious = pxIndex->pxPrevious;
+  86              		.loc 1 122 40 is_stmt 0
+  87 0004 03A78700 		lw	a4,8(a5)
+ 121:../src/FreeRTOS/list.c ****     pxNewListItem->pxPrevious = pxIndex->pxPrevious;
+  88              		.loc 1 121 27
+  89 0008 23A2F500 		sw	a5,4(a1)
+  90              		.loc 1 122 5 is_stmt 1
+  91              		.loc 1 122 31 is_stmt 0
+  92 000c 23A4E500 		sw	a4,8(a1)
+ 123:../src/FreeRTOS/list.c **** 
+ 124:../src/FreeRTOS/list.c ****     /* Only used during decision coverage testing. */
+ 125:../src/FreeRTOS/list.c ****     mtCOVERAGE_TEST_DELAY();
+  93              		.loc 1 125 28 is_stmt 1
+ 126:../src/FreeRTOS/list.c **** 
+ 127:../src/FreeRTOS/list.c ****     pxIndex->pxPrevious->pxNext = pxNewListItem;
+  94              		.loc 1 127 5
+  95              		.loc 1 127 33 is_stmt 0
+  96 0010 03A78700 		lw	a4,8(a5)
+  97 0014 2322B700 		sw	a1,4(a4)
+ 128:../src/FreeRTOS/list.c ****     pxIndex->pxPrevious = pxNewListItem;
+  98              		.loc 1 128 5 is_stmt 1
+  99              		.loc 1 128 25 is_stmt 0
+ 100 0018 23A4B700 		sw	a1,8(a5)
+ 129:../src/FreeRTOS/list.c **** 
+ 130:../src/FreeRTOS/list.c ****     /* Remember which list the item is in. */
+ 131:../src/FreeRTOS/list.c ****     pxNewListItem->pxContainer = pxList;
+ 101              		.loc 1 131 5 is_stmt 1
+ 132:../src/FreeRTOS/list.c **** 
+ 133:../src/FreeRTOS/list.c ****     ( pxList->uxNumberOfItems ) = ( UBaseType_t ) ( pxList->uxNumberOfItems + 1U );
+ 102              		.loc 1 133 35 is_stmt 0
+ 103 001c 83270500 		lw	a5,0(a0)
+ 104              	.LVL4:
+ 131:../src/FreeRTOS/list.c **** 
+ 105              		.loc 1 131 32
+ 106 0020 23A8A500 		sw	a0,16(a1)
+ 107              		.loc 1 133 5 is_stmt 1
+ 108              		.loc 1 133 35 is_stmt 0
+ 109 0024 93871700 		addi	a5,a5,1
+ 110              		.loc 1 133 33
+ 111 0028 2320F500 		sw	a5,0(a0)
+ 134:../src/FreeRTOS/list.c **** 
+ 135:../src/FreeRTOS/list.c ****     traceRETURN_vListInsertEnd();
+ 112              		.loc 1 135 33 is_stmt 1
+ 136:../src/FreeRTOS/list.c **** }
+ 113              		.loc 1 136 1 is_stmt 0
+ 114 002c 67800000 		ret
+ 115              		.cfi_endproc
+ 116              	.LFE2:
+ 118              		.section	.text.vListInsert,"ax",@progbits
+ 119              		.align	2
+ 120              		.globl	vListInsert
+ 122              	vListInsert:
+ 123              	.LFB3:
+ 137:../src/FreeRTOS/list.c **** /*-----------------------------------------------------------*/
+ 138:../src/FreeRTOS/list.c **** 
+ 139:../src/FreeRTOS/list.c **** void vListInsert( List_t * const pxList,
+ 140:../src/FreeRTOS/list.c ****                   ListItem_t * const pxNewListItem )
+ 141:../src/FreeRTOS/list.c **** {
+ 124              		.loc 1 141 1 is_stmt 1
+ 125              		.cfi_startproc
+ 126              	.LVL5:
+ 142:../src/FreeRTOS/list.c ****     ListItem_t * pxIterator;
+ 127              		.loc 1 142 5
+ 143:../src/FreeRTOS/list.c ****     const TickType_t xValueOfInsertion = pxNewListItem->xItemValue;
+ 128              		.loc 1 143 5
+ 129              		.loc 1 143 22 is_stmt 0
+ 130 0000 03A70500 		lw	a4,0(a1)
+ 131              	.LVL6:
+ 144:../src/FreeRTOS/list.c **** 
+ 145:../src/FreeRTOS/list.c ****     traceENTER_vListInsert( pxList, pxNewListItem );
+ 132              		.loc 1 145 52 is_stmt 1
+ 146:../src/FreeRTOS/list.c **** 
+ 147:../src/FreeRTOS/list.c ****     /* Only effective when configASSERT() is also defined, these tests may catch
+ 148:../src/FreeRTOS/list.c ****      * the list data structures being overwritten in memory.  They will not catch
+ 149:../src/FreeRTOS/list.c ****      * data errors caused by incorrect configuration or use of FreeRTOS. */
+ 150:../src/FreeRTOS/list.c ****     listTEST_LIST_INTEGRITY( pxList );
+ 133              		.loc 1 150 38
+ 151:../src/FreeRTOS/list.c ****     listTEST_LIST_ITEM_INTEGRITY( pxNewListItem );
+ 134              		.loc 1 151 50
+ 152:../src/FreeRTOS/list.c **** 
+ 153:../src/FreeRTOS/list.c ****     /* Insert the new list item into the list, sorted in xItemValue order.
+ 154:../src/FreeRTOS/list.c ****      *
+ 155:../src/FreeRTOS/list.c ****      * If the list already contains a list item with the same item value then the
+ 156:../src/FreeRTOS/list.c ****      * new list item should be placed after it.  This ensures that TCBs which are
+ 157:../src/FreeRTOS/list.c ****      * stored in ready lists (all of which have the same xItemValue value) get a
+ 158:../src/FreeRTOS/list.c ****      * share of the CPU.  However, if the xItemValue is the same as the back marker
+ 159:../src/FreeRTOS/list.c ****      * the iteration loop below will not end.  Therefore the value is checked
+ 160:../src/FreeRTOS/list.c ****      * first, and the algorithm slightly modified if necessary. */
+ 161:../src/FreeRTOS/list.c ****     if( xValueOfInsertion == portMAX_DELAY )
+ 135              		.loc 1 161 5
+ 136              		.loc 1 161 7 is_stmt 0
+ 137 0004 9306F0FF 		li	a3,-1
+ 162:../src/FreeRTOS/list.c ****     {
+ 163:../src/FreeRTOS/list.c ****         pxIterator = pxList->xListEnd.pxPrevious;
+ 164:../src/FreeRTOS/list.c ****     }
+ 165:../src/FreeRTOS/list.c ****     else
+ 166:../src/FreeRTOS/list.c ****     {
+ 167:../src/FreeRTOS/list.c ****         /* *** NOTE ***********************************************************
+ 168:../src/FreeRTOS/list.c ****         *  If you find your application is crashing here then likely causes are
+ 169:../src/FreeRTOS/list.c ****         *  listed below.  In addition see https://www.freertos.org/Why-FreeRTOS/FAQs for
+ 170:../src/FreeRTOS/list.c ****         *  more tips, and ensure configASSERT() is defined!
+ 171:../src/FreeRTOS/list.c ****         *  https://www.FreeRTOS.org/a00110.html#configASSERT
+ 172:../src/FreeRTOS/list.c ****         *
+ 173:../src/FreeRTOS/list.c ****         *   1) Stack overflow -
+ 174:../src/FreeRTOS/list.c ****         *      see https://www.FreeRTOS.org/Stacks-and-stack-overflow-checking.html
+ 175:../src/FreeRTOS/list.c ****         *   2) Incorrect interrupt priority assignment, especially on Cortex-M
+ 176:../src/FreeRTOS/list.c ****         *      parts where numerically high priority values denote low actual
+ 177:../src/FreeRTOS/list.c ****         *      interrupt priorities, which can seem counter intuitive.  See
+ 178:../src/FreeRTOS/list.c ****         *      https://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html and the definition
+ 179:../src/FreeRTOS/list.c ****         *      of configMAX_SYSCALL_INTERRUPT_PRIORITY on
+ 180:../src/FreeRTOS/list.c ****         *      https://www.FreeRTOS.org/a00110.html
+ 181:../src/FreeRTOS/list.c ****         *   3) Calling an API function from within a critical section or when
+ 182:../src/FreeRTOS/list.c ****         *      the scheduler is suspended, or calling an API function that does
+ 183:../src/FreeRTOS/list.c ****         *      not end in "FromISR" from an interrupt.
+ 184:../src/FreeRTOS/list.c ****         *   4) Using a queue or semaphore before it has been initialised or
+ 185:../src/FreeRTOS/list.c ****         *      before the scheduler has been started (are interrupts firing
+ 186:../src/FreeRTOS/list.c ****         *      before vTaskStartScheduler() has been called?).
+ 187:../src/FreeRTOS/list.c ****         *   5) If the FreeRTOS port supports interrupt nesting then ensure that
+ 188:../src/FreeRTOS/list.c ****         *      the priority of the tick interrupt is at or below
+ 189:../src/FreeRTOS/list.c ****         *      configMAX_SYSCALL_INTERRUPT_PRIORITY.
+ 190:../src/FreeRTOS/list.c ****         **********************************************************************/
+ 191:../src/FreeRTOS/list.c **** 
+ 192:../src/FreeRTOS/list.c ****         for( pxIterator = ( ListItem_t * ) &( pxList->xListEnd ); pxIterator->pxNext->xItemValue <=
+ 138              		.loc 1 192 25
+ 139 0008 93078500 		addi	a5,a0,8
+ 161:../src/FreeRTOS/list.c ****     {
+ 140              		.loc 1 161 7
+ 141 000c 631AD702 		bne	a4,a3,.L7
+ 163:../src/FreeRTOS/list.c ****     }
+ 142              		.loc 1 163 9 is_stmt 1
+ 163:../src/FreeRTOS/list.c ****     }
+ 143              		.loc 1 163 20 is_stmt 0
+ 144 0010 83270501 		lw	a5,16(a0)
+ 145              	.LVL7:
+ 146              	.L6:
+ 193:../src/FreeRTOS/list.c ****         {
+ 194:../src/FreeRTOS/list.c ****             /* There is nothing to do here, just iterating to the wanted
+ 195:../src/FreeRTOS/list.c ****              * insertion position.
+ 196:../src/FreeRTOS/list.c ****              * IF YOU FIND YOUR CODE STUCK HERE, SEE THE NOTE JUST ABOVE.
+ 197:../src/FreeRTOS/list.c ****              */
+ 198:../src/FreeRTOS/list.c ****         }
+ 199:../src/FreeRTOS/list.c ****     }
+ 200:../src/FreeRTOS/list.c **** 
+ 201:../src/FreeRTOS/list.c ****     pxNewListItem->pxNext = pxIterator->pxNext;
+ 147              		.loc 1 201 5 is_stmt 1
+ 148              		.loc 1 201 39 is_stmt 0
+ 149 0014 03A74700 		lw	a4,4(a5)
+ 150              	.LVL8:
+ 151              		.loc 1 201 27
+ 152 0018 23A2E500 		sw	a4,4(a1)
+ 202:../src/FreeRTOS/list.c ****     pxNewListItem->pxNext->pxPrevious = pxNewListItem;
+ 153              		.loc 1 202 5 is_stmt 1
+ 154              		.loc 1 202 39 is_stmt 0
+ 155 001c 2324B700 		sw	a1,8(a4)
+ 203:../src/FreeRTOS/list.c ****     pxNewListItem->pxPrevious = pxIterator;
+ 156              		.loc 1 203 5 is_stmt 1
+ 157              		.loc 1 203 31 is_stmt 0
+ 158 0020 23A4F500 		sw	a5,8(a1)
+ 204:../src/FreeRTOS/list.c ****     pxIterator->pxNext = pxNewListItem;
+ 159              		.loc 1 204 5 is_stmt 1
+ 160              		.loc 1 204 24 is_stmt 0
+ 161 0024 23A2B700 		sw	a1,4(a5)
+ 205:../src/FreeRTOS/list.c **** 
+ 206:../src/FreeRTOS/list.c ****     /* Remember which list the item is in.  This allows fast removal of the
+ 207:../src/FreeRTOS/list.c ****      * item later. */
+ 208:../src/FreeRTOS/list.c ****     pxNewListItem->pxContainer = pxList;
+ 162              		.loc 1 208 5 is_stmt 1
+ 209:../src/FreeRTOS/list.c **** 
+ 210:../src/FreeRTOS/list.c ****     ( pxList->uxNumberOfItems ) = ( UBaseType_t ) ( pxList->uxNumberOfItems + 1U );
+ 163              		.loc 1 210 35 is_stmt 0
+ 164 0028 83270500 		lw	a5,0(a0)
+ 165              	.LVL9:
+ 208:../src/FreeRTOS/list.c **** 
+ 166              		.loc 1 208 32
+ 167 002c 23A8A500 		sw	a0,16(a1)
+ 168              		.loc 1 210 5 is_stmt 1
+ 169              		.loc 1 210 35 is_stmt 0
+ 170 0030 93871700 		addi	a5,a5,1
+ 171              		.loc 1 210 33
+ 172 0034 2320F500 		sw	a5,0(a0)
+ 211:../src/FreeRTOS/list.c **** 
+ 212:../src/FreeRTOS/list.c ****     traceRETURN_vListInsert();
+ 173              		.loc 1 212 30 is_stmt 1
+ 213:../src/FreeRTOS/list.c **** }
+ 174              		.loc 1 213 1 is_stmt 0
+ 175 0038 67800000 		ret
+ 176              	.LVL10:
+ 177              	.L8:
+ 178 003c 93870600 		mv	a5,a3
+ 179              	.LVL11:
+ 180              	.L7:
+ 192:../src/FreeRTOS/list.c ****         {
+ 181              		.loc 1 192 77 discriminator 1
+ 182 0040 83A64700 		lw	a3,4(a5)
+ 192:../src/FreeRTOS/list.c ****         {
+ 183              		.loc 1 192 85 discriminator 1
+ 184 0044 03A60600 		lw	a2,0(a3)
+ 192:../src/FreeRTOS/list.c ****         {
+ 185              		.loc 1 192 9 discriminator 1
+ 186 0048 E37AC7FE 		bleu	a2,a4,.L8
+ 187 004c 6FF09FFC 		j	.L6
+ 188              		.cfi_endproc
+ 189              	.LFE3:
+ 191              		.section	.text.uxListRemove,"ax",@progbits
+ 192              		.align	2
+ 193              		.globl	uxListRemove
+ 195              	uxListRemove:
+ 196              	.LFB4:
+ 214:../src/FreeRTOS/list.c **** /*-----------------------------------------------------------*/
+ 215:../src/FreeRTOS/list.c **** 
+ 216:../src/FreeRTOS/list.c **** 
+ 217:../src/FreeRTOS/list.c **** UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
+ 218:../src/FreeRTOS/list.c **** {
+ 197              		.loc 1 218 1 is_stmt 1
+ 198              		.cfi_startproc
+ 199              	.LVL12:
+ 219:../src/FreeRTOS/list.c ****     /* The list item knows which list it is in.  Obtain the list from the list
+ 220:../src/FreeRTOS/list.c ****      * item. */
+ 221:../src/FreeRTOS/list.c ****     List_t * const pxList = pxItemToRemove->pxContainer;
+ 200              		.loc 1 221 5
+ 222:../src/FreeRTOS/list.c **** 
+ 223:../src/FreeRTOS/list.c ****     traceENTER_uxListRemove( pxItemToRemove );
+ 224:../src/FreeRTOS/list.c **** 
+ 225:../src/FreeRTOS/list.c ****     pxItemToRemove->pxNext->pxPrevious = pxItemToRemove->pxPrevious;
+ 201              		.loc 1 225 19 is_stmt 0
+ 202 0000 83264500 		lw	a3,4(a0)
+ 203              		.loc 1 225 56
+ 204 0004 03278500 		lw	a4,8(a0)
+ 221:../src/FreeRTOS/list.c **** 
+ 205              		.loc 1 221 20
+ 206 0008 83270501 		lw	a5,16(a0)
+ 207              	.LVL13:
+ 223:../src/FreeRTOS/list.c **** 
+ 208              		.loc 1 223 46 is_stmt 1
+ 209              		.loc 1 225 5
+ 210              		.loc 1 225 40 is_stmt 0
+ 211 000c 23A4E600 		sw	a4,8(a3)
+ 226:../src/FreeRTOS/list.c ****     pxItemToRemove->pxPrevious->pxNext = pxItemToRemove->pxNext;
+ 212              		.loc 1 226 5 is_stmt 1
+ 213              		.loc 1 226 40 is_stmt 0
+ 214 0010 2322D700 		sw	a3,4(a4)
+ 227:../src/FreeRTOS/list.c **** 
+ 228:../src/FreeRTOS/list.c ****     /* Only used during decision coverage testing. */
+ 229:../src/FreeRTOS/list.c ****     mtCOVERAGE_TEST_DELAY();
+ 215              		.loc 1 229 28 is_stmt 1
+ 230:../src/FreeRTOS/list.c **** 
+ 231:../src/FreeRTOS/list.c ****     /* Make sure the index is left pointing to a valid item. */
+ 232:../src/FreeRTOS/list.c ****     if( pxList->pxIndex == pxItemToRemove )
+ 216              		.loc 1 232 5
+ 217              		.loc 1 232 7 is_stmt 0
+ 218 0014 83A64700 		lw	a3,4(a5)
+ 219 0018 6394A600 		bne	a3,a0,.L11
+ 233:../src/FreeRTOS/list.c ****     {
+ 234:../src/FreeRTOS/list.c ****         pxList->pxIndex = pxItemToRemove->pxPrevious;
+ 220              		.loc 1 234 9 is_stmt 1
+ 221              		.loc 1 234 25 is_stmt 0
+ 222 001c 23A2E700 		sw	a4,4(a5)
+ 223              	.L11:
+ 235:../src/FreeRTOS/list.c ****     }
+ 236:../src/FreeRTOS/list.c ****     else
+ 237:../src/FreeRTOS/list.c ****     {
+ 238:../src/FreeRTOS/list.c ****         mtCOVERAGE_TEST_MARKER();
+ 224              		.loc 1 238 33 is_stmt 1
+ 239:../src/FreeRTOS/list.c ****     }
+ 240:../src/FreeRTOS/list.c **** 
+ 241:../src/FreeRTOS/list.c ****     pxItemToRemove->pxContainer = NULL;
+ 225              		.loc 1 241 5
+ 226              		.loc 1 241 33 is_stmt 0
+ 227 0020 23280500 		sw	zero,16(a0)
+ 242:../src/FreeRTOS/list.c ****     ( pxList->uxNumberOfItems ) = ( UBaseType_t ) ( pxList->uxNumberOfItems - 1U );
+ 228              		.loc 1 242 5 is_stmt 1
+ 229              		.loc 1 242 35 is_stmt 0
+ 230 0024 03A50700 		lw	a0,0(a5)
+ 231              	.LVL14:
+ 232 0028 1305F5FF 		addi	a0,a0,-1
+ 233              		.loc 1 242 33
+ 234 002c 23A0A700 		sw	a0,0(a5)
+ 243:../src/FreeRTOS/list.c **** 
+ 244:../src/FreeRTOS/list.c ****     traceRETURN_uxListRemove( pxList->uxNumberOfItems );
+ 235              		.loc 1 244 56 is_stmt 1
+ 245:../src/FreeRTOS/list.c **** 
+ 246:../src/FreeRTOS/list.c ****     return pxList->uxNumberOfItems;
+ 236              		.loc 1 246 5
+ 247:../src/FreeRTOS/list.c **** }
+ 237              		.loc 1 247 1 is_stmt 0
+ 238 0030 67800000 		ret
+ 239              		.cfi_endproc
+ 240              	.LFE4:
+ 242              		.text
+ 243              	.Letext0:
+ 244              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 245              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 246              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 247              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 248              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 249              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/stdlib.h"
+ 250              		.file 8 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 251              		.file 9 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 252              		.file 10 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/list.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 list.c
+<<<<<<< HEAD
+     /tmp/ccaRSLlO.s:13     .text.vListInitialise:0000000000000000 vListInitialise
+     /tmp/ccaRSLlO.s:17     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:19     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:20     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:21     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:22     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:24     .text.vListInitialise:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:26     .text.vListInitialise:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:28     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:29     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:30     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:32     .text.vListInitialise:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:33     .text.vListInitialise:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:35     .text.vListInitialise:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:36     .text.vListInitialise:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:38     .text.vListInitialise:0000000000000018 .L0 
+     /tmp/ccaRSLlO.s:39     .text.vListInitialise:0000000000000018 .L0 
+     /tmp/ccaRSLlO.s:41     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:42     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:43     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:44     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:45     .text.vListInitialise:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:52     .text.vListInitialiseItem:0000000000000000 vListInitialiseItem
+     /tmp/ccaRSLlO.s:55     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:57     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:58     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:59     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:60     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:62     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:63     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:64     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:65     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:66     .text.vListInitialiseItem:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:73     .text.vListInsertEnd:0000000000000000 vListInsertEnd
+     /tmp/ccaRSLlO.s:76     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:78     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:79     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:80     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:83     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:84     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:85     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:86     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:87     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:89     .text.vListInsertEnd:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:91     .text.vListInsertEnd:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:92     .text.vListInsertEnd:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:94     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:95     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:96     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:99     .text.vListInsertEnd:0000000000000018 .L0 
+     /tmp/ccaRSLlO.s:100    .text.vListInsertEnd:0000000000000018 .L0 
+     /tmp/ccaRSLlO.s:102    .text.vListInsertEnd:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:103    .text.vListInsertEnd:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:106    .text.vListInsertEnd:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:108    .text.vListInsertEnd:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:109    .text.vListInsertEnd:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:111    .text.vListInsertEnd:0000000000000028 .L0 
+     /tmp/ccaRSLlO.s:113    .text.vListInsertEnd:000000000000002c .L0 
+     /tmp/ccaRSLlO.s:114    .text.vListInsertEnd:000000000000002c .L0 
+     /tmp/ccaRSLlO.s:115    .text.vListInsertEnd:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:122    .text.vListInsert:0000000000000000 vListInsert
+     /tmp/ccaRSLlO.s:125    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:127    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:128    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:129    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:130    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:133    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:134    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:135    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:136    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:137    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:139    .text.vListInsert:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:141    .text.vListInsert:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:143    .text.vListInsert:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:144    .text.vListInsert:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:148    .text.vListInsert:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:149    .text.vListInsert:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:152    .text.vListInsert:0000000000000018 .L0 
+     /tmp/ccaRSLlO.s:154    .text.vListInsert:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:155    .text.vListInsert:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:157    .text.vListInsert:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:158    .text.vListInsert:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:160    .text.vListInsert:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:161    .text.vListInsert:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:163    .text.vListInsert:0000000000000028 .L0 
+     /tmp/ccaRSLlO.s:164    .text.vListInsert:0000000000000028 .L0 
+     /tmp/ccaRSLlO.s:167    .text.vListInsert:000000000000002c .L0 
+     /tmp/ccaRSLlO.s:169    .text.vListInsert:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:170    .text.vListInsert:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:172    .text.vListInsert:0000000000000034 .L0 
+     /tmp/ccaRSLlO.s:174    .text.vListInsert:0000000000000038 .L0 
+     /tmp/ccaRSLlO.s:175    .text.vListInsert:0000000000000038 .L0 
+     /tmp/ccaRSLlO.s:182    .text.vListInsert:0000000000000040 .L0 
+     /tmp/ccaRSLlO.s:184    .text.vListInsert:0000000000000044 .L0 
+     /tmp/ccaRSLlO.s:186    .text.vListInsert:0000000000000048 .L0 
+     /tmp/ccaRSLlO.s:188    .text.vListInsert:0000000000000050 .L0 
+     /tmp/ccaRSLlO.s:195    .text.uxListRemove:0000000000000000 uxListRemove
+     /tmp/ccaRSLlO.s:198    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:200    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:201    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:202    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:204    .text.uxListRemove:0000000000000004 .L0 
+     /tmp/ccaRSLlO.s:206    .text.uxListRemove:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:209    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:210    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:211    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccaRSLlO.s:213    .text.uxListRemove:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:214    .text.uxListRemove:0000000000000010 .L0 
+     /tmp/ccaRSLlO.s:216    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:217    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:218    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccaRSLlO.s:221    .text.uxListRemove:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:222    .text.uxListRemove:000000000000001c .L0 
+     /tmp/ccaRSLlO.s:225    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:226    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:227    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:229    .text.uxListRemove:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:230    .text.uxListRemove:0000000000000024 .L0 
+     /tmp/ccaRSLlO.s:234    .text.uxListRemove:000000000000002c .L0 
+     /tmp/ccaRSLlO.s:236    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:237    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:238    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:239    .text.uxListRemove:0000000000000034 .L0 
+     /tmp/ccaRSLlO.s:48     .text.vListInitialise:0000000000000020 .L0 
+     /tmp/ccaRSLlO.s:69     .text.vListInitialiseItem:0000000000000008 .L0 
+     /tmp/ccaRSLlO.s:118    .text.vListInsertEnd:0000000000000030 .L0 
+     /tmp/ccaRSLlO.s:191    .text.vListInsert:0000000000000050 .L0 
+     /tmp/ccaRSLlO.s:242    .text.uxListRemove:0000000000000034 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccaRSLlO.s:180    .text.vListInsert:0000000000000040 .L7
+     /tmp/ccaRSLlO.s:177    .text.vListInsert:000000000000003c .L8
+     /tmp/ccaRSLlO.s:146    .text.vListInsert:0000000000000014 .L6
+     /tmp/ccaRSLlO.s:223    .text.uxListRemove:0000000000000020 .L11
+     /tmp/ccaRSLlO.s:1752   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccaRSLlO.s:2712   .debug_str:0000000000000574 .LASF152
+     /tmp/ccaRSLlO.s:2724   .debug_str:000000000000067d .LASF153
+     /tmp/ccaRSLlO.s:2504   .debug_str:000000000000015c .LASF154
+     /tmp/ccaRSLlO.s:2420   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccaRSLlO.s:2434   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccaRSLlO.s:2440   .debug_str:0000000000000012 .LASF3
+     /tmp/ccaRSLlO.s:2532   .debug_str:000000000000020d .LASF0
+     /tmp/ccaRSLlO.s:2468   .debug_str:00000000000000bb .LASF1
+     /tmp/ccaRSLlO.s:2576   .debug_str:00000000000002ea .LASF2
+     /tmp/ccaRSLlO.s:2562   .debug_str:00000000000002ab .LASF4
+     /tmp/ccaRSLlO.s:2470   .debug_str:00000000000000c9 .LASF5
+     /tmp/ccaRSLlO.s:2608   .debug_str:0000000000000390 .LASF6
+     /tmp/ccaRSLlO.s:2614   .debug_str:00000000000003ac .LASF7
+     /tmp/ccaRSLlO.s:2548   .debug_str:0000000000000260 .LASF8
+     /tmp/ccaRSLlO.s:2486   .debug_str:000000000000010e .LASF9
+     /tmp/ccaRSLlO.s:2514   .debug_str:00000000000001bf .LASF10
+     /tmp/ccaRSLlO.s:2542   .debug_str:0000000000000241 .LASF11
+     /tmp/ccaRSLlO.s:2454   .debug_str:0000000000000061 .LASF12
+     /tmp/ccaRSLlO.s:2592   .debug_str:000000000000033d .LASF13
+     /tmp/ccaRSLlO.s:2666   .debug_str:0000000000000494 .LASF14
+     /tmp/ccaRSLlO.s:2714   .debug_str:000000000000063a .LASF15
+     /tmp/ccaRSLlO.s:2558   .debug_str:000000000000029d .LASF16
+     /tmp/ccaRSLlO.s:2534   .debug_str:000000000000021a .LASF17
+     /tmp/ccaRSLlO.s:2654   .debug_str:000000000000045f .LASF18
+     /tmp/ccaRSLlO.s:2658   .debug_str:000000000000046e .LASF19
+     /tmp/ccaRSLlO.s:2624   .debug_str:00000000000003d4 .LASF20
+     /tmp/ccaRSLlO.s:2690   .debug_str:00000000000004f5 .LASF21
+     /tmp/ccaRSLlO.s:2560   .debug_str:00000000000002a3 .LASF22
+     /tmp/ccaRSLlO.s:2656   .debug_str:0000000000000467 .LASF120
+     /tmp/ccaRSLlO.s:2518   .debug_str:00000000000001d0 .LASF23
+     /tmp/ccaRSLlO.s:2522   .debug_str:00000000000001e1 .LASF28
+     /tmp/ccaRSLlO.s:2680   .debug_str:00000000000004c9 .LASF24
+     /tmp/ccaRSLlO.s:2648   .debug_str:000000000000044a .LASF25
+     /tmp/ccaRSLlO.s:2516   .debug_str:00000000000001ca .LASF26
+     /tmp/ccaRSLlO.s:2704   .debug_str:000000000000054e .LASF27
+     /tmp/ccaRSLlO.s:2530   .debug_str:0000000000000208 .LASF29
+     /tmp/ccaRSLlO.s:2466   .debug_str:00000000000000b2 .LASF30
+     /tmp/ccaRSLlO.s:2674   .debug_str:00000000000004af .LASF31
+     /tmp/ccaRSLlO.s:2476   .debug_str:00000000000000e1 .LASF32
+     /tmp/ccaRSLlO.s:2748   .debug_str:00000000000006f9 .LASF33
+     /tmp/ccaRSLlO.s:2584   .debug_str:0000000000000317 .LASF34
+     /tmp/ccaRSLlO.s:2570   .debug_str:00000000000002c7 .LASF35
+     /tmp/ccaRSLlO.s:2706   .debug_str:0000000000000553 .LASF36
+     /tmp/ccaRSLlO.s:2616   .debug_str:00000000000003b6 .LASF37
+     /tmp/ccaRSLlO.s:2732   .debug_str:00000000000006a9 .LASF38
+     /tmp/ccaRSLlO.s:2480   .debug_str:00000000000000f0 .LASF39
+     /tmp/ccaRSLlO.s:2510   .debug_str:00000000000001b2 .LASF40
+     /tmp/ccaRSLlO.s:2436   .debug_str:0000000000000000 .LASF41
+     /tmp/ccaRSLlO.s:2684   .debug_str:00000000000004dc .LASF42
+     /tmp/ccaRSLlO.s:2490   .debug_str:000000000000011e .LASF43
+     /tmp/ccaRSLlO.s:2586   .debug_str:0000000000000320 .LASF44
+     /tmp/ccaRSLlO.s:2638   .debug_str:0000000000000413 .LASF45
+     /tmp/ccaRSLlO.s:2512   .debug_str:00000000000001ba .LASF46
+     /tmp/ccaRSLlO.s:2618   .debug_str:00000000000003c0 .LASF47
+     /tmp/ccaRSLlO.s:2474   .debug_str:00000000000000db .LASF48
+     /tmp/ccaRSLlO.s:2438   .debug_str:000000000000000c .LASF49
+     /tmp/ccaRSLlO.s:2626   .debug_str:00000000000003df .LASF50
+     /tmp/ccaRSLlO.s:2488   .debug_str:0000000000000117 .LASF51
+     /tmp/ccaRSLlO.s:2544   .debug_str:0000000000000253 .LASF52
+     /tmp/ccaRSLlO.s:2456   .debug_str:0000000000000078 .LASF53
+     /tmp/ccaRSLlO.s:2482   .debug_str:00000000000000fe .LASF54
+     /tmp/ccaRSLlO.s:2526   .debug_str:00000000000001f8 .LASF55
+     /tmp/ccaRSLlO.s:2568   .debug_str:00000000000002c0 .LASF56
+     /tmp/ccaRSLlO.s:2660   .debug_str:0000000000000476 .LASF57
+     /tmp/ccaRSLlO.s:2736   .debug_str:00000000000006c3 .LASF58
+     /tmp/ccaRSLlO.s:2472   .debug_str:00000000000000d5 .LASF59
+     /tmp/ccaRSLlO.s:2728   .debug_str:000000000000069b .LASF60
+     /tmp/ccaRSLlO.s:2494   .debug_str:000000000000012d .LASF61
+     /tmp/ccaRSLlO.s:2498   .debug_str:000000000000013e .LASF62
+     /tmp/ccaRSLlO.s:2448   .debug_str:000000000000003b .LASF63
+     /tmp/ccaRSLlO.s:2564   .debug_str:00000000000002b2 .LASF64
+     /tmp/ccaRSLlO.s:2628   .debug_str:00000000000003e7 .LASF65
+     /tmp/ccaRSLlO.s:2566   .debug_str:00000000000002b8 .LASF66
+     /tmp/ccaRSLlO.s:2650   .debug_str:0000000000000452 .LASF67
+     /tmp/ccaRSLlO.s:2668   .debug_str:000000000000049c .LASF68
+     /tmp/ccaRSLlO.s:2492   .debug_str:0000000000000126 .LASF69
+     /tmp/ccaRSLlO.s:2536   .debug_str:0000000000000221 .LASF70
+     /tmp/ccaRSLlO.s:2520   .debug_str:00000000000001d9 .LASF71
+     /tmp/ccaRSLlO.s:2636   .debug_str:000000000000040e .LASF72
+     /tmp/ccaRSLlO.s:2446   .debug_str:0000000000000030 .LASF73
+     /tmp/ccaRSLlO.s:2646   .debug_str:0000000000000431 .LASF74
+     /tmp/ccaRSLlO.s:2642   .debug_str:000000000000041f .LASF75
+     /tmp/ccaRSLlO.s:2590   .debug_str:0000000000000332 .LASF76
+     /tmp/ccaRSLlO.s:2644   .debug_str:0000000000000427 .LASF77
+     /tmp/ccaRSLlO.s:2556   .debug_str:0000000000000295 .LASF78
+     /tmp/ccaRSLlO.s:2528   .debug_str:00000000000001fe .LASF79
+     /tmp/ccaRSLlO.s:2744   .debug_str:00000000000006e8 .LASF80
+     /tmp/ccaRSLlO.s:2598   .debug_str:0000000000000357 .LASF81
+     /tmp/ccaRSLlO.s:2538   .debug_str:0000000000000229 .LASF82
+     /tmp/ccaRSLlO.s:2496   .debug_str:0000000000000136 .LASF83
+     /tmp/ccaRSLlO.s:2610   .debug_str:000000000000039e .LASF84
+     /tmp/ccaRSLlO.s:2550   .debug_str:0000000000000273 .LASF85
+     /tmp/ccaRSLlO.s:2718   .debug_str:000000000000064d .LASF86
+     /tmp/ccaRSLlO.s:2484   .debug_str:0000000000000106 .LASF87
+     /tmp/ccaRSLlO.s:2478   .debug_str:00000000000000eb .LASF88
+     /tmp/ccaRSLlO.s:2670   .debug_str:00000000000004a3 .LASF89
+     /tmp/ccaRSLlO.s:2622   .debug_str:00000000000003cd .LASF90
+     /tmp/ccaRSLlO.s:2708   .debug_str:000000000000055d .LASF91
+     /tmp/ccaRSLlO.s:2546   .debug_str:0000000000000259 .LASF92
+     /tmp/ccaRSLlO.s:2620   .debug_str:00000000000003c7 .LASF93
+     /tmp/ccaRSLlO.s:2444   .debug_str:0000000000000028 .LASF94
+     /tmp/ccaRSLlO.s:2652   .debug_str:0000000000000459 .LASF95
+     /tmp/ccaRSLlO.s:2678   .debug_str:00000000000004c3 .LASF96
+     /tmp/ccaRSLlO.s:2686   .debug_str:00000000000004e5 .LASF97
+     /tmp/ccaRSLlO.s:2700   .debug_str:0000000000000531 .LASF98
+     /tmp/ccaRSLlO.s:2682   .debug_str:00000000000004cf .LASF99
+     /tmp/ccaRSLlO.s:2554   .debug_str:0000000000000288 .LASF100
+     /tmp/ccaRSLlO.s:2734   .debug_str:00000000000006b4 .LASF101
+     /tmp/ccaRSLlO.s:2524   .debug_str:00000000000001e9 .LASF102
+     /tmp/ccaRSLlO.s:2630   .debug_str:00000000000003f0 .LASF103
+     /tmp/ccaRSLlO.s:2738   .debug_str:00000000000006ca .LASF104
+     /tmp/ccaRSLlO.s:2634   .debug_str:0000000000000401 .LASF105
+     /tmp/ccaRSLlO.s:2742   .debug_str:00000000000006da .LASF106
+     /tmp/ccaRSLlO.s:2606   .debug_str:0000000000000382 .LASF107
+     /tmp/ccaRSLlO.s:2716   .debug_str:0000000000000643 .LASF108
+     /tmp/ccaRSLlO.s:2552   .debug_str:000000000000027c .LASF109
+     /tmp/ccaRSLlO.s:2692   .debug_str:00000000000004fd .LASF110
+     /tmp/ccaRSLlO.s:2508   .debug_str:00000000000001a4 .LASF111
+     /tmp/ccaRSLlO.s:2464   .debug_str:00000000000000a3 .LASF112
+     /tmp/ccaRSLlO.s:2506   .debug_str:0000000000000193 .LASF113
+     /tmp/ccaRSLlO.s:2450   .debug_str:0000000000000041 .LASF114
+     /tmp/ccaRSLlO.s:2452   .debug_str:0000000000000050 .LASF115
+     /tmp/ccaRSLlO.s:2612   .debug_str:00000000000003a3 .LASF116
+     /tmp/ccaRSLlO.s:2582   .debug_str:0000000000000310 .LASF117
+     /tmp/ccaRSLlO.s:2574   .debug_str:00000000000002e1 .LASF118
+     /tmp/ccaRSLlO.s:2730   .debug_str:00000000000006a1 .LASF119
+     /tmp/ccaRSLlO.s:2458   .debug_str:0000000000000081 .LASF121
+     /tmp/ccaRSLlO.s:2662   .debug_str:000000000000047c .LASF122
+     /tmp/ccaRSLlO.s:2694   .debug_str:000000000000050a .LASF123
+     /tmp/ccaRSLlO.s:2588   .debug_str:0000000000000328 .LASF124
+     /tmp/ccaRSLlO.s:2696   .debug_str:000000000000051d .LASF125
+     /tmp/ccaRSLlO.s:2746   .debug_str:00000000000006ed .LASF126
+     /tmp/ccaRSLlO.s:2580   .debug_str:0000000000000305 .LASF127
+     /tmp/ccaRSLlO.s:2710   .debug_str:0000000000000563 .LASF128
+     /tmp/ccaRSLlO.s:2740   .debug_str:00000000000006cf .LASF129
+     /tmp/ccaRSLlO.s:2698   .debug_str:0000000000000526 .LASF130
+     /tmp/ccaRSLlO.s:2726   .debug_str:0000000000000694 .LASF131
+     /tmp/ccaRSLlO.s:2594   .debug_str:0000000000000344 .LASF132
+     /tmp/ccaRSLlO.s:2596   .debug_str:000000000000034f .LASF133
+     /tmp/ccaRSLlO.s:2604   .debug_str:0000000000000376 .LASF134
+     /tmp/ccaRSLlO.s:2632   .debug_str:00000000000003fb .LASF135
+     /tmp/ccaRSLlO.s:2540   .debug_str:0000000000000231 .LASF136
+     /tmp/ccaRSLlO.s:2602   .debug_str:000000000000036e .LASF137
+     /tmp/ccaRSLlO.s:2460   .debug_str:000000000000008c .LASF138
+     /tmp/ccaRSLlO.s:2676   .debug_str:00000000000004b8 .LASF139
+     /tmp/ccaRSLlO.s:2572   .debug_str:00000000000002d1 .LASF140
+     /tmp/ccaRSLlO.s:2442   .debug_str:0000000000000019 .LASF141
+     /tmp/ccaRSLlO.s:2640   .debug_str:0000000000000418 .LASF142
+     /tmp/ccaRSLlO.s:2600   .debug_str:0000000000000361 .LASF155
+     /tmp/ccaRSLlO.s:196    .text.uxListRemove:0000000000000000 .LFB4
+     /tmp/ccaRSLlO.s:240    .text.uxListRemove:0000000000000034 .LFE4
+     /tmp/ccaRSLlO.s:2578   .debug_str:00000000000002f6 .LASF143
+     /tmp/ccaRSLlO.s:2341   .debug_loc:0000000000000000 .LLST3
+     /tmp/ccaRSLlO.s:2672   .debug_str:00000000000004a8 .LASF144
+     /tmp/ccaRSLlO.s:2664   .debug_str:0000000000000488 .LASF148
+     /tmp/ccaRSLlO.s:123    .text.vListInsert:0000000000000000 .LFB3
+     /tmp/ccaRSLlO.s:189    .text.vListInsert:0000000000000050 .LFE3
+     /tmp/ccaRSLlO.s:2462   .debug_str:0000000000000095 .LASF145
+     /tmp/ccaRSLlO.s:2688   .debug_str:00000000000004ea .LASF146
+     /tmp/ccaRSLlO.s:2355   .debug_loc:0000000000000021 .LLST1
+     /tmp/ccaRSLlO.s:2720   .debug_str:0000000000000657 .LASF147
+     /tmp/ccaRSLlO.s:2371   .debug_loc:000000000000004b .LLST2
+     /tmp/ccaRSLlO.s:2502   .debug_str:000000000000014d .LASF149
+     /tmp/ccaRSLlO.s:74     .text.vListInsertEnd:0000000000000000 .LFB2
+     /tmp/ccaRSLlO.s:116    .text.vListInsertEnd:0000000000000030 .LFE2
+     /tmp/ccaRSLlO.s:2387   .debug_loc:0000000000000075 .LLST0
+     /tmp/ccaRSLlO.s:2722   .debug_str:0000000000000669 .LASF150
+     /tmp/ccaRSLlO.s:53     .text.vListInitialiseItem:0000000000000000 .LFB1
+     /tmp/ccaRSLlO.s:67     .text.vListInitialiseItem:0000000000000008 .LFE1
+     /tmp/ccaRSLlO.s:2500   .debug_str:0000000000000146 .LASF151
+     /tmp/ccaRSLlO.s:2702   .debug_str:000000000000053e .LASF156
+     /tmp/ccaRSLlO.s:14     .text.vListInitialise:0000000000000000 .LFB0
+     /tmp/ccaRSLlO.s:46     .text.vListInitialise:0000000000000020 .LFE0
+     /tmp/ccaRSLlO.s:199    .text.uxListRemove:0000000000000000 .LVL12
+     /tmp/ccaRSLlO.s:231    .text.uxListRemove:0000000000000028 .LVL14
+     /tmp/ccaRSLlO.s:145    .text.vListInsert:0000000000000014 .LVL7
+     /tmp/ccaRSLlO.s:165    .text.vListInsert:000000000000002c .LVL9
+     /tmp/ccaRSLlO.s:176    .text.vListInsert:000000000000003c .LVL10
+     /tmp/ccaRSLlO.s:131    .text.vListInsert:0000000000000004 .LVL6
+     /tmp/ccaRSLlO.s:150    .text.vListInsert:0000000000000018 .LVL8
+     /tmp/ccaRSLlO.s:81     .text.vListInsertEnd:0000000000000004 .LVL3
+     /tmp/ccaRSLlO.s:104    .text.vListInsertEnd:0000000000000020 .LVL4
+     /tmp/ccaRSLlO.s:254    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccGaj3jc.s:13     .text.vListInitialise:0000000000000000 vListInitialise
+     /tmp/ccGaj3jc.s:17     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:19     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:20     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:21     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:22     .text.vListInitialise:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:24     .text.vListInitialise:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:26     .text.vListInitialise:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:28     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:29     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:30     .text.vListInitialise:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:32     .text.vListInitialise:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:33     .text.vListInitialise:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:35     .text.vListInitialise:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:36     .text.vListInitialise:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:38     .text.vListInitialise:0000000000000018 .L0 
+     /tmp/ccGaj3jc.s:39     .text.vListInitialise:0000000000000018 .L0 
+     /tmp/ccGaj3jc.s:41     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:42     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:43     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:44     .text.vListInitialise:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:45     .text.vListInitialise:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:52     .text.vListInitialiseItem:0000000000000000 vListInitialiseItem
+     /tmp/ccGaj3jc.s:55     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:57     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:58     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:59     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:60     .text.vListInitialiseItem:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:62     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:63     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:64     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:65     .text.vListInitialiseItem:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:66     .text.vListInitialiseItem:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:73     .text.vListInsertEnd:0000000000000000 vListInsertEnd
+     /tmp/ccGaj3jc.s:76     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:78     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:79     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:80     .text.vListInsertEnd:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:83     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:84     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:85     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:86     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:87     .text.vListInsertEnd:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:89     .text.vListInsertEnd:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:91     .text.vListInsertEnd:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:92     .text.vListInsertEnd:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:94     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:95     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:96     .text.vListInsertEnd:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:99     .text.vListInsertEnd:0000000000000018 .L0 
+     /tmp/ccGaj3jc.s:100    .text.vListInsertEnd:0000000000000018 .L0 
+     /tmp/ccGaj3jc.s:102    .text.vListInsertEnd:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:103    .text.vListInsertEnd:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:106    .text.vListInsertEnd:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:108    .text.vListInsertEnd:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:109    .text.vListInsertEnd:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:111    .text.vListInsertEnd:0000000000000028 .L0 
+     /tmp/ccGaj3jc.s:113    .text.vListInsertEnd:000000000000002c .L0 
+     /tmp/ccGaj3jc.s:114    .text.vListInsertEnd:000000000000002c .L0 
+     /tmp/ccGaj3jc.s:115    .text.vListInsertEnd:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:122    .text.vListInsert:0000000000000000 vListInsert
+     /tmp/ccGaj3jc.s:125    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:127    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:128    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:129    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:130    .text.vListInsert:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:133    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:134    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:135    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:136    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:137    .text.vListInsert:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:139    .text.vListInsert:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:141    .text.vListInsert:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:143    .text.vListInsert:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:144    .text.vListInsert:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:148    .text.vListInsert:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:149    .text.vListInsert:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:152    .text.vListInsert:0000000000000018 .L0 
+     /tmp/ccGaj3jc.s:154    .text.vListInsert:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:155    .text.vListInsert:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:157    .text.vListInsert:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:158    .text.vListInsert:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:160    .text.vListInsert:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:161    .text.vListInsert:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:163    .text.vListInsert:0000000000000028 .L0 
+     /tmp/ccGaj3jc.s:164    .text.vListInsert:0000000000000028 .L0 
+     /tmp/ccGaj3jc.s:167    .text.vListInsert:000000000000002c .L0 
+     /tmp/ccGaj3jc.s:169    .text.vListInsert:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:170    .text.vListInsert:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:172    .text.vListInsert:0000000000000034 .L0 
+     /tmp/ccGaj3jc.s:174    .text.vListInsert:0000000000000038 .L0 
+     /tmp/ccGaj3jc.s:175    .text.vListInsert:0000000000000038 .L0 
+     /tmp/ccGaj3jc.s:182    .text.vListInsert:0000000000000040 .L0 
+     /tmp/ccGaj3jc.s:184    .text.vListInsert:0000000000000044 .L0 
+     /tmp/ccGaj3jc.s:186    .text.vListInsert:0000000000000048 .L0 
+     /tmp/ccGaj3jc.s:188    .text.vListInsert:0000000000000050 .L0 
+     /tmp/ccGaj3jc.s:195    .text.uxListRemove:0000000000000000 uxListRemove
+     /tmp/ccGaj3jc.s:198    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:200    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:201    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:202    .text.uxListRemove:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:204    .text.uxListRemove:0000000000000004 .L0 
+     /tmp/ccGaj3jc.s:206    .text.uxListRemove:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:209    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:210    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:211    .text.uxListRemove:000000000000000c .L0 
+     /tmp/ccGaj3jc.s:213    .text.uxListRemove:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:214    .text.uxListRemove:0000000000000010 .L0 
+     /tmp/ccGaj3jc.s:216    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:217    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:218    .text.uxListRemove:0000000000000014 .L0 
+     /tmp/ccGaj3jc.s:221    .text.uxListRemove:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:222    .text.uxListRemove:000000000000001c .L0 
+     /tmp/ccGaj3jc.s:225    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:226    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:227    .text.uxListRemove:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:229    .text.uxListRemove:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:230    .text.uxListRemove:0000000000000024 .L0 
+     /tmp/ccGaj3jc.s:234    .text.uxListRemove:000000000000002c .L0 
+     /tmp/ccGaj3jc.s:236    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:237    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:238    .text.uxListRemove:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:239    .text.uxListRemove:0000000000000034 .L0 
+     /tmp/ccGaj3jc.s:48     .text.vListInitialise:0000000000000020 .L0 
+     /tmp/ccGaj3jc.s:69     .text.vListInitialiseItem:0000000000000008 .L0 
+     /tmp/ccGaj3jc.s:118    .text.vListInsertEnd:0000000000000030 .L0 
+     /tmp/ccGaj3jc.s:191    .text.vListInsert:0000000000000050 .L0 
+     /tmp/ccGaj3jc.s:242    .text.uxListRemove:0000000000000034 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccGaj3jc.s:180    .text.vListInsert:0000000000000040 .L7
+     /tmp/ccGaj3jc.s:177    .text.vListInsert:000000000000003c .L8
+     /tmp/ccGaj3jc.s:146    .text.vListInsert:0000000000000014 .L6
+     /tmp/ccGaj3jc.s:223    .text.uxListRemove:0000000000000020 .L11
+     /tmp/ccGaj3jc.s:1752   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccGaj3jc.s:2712   .debug_str:0000000000000574 .LASF152
+     /tmp/ccGaj3jc.s:2724   .debug_str:000000000000067d .LASF153
+     /tmp/ccGaj3jc.s:2504   .debug_str:000000000000015c .LASF154
+     /tmp/ccGaj3jc.s:2420   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccGaj3jc.s:2434   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccGaj3jc.s:2440   .debug_str:0000000000000012 .LASF3
+     /tmp/ccGaj3jc.s:2532   .debug_str:000000000000020d .LASF0
+     /tmp/ccGaj3jc.s:2468   .debug_str:00000000000000bb .LASF1
+     /tmp/ccGaj3jc.s:2576   .debug_str:00000000000002ea .LASF2
+     /tmp/ccGaj3jc.s:2562   .debug_str:00000000000002ab .LASF4
+     /tmp/ccGaj3jc.s:2470   .debug_str:00000000000000c9 .LASF5
+     /tmp/ccGaj3jc.s:2608   .debug_str:0000000000000390 .LASF6
+     /tmp/ccGaj3jc.s:2614   .debug_str:00000000000003ac .LASF7
+     /tmp/ccGaj3jc.s:2548   .debug_str:0000000000000260 .LASF8
+     /tmp/ccGaj3jc.s:2486   .debug_str:000000000000010e .LASF9
+     /tmp/ccGaj3jc.s:2514   .debug_str:00000000000001bf .LASF10
+     /tmp/ccGaj3jc.s:2542   .debug_str:0000000000000241 .LASF11
+     /tmp/ccGaj3jc.s:2454   .debug_str:0000000000000061 .LASF12
+     /tmp/ccGaj3jc.s:2592   .debug_str:000000000000033d .LASF13
+     /tmp/ccGaj3jc.s:2666   .debug_str:0000000000000494 .LASF14
+     /tmp/ccGaj3jc.s:2714   .debug_str:000000000000063a .LASF15
+     /tmp/ccGaj3jc.s:2558   .debug_str:000000000000029d .LASF16
+     /tmp/ccGaj3jc.s:2534   .debug_str:000000000000021a .LASF17
+     /tmp/ccGaj3jc.s:2654   .debug_str:000000000000045f .LASF18
+     /tmp/ccGaj3jc.s:2658   .debug_str:000000000000046e .LASF19
+     /tmp/ccGaj3jc.s:2624   .debug_str:00000000000003d4 .LASF20
+     /tmp/ccGaj3jc.s:2690   .debug_str:00000000000004f5 .LASF21
+     /tmp/ccGaj3jc.s:2560   .debug_str:00000000000002a3 .LASF22
+     /tmp/ccGaj3jc.s:2656   .debug_str:0000000000000467 .LASF120
+     /tmp/ccGaj3jc.s:2518   .debug_str:00000000000001d0 .LASF23
+     /tmp/ccGaj3jc.s:2522   .debug_str:00000000000001e1 .LASF28
+     /tmp/ccGaj3jc.s:2680   .debug_str:00000000000004c9 .LASF24
+     /tmp/ccGaj3jc.s:2648   .debug_str:000000000000044a .LASF25
+     /tmp/ccGaj3jc.s:2516   .debug_str:00000000000001ca .LASF26
+     /tmp/ccGaj3jc.s:2704   .debug_str:000000000000054e .LASF27
+     /tmp/ccGaj3jc.s:2530   .debug_str:0000000000000208 .LASF29
+     /tmp/ccGaj3jc.s:2466   .debug_str:00000000000000b2 .LASF30
+     /tmp/ccGaj3jc.s:2674   .debug_str:00000000000004af .LASF31
+     /tmp/ccGaj3jc.s:2476   .debug_str:00000000000000e1 .LASF32
+     /tmp/ccGaj3jc.s:2748   .debug_str:00000000000006f9 .LASF33
+     /tmp/ccGaj3jc.s:2584   .debug_str:0000000000000317 .LASF34
+     /tmp/ccGaj3jc.s:2570   .debug_str:00000000000002c7 .LASF35
+     /tmp/ccGaj3jc.s:2706   .debug_str:0000000000000553 .LASF36
+     /tmp/ccGaj3jc.s:2616   .debug_str:00000000000003b6 .LASF37
+     /tmp/ccGaj3jc.s:2732   .debug_str:00000000000006a9 .LASF38
+     /tmp/ccGaj3jc.s:2480   .debug_str:00000000000000f0 .LASF39
+     /tmp/ccGaj3jc.s:2510   .debug_str:00000000000001b2 .LASF40
+     /tmp/ccGaj3jc.s:2436   .debug_str:0000000000000000 .LASF41
+     /tmp/ccGaj3jc.s:2684   .debug_str:00000000000004dc .LASF42
+     /tmp/ccGaj3jc.s:2490   .debug_str:000000000000011e .LASF43
+     /tmp/ccGaj3jc.s:2586   .debug_str:0000000000000320 .LASF44
+     /tmp/ccGaj3jc.s:2638   .debug_str:0000000000000413 .LASF45
+     /tmp/ccGaj3jc.s:2512   .debug_str:00000000000001ba .LASF46
+     /tmp/ccGaj3jc.s:2618   .debug_str:00000000000003c0 .LASF47
+     /tmp/ccGaj3jc.s:2474   .debug_str:00000000000000db .LASF48
+     /tmp/ccGaj3jc.s:2438   .debug_str:000000000000000c .LASF49
+     /tmp/ccGaj3jc.s:2626   .debug_str:00000000000003df .LASF50
+     /tmp/ccGaj3jc.s:2488   .debug_str:0000000000000117 .LASF51
+     /tmp/ccGaj3jc.s:2544   .debug_str:0000000000000253 .LASF52
+     /tmp/ccGaj3jc.s:2456   .debug_str:0000000000000078 .LASF53
+     /tmp/ccGaj3jc.s:2482   .debug_str:00000000000000fe .LASF54
+     /tmp/ccGaj3jc.s:2526   .debug_str:00000000000001f8 .LASF55
+     /tmp/ccGaj3jc.s:2568   .debug_str:00000000000002c0 .LASF56
+     /tmp/ccGaj3jc.s:2660   .debug_str:0000000000000476 .LASF57
+     /tmp/ccGaj3jc.s:2736   .debug_str:00000000000006c3 .LASF58
+     /tmp/ccGaj3jc.s:2472   .debug_str:00000000000000d5 .LASF59
+     /tmp/ccGaj3jc.s:2728   .debug_str:000000000000069b .LASF60
+     /tmp/ccGaj3jc.s:2494   .debug_str:000000000000012d .LASF61
+     /tmp/ccGaj3jc.s:2498   .debug_str:000000000000013e .LASF62
+     /tmp/ccGaj3jc.s:2448   .debug_str:000000000000003b .LASF63
+     /tmp/ccGaj3jc.s:2564   .debug_str:00000000000002b2 .LASF64
+     /tmp/ccGaj3jc.s:2628   .debug_str:00000000000003e7 .LASF65
+     /tmp/ccGaj3jc.s:2566   .debug_str:00000000000002b8 .LASF66
+     /tmp/ccGaj3jc.s:2650   .debug_str:0000000000000452 .LASF67
+     /tmp/ccGaj3jc.s:2668   .debug_str:000000000000049c .LASF68
+     /tmp/ccGaj3jc.s:2492   .debug_str:0000000000000126 .LASF69
+     /tmp/ccGaj3jc.s:2536   .debug_str:0000000000000221 .LASF70
+     /tmp/ccGaj3jc.s:2520   .debug_str:00000000000001d9 .LASF71
+     /tmp/ccGaj3jc.s:2636   .debug_str:000000000000040e .LASF72
+     /tmp/ccGaj3jc.s:2446   .debug_str:0000000000000030 .LASF73
+     /tmp/ccGaj3jc.s:2646   .debug_str:0000000000000431 .LASF74
+     /tmp/ccGaj3jc.s:2642   .debug_str:000000000000041f .LASF75
+     /tmp/ccGaj3jc.s:2590   .debug_str:0000000000000332 .LASF76
+     /tmp/ccGaj3jc.s:2644   .debug_str:0000000000000427 .LASF77
+     /tmp/ccGaj3jc.s:2556   .debug_str:0000000000000295 .LASF78
+     /tmp/ccGaj3jc.s:2528   .debug_str:00000000000001fe .LASF79
+     /tmp/ccGaj3jc.s:2744   .debug_str:00000000000006e8 .LASF80
+     /tmp/ccGaj3jc.s:2598   .debug_str:0000000000000357 .LASF81
+     /tmp/ccGaj3jc.s:2538   .debug_str:0000000000000229 .LASF82
+     /tmp/ccGaj3jc.s:2496   .debug_str:0000000000000136 .LASF83
+     /tmp/ccGaj3jc.s:2610   .debug_str:000000000000039e .LASF84
+     /tmp/ccGaj3jc.s:2550   .debug_str:0000000000000273 .LASF85
+     /tmp/ccGaj3jc.s:2718   .debug_str:000000000000064d .LASF86
+     /tmp/ccGaj3jc.s:2484   .debug_str:0000000000000106 .LASF87
+     /tmp/ccGaj3jc.s:2478   .debug_str:00000000000000eb .LASF88
+     /tmp/ccGaj3jc.s:2670   .debug_str:00000000000004a3 .LASF89
+     /tmp/ccGaj3jc.s:2622   .debug_str:00000000000003cd .LASF90
+     /tmp/ccGaj3jc.s:2708   .debug_str:000000000000055d .LASF91
+     /tmp/ccGaj3jc.s:2546   .debug_str:0000000000000259 .LASF92
+     /tmp/ccGaj3jc.s:2620   .debug_str:00000000000003c7 .LASF93
+     /tmp/ccGaj3jc.s:2444   .debug_str:0000000000000028 .LASF94
+     /tmp/ccGaj3jc.s:2652   .debug_str:0000000000000459 .LASF95
+     /tmp/ccGaj3jc.s:2678   .debug_str:00000000000004c3 .LASF96
+     /tmp/ccGaj3jc.s:2686   .debug_str:00000000000004e5 .LASF97
+     /tmp/ccGaj3jc.s:2700   .debug_str:0000000000000531 .LASF98
+     /tmp/ccGaj3jc.s:2682   .debug_str:00000000000004cf .LASF99
+     /tmp/ccGaj3jc.s:2554   .debug_str:0000000000000288 .LASF100
+     /tmp/ccGaj3jc.s:2734   .debug_str:00000000000006b4 .LASF101
+     /tmp/ccGaj3jc.s:2524   .debug_str:00000000000001e9 .LASF102
+     /tmp/ccGaj3jc.s:2630   .debug_str:00000000000003f0 .LASF103
+     /tmp/ccGaj3jc.s:2738   .debug_str:00000000000006ca .LASF104
+     /tmp/ccGaj3jc.s:2634   .debug_str:0000000000000401 .LASF105
+     /tmp/ccGaj3jc.s:2742   .debug_str:00000000000006da .LASF106
+     /tmp/ccGaj3jc.s:2606   .debug_str:0000000000000382 .LASF107
+     /tmp/ccGaj3jc.s:2716   .debug_str:0000000000000643 .LASF108
+     /tmp/ccGaj3jc.s:2552   .debug_str:000000000000027c .LASF109
+     /tmp/ccGaj3jc.s:2692   .debug_str:00000000000004fd .LASF110
+     /tmp/ccGaj3jc.s:2508   .debug_str:00000000000001a4 .LASF111
+     /tmp/ccGaj3jc.s:2464   .debug_str:00000000000000a3 .LASF112
+     /tmp/ccGaj3jc.s:2506   .debug_str:0000000000000193 .LASF113
+     /tmp/ccGaj3jc.s:2450   .debug_str:0000000000000041 .LASF114
+     /tmp/ccGaj3jc.s:2452   .debug_str:0000000000000050 .LASF115
+     /tmp/ccGaj3jc.s:2612   .debug_str:00000000000003a3 .LASF116
+     /tmp/ccGaj3jc.s:2582   .debug_str:0000000000000310 .LASF117
+     /tmp/ccGaj3jc.s:2574   .debug_str:00000000000002e1 .LASF118
+     /tmp/ccGaj3jc.s:2730   .debug_str:00000000000006a1 .LASF119
+     /tmp/ccGaj3jc.s:2458   .debug_str:0000000000000081 .LASF121
+     /tmp/ccGaj3jc.s:2662   .debug_str:000000000000047c .LASF122
+     /tmp/ccGaj3jc.s:2694   .debug_str:000000000000050a .LASF123
+     /tmp/ccGaj3jc.s:2588   .debug_str:0000000000000328 .LASF124
+     /tmp/ccGaj3jc.s:2696   .debug_str:000000000000051d .LASF125
+     /tmp/ccGaj3jc.s:2746   .debug_str:00000000000006ed .LASF126
+     /tmp/ccGaj3jc.s:2580   .debug_str:0000000000000305 .LASF127
+     /tmp/ccGaj3jc.s:2710   .debug_str:0000000000000563 .LASF128
+     /tmp/ccGaj3jc.s:2740   .debug_str:00000000000006cf .LASF129
+     /tmp/ccGaj3jc.s:2698   .debug_str:0000000000000526 .LASF130
+     /tmp/ccGaj3jc.s:2726   .debug_str:0000000000000694 .LASF131
+     /tmp/ccGaj3jc.s:2594   .debug_str:0000000000000344 .LASF132
+     /tmp/ccGaj3jc.s:2596   .debug_str:000000000000034f .LASF133
+     /tmp/ccGaj3jc.s:2604   .debug_str:0000000000000376 .LASF134
+     /tmp/ccGaj3jc.s:2632   .debug_str:00000000000003fb .LASF135
+     /tmp/ccGaj3jc.s:2540   .debug_str:0000000000000231 .LASF136
+     /tmp/ccGaj3jc.s:2602   .debug_str:000000000000036e .LASF137
+     /tmp/ccGaj3jc.s:2460   .debug_str:000000000000008c .LASF138
+     /tmp/ccGaj3jc.s:2676   .debug_str:00000000000004b8 .LASF139
+     /tmp/ccGaj3jc.s:2572   .debug_str:00000000000002d1 .LASF140
+     /tmp/ccGaj3jc.s:2442   .debug_str:0000000000000019 .LASF141
+     /tmp/ccGaj3jc.s:2640   .debug_str:0000000000000418 .LASF142
+     /tmp/ccGaj3jc.s:2600   .debug_str:0000000000000361 .LASF155
+     /tmp/ccGaj3jc.s:196    .text.uxListRemove:0000000000000000 .LFB4
+     /tmp/ccGaj3jc.s:240    .text.uxListRemove:0000000000000034 .LFE4
+     /tmp/ccGaj3jc.s:2578   .debug_str:00000000000002f6 .LASF143
+     /tmp/ccGaj3jc.s:2341   .debug_loc:0000000000000000 .LLST3
+     /tmp/ccGaj3jc.s:2672   .debug_str:00000000000004a8 .LASF144
+     /tmp/ccGaj3jc.s:2664   .debug_str:0000000000000488 .LASF148
+     /tmp/ccGaj3jc.s:123    .text.vListInsert:0000000000000000 .LFB3
+     /tmp/ccGaj3jc.s:189    .text.vListInsert:0000000000000050 .LFE3
+     /tmp/ccGaj3jc.s:2462   .debug_str:0000000000000095 .LASF145
+     /tmp/ccGaj3jc.s:2688   .debug_str:00000000000004ea .LASF146
+     /tmp/ccGaj3jc.s:2355   .debug_loc:0000000000000021 .LLST1
+     /tmp/ccGaj3jc.s:2720   .debug_str:0000000000000657 .LASF147
+     /tmp/ccGaj3jc.s:2371   .debug_loc:000000000000004b .LLST2
+     /tmp/ccGaj3jc.s:2502   .debug_str:000000000000014d .LASF149
+     /tmp/ccGaj3jc.s:74     .text.vListInsertEnd:0000000000000000 .LFB2
+     /tmp/ccGaj3jc.s:116    .text.vListInsertEnd:0000000000000030 .LFE2
+     /tmp/ccGaj3jc.s:2387   .debug_loc:0000000000000075 .LLST0
+     /tmp/ccGaj3jc.s:2722   .debug_str:0000000000000669 .LASF150
+     /tmp/ccGaj3jc.s:53     .text.vListInitialiseItem:0000000000000000 .LFB1
+     /tmp/ccGaj3jc.s:67     .text.vListInitialiseItem:0000000000000008 .LFE1
+     /tmp/ccGaj3jc.s:2500   .debug_str:0000000000000146 .LASF151
+     /tmp/ccGaj3jc.s:2702   .debug_str:000000000000053e .LASF156
+     /tmp/ccGaj3jc.s:14     .text.vListInitialise:0000000000000000 .LFB0
+     /tmp/ccGaj3jc.s:46     .text.vListInitialise:0000000000000020 .LFE0
+     /tmp/ccGaj3jc.s:199    .text.uxListRemove:0000000000000000 .LVL12
+     /tmp/ccGaj3jc.s:231    .text.uxListRemove:0000000000000028 .LVL14
+     /tmp/ccGaj3jc.s:145    .text.vListInsert:0000000000000014 .LVL7
+     /tmp/ccGaj3jc.s:165    .text.vListInsert:000000000000002c .LVL9
+     /tmp/ccGaj3jc.s:176    .text.vListInsert:000000000000003c .LVL10
+     /tmp/ccGaj3jc.s:131    .text.vListInsert:0000000000000004 .LVL6
+     /tmp/ccGaj3jc.s:150    .text.vListInsert:0000000000000018 .LVL8
+     /tmp/ccGaj3jc.s:81     .text.vListInsertEnd:0000000000000004 .LVL3
+     /tmp/ccGaj3jc.s:104    .text.vListInsertEnd:0000000000000020 .LVL4
+     /tmp/ccGaj3jc.s:254    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

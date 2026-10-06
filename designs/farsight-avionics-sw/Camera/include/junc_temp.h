@@ -1,0 +1,9 @@
+#ifndef JUNC_TEMP
+#define JUNC_TEMP
+
+// 'h0
+#define JUNC_TEMP_REG_OFFSET 0u
+#define JUNC_TEMP_OFFSET JUNC_TEMP_REG_OFFSET
+#define JUNC_TEMP_MASK 0xFFFFFFFFu
+#define JUNC_TEMP_SHIFT 0u
+#endif

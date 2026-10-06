@@ -1,0 +1,81 @@
+\doxysection{eth.\+h}
+\hypertarget{eth_8h_source}{}\label{eth_8h_source}\index{src/eth.h@{src/eth.h}}
+\doxymbox{\hyperlink{eth_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00002}00002\ \textcolor{comment}{\ *\ eth.h}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Dec\ 4,\ 2025}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ ETH\_H\_}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ ETH\_H\_}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00011}00011\ \textcolor{preprocessor}{\#ifndef\ ETH\_H}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00012}\doxymbox{\hyperlink{eth_8h_a38f8f3e34999550c43be51fca120b026}{00012}}\ \textcolor{preprocessor}{\#define\ ETH\_H}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00014}00014\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00015}00015\ \textcolor{comment}{//\ Ethernet\ Core\ Driver\ -\/\ Configurable\ Base\ Address}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00016}00016\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00018}00018\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00020}00020\ \textcolor{comment}{//\ The\ following\ configuration\ steps\ is\ taken\ from\ VSC8541\ data\ sheet}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00021}00021\ \textcolor{comment}{//\ Register\ offset\ definitions\ (relative\ to\ base\ address)}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00022}\doxymbox{\hyperlink{eth_8h_a3b8b84e8610c26cb56c284906df9100a}{00022}}\ \textcolor{preprocessor}{\#define\ MAC\_CONFIG\_1\_OFFSET\ \ \ \ \ \ \ \ 0x0000}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00023}\doxymbox{\hyperlink{eth_8h_abfc7ac42a4e82f18e1760df4644f7c5c}{00023}}\ \textcolor{preprocessor}{\#define\ MAC\_CONFIG\_2\_OFFSET\ \ \ \ \ \ \ \ 0x0004}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00024}\doxymbox{\hyperlink{eth_8h_a7ac8f4e46051d0126ec1feb46318acd3}{00024}}\ \textcolor{preprocessor}{\#define\ MAC\_MAX\_FRAME\_LEN\_OFFSET\ \ \ 0x0010}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00025}\doxymbox{\hyperlink{eth_8h_a68ffcfa974a3a456ad0d2bf195eb33ee}{00025}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_CONFIG\_OFFSET\ \ \ \ 0x0020}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00026}\doxymbox{\hyperlink{eth_8h_a8e08fadb8d4813d3e6b57e44fb7f5da0}{00026}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_COMMAND\_OFFSET\ \ \ 0x0024}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00027}\doxymbox{\hyperlink{eth_8h_a4026452a9acfd482472c2f145aa57cf9}{00027}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_ADDRESS\_OFFSET\ \ \ 0x0028}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00028}\doxymbox{\hyperlink{eth_8h_ab077f2e84f6205d91ed4347bfae0660b}{00028}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_CONTROL\_OFFSET\ \ \ 0x002C}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00029}\doxymbox{\hyperlink{eth_8h_a62bb242b06691b0d1eb251d2cd2a717d}{00029}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_STATUS\_OFFSET\ \ \ \ 0x0030}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00030}\doxymbox{\hyperlink{eth_8h_a28810feb2a48f7b674d11448545680d1}{00030}}\ \textcolor{preprocessor}{\#define\ MDIO\_MGMT\_INDICATORS\_OFFSET\ 0x0034}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00031}\doxymbox{\hyperlink{eth_8h_a488d6cc643d1bd70f72d75195ac1720e}{00031}}\ \textcolor{preprocessor}{\#define\ INTERFACE\_CONTROL\_OFFSET\ 0x0038}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00032}\doxymbox{\hyperlink{eth_8h_a0870da9ef8bd97f25de40e69a4945309}{00032}}\ \textcolor{preprocessor}{\#define\ STATION\_ADDRESS\_LOWER\_OFFSET\ 0x0040}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00033}\doxymbox{\hyperlink{eth_8h_a6f98034d1d58d4c502d7308366916f02}{00033}}\ \textcolor{preprocessor}{\#define\ STATION\_ADDRESS\_HIGHER\_OFFSET\ 0x0044}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00034}\doxymbox{\hyperlink{eth_8h_aeb7faa8d854c9b61d913151641b57782}{00034}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_0\_OFFSET\ 0x0048}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00035}\doxymbox{\hyperlink{eth_8h_a737031268fb11c78793b22e831eba631}{00035}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_1\_OFFSET\ 0x004C}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00036}\doxymbox{\hyperlink{eth_8h_a6e3d9210a094924a4098bb5c763661d3}{00036}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_2\_OFFSET\ 0x0050}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00037}\doxymbox{\hyperlink{eth_8h_a7872e33d250671ec6c0c936731c6025a}{00037}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_3\_OFFSET\ 0x0054}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00038}\doxymbox{\hyperlink{eth_8h_a44cc40f476daf85210d648bffca3133c}{00038}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_4\_OFFSET\ 0x0058}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00039}\doxymbox{\hyperlink{eth_8h_adf25770949ab041a30201ef7f17c8a8e}{00039}}\ \textcolor{preprocessor}{\#define\ MAC\_FIFO\_CONFIG\_5\_OFFSET\ 0x005C}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00040}\doxymbox{\hyperlink{eth_8h_a94cabcc866150fb1a5ad7cef85b88b31}{00040}}\ \textcolor{preprocessor}{\#define\ FRAME\_CONTROL\_FILTER\_OFFSET\ 0x01C0}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00042}00042\ \textcolor{comment}{//\ Ethernet\ core\ struct}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00043}\doxymbox{\hyperlink{structeth__core__regs__t}{00043}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\{}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00044}\doxymbox{\hyperlink{structeth__core__regs__t_a89ffec8ee559028ac5bdce2ce45864d1}{00044}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a89ffec8ee559028ac5bdce2ce45864d1}{mdio\_mgmt\_address\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00045}\doxymbox{\hyperlink{structeth__core__regs__t_a045aadc027ff7aa25ff50d82f490632f}{00045}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a045aadc027ff7aa25ff50d82f490632f}{mdio\_mgmt\_command\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00046}\doxymbox{\hyperlink{structeth__core__regs__t_a2251bb6284489a8c90a397a6431bccf7}{00046}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a2251bb6284489a8c90a397a6431bccf7}{mdio\_mgmt\_control\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00047}\doxymbox{\hyperlink{structeth__core__regs__t_ac15abd42917056194d868d3f2c244889}{00047}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_ac15abd42917056194d868d3f2c244889}{mdio\_mgmt\_status\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00048}\doxymbox{\hyperlink{structeth__core__regs__t_a55a520dd445a2b9b1f9cdf9a64ccde9b}{00048}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a55a520dd445a2b9b1f9cdf9a64ccde9b}{mdio\_mgmt\_indicators\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00049}\doxymbox{\hyperlink{structeth__core__regs__t_a3414631e3244e2b935f65ada09839885}{00049}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a3414631e3244e2b935f65ada09839885}{mac\_fifo\_config\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00050}\doxymbox{\hyperlink{structeth__core__regs__t_af5fc8041b5e8f420755f960839d31bce}{00050}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_af5fc8041b5e8f420755f960839d31bce}{mac\_config\_1\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00051}\doxymbox{\hyperlink{structeth__core__regs__t_af73588b13f4e748a1aa14c49922441eb}{00051}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_af73588b13f4e748a1aa14c49922441eb}{mac\_config\_2\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00052}\doxymbox{\hyperlink{structeth__core__regs__t_a5ed92e66b0c05fc530af9eeb0c97377d}{00052}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a5ed92e66b0c05fc530af9eeb0c97377d}{mac\_max\_frame\_len\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00053}\doxymbox{\hyperlink{structeth__core__regs__t_a45dc061547f45765bd471f2933a731ff}{00053}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a45dc061547f45765bd471f2933a731ff}{station\_address\_lower\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00054}\doxymbox{\hyperlink{structeth__core__regs__t_a07334ecf0214b59a7bf8ed3604d36a8d}{00054}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a07334ecf0214b59a7bf8ed3604d36a8d}{station\_address\_higher\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00055}\doxymbox{\hyperlink{structeth__core__regs__t_a34a7bdb4025c9b6d7bf5d43ec6e4be1b}{00055}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a34a7bdb4025c9b6d7bf5d43ec6e4be1b}{mac\_fifo\_config\_reg0}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00056}\doxymbox{\hyperlink{structeth__core__regs__t_ad6b2a6497160f959ee857b2cae5313b4}{00056}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_ad6b2a6497160f959ee857b2cae5313b4}{mac\_fifo\_config\_reg1}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00057}\doxymbox{\hyperlink{structeth__core__regs__t_a7fd0bfda6a3fb564f62baaa732a68e3c}{00057}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a7fd0bfda6a3fb564f62baaa732a68e3c}{mac\_fifo\_config\_reg2}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00058}\doxymbox{\hyperlink{structeth__core__regs__t_a298a8db05be3cb1de9901c2caef9505a}{00058}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a298a8db05be3cb1de9901c2caef9505a}{mac\_fifo\_config\_reg3}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00059}\doxymbox{\hyperlink{structeth__core__regs__t_a0ca3bfeef3875e0d51d70d43c188e758}{00059}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a0ca3bfeef3875e0d51d70d43c188e758}{mac\_fifo\_config\_reg4}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00060}\doxymbox{\hyperlink{structeth__core__regs__t_afd845959e02da54a6e15b86a425e33d4}{00060}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_afd845959e02da54a6e15b86a425e33d4}{mac\_fifo\_config\_reg5}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00061}\doxymbox{\hyperlink{structeth__core__regs__t_a99c59ddf5192729fd6a6a6932dc4381f}{00061}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a99c59ddf5192729fd6a6a6932dc4381f}{frame\_control\_filter\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00062}\doxymbox{\hyperlink{structeth__core__regs__t_a079396e7f24663c362fce0484bbb45b6}{00062}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_a079396e7f24663c362fce0484bbb45b6}{mdio\_mgmt\_config\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00063}\doxymbox{\hyperlink{structeth__core__regs__t_abbb935a36764080b11cfa85c12571419}{00063}}\ \ \ \ \ \textcolor{keyword}{volatile}\ uint32\_t*\ \doxymbox{\hyperlink{structeth__core__regs__t_abbb935a36764080b11cfa85c12571419}{interface\_control\_reg}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00064}00064\ \}\ \doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}};}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00066}00066\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{eth_8h_a4e3e7f0a830012fd4a008f4aacced5f9}{eth\_core\_init\_regs}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}*\ regs,\ uint32\_t\ base\_address);}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00067}00067\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{eth_8h_a0430d38d671d1696904e074af2453b6e}{phy\_advertise}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}*\ regs);}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00068}00068\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{eth_8h_abe71503d3700d7311cc1b13f93a16291}{phy\_autonegotiation}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}*\ regs);}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00069}00069\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{eth_8h_a2a4b556ebd34273cd3cd887884f9eb16}{phy\_init}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}*\ regs);}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00070}00070\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{eth_8h_a8d121b9ceea235b0d1a9000ccc5b1108}{tse\_init}}(\doxymbox{\hyperlink{structeth__core__regs__t}{eth\_core\_regs\_t}}*\ regs);}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00072}00072\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{eth_8h_source_l00075}00075\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ ETH\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,188 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+events.h File Reference}
+\hypertarget{events_8h}{}\label{events_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/events.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/events.h}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}serial\+\_\+sm.\+h"{}}\newline
+Include dependency graph for events.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{events_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{events_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structEvent__Msg__Test__t}{Event\+\_\+\+Msg\+\_\+\+Test\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structEvent__Serial__Msg__Test__t}{Event\+\_\+\+Serial\+\_\+\+Msg\+\_\+\+Test\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structCommand__Msg__Test__t}{Command\+\_\+\+Msg\+\_\+\+Test\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structEvent__Msg__No__Data__t}{Event\+\_\+\+Msg\+\_\+\+No\+\_\+\+Data\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structEvent__Mode__Set__t}{Event\+\_\+\+Mode\+\_\+\+Set\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structEvent__Msg__Position__t}{Event\+\_\+\+Msg\+\_\+\+Position\+\_\+t}}
+\item 
+union \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9}{Event\+\_\+\+Sig\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aca71c643694e2a3478c60f35b622db2a}{ENTRANCE}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a7a10b5d68d31711288e1fe0fa17dbf4f}{EXIT}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a07fc1f8c6ddddad58d7eb01c5502bf63}{RECEIVED\+\_\+\+SERIAL\+\_\+\+MESSAGE}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a94b14731eb7b52be69a5fa4dbd2b4ff5}{CONTROL\+\_\+\+TIMER\+\_\+\+EXPIRED}}
+, \newline
+\doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a3cc4cb70b377566caf62e5a437519cae}{CAMERA\+\_\+\+TIMER\+\_\+\+EXPIRED}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a18d6338603126731f39f9927348a208d}{RESET\+\_\+\+RECEIVED}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a6e17f8ffd3e354fb1f682e7f214b27ca}{ZERO\+\_\+\+STEPPER}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a8a002582b568b22bd492cbdd19d84f26}{GOTO\+\_\+\+POSITION}}
+, \newline
+\doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9addfc7f0f6d5ec0cd60c3f2c28eae8bb8}{POWER\+\_\+\+UP\+\_\+\+CAMERA}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9ad734702b94ce408cba0205b27ac20205}{POWER\+\_\+\+DOWN\+\_\+\+CAMERA}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a353d0131737dc6cf3d013004088085aa}{ARM\+\_\+\+CAMERA}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aede42632610de96e488aabb5c120476c}{IDLE\+\_\+\+CAMERA}}
+, \newline
+\doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a99eb45fef8cb60cd10c3dd95d519038a}{CAMERA\+\_\+\+TAKE\+\_\+\+PICTURE}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aa212760b1fd2b1cc68ac3d00b196e488}{CAMERA\+\_\+\+MODE\+\_\+\+SET}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9afe5b6d24081f2a5ff0d5b67dc58b4941}{SYSTEM\+\_\+\+RESET}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9a50c1247d075ab127ca3d5942328c37b5}{START\+\_\+\+TEST\+\_\+1}}
+, \newline
+\doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9afa8c9ed58d501eb490e2568ea5273f61}{START\+\_\+\+TEST\+\_\+2}}
+, \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9aac3686ed0404ad71105ddc190f1fbc94}{TEST\+\_\+\+MSG}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{events_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9}\index{events.h@{events.h}!Event\_Sig\_t@{Event\_Sig\_t}}
+\index{Event\_Sig\_t@{Event\_Sig\_t}!events.h@{events.h}}
+\doxysubsubsection{\texorpdfstring{Event\_Sig\_t}{Event\_Sig\_t}}
+{\footnotesize\ttfamily \label{events_8h_a24eebced067701f597eebbdb4dc77dc9} 
+enum \doxymbox{\hyperlink{events_8h_a24eebced067701f597eebbdb4dc77dc9}{Event\+\_\+\+Sig\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ENTRANCE@{ENTRANCE}!events.h@{events.h}}
+\index{events.h@{events.h}!ENTRANCE@{ENTRANCE}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9aca71c643694e2a3478c60f35b622db2a}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9aca71c643694e2a3478c60f35b622db2a} 
+ENTRANCE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EXIT@{EXIT}!events.h@{events.h}}
+\index{events.h@{events.h}!EXIT@{EXIT}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a7a10b5d68d31711288e1fe0fa17dbf4f}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a7a10b5d68d31711288e1fe0fa17dbf4f} 
+EXIT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RECEIVED\_SERIAL\_MESSAGE@{RECEIVED\_SERIAL\_MESSAGE}!events.h@{events.h}}
+\index{events.h@{events.h}!RECEIVED\_SERIAL\_MESSAGE@{RECEIVED\_SERIAL\_MESSAGE}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a07fc1f8c6ddddad58d7eb01c5502bf63}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a07fc1f8c6ddddad58d7eb01c5502bf63} 
+RECEIVED\+\_\+\+SERIAL\+\_\+\+MESSAGE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CONTROL\_TIMER\_EXPIRED@{CONTROL\_TIMER\_EXPIRED}!events.h@{events.h}}
+\index{events.h@{events.h}!CONTROL\_TIMER\_EXPIRED@{CONTROL\_TIMER\_EXPIRED}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a94b14731eb7b52be69a5fa4dbd2b4ff5}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a94b14731eb7b52be69a5fa4dbd2b4ff5} 
+CONTROL\+\_\+\+TIMER\+\_\+\+EXPIRED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAMERA\_TIMER\_EXPIRED@{CAMERA\_TIMER\_EXPIRED}!events.h@{events.h}}
+\index{events.h@{events.h}!CAMERA\_TIMER\_EXPIRED@{CAMERA\_TIMER\_EXPIRED}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a3cc4cb70b377566caf62e5a437519cae}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a3cc4cb70b377566caf62e5a437519cae} 
+CAMERA\+\_\+\+TIMER\+\_\+\+EXPIRED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESET\_RECEIVED@{RESET\_RECEIVED}!events.h@{events.h}}
+\index{events.h@{events.h}!RESET\_RECEIVED@{RESET\_RECEIVED}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a18d6338603126731f39f9927348a208d}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a18d6338603126731f39f9927348a208d} 
+RESET\+\_\+\+RECEIVED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ZERO\_STEPPER@{ZERO\_STEPPER}!events.h@{events.h}}
+\index{events.h@{events.h}!ZERO\_STEPPER@{ZERO\_STEPPER}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a6e17f8ffd3e354fb1f682e7f214b27ca}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a6e17f8ffd3e354fb1f682e7f214b27ca} 
+ZERO\+\_\+\+STEPPER&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GOTO\_POSITION@{GOTO\_POSITION}!events.h@{events.h}}
+\index{events.h@{events.h}!GOTO\_POSITION@{GOTO\_POSITION}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a8a002582b568b22bd492cbdd19d84f26}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a8a002582b568b22bd492cbdd19d84f26} 
+GOTO\+\_\+\+POSITION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POWER\_UP\_CAMERA@{POWER\_UP\_CAMERA}!events.h@{events.h}}
+\index{events.h@{events.h}!POWER\_UP\_CAMERA@{POWER\_UP\_CAMERA}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9addfc7f0f6d5ec0cd60c3f2c28eae8bb8}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9addfc7f0f6d5ec0cd60c3f2c28eae8bb8} 
+POWER\+\_\+\+UP\+\_\+\+CAMERA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{POWER\_DOWN\_CAMERA@{POWER\_DOWN\_CAMERA}!events.h@{events.h}}
+\index{events.h@{events.h}!POWER\_DOWN\_CAMERA@{POWER\_DOWN\_CAMERA}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9ad734702b94ce408cba0205b27ac20205}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9ad734702b94ce408cba0205b27ac20205} 
+POWER\+\_\+\+DOWN\+\_\+\+CAMERA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ARM\_CAMERA@{ARM\_CAMERA}!events.h@{events.h}}
+\index{events.h@{events.h}!ARM\_CAMERA@{ARM\_CAMERA}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a353d0131737dc6cf3d013004088085aa}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a353d0131737dc6cf3d013004088085aa} 
+ARM\+\_\+\+CAMERA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IDLE\_CAMERA@{IDLE\_CAMERA}!events.h@{events.h}}
+\index{events.h@{events.h}!IDLE\_CAMERA@{IDLE\_CAMERA}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9aede42632610de96e488aabb5c120476c}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9aede42632610de96e488aabb5c120476c} 
+IDLE\+\_\+\+CAMERA&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAMERA\_TAKE\_PICTURE@{CAMERA\_TAKE\_PICTURE}!events.h@{events.h}}
+\index{events.h@{events.h}!CAMERA\_TAKE\_PICTURE@{CAMERA\_TAKE\_PICTURE}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a99eb45fef8cb60cd10c3dd95d519038a}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a99eb45fef8cb60cd10c3dd95d519038a} 
+CAMERA\+\_\+\+TAKE\+\_\+\+PICTURE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CAMERA\_MODE\_SET@{CAMERA\_MODE\_SET}!events.h@{events.h}}
+\index{events.h@{events.h}!CAMERA\_MODE\_SET@{CAMERA\_MODE\_SET}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9aa212760b1fd2b1cc68ac3d00b196e488}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9aa212760b1fd2b1cc68ac3d00b196e488} 
+CAMERA\+\_\+\+MODE\+\_\+\+SET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SYSTEM\_RESET@{SYSTEM\_RESET}!events.h@{events.h}}
+\index{events.h@{events.h}!SYSTEM\_RESET@{SYSTEM\_RESET}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9afe5b6d24081f2a5ff0d5b67dc58b4941}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9afe5b6d24081f2a5ff0d5b67dc58b4941} 
+SYSTEM\+\_\+\+RESET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{START\_TEST\_1@{START\_TEST\_1}!events.h@{events.h}}
+\index{events.h@{events.h}!START\_TEST\_1@{START\_TEST\_1}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9a50c1247d075ab127ca3d5942328c37b5}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9a50c1247d075ab127ca3d5942328c37b5} 
+START\+\_\+\+TEST\+\_\+1&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{START\_TEST\_2@{START\_TEST\_2}!events.h@{events.h}}
+\index{events.h@{events.h}!START\_TEST\_2@{START\_TEST\_2}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9afa8c9ed58d501eb490e2568ea5273f61}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9afa8c9ed58d501eb490e2568ea5273f61} 
+START\+\_\+\+TEST\+\_\+2&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{TEST\_MSG@{TEST\_MSG}!events.h@{events.h}}
+\index{events.h@{events.h}!TEST\_MSG@{TEST\_MSG}}
+}\Hypertarget{events_8h_a24eebced067701f597eebbdb4dc77dc9aac3686ed0404ad71105ddc190f1fbc94}\label{events_8h_a24eebced067701f597eebbdb4dc77dc9aac3686ed0404ad71105ddc190f1fbc94} 
+TEST\+\_\+\+MSG&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{events_8h_source_l00015}{15}} of file \doxymbox{\hyperlink{events_8h_source}{events.\+h}}.
+

@@ -1,0 +1,77 @@
+\doxysection{src/\+\+Test\+\_\+\+Paths/\+step\+\_\+path.c File Reference}
+\hypertarget{step__path_8c}{}\label{step__path_8c}\index{src/Test\_Paths/step\_path.c@{src/Test\_Paths/step\_path.c}}
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}path.\+h"{}}\newline
+Include dependency graph for step\+\_\+path.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{step__path_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int32\+\_\+t \doxymbox{\hyperlink{step__path_8c_a8a296e8b25412be770c4905a7f14dd4f}{i32\+\_\+\+Get\+\_\+\+Setpoint}} (\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} current\+\_\+time)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static const int32\+\_\+t \doxymbox{\hyperlink{step__path_8c_ac7ba23978d7448c628bbbc65cf503fce}{i32\+\_\+\+Start\+\_\+\+Position}} = 0
+\item 
+static const int32\+\_\+t \doxymbox{\hyperlink{step__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}{i32\+\_\+\+Final\+\_\+\+Position}} = 300
+\item 
+static const uint32\+\_\+t \doxymbox{\hyperlink{step__path_8c_a4919f998a5018e95dab1b75615b5c224}{u32\+\_\+\+End\+\_\+\+Time}} = 10000
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{step__path_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{step__path_8c_a8a296e8b25412be770c4905a7f14dd4f}\index{step\_path.c@{step\_path.c}!i32\_Get\_Setpoint@{i32\_Get\_Setpoint}}
+\index{i32\_Get\_Setpoint@{i32\_Get\_Setpoint}!step\_path.c@{step\_path.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Get\_Setpoint()}{i32\_Get\_Setpoint()}}
+{\footnotesize\ttfamily \label{step__path_8c_a8a296e8b25412be770c4905a7f14dd4f} 
+int32\+\_\+t i32\+\_\+\+Get\+\_\+\+Setpoint (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}}}]{current\+\_\+time}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{step__path_8c_source_l00017}{17}} of file \doxymbox{\hyperlink{step__path_8c_source}{step\+\_\+path.\+c}}.
+
+
+
+\label{doc-var-members}
+\Hypertarget{step__path_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{step__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}\index{step\_path.c@{step\_path.c}!i32\_Final\_Position@{i32\_Final\_Position}}
+\index{i32\_Final\_Position@{i32\_Final\_Position}!step\_path.c@{step\_path.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Final\_Position}{i32\_Final\_Position}}
+{\footnotesize\ttfamily \label{step__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71} 
+const int32\+\_\+t i32\+\_\+\+Final\+\_\+\+Position = 300\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{step__path_8c_source_l00014}{14}} of file \doxymbox{\hyperlink{step__path_8c_source}{step\+\_\+path.\+c}}.
+
+\Hypertarget{step__path_8c_ac7ba23978d7448c628bbbc65cf503fce}\index{step\_path.c@{step\_path.c}!i32\_Start\_Position@{i32\_Start\_Position}}
+\index{i32\_Start\_Position@{i32\_Start\_Position}!step\_path.c@{step\_path.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Start\_Position}{i32\_Start\_Position}}
+{\footnotesize\ttfamily \label{step__path_8c_ac7ba23978d7448c628bbbc65cf503fce} 
+const int32\+\_\+t i32\+\_\+\+Start\+\_\+\+Position = 0\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{step__path_8c_source_l00013}{13}} of file \doxymbox{\hyperlink{step__path_8c_source}{step\+\_\+path.\+c}}.
+
+\Hypertarget{step__path_8c_a4919f998a5018e95dab1b75615b5c224}\index{step\_path.c@{step\_path.c}!u32\_End\_Time@{u32\_End\_Time}}
+\index{u32\_End\_Time@{u32\_End\_Time}!step\_path.c@{step\_path.c}}
+\doxysubsubsection{\texorpdfstring{u32\_End\_Time}{u32\_End\_Time}}
+{\footnotesize\ttfamily \label{step__path_8c_a4919f998a5018e95dab1b75615b5c224} 
+const uint32\+\_\+t u32\+\_\+\+End\+\_\+\+Time = 10000\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{step__path_8c_source_l00015}{15}} of file \doxymbox{\hyperlink{step__path_8c_source}{step\+\_\+path.\+c}}.
+

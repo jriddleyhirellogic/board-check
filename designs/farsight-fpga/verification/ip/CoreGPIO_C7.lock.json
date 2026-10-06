@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:CoreGPIO:3.2.102",
+  "definition_digest": "7e538df178527effa1eb37fb8d3b151febf979ac414b44a79837d373de62502c",
+  "generated": "2026-09-29T23:14:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "CoreGPIO_C7",
+  "sources_digest": "b71c7dc159ee43892e54df7dd86718733520d3f0d3e86e1a7cad3fc862a5dec9"
+}

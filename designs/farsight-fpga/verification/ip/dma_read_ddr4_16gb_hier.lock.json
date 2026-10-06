@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:dma_read_ddr4_16gb_hier",
+  "definition_digest": "e322fb6c3075fb929dcf1e862ba1a18605f17fe594f75450d4eb850bfbeb58ac",
+  "generated": "2026-09-25T22:24:17Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "dma_read_ddr4_16gb_hier",
+  "sources_digest": "362d1893be43725dee51dabf0e122611aae8d183c7409cdd5d6445a70d56d815"
+}

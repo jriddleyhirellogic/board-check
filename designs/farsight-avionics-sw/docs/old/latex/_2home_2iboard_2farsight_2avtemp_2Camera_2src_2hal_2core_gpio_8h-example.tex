@@ -1,0 +1,281 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}
+\hypertarget{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{}\label{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}The \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} function initializes a Core\+GPIO hardware instance and the data structure associated with the Core\+GPIO hardware instance. ~\newline
+ Note that a Core\+GPIO hardware instance is generated with a fixed configuration for some or all of its IOs as part of the hardware flow. Attempting to modify the configuration of such a hardware-\/configured IO using the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config()} function has no effect.
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+gpio} & Pointer to the \doxylink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t} data structure instance holding all data regarding the Core\+GPIO hardware instance being initialized. A pointer to the same data structure is used in subsequent calls to the Core\+GPIO driver functions in order to identify the Core\+GPIO instance that must perform the operation implemented by the called driver function.\\
+\hline
+{\em base\+\_\+addr} & The base\+\_\+addr parameter is the base address in the memory map of the processor for the registers of the GPIO instance being initialized.\\
+\hline
+{\em bus\+\_\+width} & The bus\+\_\+width parameter informs the driver of the APB bus width selected during the hardware flow configuration of the Core\+GPIO hardware instance. It indicates to the driver whether the Core\+GPIO hardware registers are visible as 8, 16, or 32-\/bits registers. Allowed values are:\+
+\begin{DoxyItemize}
+\item GPIO\+\_\+\+APB\+\_\+8\+\_\+\+BITS\+\_\+\+BUS
+\item GPIO\+\_\+\+APB\+\_\+16\+\_\+\+BITS\+\_\+\+BUS
+\item GPIO\+\_\+\+APB\+\_\+32\+\_\+\+BITS\+\_\+\+BUS
+\end{DoxyItemize}\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+none.
+\end{DoxyReturn}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ COREGPIO\_BASE\_ADDR\ \ 0xC2000000}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ g\_gpio;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ system\_init(\ \textcolor{keywordtype}{void}\ )}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}(\ \&g\_gpio,\ \ \ \ COREGPIO\_BASE\_ADDR,\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}\ );}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCodeInclude}{0}
+\DoxyCodeLine{\textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ (c)\ Copyright\ 2008-\/2023\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\textcolor{comment}{\ *}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\textcolor{comment}{\ *}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ deal\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ rights\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ sell\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\textcolor{comment}{\ *}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ all\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\textcolor{comment}{\ *}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ FROM,\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ IN\ THE\ SOFTWARE.}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\textcolor{comment}{\ *\ @file\ core\_gpio.h}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\textcolor{comment}{\ *\ @brief\ CoreGPIO\ bare\ metal\ driver\ public\ API.}}
+\DoxyCodeLine{\textcolor{comment}{\ *}}
+\DoxyCodeLine{\textcolor{comment}{\ */}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*=========================================================================*/}\textcolor{comment}{/*=========================================================================*/}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#ifndef\ CORE\_GPIO\_H\_}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ CORE\_GPIO\_H\_}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#ifndef\ LEGACY\_DIR\_STRUCTURE}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal_8h}{hal/hal.h}}"{}}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal_8h}{hal.h}}"{}}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6}{\_\_gpio\_id\_t}}}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a086256647dcbd93f77f55f1da9bb443e}{GPIO\_0}}\ =\ 0,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8595f8d7a0ae611fb06e4b9c690295f3}{GPIO\_1}}\ =\ 1,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6abbea21b656f1917800d9d279b685f38e}{GPIO\_2}}\ =\ 2,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a426d08ab85ab3aebbb53eed1a32dfb71}{GPIO\_3}}\ =\ 3,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8750fdf2e45e210b73beac29d0583b8d}{GPIO\_4}}\ =\ 4,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a6213ab680cde9fe00f518cfb26a30a6b}{GPIO\_5}}\ =\ 5,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1b3ef28b8ae924f5f3fdfbb0ed7e6f7c}{GPIO\_6}}\ =\ 6,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4bae0816af6049c68cf772f0e01ea0e5}{GPIO\_7}}\ =\ 7,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a1633eaf3914293921cf5e102f5026106}{GPIO\_8}}\ =\ 8,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a8bdaec9182fb8ab2106d5c67f3eabd2d}{GPIO\_9}}\ =\ 9,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a3943e6071dec78b6bcf9586cf0de6dd3}{GPIO\_10}}\ =\ 10,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af3ddb0db315daeab49b75dbca06ba6e5}{GPIO\_11}}\ =\ 11,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a9c0d0164730f9f641db357f5781643d0}{GPIO\_12}}\ =\ 12,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ad3c7eb7127bc6e6c1ecc8216c518c60b}{GPIO\_13}}\ =\ 13,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ada33ca57455eb7fc3c6af46dd57fea41}{GPIO\_14}}\ =\ 14,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a10d7c4b9b8ab7cf7c5f77d99bf420849}{GPIO\_15}}\ =\ 15,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6af5c2b7f44743385580550aa81e4b4f31}{GPIO\_16}}\ =\ 16,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a272b8d60ca888339e5095000b50ba5b1}{GPIO\_17}}\ =\ 17,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a0e8bab7ea873c22eb90aa81116208917}{GPIO\_18}}\ =\ 18,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa2918c94bcf473e7ff31138b6333f847}{GPIO\_19}}\ =\ 19,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a081be372da926e3ca6f612b267854e95}{GPIO\_20}}\ =\ 20,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a32ff7e9a2f00d396ff2b2b62af571d7c}{GPIO\_21}}\ =\ 21,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aca7c5f2acf755d61b35d05ea921c79eb}{GPIO\_22}}\ =\ 22,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a4f3bac8a4733f9e96aa952fb1d9b0a7f}{GPIO\_23}}\ =\ 23,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a65ff243eb7227a401a4ef5c74bc110fa}{GPIO\_24}}\ =\ 24,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a2e1f75ee6f35403166cda2ef4e73c61f}{GPIO\_25}}\ =\ 25,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a029e5739680c051c29587d4768f97941}{GPIO\_26}}\ =\ 26,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac1b64481f38457b83d09727eb3c749e2}{GPIO\_27}}\ =\ 27,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6ac3fd057bf75612b81ae27f229c807cb3}{GPIO\_28}}\ =\ 28,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6aa99fc25b0ac5169f1f4d7f9b05379ed6}{GPIO\_29}}\ =\ 29,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6a06e43288a6277c853986259f7e6e907f}{GPIO\_30}}\ =\ 30,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_aa2c76d9fe8b2e39d5590266020caecb6afbad7361b3278388bffc4870cff6671d}{GPIO\_31}}\ =\ 31}
+\DoxyCodeLine{\}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eb}{\_\_gpio\_apb\_width\_t}}}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}\ =\ 0,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}\ =\ 1,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}\ =\ 2,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebac5f3ea9f35f41561f325717feece2f17}{GPIO\_APB\_UNKNOWN\_BUS\_WIDTH}}\ =\ 3}
+\DoxyCodeLine{\}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\_apb\_width\_t}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct____gpio__instance__t}{\_\_gpio\_instance\_t}}}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{av__board__workspace_2Camera_2include_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\_apb\_width\_t}}\ \ \ \ \doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}};}
+\DoxyCodeLine{\}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_0\_MASK\ \ \ \ \ \ \ \ \ 0x00000001UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_1\_MASK\ \ \ \ \ \ \ \ \ 0x00000002UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_2\_MASK\ \ \ \ \ \ \ \ \ 0x00000004UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_3\_MASK\ \ \ \ \ \ \ \ \ 0x00000008UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_4\_MASK\ \ \ \ \ \ \ \ \ 0x00000010UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_5\_MASK\ \ \ \ \ \ \ \ \ 0x00000020UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_6\_MASK\ \ \ \ \ \ \ \ \ 0x00000040UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_7\_MASK\ \ \ \ \ \ \ \ \ 0x00000080UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_8\_MASK\ \ \ \ \ \ \ \ \ 0x00000100UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_9\_MASK\ \ \ \ \ \ \ \ \ 0x00000200UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_10\_MASK\ \ \ \ \ \ \ \ 0x00000400UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_11\_MASK\ \ \ \ \ \ \ \ 0x00000800UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_12\_MASK\ \ \ \ \ \ \ \ 0x00001000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_13\_MASK\ \ \ \ \ \ \ \ 0x00002000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_14\_MASK\ \ \ \ \ \ \ \ 0x00004000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_15\_MASK\ \ \ \ \ \ \ \ 0x00008000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_16\_MASK\ \ \ \ \ \ \ \ 0x00010000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_17\_MASK\ \ \ \ \ \ \ \ 0x00020000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_18\_MASK\ \ \ \ \ \ \ \ 0x00040000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_19\_MASK\ \ \ \ \ \ \ \ 0x00080000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_20\_MASK\ \ \ \ \ \ \ \ 0x00100000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_21\_MASK\ \ \ \ \ \ \ \ 0x00200000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_22\_MASK\ \ \ \ \ \ \ \ 0x00400000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_23\_MASK\ \ \ \ \ \ \ \ 0x00800000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_24\_MASK\ \ \ \ \ \ \ \ 0x01000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_25\_MASK\ \ \ \ \ \ \ \ 0x02000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_26\_MASK\ \ \ \ \ \ \ \ 0x04000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_27\_MASK\ \ \ \ \ \ \ \ 0x08000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_28\_MASK\ \ \ \ \ \ \ \ 0x10000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_29\_MASK\ \ \ \ \ \ \ \ 0x20000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_30\_MASK\ \ \ \ \ \ \ \ 0x40000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_31\_MASK\ \ \ \ \ \ \ \ 0x80000000UL}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_INPUT\_MODE\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x0000000002UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_OUTPUT\_MODE\ \ \ \ \ \ \ \ \ \ \ \ \ 0x0000000005UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_INOUT\_MODE\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x0000000003UL}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_IRQ\_LEVEL\_HIGH\ \ \ \ \ \ \ \ \ \ \ 0x0000000000UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_IRQ\_LEVEL\_LOW\ \ \ \ \ \ \ \ \ \ \ \ 0x0000000020UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_IRQ\_EDGE\_POSITIVE\ \ \ \ \ \ \ \ 0x0000000040UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_IRQ\_EDGE\_NEGATIVE\ \ \ \ \ \ \ \ 0x0000000060UL}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#define\ GPIO\_IRQ\_EDGE\_BOTH\ \ \ \ \ \ \ \ \ \ \ \ 0x0000000080UL}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8}{gpio\_inout\_state}}}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a85959287b781889e2e41b2cff4bf3ae1}{GPIO\_DRIVE\_LOW}}\ =\ 0,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a4511dc6a41c1be0f0d138d3256b9aee3}{GPIO\_DRIVE\_HIGH}},}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8ab61ab7b9924925f436b922e4473ab0ca}{GPIO\_HIGH\_Z}}}
+\DoxyCodeLine{\}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\_inout\_state\_t}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ base\_addr,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\_apb\_width\_t}}\ \ \ \ bus\_width}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\_config}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ config}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ value}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ value}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\_drive\_inout}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\_inout\_state\_t}}\ \ inout\_state}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\_enable\_irq}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}{GPIO\_disable\_irq}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\_clear\_irq}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}{GPIO\_get\_irq\_sources}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}{GPIO\_clear\_all\_irq\_sources}}}
+\DoxyCodeLine{(}
+\DoxyCodeLine{\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ bitmask}
+\DoxyCodeLine{);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ CORE\_GPIO\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCodeInclude}
+ 

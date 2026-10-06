@@ -1,0 +1,95 @@
+\doxysection{Free\+RTOSConfig.\+h}
+\hypertarget{FreeRTOSConfig_8h_source}{}\label{FreeRTOSConfig_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/FreeRTOSConfig.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/FreeRTOSConfig.h}}
+\doxymbox{\hyperlink{FreeRTOSConfig_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00002}00002\ \textcolor{comment}{\ *\ @file\ \ \ \ \ \ FreeRTOSConfig.h}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00003}00003\ \textcolor{comment}{\ *\ @copyright\ Copyright\ (c)\ 2025\ Turion\ Space.\ All\ rights\ reserved.}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00004}00004\ \textcolor{comment}{\ *\ @author\ \ \ \ Saba\ Janamian\ (sjanamian@turionspace.com)}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00005}00005\ \textcolor{comment}{\ *\ @date\ \ \ \ \ \ 06/24/2025}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00006}00006\ \textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00007}00007\ \textcolor{comment}{\ *\ @brief\ \ \ \ \ FreeRTOS\ config\ file.\ See\ Notes\ below\ for\ important\ config\ info.}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00008}00008\ \textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00009}00009\ \textcolor{comment}{\ *\ @section\ changelog}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00010}00010\ \textcolor{comment}{\ *\ -\/\ 06/24/2025:\ Saba\ Janamian\ -\/\ Initial\ implementation}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00011}00011\ \textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00012}00012\ \textcolor{comment}{*******************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00014}00014\ \textcolor{preprocessor}{\#ifndef\ FREERTOS\_CONFIG\_H}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00015}00015\ \textcolor{preprocessor}{\#define\ FREERTOS\_CONFIG\_H}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00017}00017\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00018}00018\ \textcolor{comment}{//\ IMPORTANT\ NOTE:\ }}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00019}00019\ \textcolor{comment}{//\ configMTIME\_BASE\_ADDRESS\ and\ configMTIMECMP\_BASE\_ADDRESS\ are\ configured\ for}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00020}00020\ \textcolor{comment}{//\ to\ Microchip\ MiV32\ V3\ and\ after.\ Legacy\ versions\ of\ this\ core\ have\ different}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00021}00021\ \textcolor{comment}{//\ MTIME\ address.}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00022}00022\ \textcolor{comment}{//\ configCPU\_CLOCK\_HZ\ has\ been\ configured\ to\ be\ 50MHz.\ If\ the\ clock\ frequency}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00023}00023\ \textcolor{comment}{//\ of\ the\ MiV32\ core\ changes\ in\ FPGA\ this\ value\ must\ also\ change\ here!}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00024}00024\ \textcolor{comment}{//\ \`{}RTC\_PRESCALER`\ must\ match\ the\ FPGA\ MTIME\ Prescaler\ value}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00025}00025\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00027}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a41872406bcd30d739f111d72d3ce1453}{00027}}\ \textcolor{preprocessor}{\#define\ RTC\_PRESCALER\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 100UL}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00028}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ab0e6e70d2b3abc2ecbf0171dbe3048f4}{00028}}\ \textcolor{preprocessor}{\#define\ configMTIME\_BASE\_ADDRESS\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x0200BFF8UL}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00029}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aecb52787e4520a1aa5233de32f47304e}{00029}}\ \textcolor{preprocessor}{\#define\ configMTIMECMP\_BASE\_ADDRESS\ \ \ \ \ \ \ \ \ \ \ \ \ 0x02004000UL}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00030}\doxymbox{\hyperlink{FreeRTOSConfig_8h_adde83486022745409c40605922b0bdd6}{00030}}\ \textcolor{preprocessor}{\#define\ configUSE\_PREEMPTION\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00031}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ac637ae45863c19fa2e919db0ed49301f}{00031}}\ \textcolor{preprocessor}{\#define\ configUSE\_IDLE\_HOOK\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00032}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a23c5922c077106fad3f70b54d9071466}{00032}}\ \textcolor{preprocessor}{\#define\ configUSE\_TICK\_HOOK\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00033}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aa68082df879e6fc96bcb9b26513639e7}{00033}}\ \textcolor{preprocessor}{\#define\ configCPU\_CLOCK\_HZ\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ (\ uint32\_t\ )\ (\ 50000000\ )\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00034}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a2f0258dd1e3b877e5bc013be54c2db6a}{00034}}\ \textcolor{preprocessor}{\#define\ configTICK\_RATE\_HZ\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ (\ TickType\_t\ )\ 1000\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00035}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a9a78f5ac61e6cb172dadf2a51f11db38}{00035}}\ \textcolor{preprocessor}{\#define\ configMAX\_PRIORITIES\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ 5\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00036}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a6c534a6cf8a00528fe0be42083484f9a}{00036}}\ \textcolor{preprocessor}{\#define\ configMINIMAL\_STACK\_SIZE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ (\ uint32\_t\ )\ 200\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00037}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a9f213227674effff0122a75d94d87938}{00037}}\ \textcolor{preprocessor}{\#define\ configTOTAL\_HEAP\_SIZE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ (\ size\_t\ )\ (\ 8000\ )\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00038}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ac388dc4041aab6997348828eb27fc1a8}{00038}}\ \textcolor{preprocessor}{\#define\ configMAX\_TASK\_NAME\_LEN\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ 16\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00039}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a27f5ee137dc9f125681a31f0b0a4b3be}{00039}}\ \textcolor{preprocessor}{\#define\ configUSE\_TRACE\_FACILITY\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00040}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aac311ed9b9e5ae4d2d9648b33a24acce}{00040}}\ \textcolor{preprocessor}{\#define\ configUSE\_16\_BIT\_TICKS\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00041}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ad6a5061a742fee450ac455e4ad0f4b6c}{00041}}\ \textcolor{preprocessor}{\#define\ configIDLE\_SHOULD\_YIELD\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00042}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a543bf3c79008974cc1d36bab51d94fbf}{00042}}\ \textcolor{preprocessor}{\#define\ configUSE\_MUTEXES\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00043}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aa4b5138c4e42a180f0abd4f2455f90fb}{00043}}\ \textcolor{preprocessor}{\#define\ configQUEUE\_REGISTRY\_SIZE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00044}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a847511ee433494b1e32c90602c967ae7}{00044}}\ \textcolor{preprocessor}{\#define\ configCHECK\_FOR\_STACK\_OVERFLOW\ \ \ \ \ \ \ \ \ \ 2}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00045}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a9fe02d866cb1c4fbaa0c3de79f53d42d}{00045}}\ \textcolor{preprocessor}{\#define\ configUSE\_RECURSIVE\_MUTEXES\ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00046}\doxymbox{\hyperlink{FreeRTOSConfig_8h_abdf48e7c9cf513f083aa9cbed0dd7cd7}{00046}}\ \textcolor{preprocessor}{\#define\ configUSE\_MALLOC\_FAILED\_HOOK\ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00047}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a2eb2a0baf886a7adab15b5735029434b}{00047}}\ \textcolor{preprocessor}{\#define\ configUSE\_APPLICATION\_TASK\_TAG\ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00048}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a55778995203c57369d2fbfb10224943d}{00048}}\ \textcolor{preprocessor}{\#define\ configUSE\_COUNTING\_SEMAPHORES\ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00049}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ad8081822f3ebc7c917b63bd7bdd7bc58}{00049}}\ \textcolor{preprocessor}{\#define\ configGENERATE\_RUN\_TIME\_STATS\ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00050}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aebb8c3a87d591f60f974772be0ee798d}{00050}}\ \textcolor{preprocessor}{\#define\ configUSE\_PORT\_OPTIMISED\_TASK\_SELECTION\ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00051}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a7bfbcca89aaa971f59fe9233772cc33d}{00051}}\ \textcolor{preprocessor}{\#define\ configUSE\_QUEUE\_SETS\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00052}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a5413143d3773c8e31f305805f4cad871}{00052}}\ \textcolor{preprocessor}{\#define\ configTASK\_NOTIFICATION\_ARRAY\_ENTRIES\ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00054}00054\ \textcolor{comment}{/*\ Co-\/routine\ definitions.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00055}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a57990715eb06402474b8b47e1d562616}{00055}}\ \textcolor{preprocessor}{\#define\ configUSE\_CO\_ROUTINES\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00056}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ae8f3fd645e6e78dfeb8a6e874af6195a}{00056}}\ \textcolor{preprocessor}{\#define\ configMAX\_CO\_ROUTINE\_PRIORITIES\ \ \ \ \ \ \ \ \ (\ 2\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00058}00058\ \textcolor{comment}{/*\ Software\ timer\ definitions.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00059}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ac342ae309b0c53828d2ecad3e6de355b}{00059}}\ \textcolor{preprocessor}{\#define\ configUSE\_TIMERS\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00060}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a05c75ff9029ba3f0ab5bde9196f1e873}{00060}}\ \textcolor{preprocessor}{\#define\ configTIMER\_TASK\_PRIORITY\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\ configMAX\_PRIORITIES\ -\/\ 1\ )\ \ }\textcolor{comment}{//2}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00061}\doxymbox{\hyperlink{FreeRTOSConfig_8h_abb9aa0f31c1f3b14a15083a3c6120918}{00061}}\ \textcolor{preprocessor}{\#define\ configTIMER\_QUEUE\_LENGTH\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 10}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00062}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aed7c7ebcdee603583a55e8ce04e55841}{00062}}\ \textcolor{preprocessor}{\#define\ configTIMER\_TASK\_STACK\_DEPTH\ \ \ \ \ \ \ \ \ \ \ \ (\ configMINIMAL\_STACK\_SIZE\ *2\ )}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00064}00064\ \textcolor{comment}{/*\ Task\ priorities.\ \ Allow\ these\ to\ be\ overridden.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00066}00066\ \textcolor{comment}{/*\ Set\ the\ following\ definitions\ to\ 1\ to\ include\ the\ API\ function,\ or\ zero}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00067}00067\ \textcolor{comment}{\ *\ to\ exclude\ the\ API\ function.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00068}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ad6858ac8aaf726007fd19752956ef1bd}{00068}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskPrioritySet\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00069}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a1279eb797355460aeeec06aa524e91df}{00069}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_uxTaskPriorityGet\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00070}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a5ae1434fdf995108dc749ff9329f53bd}{00070}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskDelete\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00071}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a7ee138825e57f243c8ee5fd4207b9e26}{00071}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskCleanUpResources\ \ \ \ \ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00072}\doxymbox{\hyperlink{FreeRTOSConfig_8h_aef8fbb97819ad3d962f334ac298206d1}{00072}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskSuspend\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00073}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ae8459bfd5b428319bb10de9f504a53aa}{00073}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskDelayUntil\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00074}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a24361a6eb816a965f1ee4e2e08e364f8}{00074}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_vTaskDelay\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00075}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a4fd1d67d54044ac86e8ffc890180f9f6}{00075}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_eTaskGetState\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00076}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a4b4336acd61a8e513ca2376be84326b5}{00076}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_xTimerPendFunctionCall\ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00077}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ac54efb28edcc1d3b9d0844005ea20674}{00077}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_xTaskAbortDelay\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00078}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a33733d2bbe005751ec3a417e5ac373bf}{00078}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_xTaskGetHandle\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00079}\doxymbox{\hyperlink{FreeRTOSConfig_8h_ad221128595137414579be33cf8e446d8}{00079}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_xSemaphoreGetMutexHolder\ \ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00080}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a23c7b4b41fe9b575cf2329c7cbe78b86}{00080}}\ \textcolor{preprocessor}{\#define\ INCLUDE\_uxTaskGetStackHighWaterMark\ \ \ \ \ 1\ }\textcolor{comment}{/*\ Used\ to\ get\ minimum\ stack\ size\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00082}00082\ \textcolor{comment}{/*\ Normal\ assert()\ semantics\ without\ relying\ on\ the\ provision\ of\ an\ assert.h}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00083}00083\ \textcolor{comment}{\ *\ header\ file.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00084}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a228c70cd48927d6ab730ed1a6dfbe35f}{00084}}\ \textcolor{preprocessor}{\#define\ configASSERT(\ x\ )\ if(\ (\ x\ )\ ==\ 0\ )\ \{\ taskDISABLE\_INTERRUPTS();\ \_\_asm\ volatile(\ "{}ebreak"{}\ );\ for(\ ;;\ );\ \}}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00086}00086\ \textcolor{comment}{/*\ Defined\ in\ main.c\ and\ used\ in\ main\_blinky.c\ and\ main\_full.c.\ */}}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00087}\doxymbox{\hyperlink{FreeRTOSConfig_8h_a77e451186990bbcf435b84bb7614d24b}{00087}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{FreeRTOSConfig_8h_a77e451186990bbcf435b84bb7614d24b}{vSendString}}(\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *\ \textcolor{keyword}{const}\ pcString\ );}
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{FreeRTOSConfig_8h_source_l00089}00089\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ FREERTOS\_CONFIG\_H\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

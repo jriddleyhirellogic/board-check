@@ -1,0 +1,802 @@
+   1              		.file	"Zero_Coarse_State.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Zero_Coarse_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Zero_Coarse_State
+  13              	Zero_Coarse_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/Focus_States/Zero_Coarse_State.c"
+   1:../src/Focus_States/Zero_Coarse_State.c **** /*
+   2:../src/Focus_States/Zero_Coarse_State.c ****  * Zero_Coarse.c
+   3:../src/Focus_States/Zero_Coarse_State.c ****  *
+   4:../src/Focus_States/Zero_Coarse_State.c ****  *  Created on: Oct 21, 2025
+   5:../src/Focus_States/Zero_Coarse_State.c ****  *      Author: iboard
+   6:../src/Focus_States/Zero_Coarse_State.c ****  */
+   7:../src/Focus_States/Zero_Coarse_State.c **** 
+   8:../src/Focus_States/Zero_Coarse_State.c **** /*
+   9:../src/Focus_States/Zero_Coarse_State.c ****  * Run_State.c
+  10:../src/Focus_States/Zero_Coarse_State.c ****  *
+  11:../src/Focus_States/Zero_Coarse_State.c ****  *  Created on: Oct 18, 2025
+  12:../src/Focus_States/Zero_Coarse_State.c ****  *      Author: iboard
+  13:../src/Focus_States/Zero_Coarse_State.c ****  */
+  14:../src/Focus_States/Zero_Coarse_State.c **** #include <focus.h>
+  15:../src/Focus_States/Zero_Coarse_State.c **** #include <focus_states.h>
+  16:../src/Focus_States/Zero_Coarse_State.c **** #include "states.h"
+  17:../src/Focus_States/Zero_Coarse_State.c **** #include "lvdt.h"
+  18:../src/Focus_States/Zero_Coarse_State.c **** #include "hal_stepper.h"
+  19:../src/Focus_States/Zero_Coarse_State.c **** #include "debug_gpio.h"
+  20:../src/Focus_States/Zero_Coarse_State.c **** #include "misc_math.h"
+  21:../src/Focus_States/Zero_Coarse_State.c **** 
+  22:../src/Focus_States/Zero_Coarse_State.c **** static const uint32_t STEP_SPEED = 5;//100;
+  23:../src/Focus_States/Zero_Coarse_State.c **** 
+  24:../src/Focus_States/Zero_Coarse_State.c **** /**
+  25:../src/Focus_States/Zero_Coarse_State.c ****  * @fn State_t Zero_Coarse_State(Context_t*, Event_t*)
+  26:../src/Focus_States/Zero_Coarse_State.c ****  * @brief Coarse movement for homing (zero) command
+  27:../src/Focus_States/Zero_Coarse_State.c ****  * This uses only the projection of the secondary response onto the primary -
+  28:../src/Focus_States/Zero_Coarse_State.c ****  * Re{s/p}  where s = secondary response of lvdt p = primary
+  29:../src/Focus_States/Zero_Coarse_State.c ****  * When this value is small enough in magnitude, the state transitions to Zero_Fine_State
+  30:../src/Focus_States/Zero_Coarse_State.c ****  * which slows the speed down and continues movement in the same direction until the sign of
+  31:../src/Focus_States/Zero_Coarse_State.c ****  * the projection == 0, indicating that the electrical zero of the lvdt has been found. This
+  32:../src/Focus_States/Zero_Coarse_State.c ****  * method does not depend on any calibration being present.
+  33:../src/Focus_States/Zero_Coarse_State.c ****  *
+  34:../src/Focus_States/Zero_Coarse_State.c ****  * @param context State contect for the focus mechanism
+  35:../src/Focus_States/Zero_Coarse_State.c ****  * @param event Incoming message (event) in this case, there is no data payload.
+  36:../src/Focus_States/Zero_Coarse_State.c ****  * @return The next state for the focus mechanism.
+  37:../src/Focus_States/Zero_Coarse_State.c ****  */
+  38:../src/Focus_States/Zero_Coarse_State.c **** State_t Zero_Coarse_State( Context_t *context, Event_t *event )
+  39:../src/Focus_States/Zero_Coarse_State.c **** {
+  16              		.loc 1 39 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  40:../src/Focus_States/Zero_Coarse_State.c ****     State_t next_state = (State_t)Zero_Coarse_State;
+  19              		.loc 1 40 5
+  41:../src/Focus_States/Zero_Coarse_State.c ****     int32_t i32_Projection;
+  20              		.loc 1 41 5
+  42:../src/Focus_States/Zero_Coarse_State.c ****     LVDT_Sample_t LVDT_Sample;
+  21              		.loc 1 42 5
+  43:../src/Focus_States/Zero_Coarse_State.c **** 
+  44:../src/Focus_States/Zero_Coarse_State.c ****     switch( event->no_data.sig )
+  22              		.loc 1 44 5
+  23              		.loc 1 44 27 is_stmt 0
+  24 0000 83A70500 		lw	a5,0(a1)
+  39:../src/Focus_States/Zero_Coarse_State.c ****     State_t next_state = (State_t)Zero_Coarse_State;
+  25              		.loc 1 39 1
+  26 0004 130101FE 		addi	sp,sp,-32
+  27              		.cfi_def_cfa_offset 32
+  28 0008 232E1100 		sw	ra,28(sp)
+  29 000c 232C8100 		sw	s0,24(sp)
+  30 0010 232A9100 		sw	s1,20(sp)
+  31              		.cfi_offset 1, -4
+  32              		.cfi_offset 8, -8
+  33              		.cfi_offset 9, -12
+  34              		.loc 1 44 5
+  35 0014 13071000 		li	a4,1
+  36 0018 638CE704 		beq	a5,a4,.L2
+  37 001c 63860702 		beq	a5,zero,.L3
+  38 0020 13073000 		li	a4,3
+  39 0024 6382E706 		beq	a5,a4,.L4
+  40              	.LVL1:
+  41              	.L13:
+  45:../src/Focus_States/Zero_Coarse_State.c ****     {
+  46:../src/Focus_States/Zero_Coarse_State.c ****     case ENTRANCE:
+  47:../src/Focus_States/Zero_Coarse_State.c ****         v_Start_Focus_Timer(10);        // Give everything a chance to settle first
+  48:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_LVDT_Gain( LVDT_GAIN_1 );
+  49:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Microstep_Mode( STEP_256 );
+  50:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  51:../src/Focus_States/Zero_Coarse_State.c **** 
+  52:../src/Focus_States/Zero_Coarse_State.c ****     case EXIT:
+  53:../src/Focus_States/Zero_Coarse_State.c ****         v_Stop_Focus_Timer();
+  54:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Stepper_out( 0 );
+  55:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  42              		.loc 1 55 9 is_stmt 1
+  40:../src/Focus_States/Zero_Coarse_State.c ****     int32_t i32_Projection;
+  43              		.loc 1 40 13 is_stmt 0
+  44 0028 17040000 		lla	s0,Zero_Coarse_State
+  44      13040400 
+  45              	.LVL2:
+  46              	.L1:
+  56:../src/Focus_States/Zero_Coarse_State.c **** 
+  57:../src/Focus_States/Zero_Coarse_State.c ****     case FOCUS_TIMER_EXPIRED:
+  58:../src/Focus_States/Zero_Coarse_State.c ****         v_Refresh_Stepper_Watchdog();
+  59:../src/Focus_States/Zero_Coarse_State.c ****         v_Start_Focus_Timer(10);
+  60:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Debug_GPIO( J7_PIN_6 , J7_PIN_6  );
+  61:../src/Focus_States/Zero_Coarse_State.c **** 
+  62:../src/Focus_States/Zero_Coarse_State.c ****         V_Get_LVDT_Snapshot( &LVDT_Sample );
+  63:../src/Focus_States/Zero_Coarse_State.c ****         i32_Projection = i32_Get_Projection( &LVDT_Sample );
+  64:../src/Focus_States/Zero_Coarse_State.c **** 
+  65:../src/Focus_States/Zero_Coarse_State.c ****         if( ABS( i32_Projection ) <= 30000 )
+  66:../src/Focus_States/Zero_Coarse_State.c ****         {
+  67:../src/Focus_States/Zero_Coarse_State.c ****             next_state = (State_t)Zero_Fine_State;
+  68:../src/Focus_States/Zero_Coarse_State.c ****             context->param = (void *)( i32_Projection < 0 ? -1 : 1 );  // remember direction of tra
+  69:../src/Focus_States/Zero_Coarse_State.c ****         }
+  70:../src/Focus_States/Zero_Coarse_State.c **** 
+  71:../src/Focus_States/Zero_Coarse_State.c ****         if( i32_Projection < 0 )
+  72:../src/Focus_States/Zero_Coarse_State.c ****             v_Set_Stepper_out( STEP_SPEED );      // Move in negative direction
+  73:../src/Focus_States/Zero_Coarse_State.c ****         else
+  74:../src/Focus_States/Zero_Coarse_State.c ****             v_Set_Stepper_out( -STEP_SPEED );     // Move in positive direction
+  75:../src/Focus_States/Zero_Coarse_State.c **** 
+  76:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  77:../src/Focus_States/Zero_Coarse_State.c **** 
+  78:../src/Focus_States/Zero_Coarse_State.c ****     default:
+  79:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  80:../src/Focus_States/Zero_Coarse_State.c ****     }
+  81:../src/Focus_States/Zero_Coarse_State.c **** 
+  82:../src/Focus_States/Zero_Coarse_State.c ****     return next_state;
+  83:../src/Focus_States/Zero_Coarse_State.c **** 
+  84:../src/Focus_States/Zero_Coarse_State.c **** }
+  47              		.loc 1 84 1
+  48 0030 13050400 		mv	a0,s0
+  49 0034 8320C101 		lw	ra,28(sp)
+  50              		.cfi_remember_state
+  51              		.cfi_restore 1
+  52 0038 03248101 		lw	s0,24(sp)
+  53              		.cfi_restore 8
+  54 003c 83244101 		lw	s1,20(sp)
+  55              		.cfi_restore 9
+  56 0040 13010102 		addi	sp,sp,32
+  57              		.cfi_def_cfa_offset 0
+  58 0044 67800000 		jr	ra
+  59              	.LVL3:
+  60              	.L3:
+  61              		.cfi_restore_state
+  47:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_LVDT_Gain( LVDT_GAIN_1 );
+  62              		.loc 1 47 9 is_stmt 1
+  63 0048 1305A000 		li	a0,10
+  64              	.LVL4:
+  65 004c 97000000 		call	v_Start_Focus_Timer
+  65      E7800000 
+  66              	.LVL5:
+  48:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Microstep_Mode( STEP_256 );
+  67              		.loc 1 48 9
+  68 0054 13050000 		li	a0,0
+  69 0058 97000000 		call	v_Set_LVDT_Gain
+  69      E7800000 
+  70              	.LVL6:
+  49:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  71              		.loc 1 49 9
+  72 0060 13058000 		li	a0,8
+  73 0064 97000000 		call	v_Set_Microstep_Mode
+  73      E7800000 
+  74              	.LVL7:
+  50:../src/Focus_States/Zero_Coarse_State.c **** 
+  75              		.loc 1 50 9
+  76 006c 6FF0DFFB 		j	.L13
+  77              	.LVL8:
+  78              	.L2:
+  53:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Stepper_out( 0 );
+  79              		.loc 1 53 9
+  80 0070 97000000 		call	v_Stop_Focus_Timer
+  80      E7800000 
+  81              	.LVL9:
+  54:../src/Focus_States/Zero_Coarse_State.c ****         break;
+  82              		.loc 1 54 9
+  83 0078 13050000 		li	a0,0
+  84 007c 97000000 		call	v_Set_Stepper_out
+  84      E7800000 
+  85              	.LVL10:
+  86 0084 6FF05FFA 		j	.L13
+  87              	.LVL11:
+  88              	.L4:
+  89 0088 93040500 		mv	s1,a0
+  90              	.LVL12:
+  91              	.LBB4:
+  92              	.LBB5:
+  58:../src/Focus_States/Zero_Coarse_State.c ****         v_Start_Focus_Timer(10);
+  93              		.loc 1 58 9
+  94 008c 97000000 		call	v_Refresh_Stepper_Watchdog
+  94      E7800000 
+  95              	.LVL13:
+  59:../src/Focus_States/Zero_Coarse_State.c ****         v_Set_Debug_GPIO( J7_PIN_6 , J7_PIN_6  );
+  96              		.loc 1 59 9
+  97 0094 1305A000 		li	a0,10
+  98 0098 97000000 		call	v_Start_Focus_Timer
+  98      E7800000 
+  99              	.LVL14:
+  60:../src/Focus_States/Zero_Coarse_State.c **** 
+ 100              		.loc 1 60 9
+ 101 00a0 93050008 		li	a1,128
+ 102 00a4 13050008 		li	a0,128
+ 103 00a8 97000000 		call	v_Set_Debug_GPIO
+ 103      E7800000 
+ 104              	.LVL15:
+  62:../src/Focus_States/Zero_Coarse_State.c ****         i32_Projection = i32_Get_Projection( &LVDT_Sample );
+ 105              		.loc 1 62 9
+ 106 00b0 13050100 		mv	a0,sp
+ 107 00b4 97000000 		call	V_Get_LVDT_Snapshot
+ 107      E7800000 
+ 108              	.LVL16:
+  63:../src/Focus_States/Zero_Coarse_State.c **** 
+ 109              		.loc 1 63 9
+  63:../src/Focus_States/Zero_Coarse_State.c **** 
+ 110              		.loc 1 63 26 is_stmt 0
+ 111 00bc 13050100 		mv	a0,sp
+ 112 00c0 97000000 		call	i32_Get_Projection
+ 112      E7800000 
+ 113              	.LVL17:
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 114              		.loc 1 65 9 is_stmt 1
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 115              		.loc 1 65 35 is_stmt 0
+ 116 00c8 B7770000 		li	a5,28672
+ 117 00cc 93870753 		addi	a5,a5,1328
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 118              		.loc 1 65 11
+ 119 00d0 37F70000 		li	a4,61440
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 120              		.loc 1 65 35
+ 121 00d4 B307F500 		add	a5,a0,a5
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 122              		.loc 1 65 11
+ 123 00d8 130707A6 		addi	a4,a4,-1440
+  40:../src/Focus_States/Zero_Coarse_State.c ****     int32_t i32_Projection;
+ 124              		.loc 1 40 13
+ 125 00dc 17040000 		lla	s0,Zero_Coarse_State
+ 125      13040400 
+  65:../src/Focus_States/Zero_Coarse_State.c ****         {
+ 126              		.loc 1 65 11
+ 127 00e4 636EF700 		bgtu	a5,a4,.L6
+  67:../src/Focus_States/Zero_Coarse_State.c ****             context->param = (void *)( i32_Projection < 0 ? -1 : 1 );  // remember direction of tra
+ 128              		.loc 1 67 13 is_stmt 1
+ 129              	.LVL18:
+  68:../src/Focus_States/Zero_Coarse_State.c ****         }
+ 130              		.loc 1 68 13
+  68:../src/Focus_States/Zero_Coarse_State.c ****         }
+ 131              		.loc 1 68 30 is_stmt 0
+ 132 00e8 9307F0FF 		li	a5,-1
+ 133 00ec 63440500 		blt	a0,zero,.L7
+ 134 00f0 93071000 		li	a5,1
+ 135              	.L7:
+  68:../src/Focus_States/Zero_Coarse_State.c ****         }
+ 136              		.loc 1 68 28
+ 137 00f4 23A4F400 		sw	a5,8(s1)
+  67:../src/Focus_States/Zero_Coarse_State.c ****             context->param = (void *)( i32_Projection < 0 ? -1 : 1 );  // remember direction of tra
+ 138              		.loc 1 67 24
+ 139 00f8 17040000 		lla	s0,Zero_Fine_State
+ 139      13040400 
+ 140              	.LVL19:
+ 141              	.L6:
+  71:../src/Focus_States/Zero_Coarse_State.c ****             v_Set_Stepper_out( STEP_SPEED );      // Move in negative direction
+ 142              		.loc 1 71 9 is_stmt 1
+  71:../src/Focus_States/Zero_Coarse_State.c ****             v_Set_Stepper_out( STEP_SPEED );      // Move in negative direction
+ 143              		.loc 1 71 11 is_stmt 0
+ 144 0100 635A0500 		bge	a0,zero,.L8
+  72:../src/Focus_States/Zero_Coarse_State.c ****         else
+ 145              		.loc 1 72 13 is_stmt 1
+ 146 0104 13055000 		li	a0,5
+ 147              	.LVL20:
+ 148              	.L14:
+  74:../src/Focus_States/Zero_Coarse_State.c **** 
+ 149              		.loc 1 74 13 is_stmt 0
+ 150 0108 97000000 		call	v_Set_Stepper_out
+ 150      E7800000 
+ 151              	.LVL21:
+  82:../src/Focus_States/Zero_Coarse_State.c **** 
+ 152              		.loc 1 82 5 is_stmt 1
+ 153              	.LBE5:
+ 154              	.LBE4:
+  82:../src/Focus_States/Zero_Coarse_State.c **** 
+ 155              		.loc 1 82 5
+  82:../src/Focus_States/Zero_Coarse_State.c **** 
+ 156              		.loc 1 82 12 is_stmt 0
+ 157 0110 6FF01FF2 		j	.L1
+ 158              	.LVL22:
+ 159              	.L8:
+ 160              	.LBB7:
+ 161              	.LBB6:
+  74:../src/Focus_States/Zero_Coarse_State.c **** 
+ 162              		.loc 1 74 13 is_stmt 1
+ 163 0114 1305B0FF 		li	a0,-5
+ 164              	.LVL23:
+ 165 0118 6FF01FFF 		j	.L14
+ 166              	.LBE6:
+ 167              	.LBE7:
+ 168              		.cfi_endproc
+ 169              	.LFE0:
+ 171              		.text
+ 172              	.Letext0:
+ 173              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 174              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 175              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 176              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 177              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 178              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 179              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/lvdt.h"
+ 180              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 181              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+ 182              		.file 11 "/home/iboard/farsight/avtemp/Camera/include/debug_gpio.h"
+ 183              		.file 12 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Zero_Coarse_State.c
+<<<<<<< HEAD
+     /tmp/ccyhBlV3.s:13     .text.Zero_Coarse_State:0000000000000000 Zero_Coarse_State
+     /tmp/ccyhBlV3.s:17     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:19     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:20     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:21     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:22     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:23     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:24     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:26     .text.Zero_Coarse_State:0000000000000004 .L0 
+     /tmp/ccyhBlV3.s:27     .text.Zero_Coarse_State:0000000000000008 .L0 
+     /tmp/ccyhBlV3.s:31     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/ccyhBlV3.s:32     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/ccyhBlV3.s:33     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/ccyhBlV3.s:35     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/ccyhBlV3.s:43     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/ccyhBlV3.s:44     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/ccyhBlV3.s:48     .text.Zero_Coarse_State:0000000000000030 .L0 
+     /tmp/ccyhBlV3.s:50     .text.Zero_Coarse_State:0000000000000038 .L0 
+     /tmp/ccyhBlV3.s:51     .text.Zero_Coarse_State:0000000000000038 .L0 
+     /tmp/ccyhBlV3.s:53     .text.Zero_Coarse_State:000000000000003c .L0 
+     /tmp/ccyhBlV3.s:55     .text.Zero_Coarse_State:0000000000000040 .L0 
+     /tmp/ccyhBlV3.s:57     .text.Zero_Coarse_State:0000000000000044 .L0 
+     /tmp/ccyhBlV3.s:61     .text.Zero_Coarse_State:0000000000000048 .L0 
+     /tmp/ccyhBlV3.s:63     .text.Zero_Coarse_State:0000000000000048 .L0 
+     /tmp/ccyhBlV3.s:68     .text.Zero_Coarse_State:0000000000000054 .L0 
+     /tmp/ccyhBlV3.s:72     .text.Zero_Coarse_State:0000000000000060 .L0 
+     /tmp/ccyhBlV3.s:76     .text.Zero_Coarse_State:000000000000006c .L0 
+     /tmp/ccyhBlV3.s:80     .text.Zero_Coarse_State:0000000000000070 .L0 
+     /tmp/ccyhBlV3.s:83     .text.Zero_Coarse_State:0000000000000078 .L0 
+     /tmp/ccyhBlV3.s:94     .text.Zero_Coarse_State:000000000000008c .L0 
+     /tmp/ccyhBlV3.s:97     .text.Zero_Coarse_State:0000000000000094 .L0 
+     /tmp/ccyhBlV3.s:101    .text.Zero_Coarse_State:00000000000000a0 .L0 
+     /tmp/ccyhBlV3.s:106    .text.Zero_Coarse_State:00000000000000b0 .L0 
+     /tmp/ccyhBlV3.s:110    .text.Zero_Coarse_State:00000000000000bc .L0 
+     /tmp/ccyhBlV3.s:111    .text.Zero_Coarse_State:00000000000000bc .L0 
+     /tmp/ccyhBlV3.s:115    .text.Zero_Coarse_State:00000000000000c8 .L0 
+     /tmp/ccyhBlV3.s:116    .text.Zero_Coarse_State:00000000000000c8 .L0 
+     /tmp/ccyhBlV3.s:119    .text.Zero_Coarse_State:00000000000000d0 .L0 
+     /tmp/ccyhBlV3.s:121    .text.Zero_Coarse_State:00000000000000d4 .L0 
+     /tmp/ccyhBlV3.s:123    .text.Zero_Coarse_State:00000000000000d8 .L0 
+     /tmp/ccyhBlV3.s:125    .text.Zero_Coarse_State:00000000000000dc .L0 
+     /tmp/ccyhBlV3.s:127    .text.Zero_Coarse_State:00000000000000e4 .L0 
+     /tmp/ccyhBlV3.s:130    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/ccyhBlV3.s:131    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/ccyhBlV3.s:132    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/ccyhBlV3.s:137    .text.Zero_Coarse_State:00000000000000f4 .L0 
+     /tmp/ccyhBlV3.s:139    .text.Zero_Coarse_State:00000000000000f8 .L0 
+     /tmp/ccyhBlV3.s:143    .text.Zero_Coarse_State:0000000000000100 .L0 
+     /tmp/ccyhBlV3.s:144    .text.Zero_Coarse_State:0000000000000100 .L0 
+     /tmp/ccyhBlV3.s:146    .text.Zero_Coarse_State:0000000000000104 .L0 
+     /tmp/ccyhBlV3.s:150    .text.Zero_Coarse_State:0000000000000108 .L0 
+     /tmp/ccyhBlV3.s:155    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/ccyhBlV3.s:156    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/ccyhBlV3.s:157    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/ccyhBlV3.s:163    .text.Zero_Coarse_State:0000000000000114 .L0 
+     /tmp/ccyhBlV3.s:168    .text.Zero_Coarse_State:000000000000011c .L0 
+     /tmp/ccyhBlV3.s:171    .text.Zero_Coarse_State:000000000000011c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccyhBlV3.s:44     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/ccyhBlV3.s:125    .text.Zero_Coarse_State:00000000000000dc .L0 
+     /tmp/ccyhBlV3.s:139    .text.Zero_Coarse_State:00000000000000f8 .L0 
+     /tmp/ccyhBlV3.s:78     .text.Zero_Coarse_State:0000000000000070 .L2
+     /tmp/ccyhBlV3.s:60     .text.Zero_Coarse_State:0000000000000048 .L3
+     /tmp/ccyhBlV3.s:88     .text.Zero_Coarse_State:0000000000000088 .L4
+     /tmp/ccyhBlV3.s:41     .text.Zero_Coarse_State:0000000000000028 .L13
+     /tmp/ccyhBlV3.s:141    .text.Zero_Coarse_State:0000000000000100 .L6
+     /tmp/ccyhBlV3.s:135    .text.Zero_Coarse_State:00000000000000f4 .L7
+     /tmp/ccyhBlV3.s:159    .text.Zero_Coarse_State:0000000000000114 .L8
+     /tmp/ccyhBlV3.s:46     .text.Zero_Coarse_State:0000000000000030 .L1
+     /tmp/ccyhBlV3.s:148    .text.Zero_Coarse_State:0000000000000108 .L14
+     /tmp/ccyhBlV3.s:1143   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccyhBlV3.s:1989   .debug_str:000000000000061a .LASF120
+     /tmp/ccyhBlV3.s:1923   .debug_str:000000000000040b .LASF121
+     /tmp/ccyhBlV3.s:1951   .debug_str:00000000000004e8 .LASF122
+     /tmp/ccyhBlV3.s:1757   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccyhBlV3.s:1769   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccyhBlV3.s:1855   .debug_str:0000000000000260 .LASF4
+     /tmp/ccyhBlV3.s:1791   .debug_str:00000000000000ac .LASF0
+     /tmp/ccyhBlV3.s:1889   .debug_str:000000000000033f .LASF1
+     /tmp/ccyhBlV3.s:1925   .debug_str:0000000000000433 .LASF2
+     /tmp/ccyhBlV3.s:1997   .debug_str:000000000000070c .LASF3
+     /tmp/ccyhBlV3.s:1953   .debug_str:000000000000051f .LASF5
+     /tmp/ccyhBlV3.s:1977   .debug_str:00000000000005d8 .LASF6
+     /tmp/ccyhBlV3.s:1935   .debug_str:0000000000000486 .LASF7
+     /tmp/ccyhBlV3.s:1833   .debug_str:00000000000001d8 .LASF8
+     /tmp/ccyhBlV3.s:1999   .debug_str:0000000000000718 .LASF9
+     /tmp/ccyhBlV3.s:1793   .debug_str:00000000000000b9 .LASF10
+     /tmp/ccyhBlV3.s:1941   .debug_str:00000000000004a3 .LASF11
+     /tmp/ccyhBlV3.s:1981   .debug_str:00000000000005f2 .LASF12
+     /tmp/ccyhBlV3.s:1961   .debug_str:0000000000000559 .LASF13
+     /tmp/ccyhBlV3.s:1829   .debug_str:00000000000001b9 .LASF14
+     /tmp/ccyhBlV3.s:1881   .debug_str:0000000000000314 .LASF15
+     /tmp/ccyhBlV3.s:1927   .debug_str:000000000000043f .LASF16
+     /tmp/ccyhBlV3.s:1967   .debug_str:0000000000000594 .LASF17
+     /tmp/ccyhBlV3.s:1815   .debug_str:0000000000000162 .LASF18
+     /tmp/ccyhBlV3.s:1777   .debug_str:000000000000003f .LASF123
+     /tmp/ccyhBlV3.s:1873   .debug_str:00000000000002e7 .LASF19
+     /tmp/ccyhBlV3.s:1895   .debug_str:000000000000035f .LASF20
+     /tmp/ccyhBlV3.s:2021   .debug_str:00000000000007ad .LASF21
+     /tmp/ccyhBlV3.s:1955   .debug_str:0000000000000529 .LASF22
+     /tmp/ccyhBlV3.s:2011   .debug_str:0000000000000775 .LASF23
+     /tmp/ccyhBlV3.s:2003   .debug_str:000000000000073f .LASF24
+     /tmp/ccyhBlV3.s:1821   .debug_str:0000000000000188 .LASF25
+     /tmp/ccyhBlV3.s:1819   .debug_str:000000000000017f .LASF26
+     /tmp/ccyhBlV3.s:1809   .debug_str:000000000000013a .LASF27
+     /tmp/ccyhBlV3.s:1945   .debug_str:00000000000004b8 .LASF28
+     /tmp/ccyhBlV3.s:1817   .debug_str:000000000000016b .LASF29
+     /tmp/ccyhBlV3.s:1775   .debug_str:0000000000000025 .LASF30
+     /tmp/ccyhBlV3.s:2009   .debug_str:0000000000000760 .LASF31
+     /tmp/ccyhBlV3.s:1779   .debug_str:0000000000000050 .LASF32
+     /tmp/ccyhBlV3.s:1785   .debug_str:0000000000000074 .LASF33
+     /tmp/ccyhBlV3.s:1843   .debug_str:000000000000020d .LASF34
+     /tmp/ccyhBlV3.s:1995   .debug_str:00000000000006fc .LASF35
+     /tmp/ccyhBlV3.s:1861   .debug_str:0000000000000291 .LASF36
+     /tmp/ccyhBlV3.s:1839   .debug_str:00000000000001f6 .LASF37
+     /tmp/ccyhBlV3.s:1863   .debug_str:00000000000002a3 .LASF38
+     /tmp/ccyhBlV3.s:1931   .debug_str:000000000000045f .LASF39
+     /tmp/ccyhBlV3.s:1789   .debug_str:000000000000009c .LASF40
+     /tmp/ccyhBlV3.s:1915   .debug_str:00000000000003d5 .LASF41
+     /tmp/ccyhBlV3.s:1919   .debug_str:00000000000003f0 .LASF42
+     /tmp/ccyhBlV3.s:2005   .debug_str:000000000000074b .LASF43
+     /tmp/ccyhBlV3.s:1795   .debug_str:00000000000000c3 .LASF44
+     /tmp/ccyhBlV3.s:1907   .debug_str:00000000000003a0 .LASF45
+     /tmp/ccyhBlV3.s:1975   .debug_str:00000000000005c2 .LASF46
+     /tmp/ccyhBlV3.s:1865   .debug_str:00000000000002af .LASF47
+     /tmp/ccyhBlV3.s:1783   .debug_str:0000000000000067 .LASF48
+     /tmp/ccyhBlV3.s:1959   .debug_str:0000000000000543 .LASF49
+     /tmp/ccyhBlV3.s:1965   .debug_str:000000000000057f .LASF50
+     /tmp/ccyhBlV3.s:1803   .debug_str:0000000000000107 .LASF51
+     /tmp/ccyhBlV3.s:1875   .debug_str:00000000000002ec .LASF52
+     /tmp/ccyhBlV3.s:1897   .debug_str:0000000000000369 .LASF53
+     /tmp/ccyhBlV3.s:1899   .debug_str:0000000000000376 .LASF54
+     /tmp/ccyhBlV3.s:1835   .debug_str:00000000000001e3 .LASF55
+     /tmp/ccyhBlV3.s:1993   .debug_str:00000000000006f0 .LASF56
+     /tmp/ccyhBlV3.s:1913   .debug_str:00000000000003ce .LASF57
+     /tmp/ccyhBlV3.s:2015   .debug_str:000000000000078d .LASF58
+     /tmp/ccyhBlV3.s:1811   .debug_str:000000000000013f .LASF59
+     /tmp/ccyhBlV3.s:1939   .debug_str:000000000000049c .LASF60
+     /tmp/ccyhBlV3.s:1979   .debug_str:00000000000005e6 .LASF61
+     /tmp/ccyhBlV3.s:1827   .debug_str:00000000000001a8 .LASF62
+     /tmp/ccyhBlV3.s:1857   .debug_str:0000000000000267 .LASF63
+     /tmp/ccyhBlV3.s:1773   .debug_str:0000000000000011 .LASF64
+     /tmp/ccyhBlV3.s:1917   .debug_str:00000000000003e8 .LASF65
+     /tmp/ccyhBlV3.s:1805   .debug_str:0000000000000115 .LASF66
+     /tmp/ccyhBlV3.s:2007   .debug_str:0000000000000754 .LASF67
+     /tmp/ccyhBlV3.s:1921   .debug_str:0000000000000404 .LASF68
+     /tmp/ccyhBlV3.s:1983   .debug_str:00000000000005fd .LASF69
+     /tmp/ccyhBlV3.s:1851   .debug_str:000000000000023e .LASF70
+     /tmp/ccyhBlV3.s:1849   .debug_str:0000000000000229 .LASF71
+     /tmp/ccyhBlV3.s:1837   .debug_str:00000000000001ec .LASF72
+     /tmp/ccyhBlV3.s:1987   .debug_str:0000000000000612 .LASF73
+     /tmp/ccyhBlV3.s:1801   .debug_str:00000000000000fa .LASF74
+     /tmp/ccyhBlV3.s:1807   .debug_str:0000000000000126 .LASF75
+     /tmp/ccyhBlV3.s:1831   .debug_str:00000000000001d0 .LASF76
+     /tmp/ccyhBlV3.s:1871   .debug_str:00000000000002de .LASF77
+     /tmp/ccyhBlV3.s:1909   .debug_str:00000000000003b7 .LASF78
+     /tmp/ccyhBlV3.s:2019   .debug_str:00000000000007a4 .LASF79
+     /tmp/ccyhBlV3.s:1813   .debug_str:0000000000000157 .LASF80
+     /tmp/ccyhBlV3.s:1887   .debug_str:0000000000000334 .LASF81
+     /tmp/ccyhBlV3.s:1841   .debug_str:0000000000000201 .LASF82
+     /tmp/ccyhBlV3.s:1781   .debug_str:000000000000005f .LASF83
+     /tmp/ccyhBlV3.s:1823   .debug_str:000000000000019c .LASF84
+     /tmp/ccyhBlV3.s:1885   .debug_str:000000000000032c .LASF85
+     /tmp/ccyhBlV3.s:1957   .debug_str:0000000000000535 .LASF86
+     /tmp/ccyhBlV3.s:1943   .debug_str:00000000000004ac .LASF87
+     /tmp/ccyhBlV3.s:1903   .debug_str:0000000000000391 .LASF88
+     /tmp/ccyhBlV3.s:1891   .debug_str:000000000000034d .LASF89
+     /tmp/ccyhBlV3.s:1901   .debug_str:0000000000000383 .LASF90
+     /tmp/ccyhBlV3.s:1973   .debug_str:00000000000005b4 .LASF91
+     /tmp/ccyhBlV3.s:1991   .debug_str:00000000000006e0 .LASF92
+     /tmp/ccyhBlV3.s:1949   .debug_str:00000000000004d8 .LASF93
+     /tmp/ccyhBlV3.s:1877   .debug_str:00000000000002fb .LASF94
+     /tmp/ccyhBlV3.s:1969   .debug_str:000000000000059c .LASF95
+     /tmp/ccyhBlV3.s:1971   .debug_str:00000000000005a8 .LASF96
+     /tmp/ccyhBlV3.s:1929   .debug_str:0000000000000448 .LASF97
+     /tmp/ccyhBlV3.s:1859   .debug_str:000000000000027a .LASF98
+     /tmp/ccyhBlV3.s:1867   .debug_str:00000000000002c5 .LASF99
+     /tmp/ccyhBlV3.s:1845   .debug_str:000000000000021b .LASF100
+     /tmp/ccyhBlV3.s:1847   .debug_str:0000000000000222 .LASF101
+     /tmp/ccyhBlV3.s:1947   .debug_str:00000000000004d0 .LASF102
+     /tmp/ccyhBlV3.s:1985   .debug_str:000000000000060a .LASF103
+     /tmp/ccyhBlV3.s:2013   .debug_str:0000000000000784 .LASF104
+     /tmp/ccyhBlV3.s:1905   .debug_str:0000000000000397 .LASF105
+     /tmp/ccyhBlV3.s:1879   .debug_str:0000000000000309 .LASF124
+     /tmp/ccyhBlV3.s:1869   .debug_str:00000000000002cc .LASF125
+     /tmp/ccyhBlV3.s:1893   .debug_str:0000000000000357 .LASF106
+     /tmp/ccyhBlV3.s:1825   .debug_str:00000000000001a2 .LASF107
+     /tmp/ccyhBlV3.s:1797   .debug_str:00000000000000dc .LASF108
+     /tmp/ccyhBlV3.s:1911   .debug_str:00000000000003bf .LASF109
+     /tmp/ccyhBlV3.s:1937   .debug_str:0000000000000490 .LASF110
+     /tmp/ccyhBlV3.s:14     .text.Zero_Coarse_State:0000000000000000 .LFB0
+     /tmp/ccyhBlV3.s:169    .text.Zero_Coarse_State:000000000000011c .LFE0
+     /tmp/ccyhBlV3.s:1574   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccyhBlV3.s:1618   .debug_loc:0000000000000069 .LLST1
+     /tmp/ccyhBlV3.s:1665   .debug_loc:00000000000000d5 .LLST2
+     /tmp/ccyhBlV3.s:91     .text.Zero_Coarse_State:000000000000008c .LBB4
+     /tmp/ccyhBlV3.s:1690   .debug_loc:0000000000000118 .LLST3
+     /tmp/ccyhBlV3.s:1711   .debug_loc:0000000000000147 .LLST4
+     /tmp/ccyhBlV3.s:1722   .debug_loc:0000000000000165 .LLST5
+     /tmp/ccyhBlV3.s:1733   .debug_loc:0000000000000183 .LLST6
+     /tmp/ccyhBlV3.s:95     .text.Zero_Coarse_State:0000000000000094 .LVL13
+     /tmp/ccyhBlV3.s:99     .text.Zero_Coarse_State:00000000000000a0 .LVL14
+     /tmp/ccyhBlV3.s:104    .text.Zero_Coarse_State:00000000000000b0 .LVL15
+     /tmp/ccyhBlV3.s:108    .text.Zero_Coarse_State:00000000000000bc .LVL16
+     /tmp/ccyhBlV3.s:113    .text.Zero_Coarse_State:00000000000000c8 .LVL17
+     /tmp/ccyhBlV3.s:151    .text.Zero_Coarse_State:0000000000000110 .LVL21
+     /tmp/ccyhBlV3.s:66     .text.Zero_Coarse_State:0000000000000054 .LVL5
+     /tmp/ccyhBlV3.s:70     .text.Zero_Coarse_State:0000000000000060 .LVL6
+     /tmp/ccyhBlV3.s:74     .text.Zero_Coarse_State:000000000000006c .LVL7
+     /tmp/ccyhBlV3.s:81     .text.Zero_Coarse_State:0000000000000078 .LVL9
+     /tmp/ccyhBlV3.s:85     .text.Zero_Coarse_State:0000000000000084 .LVL10
+     /tmp/ccyhBlV3.s:1787   .debug_str:0000000000000081 .LASF111
+     /tmp/ccyhBlV3.s:2001   .debug_str:000000000000072b .LASF112
+     /tmp/ccyhBlV3.s:1771   .debug_str:0000000000000000 .LASF113
+     /tmp/ccyhBlV3.s:1963   .debug_str:000000000000056b .LASF114
+     /tmp/ccyhBlV3.s:1933   .debug_str:0000000000000473 .LASF115
+     /tmp/ccyhBlV3.s:2017   .debug_str:0000000000000792 .LASF116
+     /tmp/ccyhBlV3.s:1883   .debug_str:000000000000031c .LASF117
+     /tmp/ccyhBlV3.s:1853   .debug_str:000000000000024b .LASF118
+     /tmp/ccyhBlV3.s:1799   .debug_str:00000000000000e7 .LASF119
+     /tmp/ccyhBlV3.s:18     .text.Zero_Coarse_State:0000000000000000 .LVL0
+     /tmp/ccyhBlV3.s:40     .text.Zero_Coarse_State:0000000000000028 .LVL1
+     /tmp/ccyhBlV3.s:59     .text.Zero_Coarse_State:0000000000000048 .LVL3
+     /tmp/ccyhBlV3.s:64     .text.Zero_Coarse_State:000000000000004c .LVL4
+     /tmp/ccyhBlV3.s:77     .text.Zero_Coarse_State:0000000000000070 .LVL8
+     /tmp/ccyhBlV3.s:87     .text.Zero_Coarse_State:0000000000000088 .LVL11
+     /tmp/ccyhBlV3.s:45     .text.Zero_Coarse_State:0000000000000030 .LVL2
+     /tmp/ccyhBlV3.s:158    .text.Zero_Coarse_State:0000000000000114 .LVL22
+     /tmp/ccyhBlV3.s:90     .text.Zero_Coarse_State:000000000000008c .LVL12
+     /tmp/ccyhBlV3.s:140    .text.Zero_Coarse_State:0000000000000100 .LVL19
+     /tmp/ccyhBlV3.s:147    .text.Zero_Coarse_State:0000000000000108 .LVL20
+     /tmp/ccyhBlV3.s:164    .text.Zero_Coarse_State:0000000000000118 .LVL23
+     /tmp/ccyhBlV3.s:185    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccyhBlV3.s:154    .text.Zero_Coarse_State:0000000000000110 .LBE4
+     /tmp/ccyhBlV3.s:160    .text.Zero_Coarse_State:0000000000000114 .LBB7
+     /tmp/ccyhBlV3.s:167    .text.Zero_Coarse_State:000000000000011c .LBE7
+=======
+     /tmp/cciom6SO.s:13     .text.Zero_Coarse_State:0000000000000000 Zero_Coarse_State
+     /tmp/cciom6SO.s:17     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:19     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:20     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:21     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:22     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:23     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:24     .text.Zero_Coarse_State:0000000000000000 .L0 
+     /tmp/cciom6SO.s:26     .text.Zero_Coarse_State:0000000000000004 .L0 
+     /tmp/cciom6SO.s:27     .text.Zero_Coarse_State:0000000000000008 .L0 
+     /tmp/cciom6SO.s:31     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/cciom6SO.s:32     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/cciom6SO.s:33     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/cciom6SO.s:35     .text.Zero_Coarse_State:0000000000000014 .L0 
+     /tmp/cciom6SO.s:43     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/cciom6SO.s:44     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/cciom6SO.s:48     .text.Zero_Coarse_State:0000000000000030 .L0 
+     /tmp/cciom6SO.s:50     .text.Zero_Coarse_State:0000000000000038 .L0 
+     /tmp/cciom6SO.s:51     .text.Zero_Coarse_State:0000000000000038 .L0 
+     /tmp/cciom6SO.s:53     .text.Zero_Coarse_State:000000000000003c .L0 
+     /tmp/cciom6SO.s:55     .text.Zero_Coarse_State:0000000000000040 .L0 
+     /tmp/cciom6SO.s:57     .text.Zero_Coarse_State:0000000000000044 .L0 
+     /tmp/cciom6SO.s:61     .text.Zero_Coarse_State:0000000000000048 .L0 
+     /tmp/cciom6SO.s:63     .text.Zero_Coarse_State:0000000000000048 .L0 
+     /tmp/cciom6SO.s:68     .text.Zero_Coarse_State:0000000000000054 .L0 
+     /tmp/cciom6SO.s:72     .text.Zero_Coarse_State:0000000000000060 .L0 
+     /tmp/cciom6SO.s:76     .text.Zero_Coarse_State:000000000000006c .L0 
+     /tmp/cciom6SO.s:80     .text.Zero_Coarse_State:0000000000000070 .L0 
+     /tmp/cciom6SO.s:83     .text.Zero_Coarse_State:0000000000000078 .L0 
+     /tmp/cciom6SO.s:94     .text.Zero_Coarse_State:000000000000008c .L0 
+     /tmp/cciom6SO.s:97     .text.Zero_Coarse_State:0000000000000094 .L0 
+     /tmp/cciom6SO.s:101    .text.Zero_Coarse_State:00000000000000a0 .L0 
+     /tmp/cciom6SO.s:106    .text.Zero_Coarse_State:00000000000000b0 .L0 
+     /tmp/cciom6SO.s:110    .text.Zero_Coarse_State:00000000000000bc .L0 
+     /tmp/cciom6SO.s:111    .text.Zero_Coarse_State:00000000000000bc .L0 
+     /tmp/cciom6SO.s:115    .text.Zero_Coarse_State:00000000000000c8 .L0 
+     /tmp/cciom6SO.s:116    .text.Zero_Coarse_State:00000000000000c8 .L0 
+     /tmp/cciom6SO.s:119    .text.Zero_Coarse_State:00000000000000d0 .L0 
+     /tmp/cciom6SO.s:121    .text.Zero_Coarse_State:00000000000000d4 .L0 
+     /tmp/cciom6SO.s:123    .text.Zero_Coarse_State:00000000000000d8 .L0 
+     /tmp/cciom6SO.s:125    .text.Zero_Coarse_State:00000000000000dc .L0 
+     /tmp/cciom6SO.s:127    .text.Zero_Coarse_State:00000000000000e4 .L0 
+     /tmp/cciom6SO.s:130    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/cciom6SO.s:131    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/cciom6SO.s:132    .text.Zero_Coarse_State:00000000000000e8 .L0 
+     /tmp/cciom6SO.s:137    .text.Zero_Coarse_State:00000000000000f4 .L0 
+     /tmp/cciom6SO.s:139    .text.Zero_Coarse_State:00000000000000f8 .L0 
+     /tmp/cciom6SO.s:143    .text.Zero_Coarse_State:0000000000000100 .L0 
+     /tmp/cciom6SO.s:144    .text.Zero_Coarse_State:0000000000000100 .L0 
+     /tmp/cciom6SO.s:146    .text.Zero_Coarse_State:0000000000000104 .L0 
+     /tmp/cciom6SO.s:150    .text.Zero_Coarse_State:0000000000000108 .L0 
+     /tmp/cciom6SO.s:155    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/cciom6SO.s:156    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/cciom6SO.s:157    .text.Zero_Coarse_State:0000000000000110 .L0 
+     /tmp/cciom6SO.s:163    .text.Zero_Coarse_State:0000000000000114 .L0 
+     /tmp/cciom6SO.s:168    .text.Zero_Coarse_State:000000000000011c .L0 
+     /tmp/cciom6SO.s:171    .text.Zero_Coarse_State:000000000000011c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cciom6SO.s:44     .text.Zero_Coarse_State:0000000000000028 .L0 
+     /tmp/cciom6SO.s:125    .text.Zero_Coarse_State:00000000000000dc .L0 
+     /tmp/cciom6SO.s:139    .text.Zero_Coarse_State:00000000000000f8 .L0 
+     /tmp/cciom6SO.s:78     .text.Zero_Coarse_State:0000000000000070 .L2
+     /tmp/cciom6SO.s:60     .text.Zero_Coarse_State:0000000000000048 .L3
+     /tmp/cciom6SO.s:88     .text.Zero_Coarse_State:0000000000000088 .L4
+     /tmp/cciom6SO.s:41     .text.Zero_Coarse_State:0000000000000028 .L13
+     /tmp/cciom6SO.s:141    .text.Zero_Coarse_State:0000000000000100 .L6
+     /tmp/cciom6SO.s:135    .text.Zero_Coarse_State:00000000000000f4 .L7
+     /tmp/cciom6SO.s:159    .text.Zero_Coarse_State:0000000000000114 .L8
+     /tmp/cciom6SO.s:46     .text.Zero_Coarse_State:0000000000000030 .L1
+     /tmp/cciom6SO.s:148    .text.Zero_Coarse_State:0000000000000108 .L14
+     /tmp/cciom6SO.s:1143   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cciom6SO.s:1989   .debug_str:000000000000061a .LASF120
+     /tmp/cciom6SO.s:1923   .debug_str:000000000000040b .LASF121
+     /tmp/cciom6SO.s:1951   .debug_str:00000000000004e8 .LASF122
+     /tmp/cciom6SO.s:1757   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cciom6SO.s:1769   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cciom6SO.s:1855   .debug_str:0000000000000260 .LASF4
+     /tmp/cciom6SO.s:1791   .debug_str:00000000000000ac .LASF0
+     /tmp/cciom6SO.s:1889   .debug_str:000000000000033f .LASF1
+     /tmp/cciom6SO.s:1925   .debug_str:0000000000000433 .LASF2
+     /tmp/cciom6SO.s:1997   .debug_str:000000000000070c .LASF3
+     /tmp/cciom6SO.s:1953   .debug_str:000000000000051f .LASF5
+     /tmp/cciom6SO.s:1977   .debug_str:00000000000005d8 .LASF6
+     /tmp/cciom6SO.s:1935   .debug_str:0000000000000486 .LASF7
+     /tmp/cciom6SO.s:1833   .debug_str:00000000000001d8 .LASF8
+     /tmp/cciom6SO.s:1999   .debug_str:0000000000000718 .LASF9
+     /tmp/cciom6SO.s:1793   .debug_str:00000000000000b9 .LASF10
+     /tmp/cciom6SO.s:1941   .debug_str:00000000000004a3 .LASF11
+     /tmp/cciom6SO.s:1981   .debug_str:00000000000005f2 .LASF12
+     /tmp/cciom6SO.s:1961   .debug_str:0000000000000559 .LASF13
+     /tmp/cciom6SO.s:1829   .debug_str:00000000000001b9 .LASF14
+     /tmp/cciom6SO.s:1881   .debug_str:0000000000000314 .LASF15
+     /tmp/cciom6SO.s:1927   .debug_str:000000000000043f .LASF16
+     /tmp/cciom6SO.s:1967   .debug_str:0000000000000594 .LASF17
+     /tmp/cciom6SO.s:1815   .debug_str:0000000000000162 .LASF18
+     /tmp/cciom6SO.s:1777   .debug_str:000000000000003f .LASF123
+     /tmp/cciom6SO.s:1873   .debug_str:00000000000002e7 .LASF19
+     /tmp/cciom6SO.s:1895   .debug_str:000000000000035f .LASF20
+     /tmp/cciom6SO.s:2021   .debug_str:00000000000007ad .LASF21
+     /tmp/cciom6SO.s:1955   .debug_str:0000000000000529 .LASF22
+     /tmp/cciom6SO.s:2011   .debug_str:0000000000000775 .LASF23
+     /tmp/cciom6SO.s:2003   .debug_str:000000000000073f .LASF24
+     /tmp/cciom6SO.s:1821   .debug_str:0000000000000188 .LASF25
+     /tmp/cciom6SO.s:1819   .debug_str:000000000000017f .LASF26
+     /tmp/cciom6SO.s:1809   .debug_str:000000000000013a .LASF27
+     /tmp/cciom6SO.s:1945   .debug_str:00000000000004b8 .LASF28
+     /tmp/cciom6SO.s:1817   .debug_str:000000000000016b .LASF29
+     /tmp/cciom6SO.s:1775   .debug_str:0000000000000025 .LASF30
+     /tmp/cciom6SO.s:2009   .debug_str:0000000000000760 .LASF31
+     /tmp/cciom6SO.s:1779   .debug_str:0000000000000050 .LASF32
+     /tmp/cciom6SO.s:1785   .debug_str:0000000000000074 .LASF33
+     /tmp/cciom6SO.s:1843   .debug_str:000000000000020d .LASF34
+     /tmp/cciom6SO.s:1995   .debug_str:00000000000006fc .LASF35
+     /tmp/cciom6SO.s:1861   .debug_str:0000000000000291 .LASF36
+     /tmp/cciom6SO.s:1839   .debug_str:00000000000001f6 .LASF37
+     /tmp/cciom6SO.s:1863   .debug_str:00000000000002a3 .LASF38
+     /tmp/cciom6SO.s:1931   .debug_str:000000000000045f .LASF39
+     /tmp/cciom6SO.s:1789   .debug_str:000000000000009c .LASF40
+     /tmp/cciom6SO.s:1915   .debug_str:00000000000003d5 .LASF41
+     /tmp/cciom6SO.s:1919   .debug_str:00000000000003f0 .LASF42
+     /tmp/cciom6SO.s:2005   .debug_str:000000000000074b .LASF43
+     /tmp/cciom6SO.s:1795   .debug_str:00000000000000c3 .LASF44
+     /tmp/cciom6SO.s:1907   .debug_str:00000000000003a0 .LASF45
+     /tmp/cciom6SO.s:1975   .debug_str:00000000000005c2 .LASF46
+     /tmp/cciom6SO.s:1865   .debug_str:00000000000002af .LASF47
+     /tmp/cciom6SO.s:1783   .debug_str:0000000000000067 .LASF48
+     /tmp/cciom6SO.s:1959   .debug_str:0000000000000543 .LASF49
+     /tmp/cciom6SO.s:1965   .debug_str:000000000000057f .LASF50
+     /tmp/cciom6SO.s:1803   .debug_str:0000000000000107 .LASF51
+     /tmp/cciom6SO.s:1875   .debug_str:00000000000002ec .LASF52
+     /tmp/cciom6SO.s:1897   .debug_str:0000000000000369 .LASF53
+     /tmp/cciom6SO.s:1899   .debug_str:0000000000000376 .LASF54
+     /tmp/cciom6SO.s:1835   .debug_str:00000000000001e3 .LASF55
+     /tmp/cciom6SO.s:1993   .debug_str:00000000000006f0 .LASF56
+     /tmp/cciom6SO.s:1913   .debug_str:00000000000003ce .LASF57
+     /tmp/cciom6SO.s:2015   .debug_str:000000000000078d .LASF58
+     /tmp/cciom6SO.s:1811   .debug_str:000000000000013f .LASF59
+     /tmp/cciom6SO.s:1939   .debug_str:000000000000049c .LASF60
+     /tmp/cciom6SO.s:1979   .debug_str:00000000000005e6 .LASF61
+     /tmp/cciom6SO.s:1827   .debug_str:00000000000001a8 .LASF62
+     /tmp/cciom6SO.s:1857   .debug_str:0000000000000267 .LASF63
+     /tmp/cciom6SO.s:1773   .debug_str:0000000000000011 .LASF64
+     /tmp/cciom6SO.s:1917   .debug_str:00000000000003e8 .LASF65
+     /tmp/cciom6SO.s:1805   .debug_str:0000000000000115 .LASF66
+     /tmp/cciom6SO.s:2007   .debug_str:0000000000000754 .LASF67
+     /tmp/cciom6SO.s:1921   .debug_str:0000000000000404 .LASF68
+     /tmp/cciom6SO.s:1983   .debug_str:00000000000005fd .LASF69
+     /tmp/cciom6SO.s:1851   .debug_str:000000000000023e .LASF70
+     /tmp/cciom6SO.s:1849   .debug_str:0000000000000229 .LASF71
+     /tmp/cciom6SO.s:1837   .debug_str:00000000000001ec .LASF72
+     /tmp/cciom6SO.s:1987   .debug_str:0000000000000612 .LASF73
+     /tmp/cciom6SO.s:1801   .debug_str:00000000000000fa .LASF74
+     /tmp/cciom6SO.s:1807   .debug_str:0000000000000126 .LASF75
+     /tmp/cciom6SO.s:1831   .debug_str:00000000000001d0 .LASF76
+     /tmp/cciom6SO.s:1871   .debug_str:00000000000002de .LASF77
+     /tmp/cciom6SO.s:1909   .debug_str:00000000000003b7 .LASF78
+     /tmp/cciom6SO.s:2019   .debug_str:00000000000007a4 .LASF79
+     /tmp/cciom6SO.s:1813   .debug_str:0000000000000157 .LASF80
+     /tmp/cciom6SO.s:1887   .debug_str:0000000000000334 .LASF81
+     /tmp/cciom6SO.s:1841   .debug_str:0000000000000201 .LASF82
+     /tmp/cciom6SO.s:1781   .debug_str:000000000000005f .LASF83
+     /tmp/cciom6SO.s:1823   .debug_str:000000000000019c .LASF84
+     /tmp/cciom6SO.s:1885   .debug_str:000000000000032c .LASF85
+     /tmp/cciom6SO.s:1957   .debug_str:0000000000000535 .LASF86
+     /tmp/cciom6SO.s:1943   .debug_str:00000000000004ac .LASF87
+     /tmp/cciom6SO.s:1903   .debug_str:0000000000000391 .LASF88
+     /tmp/cciom6SO.s:1891   .debug_str:000000000000034d .LASF89
+     /tmp/cciom6SO.s:1901   .debug_str:0000000000000383 .LASF90
+     /tmp/cciom6SO.s:1973   .debug_str:00000000000005b4 .LASF91
+     /tmp/cciom6SO.s:1991   .debug_str:00000000000006e0 .LASF92
+     /tmp/cciom6SO.s:1949   .debug_str:00000000000004d8 .LASF93
+     /tmp/cciom6SO.s:1877   .debug_str:00000000000002fb .LASF94
+     /tmp/cciom6SO.s:1969   .debug_str:000000000000059c .LASF95
+     /tmp/cciom6SO.s:1971   .debug_str:00000000000005a8 .LASF96
+     /tmp/cciom6SO.s:1929   .debug_str:0000000000000448 .LASF97
+     /tmp/cciom6SO.s:1859   .debug_str:000000000000027a .LASF98
+     /tmp/cciom6SO.s:1867   .debug_str:00000000000002c5 .LASF99
+     /tmp/cciom6SO.s:1845   .debug_str:000000000000021b .LASF100
+     /tmp/cciom6SO.s:1847   .debug_str:0000000000000222 .LASF101
+     /tmp/cciom6SO.s:1947   .debug_str:00000000000004d0 .LASF102
+     /tmp/cciom6SO.s:1985   .debug_str:000000000000060a .LASF103
+     /tmp/cciom6SO.s:2013   .debug_str:0000000000000784 .LASF104
+     /tmp/cciom6SO.s:1905   .debug_str:0000000000000397 .LASF105
+     /tmp/cciom6SO.s:1879   .debug_str:0000000000000309 .LASF124
+     /tmp/cciom6SO.s:1869   .debug_str:00000000000002cc .LASF125
+     /tmp/cciom6SO.s:1893   .debug_str:0000000000000357 .LASF106
+     /tmp/cciom6SO.s:1825   .debug_str:00000000000001a2 .LASF107
+     /tmp/cciom6SO.s:1797   .debug_str:00000000000000dc .LASF108
+     /tmp/cciom6SO.s:1911   .debug_str:00000000000003bf .LASF109
+     /tmp/cciom6SO.s:1937   .debug_str:0000000000000490 .LASF110
+     /tmp/cciom6SO.s:14     .text.Zero_Coarse_State:0000000000000000 .LFB0
+     /tmp/cciom6SO.s:169    .text.Zero_Coarse_State:000000000000011c .LFE0
+     /tmp/cciom6SO.s:1574   .debug_loc:0000000000000000 .LLST0
+     /tmp/cciom6SO.s:1618   .debug_loc:0000000000000069 .LLST1
+     /tmp/cciom6SO.s:1665   .debug_loc:00000000000000d5 .LLST2
+     /tmp/cciom6SO.s:91     .text.Zero_Coarse_State:000000000000008c .LBB4
+     /tmp/cciom6SO.s:1690   .debug_loc:0000000000000118 .LLST3
+     /tmp/cciom6SO.s:1711   .debug_loc:0000000000000147 .LLST4
+     /tmp/cciom6SO.s:1722   .debug_loc:0000000000000165 .LLST5
+     /tmp/cciom6SO.s:1733   .debug_loc:0000000000000183 .LLST6
+     /tmp/cciom6SO.s:95     .text.Zero_Coarse_State:0000000000000094 .LVL13
+     /tmp/cciom6SO.s:99     .text.Zero_Coarse_State:00000000000000a0 .LVL14
+     /tmp/cciom6SO.s:104    .text.Zero_Coarse_State:00000000000000b0 .LVL15
+     /tmp/cciom6SO.s:108    .text.Zero_Coarse_State:00000000000000bc .LVL16
+     /tmp/cciom6SO.s:113    .text.Zero_Coarse_State:00000000000000c8 .LVL17
+     /tmp/cciom6SO.s:151    .text.Zero_Coarse_State:0000000000000110 .LVL21
+     /tmp/cciom6SO.s:66     .text.Zero_Coarse_State:0000000000000054 .LVL5
+     /tmp/cciom6SO.s:70     .text.Zero_Coarse_State:0000000000000060 .LVL6
+     /tmp/cciom6SO.s:74     .text.Zero_Coarse_State:000000000000006c .LVL7
+     /tmp/cciom6SO.s:81     .text.Zero_Coarse_State:0000000000000078 .LVL9
+     /tmp/cciom6SO.s:85     .text.Zero_Coarse_State:0000000000000084 .LVL10
+     /tmp/cciom6SO.s:1787   .debug_str:0000000000000081 .LASF111
+     /tmp/cciom6SO.s:2001   .debug_str:000000000000072b .LASF112
+     /tmp/cciom6SO.s:1771   .debug_str:0000000000000000 .LASF113
+     /tmp/cciom6SO.s:1963   .debug_str:000000000000056b .LASF114
+     /tmp/cciom6SO.s:1933   .debug_str:0000000000000473 .LASF115
+     /tmp/cciom6SO.s:2017   .debug_str:0000000000000792 .LASF116
+     /tmp/cciom6SO.s:1883   .debug_str:000000000000031c .LASF117
+     /tmp/cciom6SO.s:1853   .debug_str:000000000000024b .LASF118
+     /tmp/cciom6SO.s:1799   .debug_str:00000000000000e7 .LASF119
+     /tmp/cciom6SO.s:18     .text.Zero_Coarse_State:0000000000000000 .LVL0
+     /tmp/cciom6SO.s:40     .text.Zero_Coarse_State:0000000000000028 .LVL1
+     /tmp/cciom6SO.s:59     .text.Zero_Coarse_State:0000000000000048 .LVL3
+     /tmp/cciom6SO.s:64     .text.Zero_Coarse_State:000000000000004c .LVL4
+     /tmp/cciom6SO.s:77     .text.Zero_Coarse_State:0000000000000070 .LVL8
+     /tmp/cciom6SO.s:87     .text.Zero_Coarse_State:0000000000000088 .LVL11
+     /tmp/cciom6SO.s:45     .text.Zero_Coarse_State:0000000000000030 .LVL2
+     /tmp/cciom6SO.s:158    .text.Zero_Coarse_State:0000000000000114 .LVL22
+     /tmp/cciom6SO.s:90     .text.Zero_Coarse_State:000000000000008c .LVL12
+     /tmp/cciom6SO.s:140    .text.Zero_Coarse_State:0000000000000100 .LVL19
+     /tmp/cciom6SO.s:147    .text.Zero_Coarse_State:0000000000000108 .LVL20
+     /tmp/cciom6SO.s:164    .text.Zero_Coarse_State:0000000000000118 .LVL23
+     /tmp/cciom6SO.s:185    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cciom6SO.s:154    .text.Zero_Coarse_State:0000000000000110 .LBE4
+     /tmp/cciom6SO.s:160    .text.Zero_Coarse_State:0000000000000114 .LBB7
+     /tmp/cciom6SO.s:167    .text.Zero_Coarse_State:000000000000011c .LBE7
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Start_Focus_Timer
+v_Set_LVDT_Gain
+v_Set_Microstep_Mode
+v_Stop_Focus_Timer
+v_Set_Stepper_out
+v_Refresh_Stepper_Watchdog
+v_Set_Debug_GPIO
+V_Get_LVDT_Snapshot
+i32_Get_Projection
+Zero_Fine_State

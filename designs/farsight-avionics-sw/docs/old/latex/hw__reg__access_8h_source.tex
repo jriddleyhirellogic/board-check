@@ -1,0 +1,118 @@
+\doxysection{hw\+\_\+reg\+\_\+access.\+h}
+\hypertarget{hw__reg__access_8h_source}{}\label{hw__reg__access_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/hw\_reg\_access.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/hw\_reg\_access.h}}
+\doxymbox{\hyperlink{hw__reg__access_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00001}00001\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00015}00015\ \textcolor{preprocessor}{\#ifndef\ \_\_HW\_REG\_ACCESS}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00016}00016\ \textcolor{preprocessor}{\#define\ \_\_HW\_REG\_ACCESS}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00017}00017\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00018}00018\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00019}00019\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{av__board__workspace_2Camera_2include_2cpu__types_8h}{cpu\_types.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00022}00022\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00030}00030\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00031}\doxymbox{\hyperlink{hw__reg__access_8h_ad663ca85f69c6059f03d81bf0d5bf21c}{00031}}\ \doxymbox{\hyperlink{hw__reg__access_8h_ad663ca85f69c6059f03d81bf0d5bf21c}{HW\_set\_32bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00032}00032\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00033}00033\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00034}00034\ \ \ \ \ uint32\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00035}00035\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00037}00037\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00045}00045\ uint32\_t}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00046}\doxymbox{\hyperlink{hw__reg__access_8h_aa7bda6094c1240b40cd9dc35200e3e98}{00046}}\ \doxymbox{\hyperlink{hw__reg__access_8h_aa7bda6094c1240b40cd9dc35200e3e98}{HW\_get\_32bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00047}00047\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00048}00048\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00049}00049\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00051}00051\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00063}00063\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00064}\doxymbox{\hyperlink{hw__reg__access_8h_ab5e5e14921fd95449666fdf90e7f899a}{00064}}\ \doxymbox{\hyperlink{hw__reg__access_8h_ab5e5e14921fd95449666fdf90e7f899a}{HW\_set\_32bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00065}00065\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00066}00066\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00067}00067\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00068}00068\ \ \ \ \ uint32\_t\ mask,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00069}00069\ \ \ \ \ uint32\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00070}00070\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00072}00072\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00086}00086\ uint32\_t\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00087}\doxymbox{\hyperlink{hw__reg__access_8h_a475517dad2bc663cb314bfac8792d91a}{00087}}\ \doxymbox{\hyperlink{hw__reg__access_8h_a475517dad2bc663cb314bfac8792d91a}{HW\_get\_32bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00088}00088\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00089}00089\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00090}00090\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00091}00091\ \ \ \ \ uint32\_t\ mask}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00092}00092\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00093}00093\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00094}00094\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00102}00102\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00103}\doxymbox{\hyperlink{hw__reg__access_8h_a558cbaaa80633de78f892beaf86eaeff}{00103}}\ \doxymbox{\hyperlink{hw__reg__access_8h_a558cbaaa80633de78f892beaf86eaeff}{HW\_set\_16bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00104}00104\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00105}00105\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00106}00106\ \ \ \ \ uint\_fast16\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00107}00107\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00108}00108\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00109}00109\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00117}00117\ uint16\_t}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00118}\doxymbox{\hyperlink{hw__reg__access_8h_a2723921157643f105b88cc1a2efe096c}{00118}}\ \doxymbox{\hyperlink{hw__reg__access_8h_a2723921157643f105b88cc1a2efe096c}{HW\_get\_16bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00119}00119\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00120}00120\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00121}00121\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00123}00123\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00135}\doxymbox{\hyperlink{hw__reg__access_8h_a6529c2f761f76afe7f3a7522cecc866e}{00135}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hw__reg__access_8h_a6529c2f761f76afe7f3a7522cecc866e}{HW\_set\_16bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00136}00136\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00137}00137\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00138}00138\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00139}00139\ \ \ \ \ uint\_fast16\_t\ mask,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00140}00140\ \ \ \ \ uint\_fast16\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00141}00141\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00142}00142\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00143}00143\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00157}\doxymbox{\hyperlink{hw__reg__access_8h_a6629a67de9a87f9b43412295b4ae8d07}{00157}}\ uint16\_t\ \doxymbox{\hyperlink{hw__reg__access_8h_a6629a67de9a87f9b43412295b4ae8d07}{HW\_get\_16bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00158}00158\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00159}00159\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00160}00160\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00161}00161\ \ \ \ \ uint\_fast16\_t\ mask}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00162}00162\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00163}00163\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00164}00164\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00172}00172\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00173}\doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{00173}}\ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00174}00174\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00175}00175\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00176}00176\ \ \ \ \ uint\_fast8\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00177}00177\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00179}00179\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00187}00187\ uint8\_t}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00188}\doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{00188}}\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00189}00189\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00190}00190\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00191}00191\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00192}00192\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00193}00193\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00205}\doxymbox{\hyperlink{hw__reg__access_8h_a0afc0f16a7a028098a7f91e769108c23}{00205}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hw__reg__access_8h_a0afc0f16a7a028098a7f91e769108c23}{HW\_set\_8bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00206}00206\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00207}00207\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00208}00208\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00209}00209\ \ \ \ \ uint\_fast8\_t\ mask,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00210}00210\ \ \ \ \ uint\_fast8\_t\ value}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00211}00211\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00212}00212\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00213}00213\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00227}\doxymbox{\hyperlink{hw__reg__access_8h_a3b1b6f4c3d5af8f8c31675f0e0846d4f}{00227}}\ uint8\_t\ \doxymbox{\hyperlink{hw__reg__access_8h_a3b1b6f4c3d5af8f8c31675f0e0846d4f}{HW\_get\_8bit\_reg\_field}}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00228}00228\ (}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00229}00229\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ reg\_addr,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00230}00230\ \ \ \ \ int\_fast8\_t\ shift,}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00231}00231\ \ \ \ \ uint\_fast8\_t\ mask}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00232}00232\ );}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00233}00233\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00234}00234\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00235}00235\ \}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00236}00236\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00238}00238\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ \_\_HW\_REG\_ACCESS\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{hw__reg__access_8h_source_l00239}00239\ }
+
+\end{DoxyCode}

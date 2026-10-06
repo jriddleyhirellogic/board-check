@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREFIFO:3.1.101",
+  "definition_digest": "b058aaf5fd41811a393285ced1d8430287ef3fba6678a7fa54db2b2a24d8e4ef",
+  "generated": "2026-10-01T16:23:44Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "COREFIFO_MAC_BACKPRES",
+  "sources_digest": "b5badd9bf39498ae960813e3f40de0f00b6e0cd634dcc0b7aea78af48a6827e2"
+}

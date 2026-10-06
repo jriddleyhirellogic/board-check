@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:corepwm:4.5.100",
+  "definition_digest": "c8bd653b477fe1acbc513dd4b7443f86da8701e69bd359649b2c574efefc2b38",
+  "generated": "2026-09-30T15:11:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "corepwm_C0",
+  "sources_digest": "c7e45578c6b1c466fa30f771487c4487059470bd588e4dcaf129f5eded4f0dc7"
+}

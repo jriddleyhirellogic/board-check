@@ -1,0 +1,236 @@
+\doxysection{core\+\_\+spi.\+h}
+\hypertarget{core__spi_8h_source}{}\label{core__spi_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/core\_spi.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/core\_spi.h}}
+\doxymbox{\hyperlink{core__spi_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00001}00001\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00042}00042\ \ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00043}00043\ \textcolor{comment}{/*=========================================================================*/}\textcolor{comment}{/*=========================================================================*/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00267}00267\ \textcolor{preprocessor}{\#ifndef\ CORE\_SPI\_H\_}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00268}00268\ \textcolor{preprocessor}{\#define\ CORE\_SPI\_H\_}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00269}00269\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00270}00270\ \textcolor{preprocessor}{\#ifndef\ LEGACY\_DIR\_STRUCTURE}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00271}00271\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal_8h}{hal/hal.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00272}00272\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00273}00273\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00274}00274\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal_8h}{hal.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00275}00275\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{av__board__workspace_2Camera_2include_2hal__assert_8h}{hal\_assert.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00276}00276\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00277}00277\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00278}00278\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00279}00279\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00280}00280\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00281}00281\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00282}00282\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00295}\doxymbox{\hyperlink{core__spi_8h_abc1b3ccb7cb9102af6c5df7c197767bd}{00295}}\ \textcolor{preprocessor}{\#define\ SPI\_MAX\_FIFO\_DEPTH\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 32u}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00296}\doxymbox{\hyperlink{core__spi_8h_aaab3b502bbd60f73291ab57f590e453a}{00296}}\ \textcolor{preprocessor}{\#define\ SPI\_MIN\_FIFO\_DEPTH\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1u}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00297}00297\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00298}00298\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00304}\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{00304}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{structspi__instance}{spi\_instance}}\ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00305}00305\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00306}00306\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00321}\doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{00321}}\ \textcolor{keyword}{typedef}\ void\ (*\doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\_slave\_frame\_tx\_handler\_t}})(\ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00322}00322\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00323}00323\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00340}\doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{00340}}\ \textcolor{keyword}{typedef}\ void\ (*\doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\_frame\_rx\_handler\_t}})(\ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f}{rx\_frame}}\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00341}00341\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00342}00342\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00359}\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{00359}}\ \textcolor{keyword}{typedef}\ void\ (*\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\_block\_rx\_handler\_t}})(\ uint8\_t\ *\ rx\_buff,\ uint32\_t\ rx\_size\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00360}00360\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00361}00361\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00366}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{00366}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09}{\_\_spi\_slave\_t}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00367}00367\ \{}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00368}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a6d1155159f8b6394a781469f034e113e}{00368}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a6d1155159f8b6394a781469f034e113e}{SPI\_SLAVE\_0}}\ \ \ \ \ =\ 0,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00369}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09ab9ab11c2ae8429affa6053379ef986b2}{00369}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09ab9ab11c2ae8429affa6053379ef986b2}{SPI\_SLAVE\_1}}\ \ \ \ \ =\ 1,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00370}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a5352951da7fb8ef5ec6b8c58d9c64624}{00370}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a5352951da7fb8ef5ec6b8c58d9c64624}{SPI\_SLAVE\_2}}\ \ \ \ \ =\ 2,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00371}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09afffd9146efbf5fecbe750c3da28109d6}{00371}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09afffd9146efbf5fecbe750c3da28109d6}{SPI\_SLAVE\_3}}\ \ \ \ \ =\ 3,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00372}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4ca73f3d71460ae2abc64f83ff9cc54c}{00372}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4ca73f3d71460ae2abc64f83ff9cc54c}{SPI\_SLAVE\_4}}\ \ \ \ \ =\ 4,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00373}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a9ec1efd88a189d88499d17077dc1a79d}{00373}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a9ec1efd88a189d88499d17077dc1a79d}{SPI\_SLAVE\_5}}\ \ \ \ \ =\ 5,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00374}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a2057d7d59e046913894dbb4d0e02988a}{00374}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a2057d7d59e046913894dbb4d0e02988a}{SPI\_SLAVE\_6}}\ \ \ \ \ =\ 6,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00375}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4bdd7ea27c3d6ec7beabe3a534e0b590}{00375}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a4bdd7ea27c3d6ec7beabe3a534e0b590}{SPI\_SLAVE\_7}}\ \ \ \ \ =\ 7,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00376}\doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a3161c4749250e1919ecc9b63f36a48aa}{00376}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae835e3d098590bce0e7efba3b5671a09a3161c4749250e1919ecc9b63f36a48aa}{SPI\_MAX\_NB\_OF\_SLAVES}}\ =\ 8}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00377}\doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{00377}}\ \}\ \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\_slave\_t}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00378}00378\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00379}00379\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00383}\doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{00383}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021a}{\_\_spi\_sxfer\_mode\_t}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00384}00384\ \{}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00385}\doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aab965fbea22efaf013a3ea1cfcbe470ea}{00385}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aab965fbea22efaf013a3ea1cfcbe470ea}{SPI\_SLAVE\_XFER\_NONE}}\ \ =\ 0,\ \textcolor{comment}{/*\ Not\ configured\ yet\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00386}\doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aaaf9fe437e10e551d7bcaef8a0688b84f}{00386}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aaaf9fe437e10e551d7bcaef8a0688b84f}{SPI\_SLAVE\_XFER\_BLOCK}}\ =\ 1,\ \textcolor{comment}{/*\ Block\ transfers,\ with\ SSEND\ delimiting\ end\ of\ block\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00387}\doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aada1558336b865138d8ac006717c55e6c}{00387}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ae7b3e1f09cb40e0b32e5cacdc605021aada1558336b865138d8ac006717c55e6c}{SPI\_SLAVE\_XFER\_FRAME}}\ =\ 2\ \ \textcolor{comment}{/*\ Single\ frame\ transfers\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00388}\doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{00388}}\ \}\ \doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\_sxfer\_mode\_t}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00389}00389\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00390}00390\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00396}\doxymbox{\hyperlink{structspi__instance}{00396}}\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{structspi__instance}{spi\_instance}}\{}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00397}00397\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00398}00398\ \ \ \ \ \textcolor{comment}{/*\ Base\ address\ in\ the\ processor's\ memory\ map\ for\ the}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00399}00399\ \textcolor{comment}{\ \ \ \ \ \ \ registers\ of\ the\ CoreSPI\ instance\ being\ initialized\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00400}\doxymbox{\hyperlink{structspi__instance_a36e0e69f6e9e7a591b421c1178b5b099}{00400}}\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ \doxymbox{\hyperlink{structspi__instance_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Base\ address\ of\ SPI\ hardware\ instance\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00401}00401\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00402}\doxymbox{\hyperlink{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f}{00402}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f}{rx\_frame}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ received\ data\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00403}00403\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00404}00404\ \ \ \ \ \textcolor{comment}{/*\ Internal\ transmit\ state:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00405}\doxymbox{\hyperlink{structspi__instance_a2875f77b7f664a267d56731f25cb29b6}{00405}}\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ \doxymbox{\hyperlink{structspi__instance_a2875f77b7f664a267d56731f25cb29b6}{slave\_tx\_buffer}};\ \ \ \ \textcolor{comment}{/*\ Pointer\ to\ slave\ transmit\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00406}\doxymbox{\hyperlink{structspi__instance_a1d5dc578a8806564b4f8282c461160c2}{00406}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a1d5dc578a8806564b4f8282c461160c2}{slave\_tx\_size}};\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Size\ of\ slave\ transmit\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00407}\doxymbox{\hyperlink{structspi__instance_a3c0b5fac4860a27aa7100a1c996e78a5}{00407}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a3c0b5fac4860a27aa7100a1c996e78a5}{slave\_tx\_idx}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Current\ index\ into\ slave\ transmit\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00408}00408\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00409}00409\ \ \ \ \ \textcolor{comment}{/*\ Slave\ command\ response\ buffer:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00410}\doxymbox{\hyperlink{structspi__instance_aafd5b287055641006388cb4d2a35a0de}{00410}}\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ \doxymbox{\hyperlink{structspi__instance_aafd5b287055641006388cb4d2a35a0de}{resp\_tx\_buffer}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00411}\doxymbox{\hyperlink{structspi__instance_a559f6860e8abd746d426391526110de9}{00411}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a559f6860e8abd746d426391526110de9}{resp\_buff\_size}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00412}\doxymbox{\hyperlink{structspi__instance_af1e5ecdf815fb3fce7d945a6fb000b4c}{00412}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_af1e5ecdf815fb3fce7d945a6fb000b4c}{resp\_buff\_tx\_idx}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00413}\doxymbox{\hyperlink{structspi__instance_a0db05beb67032edd46846acc4863f339}{00413}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\_block\_rx\_handler\_t}}\ \doxymbox{\hyperlink{structspi__instance_a0db05beb67032edd46846acc4863f339}{cmd\_handler}};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00414}\doxymbox{\hyperlink{structspi__instance_a970727cb2ff593f25c40516ea33652ee}{00414}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a970727cb2ff593f25c40516ea33652ee}{cmd\_done}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Flag\ which\ indicates\ response\ has\ been\ set\ up\ and}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00415}00415\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it\ is\ safe\ to\ pad\ with\ 0s\ once\ the\ response\ is\ sent\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00416}00416\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00417}00417\ \ \ \ \ \textcolor{comment}{/*\ Internal\ receive\ state:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00418}\doxymbox{\hyperlink{structspi__instance_a0632d3b1b398cb254c7340c6cd6c8553}{00418}}\ \ \ \ \ uint8\_t\ *\ \doxymbox{\hyperlink{structspi__instance_a0632d3b1b398cb254c7340c6cd6c8553}{slave\_rx\_buffer}};\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Pointer\ to\ buffer\ where\ data\ received\ by\ a\ slave\ will\ be\ stored\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00419}\doxymbox{\hyperlink{structspi__instance_a30db5d3af574b806028259d52041774d}{00419}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a30db5d3af574b806028259d52041774d}{slave\_rx\_size}};\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Slave\ receive\ buffer\ size\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00420}\doxymbox{\hyperlink{structspi__instance_a349458d6856b919a4108fd3c94271127}{00420}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a349458d6856b919a4108fd3c94271127}{slave\_rx\_idx}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Current\ index\ into\ slave\ receive\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00421}00421\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00422}00422\ \ \ \ \ \textcolor{comment}{/*\ Slave\ received\ frame\ handler:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00423}\doxymbox{\hyperlink{structspi__instance_a567e92d627ccbcd13643cf4da283946b}{00423}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\_frame\_rx\_handler\_t}}\ \doxymbox{\hyperlink{structspi__instance_a567e92d627ccbcd13643cf4da283946b}{frame\_rx\_handler}};\ \ \ \ \textcolor{comment}{/*\ Pointer\ to\ function\ that\ will\ be\ called\ when\ a\ frame}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00424}00424\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ is\ received\ when\ the\ SPI\ block\ is\ configured\ as\ slave\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00425}00425\ \ \ \ \ \textcolor{comment}{/*\ Slave\ transmitted\ frame\ handler:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00426}\doxymbox{\hyperlink{structspi__instance_a223ec6f1329510bc15d6140e98dee7a3}{00426}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structspi__instance_a223ec6f1329510bc15d6140e98dee7a3}{slave\_tx\_frame}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Value\ of\ the\ data\ frame\ that\ will\ be\ transmitted}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00427}00427\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ when\ the\ SPI\ block\ is\ configured\ as\ slave\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00428}\doxymbox{\hyperlink{structspi__instance_a0b0e308873d136aff81aa4aed3b5244b}{00428}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\_slave\_frame\_tx\_handler\_t}}\ \doxymbox{\hyperlink{structspi__instance_a0b0e308873d136aff81aa4aed3b5244b}{slave\_tx\_frame\_handler}};\ \textcolor{comment}{/*\ Callback\ function\ pointer\ to\ update\ slave\_tx\_frame\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00429}00429\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00430}00430\ \ \ \ \ \textcolor{comment}{/*\ Slave\ block\ rx\ handler:\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00431}\doxymbox{\hyperlink{structspi__instance_ab16a6d4dfeb9af00591f47ae5fe32917}{00431}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\_block\_rx\_handler\_t}}\ \doxymbox{\hyperlink{structspi__instance_ab16a6d4dfeb9af00591f47ae5fe32917}{block\_rx\_handler}};\ \ \ \ \textcolor{comment}{/*\ Pointer\ to\ the\ function\ that\ will\ be\ called\ when\ a\ data\ block\ has\ been\ received\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00432}00432\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00433}00433\ \ \ \ \ \textcolor{comment}{/*\ Per\ instance\ specific\ hardware\ information\ that\ the\ driver\ needs\ to\ know\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00434}\doxymbox{\hyperlink{structspi__instance_a187a0349c01c45c90628b21b244b8700}{00434}}\ \ \ \ \ uint16\_t\ \doxymbox{\hyperlink{structspi__instance_a187a0349c01c45c90628b21b244b8700}{fifo\_depth}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Depth\ of\ RX\ and\ TX\ FIFOs\ in\ frames\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00435}00435\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00436}00436\ \ \ \ \ \textcolor{comment}{/*\ How\ we\ are\ expecting\ to\ deal\ with\ slave\ transfers\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00437}\doxymbox{\hyperlink{structspi__instance_a684269632332b8741b72987a23b2163f}{00437}}\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\_sxfer\_mode\_t}}\ \doxymbox{\hyperlink{structspi__instance_a684269632332b8741b72987a23b2163f}{slave\_xfer\_mode}};\ \ \ \ \textcolor{comment}{/*\ Current\ slave\ mode\ transfer\ configuration\ */}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00438}00438\ \};}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00439}00439\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00440}00440\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/Public\ Function-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00441}00441\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00442}00442\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00479}00479\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a604018a460cbb77c22a486df479792a0}{SPI\_init}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00480}00480\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00481}00481\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00482}00482\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ base\_addr,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00483}00483\ \ \ \ \ uint16\_t\ fifo\_depth}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00484}00484\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00485}00485\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00486}00486\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00511}00511\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_abc3e6f6f96378c2abc99fadb445b2204}{SPI\_configure\_slave\_mode}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00512}00512\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00513}00513\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00514}00514\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00515}00515\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00516}00516\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00541}00541\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a31b1f7eea5a54ebd6b0e6a0123c0cc72}{SPI\_configure\_master\_mode}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00542}00542\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00543}00543\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00544}00544\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00545}00545\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00546}00546\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00579}00579\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_ac34277acc45e1508cee79386c9020b5c}{SPI\_set\_slave\_select}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00580}00580\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00581}00581\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00582}00582\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\_slave\_t}}\ slave}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00583}00583\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00584}00584\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00585}00585\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00617}00617\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_af1540b293135df9f59d600c24e78bbbe}{SPI\_clear\_slave\_select}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00618}00618\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00619}00619\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00620}00620\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a44595104c5777d7f44bdf263269ec0e2}{spi\_slave\_t}}\ slave}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00621}00621\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00622}00622\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00623}00623\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00662}00662\ uint32\_t\ \doxymbox{\hyperlink{core__spi_8h_aada490d481831ee9af76ac1a61048401}{SPI\_transfer\_frame}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00663}00663\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00664}00664\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00665}00665\ \ \ \ \ uint32\_t\ tx\_bits}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00666}00666\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00667}00667\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00668}00668\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00731}00731\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a2e99d2ecf2d50cb56ef2656f4a65bfd0}{SPI\_transfer\_block}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00732}00732\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00733}00733\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00734}00734\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ cmd\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00735}00735\ \ \ \ \ uint16\_t\ cmd\_byte\_size,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00736}00736\ \ \ \ \ uint8\_t\ *\ rx\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00737}00737\ \ \ \ \ uint16\_t\ rx\_byte\_size}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00738}00738\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00739}00739\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00740}00740\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00813}00813\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a60b046e1e2098c6dbd4b63b1c715719f}{SPI\_transfer\_block\_store\_all\_resp}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00814}00814\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00815}00815\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00816}00816\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ cmd\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00817}00817\ \ \ \ \ uint16\_t\ cmd\_byte\_size,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00818}00818\ \ \ \ \ uint8\_t\ *\ rx\_data\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00819}00819\ \ \ \ \ uint16\_t\ rx\_byte\_size,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00820}00820\ \ \ \ \ uint8\_t\ *\ cmd\_response\_buffer}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00821}00821\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00822}00822\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00823}00823\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00861}00861\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_ab79ccb9f614954fd8ede68b54e7aad03}{SPI\_set\_frame\_rx\_handler}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00862}00862\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00863}00863\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00864}00864\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\_frame\_rx\_handler\_t}}\ rx\_handler}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00865}00865\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00866}00866\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00867}00867\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00917}00917\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a3d446e09e4913a252b264a053217a0b3}{SPI\_set\_slave\_tx\_frame}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00918}00918\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00919}00919\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00920}00920\ \ \ \ \ uint32\_t\ frame\_value,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00921}00921\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\_slave\_frame\_tx\_handler\_t}}\ slave\_tx\_frame\_handler}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00922}00922\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00923}00923\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l00924}00924\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01038}01038\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_ab4c158ab3adaf61acce9387fc58edb2a}{SPI\_set\_slave\_block\_buffers}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01039}01039\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01040}01040\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01041}01041\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ tx\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01042}01042\ \ \ \ \ uint32\_t\ tx\_buff\_size,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01043}01043\ \ \ \ \ uint8\_t\ *\ rx\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01044}01044\ \ \ \ \ uint32\_t\ rx\_buff\_size,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01045}01045\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\_block\_rx\_handler\_t}}\ block\_rx\_handler}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01046}01046\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01047}01047\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01048}01048\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01115}01115\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a8b2a4d4497afa3979f39f4efe2628457}{SPI\_isr}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01116}01116\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01117}01117\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01118}01118\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01119}01119\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01120}01120\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01250}01250\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_ad0e11781bd879dc717ade03f8f3c574b}{SPI\_set\_cmd\_handler}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01251}01251\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01252}01252\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01253}01253\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\_block\_rx\_handler\_t}}\ cmd\_handler,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01254}01254\ \ \ \ \ uint32\_t\ cmd\_size}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01255}01255\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01256}01256\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01257}01257\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01277}01277\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_ad6f3a7085d86813556ac25dbf5f4edc6}{SPI\_set\_cmd\_response}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01278}01278\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01279}01279\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01280}01280\ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t\ *\ resp\_tx\_buffer,}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01281}01281\ \ \ \ \ uint32\_t\ resp\_buff\_size}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01282}01282\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01283}01283\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01284}01284\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01298}01298\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_a8fd3623e840de50b34051240fa25fd47}{SPI\_enable}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01299}01299\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01300}01300\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01301}01301\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01302}01302\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01303}01303\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01315}01315\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__spi_8h_aceeaea6ead7d51a23926feeca30b899e}{SPI\_disable}}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01316}01316\ (}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01317}01317\ \ \ \ \ \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\_instance\_t}}\ *\ this\_spi}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01318}01318\ );}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01319}01319\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01320}01320\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01321}01321\ \}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01322}01322\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01323}01323\ }
+\DoxyCodeLine{\Hypertarget{core__spi_8h_source_l01324}01324\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ CORE\_SPI\_H\_*/}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

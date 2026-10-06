@@ -1,0 +1,89 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+fpga\+\_\+design\+\_\+config/\+fpga\+\_\+design\+\_\+config.h File Reference}
+\hypertarget{fpga__design__config_8h}{}\label{fpga__design__config_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/fpga\_design\_config/fpga\_design\_config.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/fpga\_design\_config/fpga\_design\_config.h}}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{fpga__design__config_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{SYS\+\_\+\+CLK\+\_\+\+FREQ}}~50000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{fpga__design__config_8h_ab58ad190f8c8e1fbe65d614cbfb4fe67}{COREUARTAPB0\+\_\+\+BASE\+\_\+\+ADDR}}~0x60000000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{fpga__design__config_8h_ada469d9f55d459c0f30e7b58b170527d}{COREGPIO\+\_\+\+OUT\+\_\+\+BASE\+\_\+\+ADDR}}~0x60001000\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{fpga__design__config_8h_a00043b259b5302c4ac2fc39cb5e45506}{BAUD\+\_\+\+VALUE\+\_\+115200}}~((\doxymbox{\hyperlink{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{SYS\+\_\+\+CLK\+\_\+\+FREQ}} /\+ (16 \texorpdfstring{$\ast$}{*} 115200)) -\/ 1)
+\item 
+\+\#define \doxymbox{\hyperlink{fpga__design__config_8h_a2e6cb37eca54d45c739458bebe8cf979}{BAUD\+\_\+\+VALUE\+\_\+57600}}~((\doxymbox{\hyperlink{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{SYS\+\_\+\+CLK\+\_\+\+FREQ}} /\+ (16 \texorpdfstring{$\ast$}{*} 57600)) -\/ 1)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{fpga__design__config_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{fpga__design__config_8h_a00043b259b5302c4ac2fc39cb5e45506}\index{fpga\_design\_config.h@{fpga\_design\_config.h}!BAUD\_VALUE\_115200@{BAUD\_VALUE\_115200}}
+\index{BAUD\_VALUE\_115200@{BAUD\_VALUE\_115200}!fpga\_design\_config.h@{fpga\_design\_config.h}}
+\doxysubsubsection{\texorpdfstring{BAUD\_VALUE\_115200}{BAUD\_VALUE\_115200}}
+{\footnotesize\ttfamily \label{fpga__design__config_8h_a00043b259b5302c4ac2fc39cb5e45506} 
+\+\#define BAUD\+\_\+\+VALUE\+\_\+115200~((\doxymbox{\hyperlink{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{SYS\+\_\+\+CLK\+\_\+\+FREQ}} /\+ (16 \texorpdfstring{$\ast$}{*} 115200)) -\/ 1)}
+
+Peripheral Interrupts are mapped to the corresponding Mi-\/V Soft processor interrupt in the Libero design.
+
+On the legacy RV32 cores, there can be up to 31 external interrupts (IRQ\+[30:\+0]\+ pins). The legacy RV32 Soft processor external interrupts are defined in the \doxylink{miv__rv32__plic_8h}{miv\+\_\+rv32\+\_\+plic.\+h}
+
+These are of the form typedef enum \{ No\+Interrupt\+\_\+\+IRQn = 0, External\+\_\+1\+\_\+\+IRQn = 1, External\+\_\+2\+\_\+\+IRQn = 2, External\+\_\+31\+\_\+\+IRQn = 31 \} IRQn\+\_\+\+Type;
+
+On the legacy RV32 processors, the PLIC identifies the interrupt and passes it on to the processor core. The interrupt 0 is not used. The pin IRQ\+[0]\+ should map to External\+\_\+1\+\_\+\+IRQn likewise IRQ\+[30]\+ should map to External\+\_\+31\+\_\+\+IRQn
+
+e.\+g
+
+\+\#define TIMER0\+\_\+\+IRQn External\+\_\+30\+\_\+\+IRQn \+\#define TIMER1\+\_\+\+IRQn External\+\_\+31\+\_\+\+IRQn
+
+The MIV\+\_\+\+RV32 soft processor has up to six optional system interrupts, MSYS\+\_\+\+EI\+[n]\+ in addition to one EXT\+\_\+\+IRQ. The MIV\+\_\+\+RV32 does not have an inbuilt PLIC and all the interrupts are directly delivered to the processor core, hence unlike legacy RV32 cores, no interrupt number mapping is necessary on MIV\+\_\+\+RV32 core. 
+
+Definition at line \doxymbox{\hyperlink{fpga__design__config_8h_source_l00126}{126}} of file \doxymbox{\hyperlink{fpga__design__config_8h_source}{fpga\+\_\+design\+\_\+config.\+h}}.
+
+\Hypertarget{fpga__design__config_8h_a2e6cb37eca54d45c739458bebe8cf979}\index{fpga\_design\_config.h@{fpga\_design\_config.h}!BAUD\_VALUE\_57600@{BAUD\_VALUE\_57600}}
+\index{BAUD\_VALUE\_57600@{BAUD\_VALUE\_57600}!fpga\_design\_config.h@{fpga\_design\_config.h}}
+\doxysubsubsection{\texorpdfstring{BAUD\_VALUE\_57600}{BAUD\_VALUE\_57600}}
+{\footnotesize\ttfamily \label{fpga__design__config_8h_a2e6cb37eca54d45c739458bebe8cf979} 
+\+\#define BAUD\+\_\+\+VALUE\+\_\+57600~((\doxymbox{\hyperlink{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}{SYS\+\_\+\+CLK\+\_\+\+FREQ}} /\+ (16 \texorpdfstring{$\ast$}{*} 57600)) -\/ 1)}
+
+
+
+Definition at line \doxymbox{\hyperlink{fpga__design__config_8h_source_l00134}{134}} of file \doxymbox{\hyperlink{fpga__design__config_8h_source}{fpga\+\_\+design\+\_\+config.\+h}}.
+
+\Hypertarget{fpga__design__config_8h_ada469d9f55d459c0f30e7b58b170527d}\index{fpga\_design\_config.h@{fpga\_design\_config.h}!COREGPIO\_OUT\_BASE\_ADDR@{COREGPIO\_OUT\_BASE\_ADDR}}
+\index{COREGPIO\_OUT\_BASE\_ADDR@{COREGPIO\_OUT\_BASE\_ADDR}!fpga\_design\_config.h@{fpga\_design\_config.h}}
+\doxysubsubsection{\texorpdfstring{COREGPIO\_OUT\_BASE\_ADDR}{COREGPIO\_OUT\_BASE\_ADDR}}
+{\footnotesize\ttfamily \label{fpga__design__config_8h_ada469d9f55d459c0f30e7b58b170527d} 
+\+\#define COREGPIO\+\_\+\+OUT\+\_\+\+BASE\+\_\+\+ADDR~0x60001000\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{fpga__design__config_8h_source_l00073}{73}} of file \doxymbox{\hyperlink{fpga__design__config_8h_source}{fpga\+\_\+design\+\_\+config.\+h}}.
+
+\Hypertarget{fpga__design__config_8h_ab58ad190f8c8e1fbe65d614cbfb4fe67}\index{fpga\_design\_config.h@{fpga\_design\_config.h}!COREUARTAPB0\_BASE\_ADDR@{COREUARTAPB0\_BASE\_ADDR}}
+\index{COREUARTAPB0\_BASE\_ADDR@{COREUARTAPB0\_BASE\_ADDR}!fpga\_design\_config.h@{fpga\_design\_config.h}}
+\doxysubsubsection{\texorpdfstring{COREUARTAPB0\_BASE\_ADDR}{COREUARTAPB0\_BASE\_ADDR}}
+{\footnotesize\ttfamily \label{fpga__design__config_8h_ab58ad190f8c8e1fbe65d614cbfb4fe67} 
+\+\#define COREUARTAPB0\+\_\+\+BASE\+\_\+\+ADDR~0x60000000\+UL}
+
+Peripheral base addresses. Format of define is:\+ $<$corename$>$\+\_\+$<$instance$>$\+\_\+\+BASE\+\_\+\+ADDR The $<$instance$>$ field is optional if there is only one instance of the core in the design MIV\+\_\+\+ESS is an extended peripheral subsystem IP core with peripherals connections as defined below. The system can be further extended by attaching APB peripherals to the empty APB slots. 
+
+Definition at line \doxymbox{\hyperlink{fpga__design__config_8h_source_l00069}{69}} of file \doxymbox{\hyperlink{fpga__design__config_8h_source}{fpga\+\_\+design\+\_\+config.\+h}}.
+
+\Hypertarget{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d}\index{fpga\_design\_config.h@{fpga\_design\_config.h}!SYS\_CLK\_FREQ@{SYS\_CLK\_FREQ}}
+\index{SYS\_CLK\_FREQ@{SYS\_CLK\_FREQ}!fpga\_design\_config.h@{fpga\_design\_config.h}}
+\doxysubsubsection{\texorpdfstring{SYS\_CLK\_FREQ}{SYS\_CLK\_FREQ}}
+{\footnotesize\ttfamily \label{fpga__design__config_8h_a42ac138ccc8baa8d0e63b0923397013d} 
+\+\#define SYS\+\_\+\+CLK\+\_\+\+FREQ~50000000\+UL}
+
+Soft-\/processor clock definition This is the only clock brought over from the Mi-\/V Libero design. 
+
+Definition at line \doxymbox{\hyperlink{fpga__design__config_8h_source_l00054}{54}} of file \doxymbox{\hyperlink{fpga__design__config_8h_source}{fpga\+\_\+design\+\_\+config.\+h}}.
+

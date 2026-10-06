@@ -1,0 +1,62 @@
+\doxysection{src/\+\+Camera\+States/\+camera\+\_\+idle\+\_\+state.c File Reference}
+\hypertarget{camera__idle__state_8c}{}\label{camera__idle__state_8c}\index{src/CameraStates/camera\_idle\_state.c@{src/CameraStates/camera\_idle\_state.c}}
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}cam\+\_\+mux.\+h"{}}\newline
+Include dependency graph for camera\+\_\+idle\+\_\+state.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__idle__state_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{camera__idle__state_8c_ab8aa070d75195522b42f5b89f9ba1686}{Camera\+\_\+\+Idle\+\_\+\+State}} (Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Camera is powered up, but not ready to take pictures. On entry, the camera is reset and the lvds links are initialized. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__idle__state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__idle__state_8c_ab8aa070d75195522b42f5b89f9ba1686}\index{camera\_idle\_state.c@{camera\_idle\_state.c}!Camera\_Idle\_State@{Camera\_Idle\_State}}
+\index{Camera\_Idle\_State@{Camera\_Idle\_State}!camera\_idle\_state.c@{camera\_idle\_state.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Idle\_State()}{Camera\_Idle\_State()}}
+{\footnotesize\ttfamily \label{camera__idle__state_8c_ab8aa070d75195522b42f5b89f9ba1686} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Camera\+\_\+\+Idle\+\_\+\+State (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Camera is powered up, but not ready to take pictures. On entry, the camera is reset and the lvds links are initialized. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & \\
+\hline
+{\em event} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Next state, determined by event 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{camera__idle__state_8c_source_l00022}{22}} of file \doxymbox{\hyperlink{camera__idle__state_8c_source}{camera\+\_\+idle\+\_\+state.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__idle__state_8c_ab8aa070d75195522b42f5b89f9ba1686_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__idle__state_8c_ab8aa070d75195522b42f5b89f9ba1686_icgraph}
+\end{center}
+\end{figure}

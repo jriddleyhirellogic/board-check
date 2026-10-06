@@ -1,0 +1,2 @@
+
+openocd --file /opt/Microchip/SoftConsole-v2022.2-RISC-V-747/openocd/share/openocd/scripts/interface/microsemi-flashpro.cfg --file /opt/Microchip/SoftConsole-v2022.2-RISC-V-747/openocd/share/openocd/scripts/target/microsemi-riscv.cfg

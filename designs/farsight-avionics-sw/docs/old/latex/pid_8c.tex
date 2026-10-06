@@ -1,0 +1,205 @@
+\doxysection{src/\+pid.c File Reference}
+\hypertarget{pid_8c}{}\label{pid_8c}\index{src/pid.c@{src/pid.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc\+\_\+math.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+{\ttfamily \+\#include "{}path\+\_\+planner.\+h"{}}\newline
+Include dependency graph for pid.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{pid_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{pid_8c_a760893cd1a049654eed8fd3e9c4e6804}{v\+\_\+\+Init\+\_\+\+PID}} (\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, \doxymbox{\hyperlink{structPID__Init__t}{PID\+\_\+\+Init\+\_\+t}} \texorpdfstring{$\ast$}{*}init)
+\begin{DoxyCompactList}\small\item\em Initializes an instance of the PID controller. \end{DoxyCompactList}\item 
+static int32\+\_\+t \doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{i32\+\_\+\+Clamp}} (int32\+\_\+t x, int32\+\_\+t i32\+\_\+\+Min, int32\+\_\+t i32\+\_\+\+Max)
+\begin{DoxyCompactList}\small\item\em Bounds a value between a maximum and minimum. \end{DoxyCompactList}\item 
+int32\+\_\+t \doxymbox{\hyperlink{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750}{i32\+\_\+\+Update\+\_\+\+PID}} (\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, int32\+\_\+t i32\+\_\+\+Setpoint, int32\+\_\+t i32\+\_\+\+Feedback, int32\+\_\+t i32\+\_\+\+Feedforward)
+\begin{DoxyCompactList}\small\item\em Updates PI controller one time step. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35}{v\+\_\+\+Get\+\_\+\+PID\+\_\+\+Log\+\_\+\+Info}} (\doxymbox{\hyperlink{structPID__Log__Info__t}{PID\+\_\+\+Log\+\_\+\+Info\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+\+Info)
+\begin{DoxyCompactList}\small\item\em Takes a snapshot of internal data used in PID controller. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{pid_8c_a83c89cdaeaa69f4e1e33c098d144e8d8}{v\+\_\+\+Reset\+\_\+\+PID}} (\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{structPID__Log__Info__t}{PID\+\_\+\+Log\+\_\+\+Info\+\_\+t}} \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\+\_\+\+Info}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{pid_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{pid_8c_a4492fb6f81107f3779b26e805f896bc9}\index{pid.c@{pid.c}!i32\_Clamp@{i32\_Clamp}}
+\index{i32\_Clamp@{i32\_Clamp}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Clamp()}{i32\_Clamp()}}
+{\footnotesize\ttfamily \label{pid_8c_a4492fb6f81107f3779b26e805f896bc9} 
+int32\+\_\+t i32\+\_\+\+Clamp (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{x}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Min}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Max}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Bounds a value between a maximum and minimum. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The input \\
+\hline
+{\em i32\+\_\+\+Min} & Lower bound for input \\
+\hline
+{\em i32\+\_\+\+Max} & Upper bound for input \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00154}{154}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{pid_8c_a4492fb6f81107f3779b26e805f896bc9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750}\index{pid.c@{pid.c}!i32\_Update\_PID@{i32\_Update\_PID}}
+\index{i32\_Update\_PID@{i32\_Update\_PID}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Update\_PID()}{i32\_Update\_PID()}}
+{\footnotesize\ttfamily \label{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750} 
+int32\+\_\+t i32\+\_\+\+Update\+\_\+\+PID (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Setpoint}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Feedback}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Feedforward}{}\end{DoxyParamCaption})}
+
+
+
+Updates PI controller one time step. 
+
+\begin{DoxyNote}{Note}
+This is the velocity form which assumes external integration in system. 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & Instance pointer, in case more than one PID controller is used \\
+\hline
+{\em i32\+\_\+\+Setpoint} & The target value \\
+\hline
+{\em i32\+\_\+\+Feedback} & The measured value. \\
+\hline
+{\em i32\+\_\+\+Feedforward} & If used, the feedforward value to assist when close to setpoint \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Control value, in this case a rate. 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00055}{55}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=278pt]{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35}\index{pid.c@{pid.c}!v\_Get\_PID\_Log\_Info@{v\_Get\_PID\_Log\_Info}}
+\index{v\_Get\_PID\_Log\_Info@{v\_Get\_PID\_Log\_Info}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{v\_Get\_PID\_Log\_Info()}{v\_Get\_PID\_Log\_Info()}}
+{\footnotesize\ttfamily \label{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35} 
+void v\+\_\+\+Get\+\_\+\+PID\+\_\+\+Log\+\_\+\+Info (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structPID__Log__Info__t}{PID\+\_\+\+Log\+\_\+\+Info\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Info}{}\end{DoxyParamCaption})}
+
+
+
+Takes a snapshot of internal data used in PID controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Info} & Pointer to struct containing internal PID controller data. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00131}{131}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=288pt]{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{pid_8c_a760893cd1a049654eed8fd3e9c4e6804}\index{pid.c@{pid.c}!v\_Init\_PID@{v\_Init\_PID}}
+\index{v\_Init\_PID@{v\_Init\_PID}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_PID()}{v\_Init\_PID()}}
+{\footnotesize\ttfamily \label{pid_8c_a760893cd1a049654eed8fd3e9c4e6804} 
+void v\+\_\+\+Init\+\_\+\+PID (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{\doxymbox{\hyperlink{structPID__Init__t}{PID\+\_\+\+Init\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{init}{}\end{DoxyParamCaption})}
+
+
+
+Initializes an instance of the PID controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & Instance, which allows more than one PID controller to be used in system. \\
+\hline
+{\em init} & Pointer to struct containing initialization data. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00027}{27}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=238pt]{pid_8c_a760893cd1a049654eed8fd3e9c4e6804_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{pid_8c_a760893cd1a049654eed8fd3e9c4e6804_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{pid_8c_a83c89cdaeaa69f4e1e33c098d144e8d8}\index{pid.c@{pid.c}!v\_Reset\_PID@{v\_Reset\_PID}}
+\index{v\_Reset\_PID@{v\_Reset\_PID}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{v\_Reset\_PID()}{v\_Reset\_PID()}}
+{\footnotesize\ttfamily \label{pid_8c_a83c89cdaeaa69f4e1e33c098d144e8d8} 
+void v\+\_\+\+Reset\+\_\+\+PID (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structPID__Instance__t}{PID\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00139}{139}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+
+
+
+\label{doc-var-members}
+\Hypertarget{pid_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{pid_8c_a046bb2960dce68583026aeb25d123bd8}\index{pid.c@{pid.c}!Log\_Info@{Log\_Info}}
+\index{Log\_Info@{Log\_Info}!pid.c@{pid.c}}
+\doxysubsubsection{\texorpdfstring{Log\_Info}{Log\_Info}}
+{\footnotesize\ttfamily \label{pid_8c_a046bb2960dce68583026aeb25d123bd8} 
+\doxymbox{\hyperlink{structPID__Log__Info__t}{PID\+\_\+\+Log\+\_\+\+Info\+\_\+t}} Log\+\_\+\+Info\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{pid_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{pid_8c_source}{pid.\+c}}.
+

@@ -1,0 +1,934 @@
+   1              		.file	"Fine_Focus_State.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Fine_Focus_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Fine_Focus_State
+  13              	Fine_Focus_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/Focus_States/Fine_Focus_State.c"
+   1:../src/Focus_States/Fine_Focus_State.c **** /*
+   2:../src/Focus_States/Fine_Focus_State.c ****  * Fine_Focus_State.c
+   3:../src/Focus_States/Fine_Focus_State.c ****  *
+   4:../src/Focus_States/Fine_Focus_State.c ****  *  Created on: Apr 27, 2026
+   5:../src/Focus_States/Fine_Focus_State.c ****  *      Author: iboard
+   6:../src/Focus_States/Fine_Focus_State.c ****  */
+   7:../src/Focus_States/Fine_Focus_State.c **** 
+   8:../src/Focus_States/Fine_Focus_State.c **** #include <focus.h>
+   9:../src/Focus_States/Fine_Focus_State.c **** #include <focus_states.h>
+  10:../src/Focus_States/Fine_Focus_State.c **** #include "FreeRTOSConfig.h"
+  11:../src/Focus_States/Fine_Focus_State.c **** #include "FreeRTOS.h"
+  12:../src/Focus_States/Fine_Focus_State.c **** #include "task.h"
+  13:../src/Focus_States/Fine_Focus_State.c **** 
+  14:../src/Focus_States/Fine_Focus_State.c **** #include "states.h"
+  15:../src/Focus_States/Fine_Focus_State.c **** #include "debug_gpio.h"
+  16:../src/Focus_States/Fine_Focus_State.c **** #include "lvdt.h"
+  17:../src/Focus_States/Fine_Focus_State.c **** #include "hal_stepper.h"
+  18:../src/Focus_States/Fine_Focus_State.c **** #include "misc.h"
+  19:../src/Focus_States/Fine_Focus_State.c **** #include "misc_math.h"
+  20:../src/Focus_States/Fine_Focus_State.c **** #include "path.h"
+  21:../src/Focus_States/Fine_Focus_State.c **** #include "path_planner.h"
+  22:../src/Focus_States/Fine_Focus_State.c **** 
+  23:../src/Focus_States/Fine_Focus_State.c **** #define UPDATE_PERIOD_MS    10
+  24:../src/Focus_States/Fine_Focus_State.c **** #define FAULT_TIMEOUT_TICKS 100000
+  25:../src/Focus_States/Fine_Focus_State.c **** 
+  26:../src/Focus_States/Fine_Focus_State.c **** static uint8_t DB_Count;
+  27:../src/Focus_States/Fine_Focus_State.c **** 
+  28:../src/Focus_States/Fine_Focus_State.c **** static TickType_t Ticks_So_Far;
+  29:../src/Focus_States/Fine_Focus_State.c **** 
+  30:../src/Focus_States/Fine_Focus_State.c **** TickType_t Update_Period_Ticks;
+  31:../src/Focus_States/Fine_Focus_State.c **** 
+  32:../src/Focus_States/Fine_Focus_State.c **** /**
+  33:../src/Focus_States/Fine_Focus_State.c ****  * @fn State_t Focus_State(Context_t*, Event_t*)
+  34:../src/Focus_States/Fine_Focus_State.c ****  * @brief Implements movements of the focus mechanism
+  35:../src/Focus_States/Fine_Focus_State.c ****  * On entry, the PI controller and path planner are initialized with an indicated
+  36:../src/Focus_States/Fine_Focus_State.c ****  * final position. Time stepping (10 msec) is implemented with software timer. The path
+  37:../src/Focus_States/Fine_Focus_State.c ****  * planner provdes for acceleration and deccelleration. The update continues until the
+  38:../src/Focus_States/Fine_Focus_State.c ****  * position is within a deadband of the final position. On entry a fault timer is started. If
+  39:../src/Focus_States/Fine_Focus_State.c ****  * the final position is not reached within a timeout, it indicates that the mechanism is stuck.
+  40:../src/Focus_States/Fine_Focus_State.c ****  * When the movement is done, the state machine transitions back to idle if there are no faults
+  41:../src/Focus_States/Fine_Focus_State.c ****  * or to a fault state if the fault timeout occurs.
+  42:../src/Focus_States/Fine_Focus_State.c ****  *
+  43:../src/Focus_States/Fine_Focus_State.c ****  * @param context Focus state context
+  44:../src/Focus_States/Fine_Focus_State.c ****  * @param event
+  45:../src/Focus_States/Fine_Focus_State.c ****  * @return Next state.
+  46:../src/Focus_States/Fine_Focus_State.c ****  */
+  47:../src/Focus_States/Fine_Focus_State.c **** 
+  48:../src/Focus_States/Fine_Focus_State.c **** #define FINE_FOCUS_SPEED 200 //50
+  49:../src/Focus_States/Fine_Focus_State.c **** 
+  50:../src/Focus_States/Fine_Focus_State.c **** int32_t i32_Get_Focus_Destination(void);
+  51:../src/Focus_States/Fine_Focus_State.c **** 
+  52:../src/Focus_States/Fine_Focus_State.c **** State_t Fine_Focus_State( Context_t *context, Event_t *event )
+  53:../src/Focus_States/Fine_Focus_State.c **** {
+  16              		.loc 1 53 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  54:../src/Focus_States/Fine_Focus_State.c ****     State_t next_state = (State_t)Fine_Focus_State;
+  19              		.loc 1 54 5
+  55:../src/Focus_States/Fine_Focus_State.c ****     int32_t i32_Position, i32_Setpoint, i32_Stepper_Out;
+  20              		.loc 1 55 5
+  56:../src/Focus_States/Fine_Focus_State.c ****     int32_t i32_Error;
+  21              		.loc 1 56 5
+  57:../src/Focus_States/Fine_Focus_State.c **** 
+  58:../src/Focus_States/Fine_Focus_State.c ****     switch( event->no_data.sig )
+  22              		.loc 1 58 5
+  23              		.loc 1 58 27 is_stmt 0
+  24 0000 83A70500 		lw	a5,0(a1)
+  53:../src/Focus_States/Fine_Focus_State.c ****     State_t next_state = (State_t)Fine_Focus_State;
+  25              		.loc 1 53 1
+  26 0004 130101FF 		addi	sp,sp,-16
+  27              		.cfi_def_cfa_offset 16
+  28 0008 23261100 		sw	ra,12(sp)
+  29 000c 23248100 		sw	s0,8(sp)
+  30 0010 23229100 		sw	s1,4(sp)
+  31              		.cfi_offset 1, -4
+  32              		.cfi_offset 8, -8
+  33              		.cfi_offset 9, -12
+  34              		.loc 1 58 5
+  35 0014 13071000 		li	a4,1
+  36 0018 6382E708 		beq	a5,a4,.L2
+  37 001c 63860702 		beq	a5,zero,.L3
+  38 0020 13073000 		li	a4,3
+  39 0024 638CE708 		beq	a5,a4,.L4
+  40              	.LVL1:
+  41              	.L14:
+  59:../src/Focus_States/Fine_Focus_State.c ****     {
+  60:../src/Focus_States/Fine_Focus_State.c ****     case ENTRANCE:
+  61:../src/Focus_States/Fine_Focus_State.c ****         Update_Period_Ticks = pdMS_TO_TICKS( UPDATE_PERIOD_MS );
+  62:../src/Focus_States/Fine_Focus_State.c **** 
+  63:../src/Focus_States/Fine_Focus_State.c ****         v_Set_LVDT_Gain( LVDT_GAIN_1 );
+  64:../src/Focus_States/Fine_Focus_State.c ****         v_Set_Microstep_Mode( STEP_256 );
+  65:../src/Focus_States/Fine_Focus_State.c **** 
+  66:../src/Focus_States/Fine_Focus_State.c ****         v_Start_Focus_Timer(Update_Period_Ticks);
+  67:../src/Focus_States/Fine_Focus_State.c ****         v_Start_Focus_Fault_Timer( FAULT_TIMEOUT_TICKS );
+  68:../src/Focus_States/Fine_Focus_State.c **** 
+  69:../src/Focus_States/Fine_Focus_State.c ****         Ticks_So_Far = 0;
+  70:../src/Focus_States/Fine_Focus_State.c ****         DB_Count = 0;             // Hysteresis count for the deadband
+  71:../src/Focus_States/Fine_Focus_State.c ****         break;
+  72:../src/Focus_States/Fine_Focus_State.c **** 
+  73:../src/Focus_States/Fine_Focus_State.c ****     case EXIT:
+  74:../src/Focus_States/Fine_Focus_State.c ****         v_Set_Stepper_out( 0 );
+  75:../src/Focus_States/Fine_Focus_State.c ****         v_Stop_Focus_Timer();
+  76:../src/Focus_States/Fine_Focus_State.c ****         v_Stop_Focus_Fault_Timer();
+  77:../src/Focus_States/Fine_Focus_State.c ****         break;
+  42              		.loc 1 77 9 is_stmt 1
+  54:../src/Focus_States/Fine_Focus_State.c ****     int32_t i32_Position, i32_Setpoint, i32_Stepper_Out;
+  43              		.loc 1 54 13 is_stmt 0
+  44 0028 97040000 		lla	s1,Fine_Focus_State
+  44      93840400 
+  45              	.L1:
+  78:../src/Focus_States/Fine_Focus_State.c **** 
+  79:../src/Focus_States/Fine_Focus_State.c ****     case FOCUS_TIMER_EXPIRED:
+  80:../src/Focus_States/Fine_Focus_State.c ****         v_Refresh_Stepper_Watchdog();
+  81:../src/Focus_States/Fine_Focus_State.c **** 
+  82:../src/Focus_States/Fine_Focus_State.c ****         i32_Position = i32_Get_Position();
+  83:../src/Focus_States/Fine_Focus_State.c **** 
+  84:../src/Focus_States/Fine_Focus_State.c ****         // Don't let commanded moves exceed the travel limit
+  85:../src/Focus_States/Fine_Focus_State.c ****         if( i32_Position >= SOFT_TRAVEL_LIMIT_MICRONS  || i32_Position <= -SOFT_TRAVEL_LIMIT_MICRON
+  86:../src/Focus_States/Fine_Focus_State.c ****         {
+  87:../src/Focus_States/Fine_Focus_State.c ****             next_state = (State_t)Idle_State;
+  88:../src/Focus_States/Fine_Focus_State.c ****         }
+  89:../src/Focus_States/Fine_Focus_State.c **** 
+  90:../src/Focus_States/Fine_Focus_State.c ****         i32_Error = i32_Position - i32_Get_Focus_Destination();
+  91:../src/Focus_States/Fine_Focus_State.c **** 
+  92:../src/Focus_States/Fine_Focus_State.c ****         i32_Stepper_Out = -SGN(i32_Error) * FINE_FOCUS_SPEED;
+  93:../src/Focus_States/Fine_Focus_State.c **** 
+  94:../src/Focus_States/Fine_Focus_State.c ****         // Test to see how many ticks the error is in the deadband
+  95:../src/Focus_States/Fine_Focus_State.c ****         if( ABS(i32_Error) <= DEADBAND_MICRONS )
+  96:../src/Focus_States/Fine_Focus_State.c ****         {
+  97:../src/Focus_States/Fine_Focus_State.c ****             if( ++DB_Count == DB_HYST )
+  98:../src/Focus_States/Fine_Focus_State.c ****                return (State_t)Idle_State;
+  99:../src/Focus_States/Fine_Focus_State.c ****         }
+ 100:../src/Focus_States/Fine_Focus_State.c ****         else
+ 101:../src/Focus_States/Fine_Focus_State.c ****         {
+ 102:../src/Focus_States/Fine_Focus_State.c ****             DB_Count = 0;
+ 103:../src/Focus_States/Fine_Focus_State.c ****         }
+ 104:../src/Focus_States/Fine_Focus_State.c **** 
+ 105:../src/Focus_States/Fine_Focus_State.c ****         v_Set_Stepper_out( i32_Stepper_Out );
+ 106:../src/Focus_States/Fine_Focus_State.c ****         v_Start_Focus_Timer(Update_Period_Ticks);
+ 107:../src/Focus_States/Fine_Focus_State.c ****         break;
+ 108:../src/Focus_States/Fine_Focus_State.c **** 
+ 109:../src/Focus_States/Fine_Focus_State.c **** 
+ 110:../src/Focus_States/Fine_Focus_State.c ****     default:
+ 111:../src/Focus_States/Fine_Focus_State.c ****         break;
+ 112:../src/Focus_States/Fine_Focus_State.c ****     }
+ 113:../src/Focus_States/Fine_Focus_State.c **** 
+ 114:../src/Focus_States/Fine_Focus_State.c ****     return next_state;
+ 115:../src/Focus_States/Fine_Focus_State.c **** 
+ 116:../src/Focus_States/Fine_Focus_State.c **** }
+  46              		.loc 1 116 1
+  47 0030 8320C100 		lw	ra,12(sp)
+  48              		.cfi_remember_state
+  49              		.cfi_restore 1
+  50 0034 03248100 		lw	s0,8(sp)
+  51              		.cfi_restore 8
+  52 0038 13850400 		mv	a0,s1
+  53 003c 83244100 		lw	s1,4(sp)
+  54              		.cfi_restore 9
+  55 0040 13010101 		addi	sp,sp,16
+  56              		.cfi_def_cfa_offset 0
+  57 0044 67800000 		jr	ra
+  58              	.LVL2:
+  59              	.L3:
+  60              		.cfi_restore_state
+  61:../src/Focus_States/Fine_Focus_State.c **** 
+  61              		.loc 1 61 9 is_stmt 1
+  61:../src/Focus_States/Fine_Focus_State.c **** 
+  62              		.loc 1 61 29 is_stmt 0
+  63 0048 9307A000 		li	a5,10
+  63:../src/Focus_States/Fine_Focus_State.c ****         v_Set_Microstep_Mode( STEP_256 );
+  64              		.loc 1 63 9
+  65 004c 13050000 		li	a0,0
+  66              	.LVL3:
+  61:../src/Focus_States/Fine_Focus_State.c **** 
+  67              		.loc 1 61 29
+  68 0050 17070000 		sw	a5,Update_Period_Ticks,a4
+  68      2320F700 
+  63:../src/Focus_States/Fine_Focus_State.c ****         v_Set_Microstep_Mode( STEP_256 );
+  69              		.loc 1 63 9 is_stmt 1
+  70 0058 97000000 		call	v_Set_LVDT_Gain
+  70      E7800000 
+  71              	.LVL4:
+  64:../src/Focus_States/Fine_Focus_State.c **** 
+  72              		.loc 1 64 9
+  73 0060 13058000 		li	a0,8
+  74 0064 97000000 		call	v_Set_Microstep_Mode
+  74      E7800000 
+  75              	.LVL5:
+  66:../src/Focus_States/Fine_Focus_State.c ****         v_Start_Focus_Fault_Timer( FAULT_TIMEOUT_TICKS );
+  76              		.loc 1 66 9
+  77 006c 97070000 		lla	a5,Update_Period_Ticks
+  77      93870700 
+  78 0074 03A50700 		lw	a0,0(a5)
+  79 0078 97000000 		call	v_Start_Focus_Timer
+  79      E7800000 
+  80              	.LVL6:
+  67:../src/Focus_States/Fine_Focus_State.c **** 
+  81              		.loc 1 67 9
+  82 0080 37850100 		li	a0,98304
+  83 0084 1305056A 		addi	a0,a0,1696
+  84 0088 97000000 		call	v_Start_Focus_Fault_Timer
+  84      E7800000 
+  85              	.LVL7:
+  69:../src/Focus_States/Fine_Focus_State.c ****         DB_Count = 0;             // Hysteresis count for the deadband
+  86              		.loc 1 69 9
+  70:../src/Focus_States/Fine_Focus_State.c ****         break;
+  87              		.loc 1 70 9
+  70:../src/Focus_States/Fine_Focus_State.c ****         break;
+  88              		.loc 1 70 18 is_stmt 0
+  89 0090 97070000 		sb	zero,.LANCHOR0,a5
+  89      23800700 
+  71:../src/Focus_States/Fine_Focus_State.c **** 
+  90              		.loc 1 71 9 is_stmt 1
+  91 0098 6FF01FF9 		j	.L14
+  92              	.LVL8:
+  93              	.L2:
+  74:../src/Focus_States/Fine_Focus_State.c ****         v_Stop_Focus_Timer();
+  94              		.loc 1 74 9
+  95 009c 13050000 		li	a0,0
+  96              	.LVL9:
+  97 00a0 97000000 		call	v_Set_Stepper_out
+  97      E7800000 
+  98              	.LVL10:
+  75:../src/Focus_States/Fine_Focus_State.c ****         v_Stop_Focus_Fault_Timer();
+  99              		.loc 1 75 9
+ 100 00a8 97000000 		call	v_Stop_Focus_Timer
+ 100      E7800000 
+ 101              	.LVL11:
+  76:../src/Focus_States/Fine_Focus_State.c ****         break;
+ 102              		.loc 1 76 9
+ 103 00b0 97000000 		call	v_Stop_Focus_Fault_Timer
+ 103      E7800000 
+ 104              	.LVL12:
+ 105 00b8 6FF01FF7 		j	.L14
+ 106              	.LVL13:
+ 107              	.L4:
+ 108              	.LBB4:
+ 109              	.LBB5:
+  80:../src/Focus_States/Fine_Focus_State.c **** 
+ 110              		.loc 1 80 9
+ 111 00bc 97000000 		call	v_Refresh_Stepper_Watchdog
+ 111      E7800000 
+ 112              	.LVL14:
+  82:../src/Focus_States/Fine_Focus_State.c **** 
+ 113              		.loc 1 82 9
+  82:../src/Focus_States/Fine_Focus_State.c **** 
+ 114              		.loc 1 82 24 is_stmt 0
+ 115 00c4 97000000 		call	i32_Get_Position
+ 115      E7800000 
+ 116              	.LVL15:
+  85:../src/Focus_States/Fine_Focus_State.c ****         {
+ 117              		.loc 1 85 11
+ 118 00cc B7170000 		li	a5,4096
+  85:../src/Focus_States/Fine_Focus_State.c ****         {
+ 119              		.loc 1 85 56
+ 120 00d0 13074546 		addi	a4,a0,1124
+  85:../src/Focus_States/Fine_Focus_State.c ****         {
+ 121              		.loc 1 85 11
+ 122 00d4 9387878C 		addi	a5,a5,-1848
+  82:../src/Focus_States/Fine_Focus_State.c **** 
+ 123              		.loc 1 82 24
+ 124 00d8 13040500 		mv	s0,a0
+ 125              	.LVL16:
+  85:../src/Focus_States/Fine_Focus_State.c ****         {
+ 126              		.loc 1 85 9 is_stmt 1
+  54:../src/Focus_States/Fine_Focus_State.c ****     int32_t i32_Position, i32_Setpoint, i32_Stepper_Out;
+ 127              		.loc 1 54 13 is_stmt 0
+ 128 00dc 97040000 		lla	s1,Fine_Focus_State
+ 128      93840400 
+  85:../src/Focus_States/Fine_Focus_State.c ****         {
+ 129              		.loc 1 85 11
+ 130 00e4 63F6E700 		bleu	a4,a5,.L6
+  87:../src/Focus_States/Fine_Focus_State.c ****         }
+ 131              		.loc 1 87 24
+ 132 00e8 97040000 		lla	s1,Idle_State
+ 132      93840400 
+ 133              	.L6:
+ 134              	.LVL17:
+  90:../src/Focus_States/Fine_Focus_State.c **** 
+ 135              		.loc 1 90 9 is_stmt 1
+  90:../src/Focus_States/Fine_Focus_State.c **** 
+ 136              		.loc 1 90 36 is_stmt 0
+ 137 00f0 97000000 		call	i32_Get_Focus_Destination
+ 137      E7800000 
+ 138              	.LVL18:
+  90:../src/Focus_States/Fine_Focus_State.c **** 
+ 139              		.loc 1 90 19
+ 140 00f8 3304A440 		sub	s0,s0,a0
+ 141              	.LVL19:
+  92:../src/Focus_States/Fine_Focus_State.c **** 
+ 142              		.loc 1 92 9 is_stmt 1
+  92:../src/Focus_States/Fine_Focus_State.c **** 
+ 143              		.loc 1 92 43 is_stmt 0
+ 144 00fc 130580F3 		li	a0,-200
+ 145 0100 63540400 		bge	s0,zero,.L7
+ 146 0104 1305800C 		li	a0,200
+ 147              	.L7:
+ 148              	.LVL20:
+  95:../src/Focus_States/Fine_Focus_State.c ****         {
+ 149              		.loc 1 95 9 is_stmt 1
+  95:../src/Focus_States/Fine_Focus_State.c ****         {
+ 150              		.loc 1 95 28 is_stmt 0
+ 151 0108 13042400 		addi	s0,s0,2
+ 152              	.LVL21:
+  95:../src/Focus_States/Fine_Focus_State.c ****         {
+ 153              		.loc 1 95 11
+ 154 010c 93074000 		li	a5,4
+ 155 0110 63E88702 		bgtu	s0,a5,.L8
+  97:../src/Focus_States/Fine_Focus_State.c ****                return (State_t)Idle_State;
+ 156              		.loc 1 97 13 is_stmt 1
+  97:../src/Focus_States/Fine_Focus_State.c ****                return (State_t)Idle_State;
+ 157              		.loc 1 97 17 is_stmt 0
+ 158 0114 97070000 		lbu	a5,.LANCHOR0
+ 158      83C70700 
+ 159 011c 93871700 		addi	a5,a5,1
+ 160 0120 93F7F70F 		andi	a5,a5,0xff
+  97:../src/Focus_States/Fine_Focus_State.c ****                return (State_t)Idle_State;
+ 161              		.loc 1 97 15
+ 162 0124 17070000 		sb	a5,.LANCHOR0,a4
+ 162      2300F700 
+ 163 012c 13073000 		li	a4,3
+ 164 0130 639CE700 		bne	a5,a4,.L9
+  98:../src/Focus_States/Fine_Focus_State.c ****         }
+ 165              		.loc 1 98 23
+ 166 0134 97040000 		lla	s1,Idle_State
+ 166      93840400 
+ 167              	.LVL22:
+ 168 013c 6FF05FEF 		j	.L1
+ 169              	.LVL23:
+ 170              	.L8:
+ 102:../src/Focus_States/Fine_Focus_State.c ****         }
+ 171              		.loc 1 102 13 is_stmt 1
+ 102:../src/Focus_States/Fine_Focus_State.c ****         }
+ 172              		.loc 1 102 22 is_stmt 0
+ 173 0140 97070000 		sb	zero,.LANCHOR0,a5
+ 173      23800700 
+ 174              	.L9:
+ 105:../src/Focus_States/Fine_Focus_State.c ****         v_Start_Focus_Timer(Update_Period_Ticks);
+ 175              		.loc 1 105 9 is_stmt 1
+ 176 0148 97000000 		call	v_Set_Stepper_out
+ 176      E7800000 
+ 177              	.LVL24:
+ 106:../src/Focus_States/Fine_Focus_State.c ****         break;
+ 178              		.loc 1 106 9
+ 179 0150 97070000 		lla	a5,Update_Period_Ticks
+ 179      93870700 
+ 180 0158 03A50700 		lw	a0,0(a5)
+ 181 015c 97000000 		call	v_Start_Focus_Timer
+ 181      E7800000 
+ 182              	.LVL25:
+ 107:../src/Focus_States/Fine_Focus_State.c **** 
+ 183              		.loc 1 107 9
+ 184 0164 6FF0DFEC 		j	.L1
+ 185              	.LBE5:
+ 186              	.LBE4:
+ 187              		.cfi_endproc
+ 188              	.LFE0:
+ 190              		.comm	Update_Period_Ticks,4,4
+ 191              		.section	.sbss.DB_Count,"aw",@nobits
+ 192              		.set	.LANCHOR0,. + 0
+ 195              	DB_Count:
+ 196 0000 00       		.zero	1
+ 197              		.text
+ 198              	.Letext0:
+ 199              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 200              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 201              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 202              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 203              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 204              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 205              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 206              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/lvdt.h"
+ 207              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 208              		.file 11 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Fine_Focus_State.c
+<<<<<<< HEAD
+     /tmp/ccu9kJcj.s:13     .text.Fine_Focus_State:0000000000000000 Fine_Focus_State
+     /tmp/ccu9kJcj.s:17     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:19     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:20     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:21     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:22     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:23     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:24     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:26     .text.Fine_Focus_State:0000000000000004 .L0 
+     /tmp/ccu9kJcj.s:27     .text.Fine_Focus_State:0000000000000008 .L0 
+     /tmp/ccu9kJcj.s:31     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/ccu9kJcj.s:32     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/ccu9kJcj.s:33     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/ccu9kJcj.s:35     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/ccu9kJcj.s:43     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/ccu9kJcj.s:44     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/ccu9kJcj.s:47     .text.Fine_Focus_State:0000000000000030 .L0 
+     /tmp/ccu9kJcj.s:48     .text.Fine_Focus_State:0000000000000034 .L0 
+     /tmp/ccu9kJcj.s:49     .text.Fine_Focus_State:0000000000000034 .L0 
+     /tmp/ccu9kJcj.s:51     .text.Fine_Focus_State:0000000000000038 .L0 
+     /tmp/ccu9kJcj.s:54     .text.Fine_Focus_State:0000000000000040 .L0 
+     /tmp/ccu9kJcj.s:56     .text.Fine_Focus_State:0000000000000044 .L0 
+     /tmp/ccu9kJcj.s:60     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/ccu9kJcj.s:62     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/ccu9kJcj.s:63     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/ccu9kJcj.s:65     .text.Fine_Focus_State:000000000000004c .L0 
+                            *COM*:0000000000000004 Update_Period_Ticks
+     /tmp/ccu9kJcj.s:68     .text.Fine_Focus_State:0000000000000050 .L0 
+     /tmp/ccu9kJcj.s:70     .text.Fine_Focus_State:0000000000000058 .L0 
+     /tmp/ccu9kJcj.s:73     .text.Fine_Focus_State:0000000000000060 .L0 
+     /tmp/ccu9kJcj.s:77     .text.Fine_Focus_State:000000000000006c .L0 
+     /tmp/ccu9kJcj.s:82     .text.Fine_Focus_State:0000000000000080 .L0 
+     /tmp/ccu9kJcj.s:87     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/ccu9kJcj.s:88     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/ccu9kJcj.s:89     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/ccu9kJcj.s:91     .text.Fine_Focus_State:0000000000000098 .L0 
+     /tmp/ccu9kJcj.s:95     .text.Fine_Focus_State:000000000000009c .L0 
+     /tmp/ccu9kJcj.s:100    .text.Fine_Focus_State:00000000000000a8 .L0 
+     /tmp/ccu9kJcj.s:103    .text.Fine_Focus_State:00000000000000b0 .L0 
+     /tmp/ccu9kJcj.s:111    .text.Fine_Focus_State:00000000000000bc .L0 
+     /tmp/ccu9kJcj.s:114    .text.Fine_Focus_State:00000000000000c4 .L0 
+     /tmp/ccu9kJcj.s:115    .text.Fine_Focus_State:00000000000000c4 .L0 
+     /tmp/ccu9kJcj.s:118    .text.Fine_Focus_State:00000000000000cc .L0 
+     /tmp/ccu9kJcj.s:120    .text.Fine_Focus_State:00000000000000d0 .L0 
+     /tmp/ccu9kJcj.s:122    .text.Fine_Focus_State:00000000000000d4 .L0 
+     /tmp/ccu9kJcj.s:124    .text.Fine_Focus_State:00000000000000d8 .L0 
+     /tmp/ccu9kJcj.s:127    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/ccu9kJcj.s:128    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/ccu9kJcj.s:130    .text.Fine_Focus_State:00000000000000e4 .L0 
+     /tmp/ccu9kJcj.s:132    .text.Fine_Focus_State:00000000000000e8 .L0 
+     /tmp/ccu9kJcj.s:136    .text.Fine_Focus_State:00000000000000f0 .L0 
+     /tmp/ccu9kJcj.s:137    .text.Fine_Focus_State:00000000000000f0 .L0 
+     /tmp/ccu9kJcj.s:140    .text.Fine_Focus_State:00000000000000f8 .L0 
+     /tmp/ccu9kJcj.s:143    .text.Fine_Focus_State:00000000000000fc .L0 
+     /tmp/ccu9kJcj.s:144    .text.Fine_Focus_State:00000000000000fc .L0 
+     /tmp/ccu9kJcj.s:150    .text.Fine_Focus_State:0000000000000108 .L0 
+     /tmp/ccu9kJcj.s:151    .text.Fine_Focus_State:0000000000000108 .L0 
+     /tmp/ccu9kJcj.s:154    .text.Fine_Focus_State:000000000000010c .L0 
+     /tmp/ccu9kJcj.s:157    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/ccu9kJcj.s:158    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/ccu9kJcj.s:162    .text.Fine_Focus_State:0000000000000124 .L0 
+     /tmp/ccu9kJcj.s:166    .text.Fine_Focus_State:0000000000000134 .L0 
+     /tmp/ccu9kJcj.s:172    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/ccu9kJcj.s:173    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/ccu9kJcj.s:176    .text.Fine_Focus_State:0000000000000148 .L0 
+     /tmp/ccu9kJcj.s:179    .text.Fine_Focus_State:0000000000000150 .L0 
+     /tmp/ccu9kJcj.s:184    .text.Fine_Focus_State:0000000000000164 .L0 
+     /tmp/ccu9kJcj.s:187    .text.Fine_Focus_State:0000000000000168 .L0 
+     /tmp/ccu9kJcj.s:192    .sbss.DB_Count:0000000000000000 .LANCHOR0
+     /tmp/ccu9kJcj.s:195    .sbss.DB_Count:0000000000000000 DB_Count
+     /tmp/ccu9kJcj.s:191    .text.Fine_Focus_State:0000000000000168 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccu9kJcj.s:44     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/ccu9kJcj.s:68     .text.Fine_Focus_State:0000000000000050 .L0 
+     /tmp/ccu9kJcj.s:77     .text.Fine_Focus_State:000000000000006c .L0 
+     /tmp/ccu9kJcj.s:89     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/ccu9kJcj.s:128    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/ccu9kJcj.s:132    .text.Fine_Focus_State:00000000000000e8 .L0 
+     /tmp/ccu9kJcj.s:158    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/ccu9kJcj.s:162    .text.Fine_Focus_State:0000000000000124 .L0 
+     /tmp/ccu9kJcj.s:166    .text.Fine_Focus_State:0000000000000134 .L0 
+     /tmp/ccu9kJcj.s:173    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/ccu9kJcj.s:179    .text.Fine_Focus_State:0000000000000150 .L0 
+     /tmp/ccu9kJcj.s:93     .text.Fine_Focus_State:000000000000009c .L2
+     /tmp/ccu9kJcj.s:59     .text.Fine_Focus_State:0000000000000048 .L3
+     /tmp/ccu9kJcj.s:107    .text.Fine_Focus_State:00000000000000bc .L4
+     /tmp/ccu9kJcj.s:41     .text.Fine_Focus_State:0000000000000028 .L14
+     /tmp/ccu9kJcj.s:133    .text.Fine_Focus_State:00000000000000f0 .L6
+     /tmp/ccu9kJcj.s:147    .text.Fine_Focus_State:0000000000000108 .L7
+     /tmp/ccu9kJcj.s:170    .text.Fine_Focus_State:0000000000000140 .L8
+     /tmp/ccu9kJcj.s:174    .text.Fine_Focus_State:0000000000000148 .L9
+     /tmp/ccu9kJcj.s:45     .text.Fine_Focus_State:0000000000000030 .L1
+     /tmp/ccu9kJcj.s:1157   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccu9kJcj.s:1992   .debug_str:0000000000000627 .LASF123
+     /tmp/ccu9kJcj.s:1958   .debug_str:0000000000000519 .LASF124
+     /tmp/ccu9kJcj.s:1954   .debug_str:00000000000004d8 .LASF125
+     /tmp/ccu9kJcj.s:1766   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccu9kJcj.s:1772   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccu9kJcj.s:1858   .debug_str:000000000000025c .LASF4
+     /tmp/ccu9kJcj.s:1794   .debug_str:00000000000000a8 .LASF0
+     /tmp/ccu9kJcj.s:1892   .debug_str:0000000000000345 .LASF1
+     /tmp/ccu9kJcj.s:1928   .debug_str:000000000000041a .LASF2
+     /tmp/ccu9kJcj.s:1998   .debug_str:0000000000000709 .LASF3
+     /tmp/ccu9kJcj.s:1956   .debug_str:000000000000050f .LASF5
+     /tmp/ccu9kJcj.s:1980   .debug_str:00000000000005e5 .LASF6
+     /tmp/ccu9kJcj.s:1942   .debug_str:00000000000004a1 .LASF7
+     /tmp/ccu9kJcj.s:1836   .debug_str:00000000000001d4 .LASF8
+     /tmp/ccu9kJcj.s:2000   .debug_str:0000000000000715 .LASF9
+     /tmp/ccu9kJcj.s:1796   .debug_str:00000000000000b5 .LASF10
+     /tmp/ccu9kJcj.s:1946   .debug_str:00000000000004b2 .LASF11
+     /tmp/ccu9kJcj.s:1984   .debug_str:00000000000005ff .LASF12
+     /tmp/ccu9kJcj.s:1968   .debug_str:0000000000000588 .LASF13
+     /tmp/ccu9kJcj.s:1862   .debug_str:0000000000000276 .LASF14
+     /tmp/ccu9kJcj.s:1832   .debug_str:00000000000001b5 .LASF15
+     /tmp/ccu9kJcj.s:1882   .debug_str:0000000000000300 .LASF16
+     /tmp/ccu9kJcj.s:1930   .debug_str:0000000000000426 .LASF17
+     /tmp/ccu9kJcj.s:1972   .debug_str:00000000000005af .LASF18
+     /tmp/ccu9kJcj.s:1818   .debug_str:000000000000015e .LASF19
+     /tmp/ccu9kJcj.s:1950   .debug_str:00000000000004c7 .LASF20
+     /tmp/ccu9kJcj.s:1918   .debug_str:00000000000003db .LASF21
+     /tmp/ccu9kJcj.s:1778   .debug_str:000000000000002e .LASF104
+     /tmp/ccu9kJcj.s:1876   .debug_str:00000000000002dc .LASF22
+     /tmp/ccu9kJcj.s:1900   .debug_str:000000000000036f .LASF23
+     /tmp/ccu9kJcj.s:2028   .debug_str:00000000000007d1 .LASF24
+     /tmp/ccu9kJcj.s:1960   .debug_str:0000000000000540 .LASF25
+     /tmp/ccu9kJcj.s:2012   .debug_str:0000000000000772 .LASF26
+     /tmp/ccu9kJcj.s:2004   .debug_str:000000000000073c .LASF27
+     /tmp/ccu9kJcj.s:1824   .debug_str:0000000000000184 .LASF28
+     /tmp/ccu9kJcj.s:1822   .debug_str:000000000000017b .LASF29
+     /tmp/ccu9kJcj.s:1812   .debug_str:0000000000000136 .LASF30
+     /tmp/ccu9kJcj.s:1964   .debug_str:000000000000055a .LASF31
+     /tmp/ccu9kJcj.s:1820   .debug_str:0000000000000167 .LASF32
+     /tmp/ccu9kJcj.s:1776   .debug_str:0000000000000014 .LASF33
+     /tmp/ccu9kJcj.s:2010   .debug_str:000000000000075d .LASF34
+     /tmp/ccu9kJcj.s:1780   .debug_str:000000000000003f .LASF35
+     /tmp/ccu9kJcj.s:1788   .debug_str:0000000000000070 .LASF36
+     /tmp/ccu9kJcj.s:1846   .debug_str:0000000000000209 .LASF37
+     /tmp/ccu9kJcj.s:1996   .debug_str:00000000000006f9 .LASF38
+     /tmp/ccu9kJcj.s:1866   .debug_str:0000000000000298 .LASF39
+     /tmp/ccu9kJcj.s:1842   .debug_str:00000000000001f2 .LASF40
+     /tmp/ccu9kJcj.s:1868   .debug_str:00000000000002aa .LASF41
+     /tmp/ccu9kJcj.s:1936   .debug_str:000000000000045a .LASF42
+     /tmp/ccu9kJcj.s:1792   .debug_str:0000000000000098 .LASF43
+     /tmp/ccu9kJcj.s:1916   .debug_str:00000000000003c8 .LASF44
+     /tmp/ccu9kJcj.s:1922   .debug_str:00000000000003ee .LASF45
+     /tmp/ccu9kJcj.s:2006   .debug_str:0000000000000748 .LASF46
+     /tmp/ccu9kJcj.s:1798   .debug_str:00000000000000bf .LASF47
+     /tmp/ccu9kJcj.s:1910   .debug_str:00000000000003a2 .LASF48
+     /tmp/ccu9kJcj.s:1978   .debug_str:00000000000005cf .LASF49
+     /tmp/ccu9kJcj.s:1870   .debug_str:00000000000002b6 .LASF50
+     /tmp/ccu9kJcj.s:1786   .debug_str:0000000000000063 .LASF51
+     /tmp/ccu9kJcj.s:1966   .debug_str:0000000000000572 .LASF52
+     /tmp/ccu9kJcj.s:1970   .debug_str:000000000000059a .LASF53
+     /tmp/ccu9kJcj.s:1806   .debug_str:0000000000000103 .LASF54
+     /tmp/ccu9kJcj.s:1878   .debug_str:00000000000002e1 .LASF55
+     /tmp/ccu9kJcj.s:1902   .debug_str:0000000000000379 .LASF56
+     /tmp/ccu9kJcj.s:1904   .debug_str:0000000000000386 .LASF57
+     /tmp/ccu9kJcj.s:1838   .debug_str:00000000000001df .LASF58
+     /tmp/ccu9kJcj.s:1994   .debug_str:00000000000006ed .LASF59
+     /tmp/ccu9kJcj.s:1914   .debug_str:00000000000003c1 .LASF60
+     /tmp/ccu9kJcj.s:2022   .debug_str:00000000000007b1 .LASF61
+     /tmp/ccu9kJcj.s:1814   .debug_str:000000000000013b .LASF62
+     /tmp/ccu9kJcj.s:1944   .debug_str:00000000000004ab .LASF63
+     /tmp/ccu9kJcj.s:1982   .debug_str:00000000000005f3 .LASF64
+     /tmp/ccu9kJcj.s:1830   .debug_str:00000000000001a4 .LASF65
+     /tmp/ccu9kJcj.s:1860   .debug_str:0000000000000263 .LASF66
+     /tmp/ccu9kJcj.s:1774   .debug_str:0000000000000000 .LASF67
+     /tmp/ccu9kJcj.s:1920   .debug_str:00000000000003e6 .LASF68
+     /tmp/ccu9kJcj.s:1808   .debug_str:0000000000000111 .LASF69
+     /tmp/ccu9kJcj.s:2008   .debug_str:0000000000000751 .LASF70
+     /tmp/ccu9kJcj.s:1924   .debug_str:0000000000000402 .LASF71
+     /tmp/ccu9kJcj.s:1986   .debug_str:000000000000060a .LASF72
+     /tmp/ccu9kJcj.s:1854   .debug_str:000000000000023a .LASF73
+     /tmp/ccu9kJcj.s:1852   .debug_str:0000000000000225 .LASF74
+     /tmp/ccu9kJcj.s:1840   .debug_str:00000000000001e8 .LASF75
+     /tmp/ccu9kJcj.s:1990   .debug_str:000000000000061f .LASF76
+     /tmp/ccu9kJcj.s:1804   .debug_str:00000000000000f6 .LASF77
+     /tmp/ccu9kJcj.s:1810   .debug_str:0000000000000122 .LASF78
+     /tmp/ccu9kJcj.s:1834   .debug_str:00000000000001cc .LASF79
+     /tmp/ccu9kJcj.s:1874   .debug_str:00000000000002d3 .LASF80
+     /tmp/ccu9kJcj.s:1912   .debug_str:00000000000003b9 .LASF81
+     /tmp/ccu9kJcj.s:2026   .debug_str:00000000000007c8 .LASF82
+     /tmp/ccu9kJcj.s:1816   .debug_str:0000000000000153 .LASF83
+     /tmp/ccu9kJcj.s:1890   .debug_str:000000000000033a .LASF84
+     /tmp/ccu9kJcj.s:1844   .debug_str:00000000000001fd .LASF85
+     /tmp/ccu9kJcj.s:1784   .debug_str:000000000000005b .LASF86
+     /tmp/ccu9kJcj.s:1826   .debug_str:0000000000000198 .LASF87
+     /tmp/ccu9kJcj.s:1886   .debug_str:0000000000000318 .LASF88
+     /tmp/ccu9kJcj.s:1962   .debug_str:000000000000054c .LASF89
+     /tmp/ccu9kJcj.s:1948   .debug_str:00000000000004bb .LASF90
+     /tmp/ccu9kJcj.s:1906   .debug_str:0000000000000393 .LASF91
+     /tmp/ccu9kJcj.s:1896   .debug_str:000000000000035d .LASF92
+     /tmp/ccu9kJcj.s:1974   .debug_str:00000000000005b7 .LASF93
+     /tmp/ccu9kJcj.s:1976   .debug_str:00000000000005c3 .LASF94
+     /tmp/ccu9kJcj.s:1932   .debug_str:000000000000042f .LASF95
+     /tmp/ccu9kJcj.s:1864   .debug_str:0000000000000281 .LASF96
+     /tmp/ccu9kJcj.s:1872   .debug_str:00000000000002cc .LASF97
+     /tmp/ccu9kJcj.s:1848   .debug_str:0000000000000217 .LASF98
+     /tmp/ccu9kJcj.s:1850   .debug_str:000000000000021e .LASF99
+     /tmp/ccu9kJcj.s:1952   .debug_str:00000000000004d0 .LASF100
+     /tmp/ccu9kJcj.s:1988   .debug_str:0000000000000617 .LASF101
+     /tmp/ccu9kJcj.s:2014   .debug_str:0000000000000781 .LASF102
+     /tmp/ccu9kJcj.s:1908   .debug_str:0000000000000399 .LASF103
+     /tmp/ccu9kJcj.s:2020   .debug_str:00000000000007a8 .LASF126
+     /tmp/ccu9kJcj.s:2016   .debug_str:000000000000078a .LASF108
+     /tmp/ccu9kJcj.s:1934   .debug_str:0000000000000446 .LASF105
+     /tmp/ccu9kJcj.s:1926   .debug_str:0000000000000409 .LASF127
+     /tmp/ccu9kJcj.s:1898   .debug_str:0000000000000367 .LASF106
+     /tmp/ccu9kJcj.s:1828   .debug_str:000000000000019e .LASF107
+     /tmp/ccu9kJcj.s:1800   .debug_str:00000000000000d8 .LASF109
+     /tmp/ccu9kJcj.s:1782   .debug_str:000000000000004e .LASF110
+     /tmp/ccu9kJcj.s:1880   .debug_str:00000000000002f0 .LASF111
+     /tmp/ccu9kJcj.s:1894   .debug_str:0000000000000353 .LASF112
+     /tmp/ccu9kJcj.s:14     .text.Fine_Focus_State:0000000000000000 .LFB0
+     /tmp/ccu9kJcj.s:188    .text.Fine_Focus_State:0000000000000168 .LFE0
+     /tmp/ccu9kJcj.s:1593   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccu9kJcj.s:1640   .debug_loc:000000000000006c .LLST1
+     /tmp/ccu9kJcj.s:108    .text.Fine_Focus_State:00000000000000bc .LBB4
+     /tmp/ccu9kJcj.s:186    .text.Fine_Focus_State:0000000000000168 .LBE4
+     /tmp/ccu9kJcj.s:1687   .debug_loc:00000000000000d8 .LLST2
+     /tmp/ccu9kJcj.s:1701   .debug_loc:00000000000000f9 .LLST3
+     /tmp/ccu9kJcj.s:109    .text.Fine_Focus_State:00000000000000bc .LBB5
+     /tmp/ccu9kJcj.s:185    .text.Fine_Focus_State:0000000000000168 .LBE5
+     /tmp/ccu9kJcj.s:1715   .debug_loc:000000000000011a .LLST4
+     /tmp/ccu9kJcj.s:1726   .debug_loc:0000000000000138 .LLST5
+     /tmp/ccu9kJcj.s:1733   .debug_loc:000000000000014b .LLST6
+     /tmp/ccu9kJcj.s:1740   .debug_loc:000000000000015e .LLST7
+     /tmp/ccu9kJcj.s:112    .text.Fine_Focus_State:00000000000000c4 .LVL14
+     /tmp/ccu9kJcj.s:116    .text.Fine_Focus_State:00000000000000cc .LVL15
+     /tmp/ccu9kJcj.s:138    .text.Fine_Focus_State:00000000000000f8 .LVL18
+     /tmp/ccu9kJcj.s:177    .text.Fine_Focus_State:0000000000000150 .LVL24
+     /tmp/ccu9kJcj.s:182    .text.Fine_Focus_State:0000000000000164 .LVL25
+     /tmp/ccu9kJcj.s:71     .text.Fine_Focus_State:0000000000000060 .LVL4
+     /tmp/ccu9kJcj.s:75     .text.Fine_Focus_State:000000000000006c .LVL5
+     /tmp/ccu9kJcj.s:80     .text.Fine_Focus_State:0000000000000080 .LVL6
+     /tmp/ccu9kJcj.s:85     .text.Fine_Focus_State:0000000000000090 .LVL7
+     /tmp/ccu9kJcj.s:98     .text.Fine_Focus_State:00000000000000a8 .LVL10
+     /tmp/ccu9kJcj.s:101    .text.Fine_Focus_State:00000000000000b0 .LVL11
+     /tmp/ccu9kJcj.s:104    .text.Fine_Focus_State:00000000000000b8 .LVL12
+     /tmp/ccu9kJcj.s:1790   .debug_str:000000000000007d .LASF113
+     /tmp/ccu9kJcj.s:2018   .debug_str:0000000000000797 .LASF114
+     /tmp/ccu9kJcj.s:1888   .debug_str:0000000000000320 .LASF115
+     /tmp/ccu9kJcj.s:2024   .debug_str:00000000000007b6 .LASF116
+     /tmp/ccu9kJcj.s:2002   .debug_str:0000000000000728 .LASF117
+     /tmp/ccu9kJcj.s:1884   .debug_str:0000000000000308 .LASF118
+     /tmp/ccu9kJcj.s:1856   .debug_str:0000000000000247 .LASF119
+     /tmp/ccu9kJcj.s:1938   .debug_str:000000000000046e .LASF120
+     /tmp/ccu9kJcj.s:1802   .debug_str:00000000000000e3 .LASF121
+     /tmp/ccu9kJcj.s:1940   .debug_str:0000000000000488 .LASF122
+     /tmp/ccu9kJcj.s:18     .text.Fine_Focus_State:0000000000000000 .LVL0
+     /tmp/ccu9kJcj.s:40     .text.Fine_Focus_State:0000000000000028 .LVL1
+     /tmp/ccu9kJcj.s:58     .text.Fine_Focus_State:0000000000000048 .LVL2
+     /tmp/ccu9kJcj.s:66     .text.Fine_Focus_State:0000000000000050 .LVL3
+     /tmp/ccu9kJcj.s:92     .text.Fine_Focus_State:000000000000009c .LVL8
+     /tmp/ccu9kJcj.s:96     .text.Fine_Focus_State:00000000000000a0 .LVL9
+     /tmp/ccu9kJcj.s:106    .text.Fine_Focus_State:00000000000000bc .LVL13
+     /tmp/ccu9kJcj.s:134    .text.Fine_Focus_State:00000000000000f0 .LVL17
+     /tmp/ccu9kJcj.s:167    .text.Fine_Focus_State:000000000000013c .LVL22
+     /tmp/ccu9kJcj.s:169    .text.Fine_Focus_State:0000000000000140 .LVL23
+     /tmp/ccu9kJcj.s:125    .text.Fine_Focus_State:00000000000000dc .LVL16
+     /tmp/ccu9kJcj.s:141    .text.Fine_Focus_State:00000000000000fc .LVL19
+     /tmp/ccu9kJcj.s:148    .text.Fine_Focus_State:0000000000000108 .LVL20
+     /tmp/ccu9kJcj.s:152    .text.Fine_Focus_State:000000000000010c .LVL21
+     /tmp/ccu9kJcj.s:210    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cckWK5LH.s:13     .text.Fine_Focus_State:0000000000000000 Fine_Focus_State
+     /tmp/cckWK5LH.s:17     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:19     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:20     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:21     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:22     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:23     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:24     .text.Fine_Focus_State:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:26     .text.Fine_Focus_State:0000000000000004 .L0 
+     /tmp/cckWK5LH.s:27     .text.Fine_Focus_State:0000000000000008 .L0 
+     /tmp/cckWK5LH.s:31     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/cckWK5LH.s:32     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/cckWK5LH.s:33     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/cckWK5LH.s:35     .text.Fine_Focus_State:0000000000000014 .L0 
+     /tmp/cckWK5LH.s:43     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/cckWK5LH.s:44     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/cckWK5LH.s:47     .text.Fine_Focus_State:0000000000000030 .L0 
+     /tmp/cckWK5LH.s:48     .text.Fine_Focus_State:0000000000000034 .L0 
+     /tmp/cckWK5LH.s:49     .text.Fine_Focus_State:0000000000000034 .L0 
+     /tmp/cckWK5LH.s:51     .text.Fine_Focus_State:0000000000000038 .L0 
+     /tmp/cckWK5LH.s:54     .text.Fine_Focus_State:0000000000000040 .L0 
+     /tmp/cckWK5LH.s:56     .text.Fine_Focus_State:0000000000000044 .L0 
+     /tmp/cckWK5LH.s:60     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/cckWK5LH.s:62     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/cckWK5LH.s:63     .text.Fine_Focus_State:0000000000000048 .L0 
+     /tmp/cckWK5LH.s:65     .text.Fine_Focus_State:000000000000004c .L0 
+                            *COM*:0000000000000004 Update_Period_Ticks
+     /tmp/cckWK5LH.s:68     .text.Fine_Focus_State:0000000000000050 .L0 
+     /tmp/cckWK5LH.s:70     .text.Fine_Focus_State:0000000000000058 .L0 
+     /tmp/cckWK5LH.s:73     .text.Fine_Focus_State:0000000000000060 .L0 
+     /tmp/cckWK5LH.s:77     .text.Fine_Focus_State:000000000000006c .L0 
+     /tmp/cckWK5LH.s:82     .text.Fine_Focus_State:0000000000000080 .L0 
+     /tmp/cckWK5LH.s:87     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/cckWK5LH.s:88     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/cckWK5LH.s:89     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/cckWK5LH.s:91     .text.Fine_Focus_State:0000000000000098 .L0 
+     /tmp/cckWK5LH.s:95     .text.Fine_Focus_State:000000000000009c .L0 
+     /tmp/cckWK5LH.s:100    .text.Fine_Focus_State:00000000000000a8 .L0 
+     /tmp/cckWK5LH.s:103    .text.Fine_Focus_State:00000000000000b0 .L0 
+     /tmp/cckWK5LH.s:111    .text.Fine_Focus_State:00000000000000bc .L0 
+     /tmp/cckWK5LH.s:114    .text.Fine_Focus_State:00000000000000c4 .L0 
+     /tmp/cckWK5LH.s:115    .text.Fine_Focus_State:00000000000000c4 .L0 
+     /tmp/cckWK5LH.s:118    .text.Fine_Focus_State:00000000000000cc .L0 
+     /tmp/cckWK5LH.s:120    .text.Fine_Focus_State:00000000000000d0 .L0 
+     /tmp/cckWK5LH.s:122    .text.Fine_Focus_State:00000000000000d4 .L0 
+     /tmp/cckWK5LH.s:124    .text.Fine_Focus_State:00000000000000d8 .L0 
+     /tmp/cckWK5LH.s:127    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/cckWK5LH.s:128    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/cckWK5LH.s:130    .text.Fine_Focus_State:00000000000000e4 .L0 
+     /tmp/cckWK5LH.s:132    .text.Fine_Focus_State:00000000000000e8 .L0 
+     /tmp/cckWK5LH.s:136    .text.Fine_Focus_State:00000000000000f0 .L0 
+     /tmp/cckWK5LH.s:137    .text.Fine_Focus_State:00000000000000f0 .L0 
+     /tmp/cckWK5LH.s:140    .text.Fine_Focus_State:00000000000000f8 .L0 
+     /tmp/cckWK5LH.s:143    .text.Fine_Focus_State:00000000000000fc .L0 
+     /tmp/cckWK5LH.s:144    .text.Fine_Focus_State:00000000000000fc .L0 
+     /tmp/cckWK5LH.s:150    .text.Fine_Focus_State:0000000000000108 .L0 
+     /tmp/cckWK5LH.s:151    .text.Fine_Focus_State:0000000000000108 .L0 
+     /tmp/cckWK5LH.s:154    .text.Fine_Focus_State:000000000000010c .L0 
+     /tmp/cckWK5LH.s:157    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/cckWK5LH.s:158    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/cckWK5LH.s:162    .text.Fine_Focus_State:0000000000000124 .L0 
+     /tmp/cckWK5LH.s:166    .text.Fine_Focus_State:0000000000000134 .L0 
+     /tmp/cckWK5LH.s:172    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/cckWK5LH.s:173    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/cckWK5LH.s:176    .text.Fine_Focus_State:0000000000000148 .L0 
+     /tmp/cckWK5LH.s:179    .text.Fine_Focus_State:0000000000000150 .L0 
+     /tmp/cckWK5LH.s:184    .text.Fine_Focus_State:0000000000000164 .L0 
+     /tmp/cckWK5LH.s:187    .text.Fine_Focus_State:0000000000000168 .L0 
+     /tmp/cckWK5LH.s:192    .sbss.DB_Count:0000000000000000 .LANCHOR0
+     /tmp/cckWK5LH.s:195    .sbss.DB_Count:0000000000000000 DB_Count
+     /tmp/cckWK5LH.s:191    .text.Fine_Focus_State:0000000000000168 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cckWK5LH.s:44     .text.Fine_Focus_State:0000000000000028 .L0 
+     /tmp/cckWK5LH.s:68     .text.Fine_Focus_State:0000000000000050 .L0 
+     /tmp/cckWK5LH.s:77     .text.Fine_Focus_State:000000000000006c .L0 
+     /tmp/cckWK5LH.s:89     .text.Fine_Focus_State:0000000000000090 .L0 
+     /tmp/cckWK5LH.s:128    .text.Fine_Focus_State:00000000000000dc .L0 
+     /tmp/cckWK5LH.s:132    .text.Fine_Focus_State:00000000000000e8 .L0 
+     /tmp/cckWK5LH.s:158    .text.Fine_Focus_State:0000000000000114 .L0 
+     /tmp/cckWK5LH.s:162    .text.Fine_Focus_State:0000000000000124 .L0 
+     /tmp/cckWK5LH.s:166    .text.Fine_Focus_State:0000000000000134 .L0 
+     /tmp/cckWK5LH.s:173    .text.Fine_Focus_State:0000000000000140 .L0 
+     /tmp/cckWK5LH.s:179    .text.Fine_Focus_State:0000000000000150 .L0 
+     /tmp/cckWK5LH.s:93     .text.Fine_Focus_State:000000000000009c .L2
+     /tmp/cckWK5LH.s:59     .text.Fine_Focus_State:0000000000000048 .L3
+     /tmp/cckWK5LH.s:107    .text.Fine_Focus_State:00000000000000bc .L4
+     /tmp/cckWK5LH.s:41     .text.Fine_Focus_State:0000000000000028 .L14
+     /tmp/cckWK5LH.s:133    .text.Fine_Focus_State:00000000000000f0 .L6
+     /tmp/cckWK5LH.s:147    .text.Fine_Focus_State:0000000000000108 .L7
+     /tmp/cckWK5LH.s:170    .text.Fine_Focus_State:0000000000000140 .L8
+     /tmp/cckWK5LH.s:174    .text.Fine_Focus_State:0000000000000148 .L9
+     /tmp/cckWK5LH.s:45     .text.Fine_Focus_State:0000000000000030 .L1
+     /tmp/cckWK5LH.s:1157   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cckWK5LH.s:1992   .debug_str:0000000000000627 .LASF123
+     /tmp/cckWK5LH.s:1958   .debug_str:0000000000000519 .LASF124
+     /tmp/cckWK5LH.s:1954   .debug_str:00000000000004d8 .LASF125
+     /tmp/cckWK5LH.s:1766   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cckWK5LH.s:1772   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cckWK5LH.s:1858   .debug_str:000000000000025c .LASF4
+     /tmp/cckWK5LH.s:1794   .debug_str:00000000000000a8 .LASF0
+     /tmp/cckWK5LH.s:1892   .debug_str:0000000000000345 .LASF1
+     /tmp/cckWK5LH.s:1928   .debug_str:000000000000041a .LASF2
+     /tmp/cckWK5LH.s:1998   .debug_str:0000000000000709 .LASF3
+     /tmp/cckWK5LH.s:1956   .debug_str:000000000000050f .LASF5
+     /tmp/cckWK5LH.s:1980   .debug_str:00000000000005e5 .LASF6
+     /tmp/cckWK5LH.s:1942   .debug_str:00000000000004a1 .LASF7
+     /tmp/cckWK5LH.s:1836   .debug_str:00000000000001d4 .LASF8
+     /tmp/cckWK5LH.s:2000   .debug_str:0000000000000715 .LASF9
+     /tmp/cckWK5LH.s:1796   .debug_str:00000000000000b5 .LASF10
+     /tmp/cckWK5LH.s:1946   .debug_str:00000000000004b2 .LASF11
+     /tmp/cckWK5LH.s:1984   .debug_str:00000000000005ff .LASF12
+     /tmp/cckWK5LH.s:1968   .debug_str:0000000000000588 .LASF13
+     /tmp/cckWK5LH.s:1862   .debug_str:0000000000000276 .LASF14
+     /tmp/cckWK5LH.s:1832   .debug_str:00000000000001b5 .LASF15
+     /tmp/cckWK5LH.s:1882   .debug_str:0000000000000300 .LASF16
+     /tmp/cckWK5LH.s:1930   .debug_str:0000000000000426 .LASF17
+     /tmp/cckWK5LH.s:1972   .debug_str:00000000000005af .LASF18
+     /tmp/cckWK5LH.s:1818   .debug_str:000000000000015e .LASF19
+     /tmp/cckWK5LH.s:1950   .debug_str:00000000000004c7 .LASF20
+     /tmp/cckWK5LH.s:1918   .debug_str:00000000000003db .LASF21
+     /tmp/cckWK5LH.s:1778   .debug_str:000000000000002e .LASF104
+     /tmp/cckWK5LH.s:1876   .debug_str:00000000000002dc .LASF22
+     /tmp/cckWK5LH.s:1900   .debug_str:000000000000036f .LASF23
+     /tmp/cckWK5LH.s:2028   .debug_str:00000000000007d1 .LASF24
+     /tmp/cckWK5LH.s:1960   .debug_str:0000000000000540 .LASF25
+     /tmp/cckWK5LH.s:2012   .debug_str:0000000000000772 .LASF26
+     /tmp/cckWK5LH.s:2004   .debug_str:000000000000073c .LASF27
+     /tmp/cckWK5LH.s:1824   .debug_str:0000000000000184 .LASF28
+     /tmp/cckWK5LH.s:1822   .debug_str:000000000000017b .LASF29
+     /tmp/cckWK5LH.s:1812   .debug_str:0000000000000136 .LASF30
+     /tmp/cckWK5LH.s:1964   .debug_str:000000000000055a .LASF31
+     /tmp/cckWK5LH.s:1820   .debug_str:0000000000000167 .LASF32
+     /tmp/cckWK5LH.s:1776   .debug_str:0000000000000014 .LASF33
+     /tmp/cckWK5LH.s:2010   .debug_str:000000000000075d .LASF34
+     /tmp/cckWK5LH.s:1780   .debug_str:000000000000003f .LASF35
+     /tmp/cckWK5LH.s:1788   .debug_str:0000000000000070 .LASF36
+     /tmp/cckWK5LH.s:1846   .debug_str:0000000000000209 .LASF37
+     /tmp/cckWK5LH.s:1996   .debug_str:00000000000006f9 .LASF38
+     /tmp/cckWK5LH.s:1866   .debug_str:0000000000000298 .LASF39
+     /tmp/cckWK5LH.s:1842   .debug_str:00000000000001f2 .LASF40
+     /tmp/cckWK5LH.s:1868   .debug_str:00000000000002aa .LASF41
+     /tmp/cckWK5LH.s:1936   .debug_str:000000000000045a .LASF42
+     /tmp/cckWK5LH.s:1792   .debug_str:0000000000000098 .LASF43
+     /tmp/cckWK5LH.s:1916   .debug_str:00000000000003c8 .LASF44
+     /tmp/cckWK5LH.s:1922   .debug_str:00000000000003ee .LASF45
+     /tmp/cckWK5LH.s:2006   .debug_str:0000000000000748 .LASF46
+     /tmp/cckWK5LH.s:1798   .debug_str:00000000000000bf .LASF47
+     /tmp/cckWK5LH.s:1910   .debug_str:00000000000003a2 .LASF48
+     /tmp/cckWK5LH.s:1978   .debug_str:00000000000005cf .LASF49
+     /tmp/cckWK5LH.s:1870   .debug_str:00000000000002b6 .LASF50
+     /tmp/cckWK5LH.s:1786   .debug_str:0000000000000063 .LASF51
+     /tmp/cckWK5LH.s:1966   .debug_str:0000000000000572 .LASF52
+     /tmp/cckWK5LH.s:1970   .debug_str:000000000000059a .LASF53
+     /tmp/cckWK5LH.s:1806   .debug_str:0000000000000103 .LASF54
+     /tmp/cckWK5LH.s:1878   .debug_str:00000000000002e1 .LASF55
+     /tmp/cckWK5LH.s:1902   .debug_str:0000000000000379 .LASF56
+     /tmp/cckWK5LH.s:1904   .debug_str:0000000000000386 .LASF57
+     /tmp/cckWK5LH.s:1838   .debug_str:00000000000001df .LASF58
+     /tmp/cckWK5LH.s:1994   .debug_str:00000000000006ed .LASF59
+     /tmp/cckWK5LH.s:1914   .debug_str:00000000000003c1 .LASF60
+     /tmp/cckWK5LH.s:2022   .debug_str:00000000000007b1 .LASF61
+     /tmp/cckWK5LH.s:1814   .debug_str:000000000000013b .LASF62
+     /tmp/cckWK5LH.s:1944   .debug_str:00000000000004ab .LASF63
+     /tmp/cckWK5LH.s:1982   .debug_str:00000000000005f3 .LASF64
+     /tmp/cckWK5LH.s:1830   .debug_str:00000000000001a4 .LASF65
+     /tmp/cckWK5LH.s:1860   .debug_str:0000000000000263 .LASF66
+     /tmp/cckWK5LH.s:1774   .debug_str:0000000000000000 .LASF67
+     /tmp/cckWK5LH.s:1920   .debug_str:00000000000003e6 .LASF68
+     /tmp/cckWK5LH.s:1808   .debug_str:0000000000000111 .LASF69
+     /tmp/cckWK5LH.s:2008   .debug_str:0000000000000751 .LASF70
+     /tmp/cckWK5LH.s:1924   .debug_str:0000000000000402 .LASF71
+     /tmp/cckWK5LH.s:1986   .debug_str:000000000000060a .LASF72
+     /tmp/cckWK5LH.s:1854   .debug_str:000000000000023a .LASF73
+     /tmp/cckWK5LH.s:1852   .debug_str:0000000000000225 .LASF74
+     /tmp/cckWK5LH.s:1840   .debug_str:00000000000001e8 .LASF75
+     /tmp/cckWK5LH.s:1990   .debug_str:000000000000061f .LASF76
+     /tmp/cckWK5LH.s:1804   .debug_str:00000000000000f6 .LASF77
+     /tmp/cckWK5LH.s:1810   .debug_str:0000000000000122 .LASF78
+     /tmp/cckWK5LH.s:1834   .debug_str:00000000000001cc .LASF79
+     /tmp/cckWK5LH.s:1874   .debug_str:00000000000002d3 .LASF80
+     /tmp/cckWK5LH.s:1912   .debug_str:00000000000003b9 .LASF81
+     /tmp/cckWK5LH.s:2026   .debug_str:00000000000007c8 .LASF82
+     /tmp/cckWK5LH.s:1816   .debug_str:0000000000000153 .LASF83
+     /tmp/cckWK5LH.s:1890   .debug_str:000000000000033a .LASF84
+     /tmp/cckWK5LH.s:1844   .debug_str:00000000000001fd .LASF85
+     /tmp/cckWK5LH.s:1784   .debug_str:000000000000005b .LASF86
+     /tmp/cckWK5LH.s:1826   .debug_str:0000000000000198 .LASF87
+     /tmp/cckWK5LH.s:1886   .debug_str:0000000000000318 .LASF88
+     /tmp/cckWK5LH.s:1962   .debug_str:000000000000054c .LASF89
+     /tmp/cckWK5LH.s:1948   .debug_str:00000000000004bb .LASF90
+     /tmp/cckWK5LH.s:1906   .debug_str:0000000000000393 .LASF91
+     /tmp/cckWK5LH.s:1896   .debug_str:000000000000035d .LASF92
+     /tmp/cckWK5LH.s:1974   .debug_str:00000000000005b7 .LASF93
+     /tmp/cckWK5LH.s:1976   .debug_str:00000000000005c3 .LASF94
+     /tmp/cckWK5LH.s:1932   .debug_str:000000000000042f .LASF95
+     /tmp/cckWK5LH.s:1864   .debug_str:0000000000000281 .LASF96
+     /tmp/cckWK5LH.s:1872   .debug_str:00000000000002cc .LASF97
+     /tmp/cckWK5LH.s:1848   .debug_str:0000000000000217 .LASF98
+     /tmp/cckWK5LH.s:1850   .debug_str:000000000000021e .LASF99
+     /tmp/cckWK5LH.s:1952   .debug_str:00000000000004d0 .LASF100
+     /tmp/cckWK5LH.s:1988   .debug_str:0000000000000617 .LASF101
+     /tmp/cckWK5LH.s:2014   .debug_str:0000000000000781 .LASF102
+     /tmp/cckWK5LH.s:1908   .debug_str:0000000000000399 .LASF103
+     /tmp/cckWK5LH.s:2020   .debug_str:00000000000007a8 .LASF126
+     /tmp/cckWK5LH.s:2016   .debug_str:000000000000078a .LASF108
+     /tmp/cckWK5LH.s:1934   .debug_str:0000000000000446 .LASF105
+     /tmp/cckWK5LH.s:1926   .debug_str:0000000000000409 .LASF127
+     /tmp/cckWK5LH.s:1898   .debug_str:0000000000000367 .LASF106
+     /tmp/cckWK5LH.s:1828   .debug_str:000000000000019e .LASF107
+     /tmp/cckWK5LH.s:1800   .debug_str:00000000000000d8 .LASF109
+     /tmp/cckWK5LH.s:1782   .debug_str:000000000000004e .LASF110
+     /tmp/cckWK5LH.s:1880   .debug_str:00000000000002f0 .LASF111
+     /tmp/cckWK5LH.s:1894   .debug_str:0000000000000353 .LASF112
+     /tmp/cckWK5LH.s:14     .text.Fine_Focus_State:0000000000000000 .LFB0
+     /tmp/cckWK5LH.s:188    .text.Fine_Focus_State:0000000000000168 .LFE0
+     /tmp/cckWK5LH.s:1593   .debug_loc:0000000000000000 .LLST0
+     /tmp/cckWK5LH.s:1640   .debug_loc:000000000000006c .LLST1
+     /tmp/cckWK5LH.s:108    .text.Fine_Focus_State:00000000000000bc .LBB4
+     /tmp/cckWK5LH.s:186    .text.Fine_Focus_State:0000000000000168 .LBE4
+     /tmp/cckWK5LH.s:1687   .debug_loc:00000000000000d8 .LLST2
+     /tmp/cckWK5LH.s:1701   .debug_loc:00000000000000f9 .LLST3
+     /tmp/cckWK5LH.s:109    .text.Fine_Focus_State:00000000000000bc .LBB5
+     /tmp/cckWK5LH.s:185    .text.Fine_Focus_State:0000000000000168 .LBE5
+     /tmp/cckWK5LH.s:1715   .debug_loc:000000000000011a .LLST4
+     /tmp/cckWK5LH.s:1726   .debug_loc:0000000000000138 .LLST5
+     /tmp/cckWK5LH.s:1733   .debug_loc:000000000000014b .LLST6
+     /tmp/cckWK5LH.s:1740   .debug_loc:000000000000015e .LLST7
+     /tmp/cckWK5LH.s:112    .text.Fine_Focus_State:00000000000000c4 .LVL14
+     /tmp/cckWK5LH.s:116    .text.Fine_Focus_State:00000000000000cc .LVL15
+     /tmp/cckWK5LH.s:138    .text.Fine_Focus_State:00000000000000f8 .LVL18
+     /tmp/cckWK5LH.s:177    .text.Fine_Focus_State:0000000000000150 .LVL24
+     /tmp/cckWK5LH.s:182    .text.Fine_Focus_State:0000000000000164 .LVL25
+     /tmp/cckWK5LH.s:71     .text.Fine_Focus_State:0000000000000060 .LVL4
+     /tmp/cckWK5LH.s:75     .text.Fine_Focus_State:000000000000006c .LVL5
+     /tmp/cckWK5LH.s:80     .text.Fine_Focus_State:0000000000000080 .LVL6
+     /tmp/cckWK5LH.s:85     .text.Fine_Focus_State:0000000000000090 .LVL7
+     /tmp/cckWK5LH.s:98     .text.Fine_Focus_State:00000000000000a8 .LVL10
+     /tmp/cckWK5LH.s:101    .text.Fine_Focus_State:00000000000000b0 .LVL11
+     /tmp/cckWK5LH.s:104    .text.Fine_Focus_State:00000000000000b8 .LVL12
+     /tmp/cckWK5LH.s:1790   .debug_str:000000000000007d .LASF113
+     /tmp/cckWK5LH.s:2018   .debug_str:0000000000000797 .LASF114
+     /tmp/cckWK5LH.s:1888   .debug_str:0000000000000320 .LASF115
+     /tmp/cckWK5LH.s:2024   .debug_str:00000000000007b6 .LASF116
+     /tmp/cckWK5LH.s:2002   .debug_str:0000000000000728 .LASF117
+     /tmp/cckWK5LH.s:1884   .debug_str:0000000000000308 .LASF118
+     /tmp/cckWK5LH.s:1856   .debug_str:0000000000000247 .LASF119
+     /tmp/cckWK5LH.s:1938   .debug_str:000000000000046e .LASF120
+     /tmp/cckWK5LH.s:1802   .debug_str:00000000000000e3 .LASF121
+     /tmp/cckWK5LH.s:1940   .debug_str:0000000000000488 .LASF122
+     /tmp/cckWK5LH.s:18     .text.Fine_Focus_State:0000000000000000 .LVL0
+     /tmp/cckWK5LH.s:40     .text.Fine_Focus_State:0000000000000028 .LVL1
+     /tmp/cckWK5LH.s:58     .text.Fine_Focus_State:0000000000000048 .LVL2
+     /tmp/cckWK5LH.s:66     .text.Fine_Focus_State:0000000000000050 .LVL3
+     /tmp/cckWK5LH.s:92     .text.Fine_Focus_State:000000000000009c .LVL8
+     /tmp/cckWK5LH.s:96     .text.Fine_Focus_State:00000000000000a0 .LVL9
+     /tmp/cckWK5LH.s:106    .text.Fine_Focus_State:00000000000000bc .LVL13
+     /tmp/cckWK5LH.s:134    .text.Fine_Focus_State:00000000000000f0 .LVL17
+     /tmp/cckWK5LH.s:167    .text.Fine_Focus_State:000000000000013c .LVL22
+     /tmp/cckWK5LH.s:169    .text.Fine_Focus_State:0000000000000140 .LVL23
+     /tmp/cckWK5LH.s:125    .text.Fine_Focus_State:00000000000000dc .LVL16
+     /tmp/cckWK5LH.s:141    .text.Fine_Focus_State:00000000000000fc .LVL19
+     /tmp/cckWK5LH.s:148    .text.Fine_Focus_State:0000000000000108 .LVL20
+     /tmp/cckWK5LH.s:152    .text.Fine_Focus_State:000000000000010c .LVL21
+     /tmp/cckWK5LH.s:210    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Set_LVDT_Gain
+v_Set_Microstep_Mode
+v_Start_Focus_Timer
+v_Start_Focus_Fault_Timer
+v_Set_Stepper_out
+v_Stop_Focus_Timer
+v_Stop_Focus_Fault_Timer
+v_Refresh_Stepper_Watchdog
+i32_Get_Position
+Idle_State
+i32_Get_Focus_Destination

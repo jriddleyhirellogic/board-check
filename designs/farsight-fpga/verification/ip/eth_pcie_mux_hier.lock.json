@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:eth_pcie_mux_hier",
+  "definition_digest": "c18afef7ed999173e80960507bbdaf5df949eec3a37fc7d2fba2bff5b606824e",
+  "generated": "2026-09-29T23:14:59Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "eth_pcie_mux_hier",
+  "sources_digest": "b987decc50fbfac78f5b05f3ee7d4ebb6cabce406be2afa613a5f2ce6f94c1ff"
+}

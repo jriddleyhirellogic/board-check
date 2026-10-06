@@ -1,0 +1,86 @@
+\doxysection{x\+LIST\+\_\+\+ITEM Struct Reference}
+\hypertarget{structxLIST__ITEM}{}\label{structxLIST__ITEM}\index{xLIST\_ITEM@{xLIST\_ITEM}}
+
+
+{\ttfamily \+\#include $<$list.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{list_8h_a3611bd5d5d87cb26ac1dc7a4852b94a0}{list\+FIRST\+\_\+\+LIST\+\_\+\+ITEM\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+VALUE}} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} \doxymbox{\hyperlink{structxLIST__ITEM_aa6f3caf3e73107fb0da6fede4b06f104}{x\+Item\+Value}}
+\item 
+struct \doxymbox{\hyperlink{structxLIST__ITEM}{x\+LIST\+\_\+\+ITEM}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{structxLIST__ITEM_a77927cd93dda0c59b3855aca58881ca1}{px\+Next}}
+\item 
+struct \doxymbox{\hyperlink{structxLIST__ITEM}{x\+LIST\+\_\+\+ITEM}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{structxLIST__ITEM_a0294e93ecc18bcdb723038af1027505d}{px\+Previous}}
+\item 
+void \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structxLIST__ITEM_aeb54d184fbcccb5748e66cb2426e3b3f}{pv\+Owner}}
+\item 
+struct \doxymbox{\hyperlink{structxLIST}{x\+LIST}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{structxLIST__ITEM_aaa1244a815a1c4583ac1cc3cc7cb1e77}{px\+Container}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00144}{144}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structxLIST__ITEM_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structxLIST__ITEM_aeb54d184fbcccb5748e66cb2426e3b3f}\index{xLIST\_ITEM@{xLIST\_ITEM}!pvOwner@{pvOwner}}
+\index{pvOwner@{pvOwner}!xLIST\_ITEM@{xLIST\_ITEM}}
+\doxysubsubsection{\texorpdfstring{pvOwner}{pvOwner}}
+{\footnotesize\ttfamily \label{structxLIST__ITEM_aeb54d184fbcccb5748e66cb2426e3b3f} 
+void\texorpdfstring{$\ast$}{*} pv\+Owner}
+
+Pointer to the object (normally a TCB) that contains the list item. There is therefore a two way link between the object containing the list item and the list item itself. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00150}{150}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST__ITEM_aaa1244a815a1c4583ac1cc3cc7cb1e77}\index{xLIST\_ITEM@{xLIST\_ITEM}!pxContainer@{pxContainer}}
+\index{pxContainer@{pxContainer}!xLIST\_ITEM@{xLIST\_ITEM}}
+\doxysubsubsection{\texorpdfstring{pxContainer}{pxContainer}}
+{\footnotesize\ttfamily \label{structxLIST__ITEM_aaa1244a815a1c4583ac1cc3cc7cb1e77} 
+struct \doxymbox{\hyperlink{structxLIST}{x\+LIST}}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} px\+Container}
+
+Pointer to the list in which this list item is placed (if any). 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00151}{151}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST__ITEM_a77927cd93dda0c59b3855aca58881ca1}\index{xLIST\_ITEM@{xLIST\_ITEM}!pxNext@{pxNext}}
+\index{pxNext@{pxNext}!xLIST\_ITEM@{xLIST\_ITEM}}
+\doxysubsubsection{\texorpdfstring{pxNext}{pxNext}}
+{\footnotesize\ttfamily \label{structxLIST__ITEM_a77927cd93dda0c59b3855aca58881ca1} 
+struct \doxymbox{\hyperlink{structxLIST__ITEM}{x\+LIST\+\_\+\+ITEM}}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} px\+Next}
+
+Pointer to the next \doxylink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t} in the list. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00148}{148}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST__ITEM_a0294e93ecc18bcdb723038af1027505d}\index{xLIST\_ITEM@{xLIST\_ITEM}!pxPrevious@{pxPrevious}}
+\index{pxPrevious@{pxPrevious}!xLIST\_ITEM@{xLIST\_ITEM}}
+\doxysubsubsection{\texorpdfstring{pxPrevious}{pxPrevious}}
+{\footnotesize\ttfamily \label{structxLIST__ITEM_a0294e93ecc18bcdb723038af1027505d} 
+struct \doxymbox{\hyperlink{structxLIST__ITEM}{x\+LIST\+\_\+\+ITEM}}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} px\+Previous}
+
+Pointer to the previous \doxylink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t} in the list. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00149}{149}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST__ITEM_aa6f3caf3e73107fb0da6fede4b06f104}\index{xLIST\_ITEM@{xLIST\_ITEM}!xItemValue@{xItemValue}}
+\index{xItemValue@{xItemValue}!xLIST\_ITEM@{xLIST\_ITEM}}
+\doxysubsubsection{\texorpdfstring{xItemValue}{xItemValue}}
+{\footnotesize\ttfamily \label{structxLIST__ITEM_aa6f3caf3e73107fb0da6fede4b06f104} 
+\doxymbox{\hyperlink{list_8h_a3611bd5d5d87cb26ac1dc7a4852b94a0}{list\+FIRST\+\_\+\+LIST\+\_\+\+ITEM\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+VALUE}} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} x\+Item\+Value}
+
+\texorpdfstring{$<$}{<} Set to a known value if config\+USE\+\_\+\+LIST\+\_\+\+DATA\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+BYTES is set to 1. The value being listed. In most cases this is used to sort the list in ascending order. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00147}{147}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+\+Free\+RTOS/\+include/\+\doxymbox{\hyperlink{list_8h}{list.\+h}}\end{DoxyCompactItemize}

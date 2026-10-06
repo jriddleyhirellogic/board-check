@@ -1,0 +1,505 @@
+\doxysection{core\+\_\+gpio.\+c}
+\hypertarget{core__gpio_8c_source}{}\label{core__gpio_8c_source}\index{src/hal/core\_gpio.c@{src/hal/core\_gpio.c}}
+\doxymbox{\hyperlink{core__gpio_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00002}00002\ \textcolor{comment}{\ *\ (c)\ Copyright\ 2008-\/2023\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00003}00003\ \textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00006}00006\ \textcolor{comment}{\ *\ @file\ core\_gpio.c}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00007}00007\ \textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ CoreGPIO\ bare\ metal\ driver\ implementation.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00009}00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00010}00010\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{coregpio__regs_8h}{coregpio\_regs.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h}{core\_gpio.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00014}00014\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00017}\doxymbox{\hyperlink{core__gpio_8c_acfc9b47e257342b23240547957e1857c}{00017}}\ \textcolor{preprocessor}{\#define\ GPIO\_INT\_ENABLE\_MASK\ \ \ \ \ \ \ \ (uint32\_t)0x00000008UL}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00018}\doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{00018}}\ \textcolor{preprocessor}{\#define\ OUTPUT\_BUFFER\_ENABLE\_MASK\ \ \ 0x00000004UL}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00021}\doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{00021}}\ \textcolor{preprocessor}{\#define\ NB\_OF\_GPIO\ \ 32}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00023}\doxymbox{\hyperlink{core__gpio_8c_a2170214b07fabbdcfa3a384c27ec8fa1}{00023}}\ \textcolor{preprocessor}{\#define\ CLEAR\_ALL\_IRQ32\ \ \ \ \ (uint32\_t)0xFFFFFFFF}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00024}\doxymbox{\hyperlink{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1}{00024}}\ \textcolor{preprocessor}{\#define\ CLEAR\_ALL\_IRQ16\ \ \ \ \ (uint16\_t)0xFFFF}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00025}\doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{00025}}\ \textcolor{preprocessor}{\#define\ CLEAR\_ALL\_IRQ8\ \ \ \ \ \ (uint8\_t)0xFF}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00026}00026\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00027}00027\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00031}\doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{00031}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\_init}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00032}00032\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00033}00033\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00034}00034\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ base\_addr,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00035}00035\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\_apb\_width\_t}}\ \ \ \ bus\_width}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00036}00036\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00037}00037\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00038}00038\ \ \ \ \ uint8\_t\ i\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00039}00039\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}}\ cfg\_reg\_addr\ =\ base\_addr;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00040}00040\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00041}00041\ \ \ \ \ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ =\ base\_addr;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00042}00042\ \ \ \ \ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ =\ bus\_width;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00043}00043\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00044}00044\ \ \ \ \ \textcolor{comment}{/*\ Clear\ configuration.\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00045}00045\ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0,\ cfg\_reg\_addr\ =\ base\_addr;\ i\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}};\ ++i\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00046}00046\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00047}00047\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ 0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00048}00048\ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ +=\ 4;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00049}00049\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00050}00050\ \ \ \ \ \textcolor{comment}{/*\ Clear\ any\ pending\ interrupts\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00051}00051\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00052}00052\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ,\ \doxymbox{\hyperlink{core__gpio_8c_a2170214b07fabbdcfa3a384c27ec8fa1}{CLEAR\_ALL\_IRQ32}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ (uint16\_t)\doxymbox{\hyperlink{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1}{CLEAR\_ALL\_IRQ16}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ (uint16\_t)\doxymbox{\hyperlink{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1}{CLEAR\_ALL\_IRQ16}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ (uint8\_t)\doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{CLEAR\_ALL\_IRQ8}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ (uint8\_t)\doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{CLEAR\_ALL\_IRQ8}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ2,\ (uint8\_t)\doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{CLEAR\_ALL\_IRQ8}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ3,\ (uint8\_t)\doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{CLEAR\_ALL\_IRQ8}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00072}00072\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00073}00073\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00075}00075\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00079}\doxymbox{\hyperlink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{00079}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\_config}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00080}00080\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00081}00081\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00082}00082\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00083}00083\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ config}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00084}00084\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00085}00085\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00086}00086\ \ \ \ \ HAL\_ASSERT(\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00087}00087\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00088}00088\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00089}00089\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00090}00090\ \ \ \ \ \ \ \ \ uint32\_t\ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00091}00091\ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ +=\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00092}00092\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ad663ca85f69c6059f03d81bf0d5bf21c}{HW\_set\_32bit\_reg}}(\ cfg\_reg\_addr,\ config\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00093}00093\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00095}00095\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ Verify\ that\ the\ configuration\ was\ correctly\ written.\ Failure\ to\ read}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00096}00096\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ back\ the\ expected\ value\ may\ indicate\ that\ the\ GPIO\ port\ was\ configured}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00097}00097\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ as\ part\ of\ the\ hardware\ flow\ and\ cannot\ be\ modified\ through\ software.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00098}00098\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ It\ may\ also\ indicate\ that\ the\ base\ address\ passed\ as\ parameter\ to}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00099}00099\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ GPIO\_init()\ was\ incorrect.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00100}00100\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00101}00101\ \ \ \ \ \ \ \ \ HAL\_ASSERT(\ \doxymbox{\hyperlink{hw__reg__access_8h_aa7bda6094c1240b40cd9dc35200e3e98}{HW\_get\_32bit\_reg}}(\ cfg\_reg\_addr\ )\ ==\ config\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00102}00102\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00103}00103\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00105}00105\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00109}\doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{00109}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00110}00110\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00111}00111\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00112}00112\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ value}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00113}00113\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00114}00114\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00115}00115\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ readback;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00117}00117\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00118}00118\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00119}00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT,\ value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT0,\ (uint16\_t)value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT1,\ (uint16\_t)(value\ >>\ 16)\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT0,\ (uint8\_t)value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT1,\ (uint8\_t)(value\ >>\ 8)\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT2,\ (uint8\_t)(value\ >>\ 16)\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT3,\ (uint8\_t)(value\ >>\ 24)\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00135}00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00138}00138\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00139}00139\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00140}00140\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00141}00141\ \textcolor{comment}{\ \ \ \ \ *\ Verify\ that\ the\ output\ register\ was\ correctly\ written.\ Failure\ to\ read\ back}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00142}00142\ \textcolor{comment}{\ \ \ \ \ *\ the\ expected\ value\ may\ indicate\ that\ some\ of\ the\ GPIOs\ may\ not\ exist\ due\ to}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00143}00143\ \textcolor{comment}{\ \ \ \ \ *\ the\ number\ of\ GPIOs\ selected\ in\ the\ CoreGPIO\ hardware\ flow\ configuration.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00144}00144\ \textcolor{comment}{\ \ \ \ \ *\ It\ may\ also\ indicate\ that\ the\ base\ address\ or\ APB\ bus\ width\ passed\ as}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00145}00145\ \textcolor{comment}{\ \ \ \ \ *\ parameter\ to\ the\ GPIO\_init()\ function\ do\ not\ match\ the\ hardware\ design.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00146}00146\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00147}00147\ \ \ \ \ readback\ =\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}(\ this\_gpio\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00148}00148\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00149}00149\ \ \ \ \ HAL\_ASSERT(\ readback\ ==\ value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00150}00150\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00152}00152\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00156}\doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{00156}}\ uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00157}00157\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00158}00158\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00159}00159\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00160}00160\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00161}00161\ \ \ \ \ uint32\_t\ gpio\_in\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00162}00162\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00163}00163\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00164}00164\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN1\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00174}00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ \doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\_get\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ (\doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\_get\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN1\ )\ <<\ 8);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ (\doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\_get\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN2\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_in\ |=\ (\doxymbox{\hyperlink{hal_8h_affa58621ab400955a106ac95d68a0e32}{HAL\_get\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_IN3\ )\ <<\ 24);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00184}00184\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00185}00185\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00186}00186\ \ \ \ \ \textcolor{keywordflow}{return}\ gpio\_in;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00187}00187\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00188}00188\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00189}00189\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00193}\doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{00193}}\ uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00194}00194\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00195}00195\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00196}00196\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00197}00197\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00198}00198\ \ \ \ \ uint32\_t\ gpio\_out\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00199}00199\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00200}00200\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00201}00201\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00202}00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT1\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00211}00211\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT1\ )\ <<\ 8);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT2\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ gpio\_out\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT3\ )\ <<\ 24);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00218}00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00221}00221\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00222}00222\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00223}00223\ \ \ \ \ \textcolor{keywordflow}{return}\ gpio\_out;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00224}00224\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00225}00225\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00226}00226\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00230}\doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{00230}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00231}00231\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00232}00232\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00233}00233\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00234}00234\ \ \ \ \ uint8\_t\ \ \ \ \ \ \ \ \ \ \ \ \ value}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00235}00235\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00236}00236\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00237}00237\ \ \ \ \ HAL\_ASSERT(\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00238}00238\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00240}00240\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00241}00241\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00242}00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ outputs\_state;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ 0\ ==\ value\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ \&=\ \string~(1\ <<\ port\_id);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ |=\ 1\ <<\ port\_id;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT,\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00258}00258\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ Verify\ that\ the\ output\ register\ was\ correctly\ written.\ Failure\ to\ read\ back}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00259}00259\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ expected\ value\ may\ indicate\ that\ some\ of\ the\ GPIOs\ may\ not\ exist\ due\ to}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00260}00260\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ number\ of\ GPIOs\ selected\ in\ the\ CoreGPIO\ hardware\ flow\ configuration.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00261}00261\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ It\ may\ also\ indicate\ that\ the\ base\ address\ or\ APB\ bus\ width\ passed\ as}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00262}00262\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ parameter\ to\ the\ GPIO\_init()\ function\ do\ not\ match\ the\ hardware\ design.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00263}00263\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ GPIO\_OUT\ )\ ==\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00268}00268\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ outputs\_state;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ gpio\_out\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ \doxymbox{\hyperlink{coregpio__regs_8h_ae8f7a57cd611067a622b7d1a9fe94da7}{GPIO\_OUT\_REG\_OFFSET}}\ +\ ((port\_id\ >>\ 4)\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a2723921157643f105b88cc1a2efe096c}{HW\_get\_16bit\_reg}}(\ gpio\_out\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ 0\ ==\ value\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ \&=\ \string~(1\ <<\ (port\_id\ \&\ 0x0F));}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ |=\ 1\ <<\ (port\_id\ \&\ 0x0F);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_a558cbaaa80633de78f892beaf86eaeff}{HW\_set\_16bit\_reg}}(\ gpio\_out\_reg\_addr,\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00285}00285\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ Verify\ that\ the\ output\ register\ was\ correctly\ written.\ Failure\ to\ read\ back}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00286}00286\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ expected\ value\ may\ indicate\ that\ some\ of\ the\ GPIOs\ may\ not\ exist\ due\ to}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00287}00287\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ number\ of\ GPIOs\ selected\ in\ the\ CoreGPIO\ hardware\ flow\ configuration.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00288}00288\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ It\ may\ also\ indicate\ that\ the\ base\ address\ or\ APB\ bus\ width\ passed\ as}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00289}00289\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ parameter\ to\ the\ GPIO\_init()\ function\ do\ not\ match\ the\ hardware\ design.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00290}00290\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(\ \doxymbox{\hyperlink{hw__reg__access_8h_a2723921157643f105b88cc1a2efe096c}{HW\_get\_16bit\_reg}}(\ gpio\_out\_reg\_addr\ )\ ==\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00295}00295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint8\_t\ outputs\_state;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ gpio\_out\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ \doxymbox{\hyperlink{coregpio__regs_8h_ae8f7a57cd611067a622b7d1a9fe94da7}{GPIO\_OUT\_REG\_OFFSET}}\ +\ ((port\_id\ >>\ 3)\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ gpio\_out\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ 0\ ==\ value\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ \&=\ \string~(1\ <<\ (port\_id\ \&\ 0x07));}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs\_state\ |=\ 1\ <<\ (port\_id\ \&\ 0x07);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ gpio\_out\_reg\_addr,\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00312}00312\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ Verify\ that\ the\ output\ register\ was\ correctly\ written.\ Failure\ to\ read\ back}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00313}00313\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ expected\ value\ may\ indicate\ that\ some\ of\ the\ GPIOs\ may\ not\ exist\ due\ to}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00314}00314\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ the\ number\ of\ GPIOs\ selected\ in\ the\ CoreGPIO\ hardware\ flow\ configuration.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00315}00315\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ It\ may\ also\ indicate\ that\ the\ base\ address\ or\ APB\ bus\ width\ passed\ as}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00316}00316\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ parameter\ to\ the\ GPIO\_init()\ function\ do\ not\ match\ the\ hardware\ design.}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00317}00317\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ gpio\_out\_reg\_addr\ )\ ==\ outputs\_state\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00322}00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00325}00325\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00326}00326\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00327}00327\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00328}00328\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00332}\doxymbox{\hyperlink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{00332}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\_drive\_inout}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00333}00333\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00334}00334\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00335}00335\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00336}00336\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\_inout\_state\_t}}\ \ inout\_state}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00337}00337\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00338}00338\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00339}00339\ \ \ \ \ uint32\_t\ config;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00340}00340\ \ \ \ \ uint32\_t\ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00341}00341\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00342}00342\ \ \ \ \ HAL\_ASSERT(\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00343}00343\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00344}00344\ \ \ \ \ \textcolor{keywordflow}{switch}(\ inout\_state\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00345}00345\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00346}00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a4511dc6a41c1be0f0d138d3256b9aee3}{GPIO\_DRIVE\_HIGH}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00347}00347\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Set\ output\ high\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00348}00348\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\ this\_gpio,\ port\_id,\ 1\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00349}00349\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Enable\ output\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ config\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ cfg\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ config\ |=\ \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{OUTPUT\_BUFFER\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ config\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00357}00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8a85959287b781889e2e41b2cff4bf3ae1}{GPIO\_DRIVE\_LOW}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Set\ output\ low\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\_set\_output}}(\ this\_gpio,\ port\_id,\ 0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Enable\ output\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ config\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ cfg\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ config\ |=\ \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{OUTPUT\_BUFFER\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ config\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00368}00368\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a188aa7df8ed263b63b5930ed63624fa8ab61ab7b9924925f436b922e4473ab0ca}{GPIO\_HIGH\_Z}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Disable\ output\ buffer\ */}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ config\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ cfg\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ config\ \&=\ \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{\string~OUTPUT\_BUFFER\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ config\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00376}00376\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00379}00379\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00380}00380\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00381}00381\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00382}00382\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00386}\doxymbox{\hyperlink{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}{00386}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\_enable\_irq}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00387}00387\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00388}00388\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00389}00389\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00390}00390\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00391}00391\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00392}00392\ \ \ \ \ uint32\_t\ cfg\_value;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00393}00393\ \ \ \ \ uint32\_t\ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00394}00394\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00395}00395\ \ \ \ \ HAL\_ASSERT(\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00396}00396\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00397}00397\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00398}00398\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00399}00399\ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ +=\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00400}00400\ \ \ \ \ \ \ \ \ cfg\_value\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ cfg\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00401}00401\ \ \ \ \ \ \ \ \ cfg\_value\ |=\ \doxymbox{\hyperlink{core__gpio_8c_acfc9b47e257342b23240547957e1857c}{GPIO\_INT\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00402}00402\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ cfg\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00403}00403\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00404}00404\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00405}00405\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00406}00406\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00410}\doxymbox{\hyperlink{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}{00410}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}{GPIO\_disable\_irq}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00411}00411\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00412}00412\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00413}00413\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00414}00414\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00415}00415\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00416}00416\ \ \ \ \ uint32\_t\ cfg\_value;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00417}00417\ \ \ \ \ uint32\_t\ cfg\_reg\_addr\ =\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00418}00418\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00419}00419\ \ \ \ \ HAL\_ASSERT(\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00420}00420\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00421}00421\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ port\_id\ <\ \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\_OF\_GPIO}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00422}00422\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00423}00423\ \ \ \ \ \ \ \ \ cfg\_reg\_addr\ +=\ (port\_id\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00424}00424\ \ \ \ \ \ \ \ \ cfg\_value\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ cfg\_reg\_addr\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00425}00425\ \ \ \ \ \ \ \ \ cfg\_value\ \&=\ \doxymbox{\hyperlink{core__gpio_8c_acfc9b47e257342b23240547957e1857c}{\string~GPIO\_INT\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00426}00426\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ cfg\_reg\_addr,\ cfg\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00427}00427\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00428}00428\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00429}00429\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00430}00430\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00434}\doxymbox{\hyperlink{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}{00434}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\_clear\_irq}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00435}00435\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00436}00436\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00437}00437\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\_id\_t}}\ \ \ \ \ \ \ \ \ \ \ port\_id}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00438}00438\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00439}00439\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00440}00440\ \ \ \ \ uint32\_t\ irq\_clr\_value\ =\ ((uint32\_t)1)\ <<\ ((uint32\_t)port\_id);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00441}00441\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00442}00442\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00443}00443\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00444}00444\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00445}00445\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00446}00446\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00447}00447\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00448}00448\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00449}00449\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00450}00450\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ irq\_clr\_value\ >>\ 16\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00451}00451\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00452}00452\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00453}00453\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00454}00454\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00455}00455\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ irq\_clr\_value\ >>\ 8\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00456}00456\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ2,\ irq\_clr\_value\ >>\ 16\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00457}00457\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ3,\ irq\_clr\_value\ >>\ 24\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00458}00458\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00459}00459\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00460}00460\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00462}00462\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00463}00463\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00464}00464\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00465}00465\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00466}00466\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00470}\doxymbox{\hyperlink{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}{00470}}\ uint32\_t\ \doxymbox{\hyperlink{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}{GPIO\_get\_irq\_sources}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00471}00471\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00472}00472\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00473}00473\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00474}00474\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00475}00475\ \ \ \ \ uint32\_t\ intr\_src\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00476}00476\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00477}00477\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00478}00478\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00479}00479\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00480}00480\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ =\ \doxymbox{\hyperlink{hal_8h_a3bf3af219cdbfe1a0e7637840ff974e1}{HAL\_get\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00481}00481\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00482}00482\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00483}00483\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00484}00484\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00485}00485\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00486}00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00487}00487\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00488}00488\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00489}00489\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ \doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00490}00490\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1\ )\ <<\ 8);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00491}00491\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ2\ )\ <<\ 16);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00492}00492\ \ \ \ \ \ \ \ \ \ \ \ \ intr\_src\ |=\ (\doxymbox{\hyperlink{hal_8h_a14c1ee42b8a003b2509a45b5c39be711}{HAL\_get\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ3\ )\ <<\ 24);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00493}00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00494}00494\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00495}00495\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00496}00496\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00497}00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00498}00498\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00499}00499\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00500}00500\ \ \ \ \ \textcolor{keywordflow}{return}\ intr\_src;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00501}00501\ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00502}00502\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00503}00503\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00507}\doxymbox{\hyperlink{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}{00507}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}{GPIO\_clear\_all\_irq\_sources}}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00508}00508\ (}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00509}00509\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *\ \ \ this\_gpio,}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00510}00510\ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ bitmask}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00511}00511\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00512}00512\ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00513}00513\ \ \ \ \ uint32\_t\ irq\_clr\_value\ =\ bitmask;}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00514}00514\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00515}00515\ \ \ \ \ \textcolor{keywordflow}{switch}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ )}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00516}00516\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00517}00517\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00518}00518\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_ac0a3d681af67480f2cef068293a60f2b}{HAL\_set\_32bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00519}00519\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00520}00520\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00521}00521\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53ebaa7ea3b22b78be7e81b3b90641b19a4a5}{GPIO\_APB\_16\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00522}00522\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00523}00523\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ irq\_clr\_value\ >>\ 16\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00524}00524\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00525}00525\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00526}00526\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba4f14c98625f18026d2c987c9381b507e}{GPIO\_APB\_8\_BITS\_BUS}}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00527}00527\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ0,\ irq\_clr\_value\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00528}00528\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ1,\ irq\_clr\_value\ >>\ 8\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00529}00529\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ2,\ irq\_clr\_value\ >>\ 16\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00530}00530\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal_8h_a9e82aeb80be0e78a6253d920eefe84fc}{HAL\_set\_8bit\_reg}}(\ this\_gpio-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}},\ IRQ3,\ irq\_clr\_value\ >>\ 24\ );}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00531}00531\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00532}00532\ }
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00533}00533\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ HAL\_ASSERT(0);}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00535}00535\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00536}00536\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{core__gpio_8c_source_l00537}00537\ \}}
+
+\end{DoxyCode}

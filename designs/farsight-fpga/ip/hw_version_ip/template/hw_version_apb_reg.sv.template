@@ -1,0 +1,118 @@
+/*
+ * @file      hw_version_apb_reg.sv
+ * @copyright Copyright (c) 2025 Turion Space. All rights reserved.
+ * @author    Saba Janamian (sjanamian@turionspace.com)
+ * @date      11/25/2025
+ * 
+ * @brief     The registers in this module will be updated during the build time
+ *            and will have the FPGA build information as read only registers.
+ *
+ * @section changelog
+ * - 11/25/2025: Saba Janamian - Initial implementation
+ * 
+ */
+
+
+
+module hw_version_apb_reg #(
+    parameter integer APB_DATA_WIDTH    = 32,
+    parameter integer APB_ADDR_WIDTH    = 32
+)(
+    // APB Slave interface
+    input  logic                          pclk,     // APB clock
+    input  logic                          presetn,  // APB resetn
+    input  logic                          penable,  // APB enable
+    input  logic                          psel,     // APB periph select
+    input  logic [APB_ADDR_WIDTH-1:0]     paddr,    // APB address bus
+    input  logic                          pwrite,   // APB write req
+    input  logic [APB_DATA_WIDTH-1:0]     pwdata,   // APB write data
+    output logic [APB_DATA_WIDTH-1:0]     prdata,   // APB read data
+    output logic                          pready,   // APB ready signal
+    output logic                          pslverr   // APB error signal
+);
+
+//------------------------------------------------------------------------------
+// Register address definitions
+//------------------------------------------------------------------------------
+localparam integer ADDR_BUILD_VERSION         = 'd0; // RO
+localparam integer ADDR_BUILD_GIT_HASH        = 'd1; // RO
+localparam integer ADDR_BUILD_TIME_UTC_SEC    = 'd2; // RO
+
+localparam integer HW_MAJOR                   = 32'd0; // @AUTO UPDATE AT BUILD@
+localparam integer HW_MINOR                   = 32'd0; // @AUTO UPDATE AT BUILD@
+localparam integer HW_FIX                     = 32'd0; // @AUTO UPDATE AT BUILD@
+localparam integer HW_BUILD                   = 32'd0; // @AUTO UPDATE AT BUILD@
+
+localparam integer BUILD_VERSION              = (((HW_MAJOR & 32'hFF) << 24) |
+                                                 ((HW_MINOR & 32'hFF) << 16) |
+                                                 ((HW_FIX   & 32'hFF) <<  8) |
+                                                  (HW_BUILD & 32'hFF));
+localparam integer BUILD_GIT_HASH             = 32'h0; // @AUTO UPDATE AT BUILD@
+localparam integer BUILD_TIME_UTC_SEC         = 32'd0; // @AUTO UPDATE AT BUILD@
+
+//------------------------------------------------------------------------------
+// APB write and read register logic
+//------------------------------------------------------------------------------
+always_ff @(posedge pclk or negedge presetn) begin
+    if(~presetn) begin
+        prdata        <= 'b0;
+        pready        <= 'b0;
+        pslverr       <= 'b0;
+
+    end else begin
+        pslverr <= 'b0; // Not used
+
+        // APB Write operation
+        if(psel && penable && pwrite && paddr[1:0] == 'b0) begin
+            prdata  <= 'b0;
+            pready  <= 'b1;  // Indicate done
+
+            case(paddr[6:2])
+                ADDR_BUILD_VERSION: begin
+                    // Read only
+                end
+
+                ADDR_BUILD_GIT_HASH: begin
+                    // Read only
+                end
+
+                ADDR_BUILD_TIME_UTC_SEC: begin
+                    // Read only
+                end
+
+                default: begin
+                    pslverr <= 'b0;
+                end
+            endcase
+
+        // APB READ operation
+        end else if(psel && penable && !pwrite && paddr[1:0] == 'b0) begin
+            pready  <= 'b1; // Indicate done
+
+            case(paddr[6:2])
+                ADDR_BUILD_VERSION: begin
+                    prdata     <= BUILD_VERSION;
+                end
+
+                ADDR_BUILD_GIT_HASH: begin
+                    prdata     <= BUILD_GIT_HASH;
+                end
+
+                ADDR_BUILD_TIME_UTC_SEC: begin
+                    prdata     <= BUILD_TIME_UTC_SEC;
+                end
+
+                default: begin
+                    pslverr    <= 'b0;
+                end
+            endcase
+
+        end else begin
+            pready             <= 'b0;
+            prdata             <= 'b0;
+            pslverr            <= 'b0;
+        end
+    end
+end
+
+endmodule

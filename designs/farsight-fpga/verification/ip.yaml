@@ -1,0 +1,87 @@
+# Vendor components generated for simulation.
+#
+# The build defines 81 vendor components beside the SmartDesigns that use them
+# (bd/<board>/**/components/, ip/**/components/). A block-level test needs a
+# handful, so only those listed here are generated -- by `make ip`, which needs
+# Libero but not a synthesis licence, into verification/ip/<name>/ with a
+# committed lockfile beside each.
+#
+# An entry is a name, or for a SmartDesign a mapping naming the RTL
+# directories to link (`sources`) and the build's own scripts to run first
+# (`prepare`), exactly as synth.tcl links and runs them.
+#
+# List a component when a test first compiles one; `sim.vendor()` refuses a
+# component that is not listed, so a test cannot quietly depend on IP that
+# `make ip` would never produce. Remove one when no test compiles it.
+components:
+  # COREFIFO configured for the image-metadata clock crossing
+  # (ip/image_metadata_ip). Plain Verilog, no hard blocks: the first component
+  # listed, to prove the flow end to end.
+  - COREFIFO_METADATA_CDC
+  # The PPS hierarchy: pps_generator, pps and pps_mux wired as the build wires
+  # them. The discipline input of `pps` is driven by the mux output, which is
+  # not a port, so PF-PPS-08 is only observable through this wiring -- and a
+  # hand-written copy of it would be a second definition that drifts.
+  - name: pps_hier
+    sources: [ip/pps_ip/src]
+    prepare: [ip/pps_ip/pps_ip.tcl]
+  # The DDR4 write DMA of each bank with its APB register block, wired as the
+  # build wires them. The stall flag of PF-DMAW-09 is observable to firmware
+  # only through this register block. A SmartDesign's manifest lists its own
+  # netlist and not the cores below it, so the COREFIFO each DMA instantiates
+  # for its pixel-to-DDR clock crossing is listed as well.
+  - COREFIFO_DMA_WR_8GB
+  - COREFIFO_DMA_WR_16GB
+  - name: dma_write_ddr4_8gb_hier
+    sources: [ip/dma_write_ip/src]
+    prepare: [ip/dma_write_ip/dma_write_ip.tcl]
+  - name: dma_write_ddr4_16gb_hier
+    sources: [ip/dma_write_ip/src]
+    prepare: [ip/dma_write_ip/dma_write_ip.tcl]
+  # The DDR4 read path of each bank: the read DMA with its COREFIFO, the line
+  # and packet controller, and both register blocks, wired as the build wires
+  # them. The packetiser's timing constants assume the real FIFO's read
+  # latency, so PF-DMAR-16/18/23 run against the real FIFO, not a model.
+  - COREFIFO_DMA_READ_DDR4_8GB_C0
+  - COREFIFO_DMA_READ_DDR4_16GB_C0
+  - name: dma_read_ddr4_8gb_hier
+    sources: [ip/dma_read_ip/src, ip/dma_read_ctrl_ip/src]
+    prepare: [ip/dma_read_ip/dma_read_ip.tcl, ip/dma_read_ctrl_ip/dma_read_ctrl_ip.tcl]
+  - name: dma_read_ddr4_16gb_hier
+    sources: [ip/dma_read_ip/src, ip/dma_read_ctrl_ip/src]
+    prepare: [ip/dma_read_ip/dma_read_ip.tcl, ip/dma_read_ctrl_ip/dma_read_ctrl_ip.tcl]
+  # The PCIe read path: the demux the host writes its bank select and frame
+  # index into, a translator per bank, and the ETH/PCIe mux in front of each
+  # bank's DDR4 port, with the CoreGPIO whose output selects PCIe. PF-PCIE-07,
+  # -08 and -09 are observable at its AXI boundaries, as the build wires it.
+  - CoreGPIO_C7
+  - name: eth_pcie_mux_hier
+    sources: [ip/eth_pcie_mux_ip/src]
+    prepare: [ip/eth_pcie_mux_ip/eth_pcie_mux_ip.tcl]
+  # The focus mechanism, as the build instantiates it: two STEPPER_DRIVERs
+  # (STEP_DIR with its GPIO and PWM cores), the focus watchdog, the LVDT
+  # readout, and the AND gates and output buffers between them and the pins.
+  # PF-FOCUS-01's suppression is those AND gates, which exist only here. The
+  # SmartDesigns below it and their cores are listed for the same reason as the
+  # DMA FIFOs: a SmartDesign's manifest lists only its own netlist.
+  - FOCUS_MECH_CoreGPIO_C0
+  - FOCUS_MECH_CoreGPIO_C2
+  - FOCUS_MECH_CoreGPIO_C3
+  - FOCUS_MECH_CoreGPIO_C4
+  - corepwm_C0
+  - SIN_COS_GEN
+  - LVDT_Gain
+  - STEPPER_DRIVER
+  - LOCK_IN_CHAIN
+  - LVDT_READOUT
+  - name: focus_mech
+    sources: [ip/focus_mech_ip/hw/ip/stepper_ip/src, ip/focus_mech_ip/hw/ip/lvdt_ip/src, ip/focus_mech_ip/hw/ip/watchdog_ip/src]
+    prepare: [ip/focus_mech_ip/hw/ip/stepper_ip/STEPPER_DRIVER_recursive.tcl, ip/focus_mech_ip/hw/ip/watchdog_ip/watchdog_ip.tcl,
+              ip/focus_mech_ip/hw/ip/lvdt_ip/LVDT_READOUT_recursive.tcl, ip/focus_mech_ip/hw/ip/focus_mech_ip/focus_mech_recursive.tcl]
+  # The UDP image transmitter: the mux between the two DDR4 read paths, the
+  # transmitter and its APB registers, and the MAC transmit mux it shares with
+  # the Ethernet responder, wired as the build wires them.
+  - COREFIFO_MAC_BACKPRES
+  - name: udp_hier
+    sources: [ip/udp_ip/src, ip/responder_ip/src]
+    prepare: [ip/udp_ip/udp_ip.tcl, ip/responder_ip/responder_ip.tcl]

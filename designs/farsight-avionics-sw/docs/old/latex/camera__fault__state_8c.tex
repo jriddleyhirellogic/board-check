@@ -1,0 +1,61 @@
+\doxysection{src/\+\+Camera\+States/\+camera\+\_\+fault\+\_\+state.c File Reference}
+\hypertarget{camera__fault__state_8c}{}\label{camera__fault__state_8c}\index{src/CameraStates/camera\_fault\_state.c@{src/CameraStates/camera\_fault\_state.c}}
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+Include dependency graph for camera\+\_\+fault\+\_\+state.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__fault__state_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{camera__fault__state_8c_a2fe1ab7ae85a07447781d37cfc2588f0}{Camera\+\_\+\+Fault\+\_\+\+State}} (Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em A fault has been experienced by the camera This is an absorbing state. It will not respond to events. To exit this state, a reset or power cycle is needed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__fault__state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__fault__state_8c_a2fe1ab7ae85a07447781d37cfc2588f0}\index{camera\_fault\_state.c@{camera\_fault\_state.c}!Camera\_Fault\_State@{Camera\_Fault\_State}}
+\index{Camera\_Fault\_State@{Camera\_Fault\_State}!camera\_fault\_state.c@{camera\_fault\_state.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Fault\_State()}{Camera\_Fault\_State()}}
+{\footnotesize\ttfamily \label{camera__fault__state_8c_a2fe1ab7ae85a07447781d37cfc2588f0} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Camera\+\_\+\+Fault\+\_\+\+State (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+A fault has been experienced by the camera This is an absorbing state. It will not respond to events. To exit this state, a reset or power cycle is needed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & State context \\
+\hline
+{\em event} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Next state. 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{camera__fault__state_8c_source_l00021}{21}} of file \doxymbox{\hyperlink{camera__fault__state_8c_source}{camera\+\_\+fault\+\_\+state.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=194pt]{camera__fault__state_8c_a2fe1ab7ae85a07447781d37cfc2588f0_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__fault__state_8c_a2fe1ab7ae85a07447781d37cfc2588f0_icgraph}
+\end{center}
+\end{figure}

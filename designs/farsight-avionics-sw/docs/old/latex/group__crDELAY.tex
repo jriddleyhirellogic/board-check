@@ -1,0 +1,47 @@
+\doxysection{cr\+DELAY }
+\hypertarget{group__crDELAY}{}\label{group__crDELAY}\index{crDELAY@{crDELAY}}
+croutine. h 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{croutine_8h_a05a06feb11028f2d1d440ea335f562ba}{crDELAY}}(\ \doxymbox{\hyperlink{croutine_8h_a33b9d058688c92258155b5756d9936dd}{CoRoutineHandle\_t}}\ xHandle,\ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ xTicksToDelay\ );}
+
+\end{DoxyCode}
+
+
+Delay a co-\/routine for a fixed period of time.
+
+cr\+DELAY can only be called from the co-\/routine function itself -\/ not from within a function called by the co-\/routine function. This is because co-\/routines do not maintain their own stack.
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Handle} & The handle of the co-\/routine to delay. This is the x\+Handle parameter of the co-\/routine function.\\
+\hline
+{\em x\+Tick\+To\+Delay} & The number of ticks that the co-\/routine should delay for. The actual amount of time this equates to is defined by config\+TICK\+\_\+\+RATE\+\_\+\+HZ (set in \doxylink{FreeRTOSConfig_8h}{Free\+RTOSConfig.\+h}). The constant port\+TICK\+\_\+\+PERIOD\+\_\+\+MS can be used to convert ticks to milliseconds.\\
+\hline
+\end{DoxyParams}
+Example usage:\+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{comment}{//\ Co-\/routine\ to\ be\ created.}}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ vACoRoutine(\ \doxymbox{\hyperlink{croutine_8h_a33b9d058688c92258155b5756d9936dd}{CoRoutineHandle\_t}}\ xHandle,\ \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBaseType\_t}}\ uxIndex\ )}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\textcolor{comment}{//\ Variables\ in\ co-\/routines\ must\ be\ declared\ static\ if\ they\ must\ maintain\ value\ across\ a\ blocking\ call.}}
+\DoxyCodeLine{\textcolor{comment}{//\ This\ may\ not\ be\ necessary\ for\ const\ variables.}}
+\DoxyCodeLine{\textcolor{comment}{//\ We\ are\ to\ delay\ for\ 200ms.}}
+\DoxyCodeLine{\textcolor{keyword}{static}\ \textcolor{keyword}{const}\ xTickType\ xDelayTime\ =\ 200\ /\ \doxymbox{\hyperlink{portmacro_8h_a554d9322ce7f698a86a22b21234bd8cd}{portTICK\_PERIOD\_MS}};}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Must\ start\ every\ co-\/routine\ with\ a\ call\ to\ crSTART();}}
+\DoxyCodeLine{\ \ \doxymbox{\hyperlink{croutine_8h_a19a57a201a325e8af1207ed68c4aedde}{crSTART}}(\ xHandle\ );}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{keywordflow}{for}(\ ;;\ )}
+\DoxyCodeLine{\ \ \{}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{comment}{//\ Delay\ for\ 200ms.}}
+\DoxyCodeLine{\ \ \ \ \ \doxymbox{\hyperlink{croutine_8h_a05a06feb11028f2d1d440ea335f562ba}{crDELAY}}(\ xHandle,\ xDelayTime\ );}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \ \textcolor{comment}{//\ Do\ something\ here.}}
+\DoxyCodeLine{\ \ \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \textcolor{comment}{//\ Must\ end\ every\ co-\/routine\ with\ a\ call\ to\ crEND();}}
+\DoxyCodeLine{\ \ \doxymbox{\hyperlink{croutine_8h_ae6038cc976689b50000475ebfc4e2f23}{crEND}}();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ 

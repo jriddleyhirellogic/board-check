@@ -1,0 +1,645 @@
+   1              		.file	"hal_pwm.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_PWM,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_PWM
+  13              	v_Init_PWM:
+  14              	.LFB0:
+  15              		.file 1 "../src/hal/hal_pwm.c"
+   1:../src/hal/hal_pwm.c **** /*
+   2:../src/hal/hal_pwm.c ****  * pwm.c
+   3:../src/hal/hal_pwm.c ****  *
+   4:../src/hal/hal_pwm.c ****  *  Created on: Sep 29, 2025
+   5:../src/hal/hal_pwm.c ****  *      Author: iboard
+   6:../src/hal/hal_pwm.c ****  */
+   7:../src/hal/hal_pwm.c **** #include <assert.h>
+   8:../src/hal/hal_pwm.c **** #include "hal.h"
+   9:../src/hal/hal_pwm.c **** #include "hw_reg_access.h"
+  10:../src/hal/hal_pwm.c **** #include "pwm.h"
+  11:../src/hal/hal_pwm.c **** 
+  12:../src/hal/hal_pwm.c **** /**
+  13:../src/hal/hal_pwm.c ****  * @fn void v_Init_PWM(PWM_Instance_t*, PWM_Init_t*)
+  14:../src/hal/hal_pwm.c ****  * @brief Initializes the pwm VRef generator used to set the current limit.
+  15:../src/hal/hal_pwm.c ****  * @param instance to particular PWM instance.
+  16:../src/hal/hal_pwm.c ****  * @param init
+  17:../src/hal/hal_pwm.c ****  */
+  18:../src/hal/hal_pwm.c **** void v_Init_PWM( PWM_Instance_t *instance, PWM_Init_t *init)
+  19:../src/hal/hal_pwm.c **** {
+  16              		.loc 1 19 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  20:../src/hal/hal_pwm.c ****     // Set base address
+  21:../src/hal/hal_pwm.c ****     instance->u32_Base_Address = init->u32_Base_Address;
+  19              		.loc 1 21 5
+  19:../src/hal/hal_pwm.c ****     // Set base address
+  20              		.loc 1 19 1 is_stmt 0
+  21 0000 130101FF 		addi	sp,sp,-16
+  22              		.cfi_def_cfa_offset 16
+  23 0004 23248100 		sw	s0,8(sp)
+  24              		.cfi_offset 8, -8
+  25 0008 13040500 		mv	s0,a0
+  26              		.loc 1 21 38
+  27 000c 03A50500 		lw	a0,0(a1)
+  28              	.LVL1:
+  19:../src/hal/hal_pwm.c ****     // Set base address
+  29              		.loc 1 19 1
+  30 0010 23229100 		sw	s1,4(sp)
+  31              		.cfi_offset 9, -12
+  32 0014 93840500 		mv	s1,a1
+  33              		.loc 1 21 32
+  34 0018 2320A400 		sw	a0,0(s0)
+  22:../src/hal/hal_pwm.c **** 
+  23:../src/hal/hal_pwm.c ****     // Start with PWM disabled
+  24:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM_ENABLE_0_7, 0);
+  35              		.loc 1 24 5 is_stmt 1
+  36 001c 93050000 		li	a1,0
+  37              	.LVL2:
+  38 0020 13058500 		addi	a0,a0,8
+  19:../src/hal/hal_pwm.c ****     // Set base address
+  39              		.loc 1 19 1 is_stmt 0
+  40 0024 23261100 		sw	ra,12(sp)
+  41              		.cfi_offset 1, -4
+  42              		.loc 1 24 5
+  43 0028 97000000 		call	HW_set_16bit_reg
+  43      E7800000 
+  44              	.LVL3:
+  25:../src/hal/hal_pwm.c **** 
+  26:../src/hal/hal_pwm.c ****     // Prescaler
+  27:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PRESCALE, init->u16_Prescale );
+  45              		.loc 1 27 5 is_stmt 1
+  46 0030 83D54400 		lhu	a1,4(s1)
+  47 0034 03250400 		lw	a0,0(s0)
+  48 0038 97000000 		call	HW_set_16bit_reg
+  48      E7800000 
+  49              	.LVL4:
+  28:../src/hal/hal_pwm.c **** 
+  29:../src/hal/hal_pwm.c ****     // Period - in cycles of clk/prescale value
+  30:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PERIOD, init->u16_Period );
+  50              		.loc 1 30 5
+  51 0040 03250400 		lw	a0,0(s0)
+  52 0044 83D56400 		lhu	a1,6(s1)
+  53 0048 13054500 		addi	a0,a0,4
+  54 004c 97000000 		call	HW_set_16bit_reg
+  54      E7800000 
+  55              	.LVL5:
+  31:../src/hal/hal_pwm.c **** 
+  32:../src/hal/hal_pwm.c ****     // Posedge
+  33:../src/hal/hal_pwm.c ****     //HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_POSEDGE, init->u16_Posedge );
+  34:../src/hal/hal_pwm.c **** 
+  35:../src/hal/hal_pwm.c ****     // Negedge
+  36:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, init->u16_Negedge );
+  56              		.loc 1 36 5
+  57 0054 03250400 		lw	a0,0(s0)
+  58 0058 83D5A400 		lhu	a1,10(s1)
+  59 005c 13054501 		addi	a0,a0,20
+  60 0060 97000000 		call	HW_set_16bit_reg
+  60      E7800000 
+  61              	.LVL6:
+  37:../src/hal/hal_pwm.c **** 
+  38:../src/hal/hal_pwm.c ****     // Enable channel 0
+  39:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM_ENABLE_0_7, 1 );
+  62              		.loc 1 39 5
+  63 0068 03250400 		lw	a0,0(s0)
+  40:../src/hal/hal_pwm.c **** 
+  41:../src/hal/hal_pwm.c **** }
+  64              		.loc 1 41 1 is_stmt 0
+  65 006c 03248100 		lw	s0,8(sp)
+  66              		.cfi_restore 8
+  67              	.LVL7:
+  68 0070 8320C100 		lw	ra,12(sp)
+  69              		.cfi_restore 1
+  70 0074 83244100 		lw	s1,4(sp)
+  71              		.cfi_restore 9
+  72              	.LVL8:
+  39:../src/hal/hal_pwm.c **** 
+  73              		.loc 1 39 5
+  74 0078 93051000 		li	a1,1
+  75              		.loc 1 41 1
+  39:../src/hal/hal_pwm.c **** 
+  76              		.loc 1 39 5
+  77 007c 13058500 		addi	a0,a0,8
+  78              		.loc 1 41 1
+  79 0080 13010101 		addi	sp,sp,16
+  80              		.cfi_def_cfa_offset 0
+  39:../src/hal/hal_pwm.c **** 
+  81              		.loc 1 39 5
+  82 0084 17030000 		tail	HW_set_16bit_reg
+  82      67000300 
+  83              	.LVL9:
+  84              		.cfi_endproc
+  85              	.LFE0:
+  87              		.section	.text.v_Set_PWM_Duty_Cycle,"ax",@progbits
+  88              		.align	2
+  89              		.globl	v_Set_PWM_Duty_Cycle
+  91              	v_Set_PWM_Duty_Cycle:
+  92              	.LFB1:
+  42:../src/hal/hal_pwm.c **** 
+  43:../src/hal/hal_pwm.c **** /**
+  44:../src/hal/hal_pwm.c ****  * @fn void v_Set_PWM_Duty_Cycle(PWM_Instance_t*, uint16_t)
+  45:../src/hal/hal_pwm.c ****  * @brief Sets the PWM duty cycle
+  46:../src/hal/hal_pwm.c ****  * The PWM signal is lowpass filtered to produce a voltage which is input to the stepper controller
+  47:../src/hal/hal_pwm.c ****  * The output voltage is given by: v_out = V_ref * u16_Duty_Cycle/(2^16-1)
+  48:../src/hal/hal_pwm.c ****  * @param instance The actual instance of the PWM generator in case system has more than one.
+  49:../src/hal/hal_pwm.c ****  * @param u16_Duty_Cycle
+  50:../src/hal/hal_pwm.c ****  */
+  51:../src/hal/hal_pwm.c **** void v_Set_PWM_Duty_Cycle( PWM_Instance_t *instance, uint16_t u16_Duty_Cycle )
+  52:../src/hal/hal_pwm.c **** {
+  93              		.loc 1 52 1 is_stmt 1
+  94              		.cfi_startproc
+  95              	.LVL10:
+  53:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, u16_Duty_Cycle );
+  96              		.loc 1 53 5
+  97 0000 03250500 		lw	a0,0(a0)
+  98              	.LVL11:
+  99 0004 13054501 		addi	a0,a0,20
+ 100 0008 17030000 		tail	HW_set_16bit_reg
+ 100      67000300 
+ 101              	.LVL12:
+ 102              		.cfi_endproc
+ 103              	.LFE1:
+ 105              		.section	.text.PWM_Set_Voltage_mV,"ax",@progbits
+ 106              		.align	2
+ 107              		.globl	PWM_Set_Voltage_mV
+ 109              	PWM_Set_Voltage_mV:
+ 110              	.LFB2:
+  54:../src/hal/hal_pwm.c **** }
+  55:../src/hal/hal_pwm.c **** 
+  56:../src/hal/hal_pwm.c **** /*
+  57:../src/hal/hal_pwm.c ****  * The relationship between the data duty cycle and the current setpoint is:
+  58:../src/hal/hal_pwm.c ****  * I_FS = (V_Ref / K_V) * DC (%)
+  59:../src/hal/hal_pwm.c ****  *
+  60:../src/hal/hal_pwm.c ****  *      => DC(%) = (I_FS(mA) * 1.32) / 3200 (mV)
+  61:../src/hal/hal_pwm.c ****  */
+  62:../src/hal/hal_pwm.c **** 
+  63:../src/hal/hal_pwm.c **** /**
+  64:../src/hal/hal_pwm.c ****  * @fn void PWM_Set_Voltage_mV(PWM_Instance_t*, uint16_t)
+  65:../src/hal/hal_pwm.c ****  * @brief Converts a desired voltage into an equivalent duty cycle.
+  66:../src/hal/hal_pwm.c ****  * This is assuming VRef = 3200 mV.
+  67:../src/hal/hal_pwm.c ****  * @param instance PWM instance in use.
+  68:../src/hal/hal_pwm.c ****  * @param u16_V_Set_mV Desired output voltage.
+  69:../src/hal/hal_pwm.c ****  */
+  70:../src/hal/hal_pwm.c **** void PWM_Set_Voltage_mV( PWM_Instance_t *instance, uint16_t u16_V_Set_mV )
+  71:../src/hal/hal_pwm.c **** {
+ 111              		.loc 1 71 1
+ 112              		.cfi_startproc
+ 113              	.LVL13:
+  72:../src/hal/hal_pwm.c ****     uint32_t u32_Temp;
+ 114              		.loc 1 72 5
+  73:../src/hal/hal_pwm.c ****     uint16_t u16_DC_Setpoint;
+ 115              		.loc 1 73 5
+  74:../src/hal/hal_pwm.c ****     /** PWM Count = (set_v_mv / vref_mv) * max_count
+  75:../src/hal/hal_pwm.c ****                   = (max_count / vref_mv) * set_v_mv
+  76:../src/hal/hal_pwm.c ****                */
+  77:../src/hal/hal_pwm.c ****     u32_Temp = COUNT_PER_MV * (uint32_t)u16_V_Set_mV;
+ 116              		.loc 1 77 5
+  78:../src/hal/hal_pwm.c ****     u16_DC_Setpoint = (uint16_t)(u32_Temp >> 10 );
+ 117              		.loc 1 78 5
+  79:../src/hal/hal_pwm.c **** #ifndef FULL_STEPPER_CURRENT
+  80:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, u16_DC_Setpoint );
+  81:../src/hal/hal_pwm.c **** #else
+  82:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, 0xFFFF );
+ 118              		.loc 1 82 5
+ 119 0000 03250500 		lw	a0,0(a0)
+ 120              	.LVL14:
+ 121 0004 B7050100 		li	a1,65536
+ 122              	.LVL15:
+ 123 0008 9385F5FF 		addi	a1,a1,-1
+ 124 000c 13054501 		addi	a0,a0,20
+ 125 0010 17030000 		tail	HW_set_16bit_reg
+ 125      67000300 
+ 126              	.LVL16:
+ 127              		.cfi_endproc
+ 128              	.LFE2:
+ 130              		.section	.text.PWM_Set_Current_mA,"ax",@progbits
+ 131              		.align	2
+ 132              		.globl	PWM_Set_Current_mA
+ 134              	PWM_Set_Current_mA:
+ 135              	.LFB3:
+  83:../src/hal/hal_pwm.c **** #endif
+  84:../src/hal/hal_pwm.c **** 
+  85:../src/hal/hal_pwm.c **** }
+  86:../src/hal/hal_pwm.c **** 
+  87:../src/hal/hal_pwm.c **** /**
+  88:../src/hal/hal_pwm.c ****  * @fn void PWM_Set_Current_mA(PWM_Instance_t*, uint16_t)
+  89:../src/hal/hal_pwm.c ****  * @brief Converts a desired max current for stepper into an equivalent duty cycle.
+  90:../src/hal/hal_pwm.c ****  * This is assuming the use of a TI DRV8434 stepper driver IC.
+  91:../src/hal/hal_pwm.c ****  * @param instance The PWM instance in use.
+  92:../src/hal/hal_pwm.c ****  * @param u16_I_Set_mA Desired max current in mA.
+  93:../src/hal/hal_pwm.c ****  */
+  94:../src/hal/hal_pwm.c **** void PWM_Set_Current_mA( PWM_Instance_t *instance, uint16_t u16_I_Set_mA )
+  95:../src/hal/hal_pwm.c **** {
+ 136              		.loc 1 95 1
+ 137              		.cfi_startproc
+ 138              	.LVL17:
+  96:../src/hal/hal_pwm.c ****     /**
+  97:../src/hal/hal_pwm.c ****      * Count/2^16 = (I_mA * 1.32)/V_ref(mV)
+  98:../src/hal/hal_pwm.c ****      * => Count = (I_mA *1.32 * 2^16)/3200   assumes Vref = 3200 mV
+  99:../src/hal/hal_pwm.c ****      *          ~= I_mA * 27
+ 100:../src/hal/hal_pwm.c ****      */
+ 101:../src/hal/hal_pwm.c ****     assert(u16_I_Set_mA < I_MAX_MA );
+ 139              		.loc 1 101 5
+ 140 0000 B7170000 		li	a5,4096
+ 141 0004 9387379C 		addi	a5,a5,-1597
+ 142 0008 63F8B702 		bleu	a1,a5,.L6
+  95:../src/hal/hal_pwm.c ****     /**
+ 143              		.loc 1 95 1 is_stmt 0 discriminator 1
+ 144 000c 130101FF 		addi	sp,sp,-16
+ 145              		.cfi_def_cfa_offset 16
+ 146              		.loc 1 101 5 discriminator 1
+ 147 0010 97060000 		lla	a3,.LC0
+ 147      93860600 
+ 148 0018 17060000 		lla	a2,.LANCHOR0
+ 148      13060600 
+ 149 0020 93055006 		li	a1,101
+ 150              	.LVL18:
+ 151 0024 17050000 		lla	a0,.LC1
+ 151      13050500 
+ 152              	.LVL19:
+  95:../src/hal/hal_pwm.c ****     /**
+ 153              		.loc 1 95 1 discriminator 1
+ 154 002c 23261100 		sw	ra,12(sp)
+ 155              		.cfi_offset 1, -4
+ 156              		.loc 1 101 5 discriminator 1
+ 157 0030 97000000 		call	__assert_func
+ 157      E7800000 
+ 158              	.LVL20:
+ 159              	.L6:
+ 160              		.cfi_def_cfa_offset 0
+ 161              		.cfi_restore 1
+ 102:../src/hal/hal_pwm.c ****     uint16_t u16_DC_Setpoint = u16_I_Set_mA * 27;
+ 162              		.loc 1 102 5 is_stmt 1
+ 103:../src/hal/hal_pwm.c **** #ifndef FULL_STEPPER_CURRENT
+ 104:../src/hal/hal_pwm.c **** #ifdef AVIONICS_BOARD
+ 105:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, u16_DC_Setpoint*10 );
+ 106:../src/hal/hal_pwm.c **** #else
+ 107:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, u16_DC_Setpoint );
+ 108:../src/hal/hal_pwm.c **** #endif
+ 109:../src/hal/hal_pwm.c **** #else
+ 110:../src/hal/hal_pwm.c ****     HAL_set_16bit_reg( instance->u32_Base_Address, PWM1_NEGEDGE, 0xFFFF );
+ 163              		.loc 1 110 5
+ 164 0038 03250500 		lw	a0,0(a0)
+ 165              	.LVL21:
+ 166 003c B7050100 		li	a1,65536
+ 167              	.LVL22:
+ 168 0040 9385F5FF 		addi	a1,a1,-1
+ 169 0044 13054501 		addi	a0,a0,20
+ 170 0048 17030000 		tail	HW_set_16bit_reg
+ 170      67000300 
+ 171              	.LVL23:
+ 172              		.cfi_endproc
+ 173              	.LFE3:
+ 175              		.section	.rodata.PWM_Set_Current_mA.str1.4,"aMS",@progbits,1
+ 176              		.align	2
+ 177              	.LC0:
+ 178 0000 7531365F 		.string	"u16_I_Set_mA < I_MAX_MA"
+ 178      495F5365 
+ 178      745F6D41 
+ 178      203C2049 
+ 178      5F4D4158 
+ 179              	.LC1:
+ 180 0018 2E2E2F73 		.string	"../src/hal/hal_pwm.c"
+ 180      72632F68 
+ 180      616C2F68 
+ 180      616C5F70 
+ 180      776D2E63 
+ 181              		.section	.rodata.__func__.1662,"a"
+ 182              		.align	2
+ 183              		.set	.LANCHOR0,. + 0
+ 186              	__func__.1662:
+ 187 0000 50574D5F 		.string	"PWM_Set_Current_mA"
+ 187      5365745F 
+ 187      43757272 
+ 187      656E745F 
+ 187      6D4100
+ 188              		.text
+ 189              	.Letext0:
+ 190              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 191              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 192              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/pwm.h"
+ 193              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/assert.h"
+ 194              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/hw_reg_access.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hal_pwm.c
+<<<<<<< HEAD
+     /tmp/ccFeHxmI.s:13     .text.v_Init_PWM:0000000000000000 v_Init_PWM
+     /tmp/ccFeHxmI.s:17     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:19     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:20     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:21     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:22     .text.v_Init_PWM:0000000000000004 .L0 
+     /tmp/ccFeHxmI.s:24     .text.v_Init_PWM:0000000000000008 .L0 
+     /tmp/ccFeHxmI.s:27     .text.v_Init_PWM:000000000000000c .L0 
+     /tmp/ccFeHxmI.s:30     .text.v_Init_PWM:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:31     .text.v_Init_PWM:0000000000000014 .L0 
+     /tmp/ccFeHxmI.s:34     .text.v_Init_PWM:0000000000000018 .L0 
+     /tmp/ccFeHxmI.s:36     .text.v_Init_PWM:000000000000001c .L0 
+     /tmp/ccFeHxmI.s:40     .text.v_Init_PWM:0000000000000024 .L0 
+     /tmp/ccFeHxmI.s:41     .text.v_Init_PWM:0000000000000028 .L0 
+     /tmp/ccFeHxmI.s:43     .text.v_Init_PWM:0000000000000028 .L0 
+     /tmp/ccFeHxmI.s:46     .text.v_Init_PWM:0000000000000030 .L0 
+     /tmp/ccFeHxmI.s:51     .text.v_Init_PWM:0000000000000040 .L0 
+     /tmp/ccFeHxmI.s:57     .text.v_Init_PWM:0000000000000054 .L0 
+     /tmp/ccFeHxmI.s:63     .text.v_Init_PWM:0000000000000068 .L0 
+     /tmp/ccFeHxmI.s:65     .text.v_Init_PWM:000000000000006c .L0 
+     /tmp/ccFeHxmI.s:66     .text.v_Init_PWM:0000000000000070 .L0 
+     /tmp/ccFeHxmI.s:69     .text.v_Init_PWM:0000000000000074 .L0 
+     /tmp/ccFeHxmI.s:71     .text.v_Init_PWM:0000000000000078 .L0 
+     /tmp/ccFeHxmI.s:74     .text.v_Init_PWM:0000000000000078 .L0 
+     /tmp/ccFeHxmI.s:76     .text.v_Init_PWM:000000000000007c .L0 
+     /tmp/ccFeHxmI.s:77     .text.v_Init_PWM:000000000000007c .L0 
+     /tmp/ccFeHxmI.s:79     .text.v_Init_PWM:0000000000000080 .L0 
+     /tmp/ccFeHxmI.s:80     .text.v_Init_PWM:0000000000000084 .L0 
+     /tmp/ccFeHxmI.s:82     .text.v_Init_PWM:0000000000000084 .L0 
+     /tmp/ccFeHxmI.s:84     .text.v_Init_PWM:000000000000008c .L0 
+     /tmp/ccFeHxmI.s:91     .text.v_Set_PWM_Duty_Cycle:0000000000000000 v_Set_PWM_Duty_Cycle
+     /tmp/ccFeHxmI.s:94     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:96     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:97     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:102    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:109    .text.PWM_Set_Voltage_mV:0000000000000000 PWM_Set_Voltage_mV
+     /tmp/ccFeHxmI.s:112    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:114    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:115    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:116    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:117    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:118    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:119    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:127    .text.PWM_Set_Voltage_mV:0000000000000018 .L0 
+     /tmp/ccFeHxmI.s:134    .text.PWM_Set_Current_mA:0000000000000000 PWM_Set_Current_mA
+     /tmp/ccFeHxmI.s:137    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:139    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:140    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:144    .text.PWM_Set_Current_mA:000000000000000c .L0 
+     /tmp/ccFeHxmI.s:145    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:147    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:154    .text.PWM_Set_Current_mA:000000000000002c .L0 
+     /tmp/ccFeHxmI.s:155    .text.PWM_Set_Current_mA:0000000000000030 .L0 
+     /tmp/ccFeHxmI.s:157    .text.PWM_Set_Current_mA:0000000000000030 .L0 
+     /tmp/ccFeHxmI.s:160    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccFeHxmI.s:161    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccFeHxmI.s:163    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccFeHxmI.s:164    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccFeHxmI.s:172    .text.PWM_Set_Current_mA:0000000000000050 .L0 
+     /tmp/ccFeHxmI.s:183    .rodata.__func__.1662:0000000000000000 .LANCHOR0
+     /tmp/ccFeHxmI.s:186    .rodata.__func__.1662:0000000000000000 __func__.1662
+     /tmp/ccFeHxmI.s:87     .text.v_Init_PWM:000000000000008c .L0 
+     /tmp/ccFeHxmI.s:105    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:130    .text.PWM_Set_Voltage_mV:0000000000000018 .L0 
+     /tmp/ccFeHxmI.s:175    .text.PWM_Set_Current_mA:0000000000000050 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccFeHxmI.s:177    .rodata.PWM_Set_Current_mA.str1.4:0000000000000000 .LC0
+     /tmp/ccFeHxmI.s:147    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccFeHxmI.s:148    .text.PWM_Set_Current_mA:0000000000000018 .L0 
+     /tmp/ccFeHxmI.s:179    .rodata.PWM_Set_Current_mA.str1.4:0000000000000018 .LC1
+     /tmp/ccFeHxmI.s:151    .text.PWM_Set_Current_mA:0000000000000024 .L0 
+     /tmp/ccFeHxmI.s:159    .text.PWM_Set_Current_mA:0000000000000038 .L6
+     /tmp/ccFeHxmI.s:605    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccFeHxmI.s:1078   .debug_str:0000000000000000 .LASF34
+     /tmp/ccFeHxmI.s:1090   .debug_str:0000000000000103 .LASF35
+     /tmp/ccFeHxmI.s:1144   .debug_str:000000000000026f .LASF36
+     /tmp/ccFeHxmI.s:1064   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccFeHxmI.s:1076   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccFeHxmI.s:1148   .debug_str:00000000000002b7 .LASF0
+     /tmp/ccFeHxmI.s:1096   .debug_str:0000000000000130 .LASF1
+     /tmp/ccFeHxmI.s:1134   .debug_str:0000000000000237 .LASF2
+     /tmp/ccFeHxmI.s:1108   .debug_str:0000000000000186 .LASF5
+     /tmp/ccFeHxmI.s:1104   .debug_str:0000000000000168 .LASF3
+     /tmp/ccFeHxmI.s:1142   .debug_str:0000000000000266 .LASF4
+     /tmp/ccFeHxmI.s:1112   .debug_str:00000000000001a1 .LASF6
+     /tmp/ccFeHxmI.s:1102   .debug_str:0000000000000156 .LASF7
+     /tmp/ccFeHxmI.s:1126   .debug_str:000000000000020a .LASF8
+     /tmp/ccFeHxmI.s:1120   .debug_str:00000000000001d4 .LASF9
+     /tmp/ccFeHxmI.s:1118   .debug_str:00000000000001c7 .LASF10
+     /tmp/ccFeHxmI.s:1138   .debug_str:0000000000000254 .LASF11
+     /tmp/ccFeHxmI.s:1140   .debug_str:000000000000025d .LASF12
+     /tmp/ccFeHxmI.s:1146   .debug_str:00000000000002a6 .LASF14
+     /tmp/ccFeHxmI.s:1084   .debug_str:00000000000000d6 .LASF13
+     /tmp/ccFeHxmI.s:1114   .debug_str:00000000000001ac .LASF15
+     /tmp/ccFeHxmI.s:1092   .debug_str:0000000000000118 .LASF16
+     /tmp/ccFeHxmI.s:1152   .debug_str:00000000000002d0 .LASF17
+     /tmp/ccFeHxmI.s:1124   .debug_str:00000000000001fe .LASF18
+     /tmp/ccFeHxmI.s:1106   .debug_str:000000000000017b .LASF19
+     /tmp/ccFeHxmI.s:1136   .debug_str:0000000000000241 .LASF23
+     /tmp/ccFeHxmI.s:135    .text.PWM_Set_Current_mA:0000000000000000 .LFB3
+     /tmp/ccFeHxmI.s:173    .text.PWM_Set_Current_mA:0000000000000050 .LFE3
+     /tmp/ccFeHxmI.s:1130   .debug_str:000000000000021d .LASF20
+     /tmp/ccFeHxmI.s:892    .debug_loc:0000000000000000 .LLST6
+     /tmp/ccFeHxmI.s:1094   .debug_str:0000000000000123 .LASF21
+     /tmp/ccFeHxmI.s:917    .debug_loc:000000000000003a .LLST7
+     /tmp/ccFeHxmI.s:1088   .debug_str:00000000000000fa .LASF37
+     /tmp/ccFeHxmI.s:1110   .debug_str:0000000000000191 .LASF26
+     /tmp/ccFeHxmI.s:942    .debug_loc:0000000000000074 .LLST8
+     /tmp/ccFeHxmI.s:158    .text.PWM_Set_Current_mA:0000000000000038 .LVL20
+     /tmp/ccFeHxmI.s:171    .text.PWM_Set_Current_mA:0000000000000050 .LVL23
+     /tmp/ccFeHxmI.s:1128   .debug_str:0000000000000218 .LASF22
+     /tmp/ccFeHxmI.s:1122   .debug_str:00000000000001eb .LASF24
+     /tmp/ccFeHxmI.s:110    .text.PWM_Set_Voltage_mV:0000000000000000 .LFB2
+     /tmp/ccFeHxmI.s:128    .text.PWM_Set_Voltage_mV:0000000000000018 .LFE2
+     /tmp/ccFeHxmI.s:953    .debug_loc:000000000000008b .LLST4
+     /tmp/ccFeHxmI.s:1150   .debug_str:00000000000002c3 .LASF25
+     /tmp/ccFeHxmI.s:967    .debug_loc:00000000000000ac .LLST5
+     /tmp/ccFeHxmI.s:1098   .debug_str:000000000000013e .LASF27
+     /tmp/ccFeHxmI.s:126    .text.PWM_Set_Voltage_mV:0000000000000018 .LVL16
+     /tmp/ccFeHxmI.s:1086   .debug_str:00000000000000e5 .LASF28
+     /tmp/ccFeHxmI.s:92     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .LFB1
+     /tmp/ccFeHxmI.s:103    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .LFE1
+     /tmp/ccFeHxmI.s:981    .debug_loc:00000000000000cd .LLST2
+     /tmp/ccFeHxmI.s:1100   .debug_str:0000000000000147 .LASF29
+     /tmp/ccFeHxmI.s:995    .debug_loc:00000000000000ee .LLST3
+     /tmp/ccFeHxmI.s:101    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .LVL12
+     /tmp/ccFeHxmI.s:1080   .debug_str:00000000000000c6 .LASF30
+     /tmp/ccFeHxmI.s:14     .text.v_Init_PWM:0000000000000000 .LFB0
+     /tmp/ccFeHxmI.s:85     .text.v_Init_PWM:000000000000008c .LFE0
+     /tmp/ccFeHxmI.s:1009   .debug_loc:000000000000010f .LLST0
+     /tmp/ccFeHxmI.s:1082   .debug_str:00000000000000d1 .LASF31
+     /tmp/ccFeHxmI.s:1027   .debug_loc:000000000000013b .LLST1
+     /tmp/ccFeHxmI.s:44     .text.v_Init_PWM:0000000000000030 .LVL3
+     /tmp/ccFeHxmI.s:49     .text.v_Init_PWM:0000000000000040 .LVL4
+     /tmp/ccFeHxmI.s:55     .text.v_Init_PWM:0000000000000054 .LVL5
+     /tmp/ccFeHxmI.s:61     .text.v_Init_PWM:0000000000000068 .LVL6
+     /tmp/ccFeHxmI.s:83     .text.v_Init_PWM:000000000000008c .LVL9
+     /tmp/ccFeHxmI.s:1116   .debug_str:00000000000001b9 .LASF32
+     /tmp/ccFeHxmI.s:1132   .debug_str:0000000000000226 .LASF33
+     /tmp/ccFeHxmI.s:138    .text.PWM_Set_Current_mA:0000000000000000 .LVL17
+     /tmp/ccFeHxmI.s:152    .text.PWM_Set_Current_mA:000000000000002c .LVL19
+     /tmp/ccFeHxmI.s:165    .text.PWM_Set_Current_mA:000000000000003c .LVL21
+     /tmp/ccFeHxmI.s:150    .text.PWM_Set_Current_mA:0000000000000024 .LVL18
+     /tmp/ccFeHxmI.s:167    .text.PWM_Set_Current_mA:0000000000000040 .LVL22
+     /tmp/ccFeHxmI.s:113    .text.PWM_Set_Voltage_mV:0000000000000000 .LVL13
+     /tmp/ccFeHxmI.s:120    .text.PWM_Set_Voltage_mV:0000000000000004 .LVL14
+     /tmp/ccFeHxmI.s:122    .text.PWM_Set_Voltage_mV:0000000000000008 .LVL15
+     /tmp/ccFeHxmI.s:95     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .LVL10
+     /tmp/ccFeHxmI.s:98     .text.v_Set_PWM_Duty_Cycle:0000000000000004 .LVL11
+     /tmp/ccFeHxmI.s:18     .text.v_Init_PWM:0000000000000000 .LVL0
+     /tmp/ccFeHxmI.s:28     .text.v_Init_PWM:0000000000000010 .LVL1
+     /tmp/ccFeHxmI.s:67     .text.v_Init_PWM:0000000000000070 .LVL7
+     /tmp/ccFeHxmI.s:37     .text.v_Init_PWM:0000000000000020 .LVL2
+     /tmp/ccFeHxmI.s:72     .text.v_Init_PWM:0000000000000078 .LVL8
+     /tmp/ccFeHxmI.s:196    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccjdmQv6.s:13     .text.v_Init_PWM:0000000000000000 v_Init_PWM
+     /tmp/ccjdmQv6.s:17     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:19     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:20     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:21     .text.v_Init_PWM:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:22     .text.v_Init_PWM:0000000000000004 .L0 
+     /tmp/ccjdmQv6.s:24     .text.v_Init_PWM:0000000000000008 .L0 
+     /tmp/ccjdmQv6.s:27     .text.v_Init_PWM:000000000000000c .L0 
+     /tmp/ccjdmQv6.s:30     .text.v_Init_PWM:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:31     .text.v_Init_PWM:0000000000000014 .L0 
+     /tmp/ccjdmQv6.s:34     .text.v_Init_PWM:0000000000000018 .L0 
+     /tmp/ccjdmQv6.s:36     .text.v_Init_PWM:000000000000001c .L0 
+     /tmp/ccjdmQv6.s:40     .text.v_Init_PWM:0000000000000024 .L0 
+     /tmp/ccjdmQv6.s:41     .text.v_Init_PWM:0000000000000028 .L0 
+     /tmp/ccjdmQv6.s:43     .text.v_Init_PWM:0000000000000028 .L0 
+     /tmp/ccjdmQv6.s:46     .text.v_Init_PWM:0000000000000030 .L0 
+     /tmp/ccjdmQv6.s:51     .text.v_Init_PWM:0000000000000040 .L0 
+     /tmp/ccjdmQv6.s:57     .text.v_Init_PWM:0000000000000054 .L0 
+     /tmp/ccjdmQv6.s:63     .text.v_Init_PWM:0000000000000068 .L0 
+     /tmp/ccjdmQv6.s:65     .text.v_Init_PWM:000000000000006c .L0 
+     /tmp/ccjdmQv6.s:66     .text.v_Init_PWM:0000000000000070 .L0 
+     /tmp/ccjdmQv6.s:69     .text.v_Init_PWM:0000000000000074 .L0 
+     /tmp/ccjdmQv6.s:71     .text.v_Init_PWM:0000000000000078 .L0 
+     /tmp/ccjdmQv6.s:74     .text.v_Init_PWM:0000000000000078 .L0 
+     /tmp/ccjdmQv6.s:76     .text.v_Init_PWM:000000000000007c .L0 
+     /tmp/ccjdmQv6.s:77     .text.v_Init_PWM:000000000000007c .L0 
+     /tmp/ccjdmQv6.s:79     .text.v_Init_PWM:0000000000000080 .L0 
+     /tmp/ccjdmQv6.s:80     .text.v_Init_PWM:0000000000000084 .L0 
+     /tmp/ccjdmQv6.s:82     .text.v_Init_PWM:0000000000000084 .L0 
+     /tmp/ccjdmQv6.s:84     .text.v_Init_PWM:000000000000008c .L0 
+     /tmp/ccjdmQv6.s:91     .text.v_Set_PWM_Duty_Cycle:0000000000000000 v_Set_PWM_Duty_Cycle
+     /tmp/ccjdmQv6.s:94     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:96     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:97     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:102    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:109    .text.PWM_Set_Voltage_mV:0000000000000000 PWM_Set_Voltage_mV
+     /tmp/ccjdmQv6.s:112    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:114    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:115    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:116    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:117    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:118    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:119    .text.PWM_Set_Voltage_mV:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:127    .text.PWM_Set_Voltage_mV:0000000000000018 .L0 
+     /tmp/ccjdmQv6.s:134    .text.PWM_Set_Current_mA:0000000000000000 PWM_Set_Current_mA
+     /tmp/ccjdmQv6.s:137    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:139    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:140    .text.PWM_Set_Current_mA:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:144    .text.PWM_Set_Current_mA:000000000000000c .L0 
+     /tmp/ccjdmQv6.s:145    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:147    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:154    .text.PWM_Set_Current_mA:000000000000002c .L0 
+     /tmp/ccjdmQv6.s:155    .text.PWM_Set_Current_mA:0000000000000030 .L0 
+     /tmp/ccjdmQv6.s:157    .text.PWM_Set_Current_mA:0000000000000030 .L0 
+     /tmp/ccjdmQv6.s:160    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccjdmQv6.s:161    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccjdmQv6.s:163    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccjdmQv6.s:164    .text.PWM_Set_Current_mA:0000000000000038 .L0 
+     /tmp/ccjdmQv6.s:172    .text.PWM_Set_Current_mA:0000000000000050 .L0 
+     /tmp/ccjdmQv6.s:183    .rodata.__func__.1662:0000000000000000 .LANCHOR0
+     /tmp/ccjdmQv6.s:186    .rodata.__func__.1662:0000000000000000 __func__.1662
+     /tmp/ccjdmQv6.s:87     .text.v_Init_PWM:000000000000008c .L0 
+     /tmp/ccjdmQv6.s:105    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:130    .text.PWM_Set_Voltage_mV:0000000000000018 .L0 
+     /tmp/ccjdmQv6.s:175    .text.PWM_Set_Current_mA:0000000000000050 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccjdmQv6.s:177    .rodata.PWM_Set_Current_mA.str1.4:0000000000000000 .LC0
+     /tmp/ccjdmQv6.s:147    .text.PWM_Set_Current_mA:0000000000000010 .L0 
+     /tmp/ccjdmQv6.s:148    .text.PWM_Set_Current_mA:0000000000000018 .L0 
+     /tmp/ccjdmQv6.s:179    .rodata.PWM_Set_Current_mA.str1.4:0000000000000018 .LC1
+     /tmp/ccjdmQv6.s:151    .text.PWM_Set_Current_mA:0000000000000024 .L0 
+     /tmp/ccjdmQv6.s:159    .text.PWM_Set_Current_mA:0000000000000038 .L6
+     /tmp/ccjdmQv6.s:605    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccjdmQv6.s:1078   .debug_str:0000000000000000 .LASF34
+     /tmp/ccjdmQv6.s:1090   .debug_str:0000000000000103 .LASF35
+     /tmp/ccjdmQv6.s:1144   .debug_str:000000000000026f .LASF36
+     /tmp/ccjdmQv6.s:1064   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccjdmQv6.s:1076   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccjdmQv6.s:1148   .debug_str:00000000000002b7 .LASF0
+     /tmp/ccjdmQv6.s:1096   .debug_str:0000000000000130 .LASF1
+     /tmp/ccjdmQv6.s:1134   .debug_str:0000000000000237 .LASF2
+     /tmp/ccjdmQv6.s:1108   .debug_str:0000000000000186 .LASF5
+     /tmp/ccjdmQv6.s:1104   .debug_str:0000000000000168 .LASF3
+     /tmp/ccjdmQv6.s:1142   .debug_str:0000000000000266 .LASF4
+     /tmp/ccjdmQv6.s:1112   .debug_str:00000000000001a1 .LASF6
+     /tmp/ccjdmQv6.s:1102   .debug_str:0000000000000156 .LASF7
+     /tmp/ccjdmQv6.s:1126   .debug_str:000000000000020a .LASF8
+     /tmp/ccjdmQv6.s:1120   .debug_str:00000000000001d4 .LASF9
+     /tmp/ccjdmQv6.s:1118   .debug_str:00000000000001c7 .LASF10
+     /tmp/ccjdmQv6.s:1138   .debug_str:0000000000000254 .LASF11
+     /tmp/ccjdmQv6.s:1140   .debug_str:000000000000025d .LASF12
+     /tmp/ccjdmQv6.s:1146   .debug_str:00000000000002a6 .LASF14
+     /tmp/ccjdmQv6.s:1084   .debug_str:00000000000000d6 .LASF13
+     /tmp/ccjdmQv6.s:1114   .debug_str:00000000000001ac .LASF15
+     /tmp/ccjdmQv6.s:1092   .debug_str:0000000000000118 .LASF16
+     /tmp/ccjdmQv6.s:1152   .debug_str:00000000000002d0 .LASF17
+     /tmp/ccjdmQv6.s:1124   .debug_str:00000000000001fe .LASF18
+     /tmp/ccjdmQv6.s:1106   .debug_str:000000000000017b .LASF19
+     /tmp/ccjdmQv6.s:1136   .debug_str:0000000000000241 .LASF23
+     /tmp/ccjdmQv6.s:135    .text.PWM_Set_Current_mA:0000000000000000 .LFB3
+     /tmp/ccjdmQv6.s:173    .text.PWM_Set_Current_mA:0000000000000050 .LFE3
+     /tmp/ccjdmQv6.s:1130   .debug_str:000000000000021d .LASF20
+     /tmp/ccjdmQv6.s:892    .debug_loc:0000000000000000 .LLST6
+     /tmp/ccjdmQv6.s:1094   .debug_str:0000000000000123 .LASF21
+     /tmp/ccjdmQv6.s:917    .debug_loc:000000000000003a .LLST7
+     /tmp/ccjdmQv6.s:1088   .debug_str:00000000000000fa .LASF37
+     /tmp/ccjdmQv6.s:1110   .debug_str:0000000000000191 .LASF26
+     /tmp/ccjdmQv6.s:942    .debug_loc:0000000000000074 .LLST8
+     /tmp/ccjdmQv6.s:158    .text.PWM_Set_Current_mA:0000000000000038 .LVL20
+     /tmp/ccjdmQv6.s:171    .text.PWM_Set_Current_mA:0000000000000050 .LVL23
+     /tmp/ccjdmQv6.s:1128   .debug_str:0000000000000218 .LASF22
+     /tmp/ccjdmQv6.s:1122   .debug_str:00000000000001eb .LASF24
+     /tmp/ccjdmQv6.s:110    .text.PWM_Set_Voltage_mV:0000000000000000 .LFB2
+     /tmp/ccjdmQv6.s:128    .text.PWM_Set_Voltage_mV:0000000000000018 .LFE2
+     /tmp/ccjdmQv6.s:953    .debug_loc:000000000000008b .LLST4
+     /tmp/ccjdmQv6.s:1150   .debug_str:00000000000002c3 .LASF25
+     /tmp/ccjdmQv6.s:967    .debug_loc:00000000000000ac .LLST5
+     /tmp/ccjdmQv6.s:1098   .debug_str:000000000000013e .LASF27
+     /tmp/ccjdmQv6.s:126    .text.PWM_Set_Voltage_mV:0000000000000018 .LVL16
+     /tmp/ccjdmQv6.s:1086   .debug_str:00000000000000e5 .LASF28
+     /tmp/ccjdmQv6.s:92     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .LFB1
+     /tmp/ccjdmQv6.s:103    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .LFE1
+     /tmp/ccjdmQv6.s:981    .debug_loc:00000000000000cd .LLST2
+     /tmp/ccjdmQv6.s:1100   .debug_str:0000000000000147 .LASF29
+     /tmp/ccjdmQv6.s:995    .debug_loc:00000000000000ee .LLST3
+     /tmp/ccjdmQv6.s:101    .text.v_Set_PWM_Duty_Cycle:0000000000000010 .LVL12
+     /tmp/ccjdmQv6.s:1080   .debug_str:00000000000000c6 .LASF30
+     /tmp/ccjdmQv6.s:14     .text.v_Init_PWM:0000000000000000 .LFB0
+     /tmp/ccjdmQv6.s:85     .text.v_Init_PWM:000000000000008c .LFE0
+     /tmp/ccjdmQv6.s:1009   .debug_loc:000000000000010f .LLST0
+     /tmp/ccjdmQv6.s:1082   .debug_str:00000000000000d1 .LASF31
+     /tmp/ccjdmQv6.s:1027   .debug_loc:000000000000013b .LLST1
+     /tmp/ccjdmQv6.s:44     .text.v_Init_PWM:0000000000000030 .LVL3
+     /tmp/ccjdmQv6.s:49     .text.v_Init_PWM:0000000000000040 .LVL4
+     /tmp/ccjdmQv6.s:55     .text.v_Init_PWM:0000000000000054 .LVL5
+     /tmp/ccjdmQv6.s:61     .text.v_Init_PWM:0000000000000068 .LVL6
+     /tmp/ccjdmQv6.s:83     .text.v_Init_PWM:000000000000008c .LVL9
+     /tmp/ccjdmQv6.s:1116   .debug_str:00000000000001b9 .LASF32
+     /tmp/ccjdmQv6.s:1132   .debug_str:0000000000000226 .LASF33
+     /tmp/ccjdmQv6.s:138    .text.PWM_Set_Current_mA:0000000000000000 .LVL17
+     /tmp/ccjdmQv6.s:152    .text.PWM_Set_Current_mA:000000000000002c .LVL19
+     /tmp/ccjdmQv6.s:165    .text.PWM_Set_Current_mA:000000000000003c .LVL21
+     /tmp/ccjdmQv6.s:150    .text.PWM_Set_Current_mA:0000000000000024 .LVL18
+     /tmp/ccjdmQv6.s:167    .text.PWM_Set_Current_mA:0000000000000040 .LVL22
+     /tmp/ccjdmQv6.s:113    .text.PWM_Set_Voltage_mV:0000000000000000 .LVL13
+     /tmp/ccjdmQv6.s:120    .text.PWM_Set_Voltage_mV:0000000000000004 .LVL14
+     /tmp/ccjdmQv6.s:122    .text.PWM_Set_Voltage_mV:0000000000000008 .LVL15
+     /tmp/ccjdmQv6.s:95     .text.v_Set_PWM_Duty_Cycle:0000000000000000 .LVL10
+     /tmp/ccjdmQv6.s:98     .text.v_Set_PWM_Duty_Cycle:0000000000000004 .LVL11
+     /tmp/ccjdmQv6.s:18     .text.v_Init_PWM:0000000000000000 .LVL0
+     /tmp/ccjdmQv6.s:28     .text.v_Init_PWM:0000000000000010 .LVL1
+     /tmp/ccjdmQv6.s:67     .text.v_Init_PWM:0000000000000070 .LVL7
+     /tmp/ccjdmQv6.s:37     .text.v_Init_PWM:0000000000000020 .LVL2
+     /tmp/ccjdmQv6.s:72     .text.v_Init_PWM:0000000000000078 .LVL8
+     /tmp/ccjdmQv6.s:196    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+HW_set_16bit_reg
+__assert_func

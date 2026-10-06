@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:dma_write_ddr4_8gb_hier",
+  "definition_digest": "6d2241330b313c815bf26adddd31712370385509160a0585088463c39352f9a8",
+  "generated": "2026-09-25T18:35:23Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "dma_write_ddr4_8gb_hier",
+  "sources_digest": "36e1eb873733acc861b2bdc8b78cd4fb4dfc1ce814cd5e77ec21df28f4663625"
+}

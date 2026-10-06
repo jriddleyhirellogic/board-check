@@ -1,0 +1,872 @@
+   1              		.file	"camera_low_power_state.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Camera_Low_Power_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Camera_Low_Power_State
+  13              	Camera_Low_Power_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/CameraStates/camera_low_power_state.c"
+   1:../src/CameraStates/camera_low_power_state.c **** /*
+   2:../src/CameraStates/camera_low_power_state.c ****  * Camera_Low_Power_State.c
+   3:../src/CameraStates/camera_low_power_state.c ****  *
+   4:../src/CameraStates/camera_low_power_state.c ****  *  Created on: Dec. 8, 20225
+   5:../src/CameraStates/camera_low_power_state.c ****  *      Author: iboard
+   6:../src/CameraStates/camera_low_power_state.c ****  */
+   7:../src/CameraStates/camera_low_power_state.c **** #include "FreeRTOSConfig.h"
+   8:../src/CameraStates/camera_low_power_state.c **** #include "FreeRTOS.h"
+   9:../src/CameraStates/camera_low_power_state.c **** #include "task.h"
+  10:../src/CameraStates/camera_low_power_state.c **** #include "register.h"
+  11:../src/CameraStates/camera_low_power_state.c **** #include "errors.h"
+  12:../src/CameraStates/camera_low_power_state.c **** #include "camera.h"
+  13:../src/CameraStates/camera_low_power_state.c **** #include "states.h"
+  14:../src/CameraStates/camera_low_power_state.c **** #include "camera_states.h"
+  15:../src/CameraStates/camera_low_power_state.c **** #include "misc.h"
+  16:../src/CameraStates/camera_low_power_state.c **** 
+  17:../src/CameraStates/camera_low_power_state.c **** /**
+  18:../src/CameraStates/camera_low_power_state.c ****  * @fn State_t Camera_Low_Power_State(Camera_Context_t*, Event_t*)
+  19:../src/CameraStates/camera_low_power_state.c ****  * @brief Low power event handler for low power state.
+  20:../src/CameraStates/camera_low_power_state.c ****  * In this state, the camera camera sensor and oscillator are powered down.
+  21:../src/CameraStates/camera_low_power_state.c ****  * @param context Context info for state
+  22:../src/CameraStates/camera_low_power_state.c ****  * @param event
+  23:../src/CameraStates/camera_low_power_state.c ****  * @return Next state
+  24:../src/CameraStates/camera_low_power_state.c ****  */
+  25:../src/CameraStates/camera_low_power_state.c **** State_t Camera_Low_Power_State( Camera_Context_t *context, Event_t *event )
+  26:../src/CameraStates/camera_low_power_state.c **** {
+  16              		.loc 1 26 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  27:../src/CameraStates/camera_low_power_state.c ****     State_t next_state = (State_t)Camera_Low_Power_State;
+  19              		.loc 1 27 5
+  28:../src/CameraStates/camera_low_power_state.c ****     Camera_Instance_t *camera_instance = context->instance;
+  20              		.loc 1 28 5
+  29:../src/CameraStates/camera_low_power_state.c ****     Error_Code_t err = NO_ERROR;
+  21              		.loc 1 29 5
+  30:../src/CameraStates/camera_low_power_state.c **** 
+  31:../src/CameraStates/camera_low_power_state.c ****     switch( event->no_data.sig )
+  22              		.loc 1 31 5
+  23 0000 83A70500 		lw	a5,0(a1)
+  24 0004 13072001 		li	a4,18
+  25 0008 6368F70A 		bgtu	a5,a4,.L11
+  26 000c 17070000 		lla	a4,.L4
+  26      13070700 
+  27 0014 93972700 		slli	a5,a5,2
+  28 0018 B387E700 		add	a5,a5,a4
+  29 001c 83A70700 		lw	a5,0(a5)
+  26:../src/CameraStates/camera_low_power_state.c ****     State_t next_state = (State_t)Camera_Low_Power_State;
+  30              		.loc 1 26 1 is_stmt 0
+  31 0020 130101FF 		addi	sp,sp,-16
+  32              		.cfi_def_cfa_offset 16
+  33 0024 23248100 		sw	s0,8(sp)
+  34 0028 23261100 		sw	ra,12(sp)
+  35 002c 23229100 		sw	s1,4(sp)
+  36              		.cfi_offset 8, -8
+  37              		.cfi_offset 1, -4
+  38              		.cfi_offset 9, -12
+  39              		.loc 1 31 5
+  40 0030 B387E700 		add	a5,a5,a4
+  41 0034 13040500 		mv	s0,a0
+  42 0038 67800700 		jr	a5
+  43              		.section	.rodata.Camera_Low_Power_State,"a",@progbits
+  44              		.align	2
+  45              		.align	2
+  46              	.L4:
+  47 0000 00000000 		.word	.L8-.L4
+  48 0004 00000000 		.word	.L9-.L4
+  49 0008 00000000 		.word	.L9-.L4
+  50 000c 00000000 		.word	.L9-.L4
+  51 0010 00000000 		.word	.L9-.L4
+  52 0014 00000000 		.word	.L9-.L4
+  53 0018 00000000 		.word	.L9-.L4
+  54 001c 00000000 		.word	.L9-.L4
+  55 0020 00000000 		.word	.L9-.L4
+  56 0024 00000000 		.word	.L7-.L4
+  57 0028 00000000 		.word	.L9-.L4
+  58 002c 00000000 		.word	.L9-.L4
+  59 0030 00000000 		.word	.L9-.L4
+  60 0034 00000000 		.word	.L9-.L4
+  61 0038 00000000 		.word	.L9-.L4
+  62 003c 00000000 		.word	.L6-.L4
+  63 0040 00000000 		.word	.L6-.L4
+  64 0044 00000000 		.word	.L5-.L4
+  65 0048 00000000 		.word	.L3-.L4
+  66              		.section	.text.Camera_Low_Power_State
+  67              	.L7:
+  32:../src/CameraStates/camera_low_power_state.c ****     {
+  33:../src/CameraStates/camera_low_power_state.c ****     case ENTRANCE:
+  34:../src/CameraStates/camera_low_power_state.c ****         v_Enable_Camera_IRQ(0);
+  35:../src/CameraStates/camera_low_power_state.c ****         v_Enable_Camera_Power( camera_instance, 0 ); // start with camera powered down
+  36:../src/CameraStates/camera_low_power_state.c ****         context->eState = CAMERA_LP_STATE;
+  37:../src/CameraStates/camera_low_power_state.c ****         break;
+  38:../src/CameraStates/camera_low_power_state.c **** 
+  39:../src/CameraStates/camera_low_power_state.c ****     case EXIT:
+  40:../src/CameraStates/camera_low_power_state.c ****         break;
+  41:../src/CameraStates/camera_low_power_state.c ****         
+  42:../src/CameraStates/camera_low_power_state.c ****     case POWER_UP_CAMERA:
+  43:../src/CameraStates/camera_low_power_state.c ****         next_state = (State_t)Camera_Idle_State;
+  68              		.loc 1 43 20
+  69 003c 17050000 		lla	a0,Camera_Idle_State
+  69      13050500 
+  70              	.LVL1:
+  71              	.L1:
+  44:../src/CameraStates/camera_low_power_state.c ****         break;
+  45:../src/CameraStates/camera_low_power_state.c ****     
+  46:../src/CameraStates/camera_low_power_state.c ****     case POWER_DOWN_CAMERA:
+  47:../src/CameraStates/camera_low_power_state.c ****         break;
+  48:../src/CameraStates/camera_low_power_state.c **** 
+  49:../src/CameraStates/camera_low_power_state.c ****     case UDP_TEST:   // Do this while camera is powered down
+  50:../src/CameraStates/camera_low_power_state.c ****         test_udp_dbg( 0, 2000 );
+  51:../src/CameraStates/camera_low_power_state.c ****         break;
+  52:../src/CameraStates/camera_low_power_state.c **** 
+  53:../src/CameraStates/camera_low_power_state.c ****     case CAMERA_RESET_FRAME_INDEX:
+  54:../src/CameraStates/camera_low_power_state.c ****         v_Reset_Camera_Buffer();
+  55:../src/CameraStates/camera_low_power_state.c ****         break;
+  56:../src/CameraStates/camera_low_power_state.c **** 
+  57:../src/CameraStates/camera_low_power_state.c ****     case CAMERA_SEND_FRAMES:
+  58:../src/CameraStates/camera_low_power_state.c ****         next_state = (State_t)Camera_Transfer_State;
+  59:../src/CameraStates/camera_low_power_state.c ****         break;
+  60:../src/CameraStates/camera_low_power_state.c **** 
+  61:../src/CameraStates/camera_low_power_state.c ****     case CAMERA_GET_METADATA:
+  62:../src/CameraStates/camera_low_power_state.c ****         next_state = (State_t)Camera_Transfer_State;
+  63:../src/CameraStates/camera_low_power_state.c ****         break;
+  64:../src/CameraStates/camera_low_power_state.c **** 
+  65:../src/CameraStates/camera_low_power_state.c ****     default:
+  66:../src/CameraStates/camera_low_power_state.c ****         // @todo unhandled commands should set error
+  67:../src/CameraStates/camera_low_power_state.c ****         break;
+  68:../src/CameraStates/camera_low_power_state.c ****     }
+  69:../src/CameraStates/camera_low_power_state.c **** 
+  70:../src/CameraStates/camera_low_power_state.c ****     return next_state;
+  71:../src/CameraStates/camera_low_power_state.c **** 
+  72:../src/CameraStates/camera_low_power_state.c **** }
+  72              		.loc 1 72 1
+  73 0044 8320C100 		lw	ra,12(sp)
+  74              		.cfi_remember_state
+  75              		.cfi_restore 1
+  76 0048 03248100 		lw	s0,8(sp)
+  77              		.cfi_restore 8
+  78              	.LVL2:
+  79 004c 83244100 		lw	s1,4(sp)
+  80              		.cfi_restore 9
+  81 0050 13010101 		addi	sp,sp,16
+  82              		.cfi_def_cfa_offset 0
+  83 0054 67800000 		jr	ra
+  84              	.LVL3:
+  85              	.L8:
+  86              		.cfi_restore_state
+  28:../src/CameraStates/camera_low_power_state.c ****     Error_Code_t err = NO_ERROR;
+  87              		.loc 1 28 24
+  88 0058 8324C500 		lw	s1,12(a0)
+  34:../src/CameraStates/camera_low_power_state.c ****         v_Enable_Camera_Power( camera_instance, 0 ); // start with camera powered down
+  89              		.loc 1 34 9 is_stmt 1
+  90 005c 13050000 		li	a0,0
+  91 0060 97000000 		call	v_Enable_Camera_IRQ
+  91      E7800000 
+  92              	.LVL4:
+  35:../src/CameraStates/camera_low_power_state.c ****         context->eState = CAMERA_LP_STATE;
+  93              		.loc 1 35 9
+  94 0068 93050000 		li	a1,0
+  95 006c 13850400 		mv	a0,s1
+  96 0070 97000000 		call	v_Enable_Camera_Power
+  96      E7800000 
+  97              	.LVL5:
+  36:../src/CameraStates/camera_low_power_state.c ****         break;
+  98              		.loc 1 36 9
+  36:../src/CameraStates/camera_low_power_state.c ****         break;
+  99              		.loc 1 36 25 is_stmt 0
+ 100 0078 93071000 		li	a5,1
+ 101 007c 2308F400 		sb	a5,16(s0)
+  37:../src/CameraStates/camera_low_power_state.c **** 
+ 102              		.loc 1 37 9 is_stmt 1
+ 103              	.L9:
+  27:../src/CameraStates/camera_low_power_state.c ****     Camera_Instance_t *camera_instance = context->instance;
+ 104              		.loc 1 27 13 is_stmt 0
+ 105 0080 17050000 		lla	a0,Camera_Low_Power_State
+ 105      13050500 
+  70:../src/CameraStates/camera_low_power_state.c **** 
+ 106              		.loc 1 70 5 is_stmt 1
+  70:../src/CameraStates/camera_low_power_state.c **** 
+ 107              		.loc 1 70 12 is_stmt 0
+ 108 0088 6FF0DFFB 		j	.L1
+ 109              	.LVL6:
+ 110              	.L5:
+ 111              	.LBB4:
+ 112              	.LBB5:
+  50:../src/CameraStates/camera_low_power_state.c ****         break;
+ 113              		.loc 1 50 9 is_stmt 1
+ 114 008c 9305007D 		li	a1,2000
+ 115              	.LVL7:
+ 116 0090 13050000 		li	a0,0
+ 117 0094 97000000 		call	test_udp_dbg
+ 117      E7800000 
+ 118              	.LVL8:
+  51:../src/CameraStates/camera_low_power_state.c **** 
+ 119              		.loc 1 51 9
+  70:../src/CameraStates/camera_low_power_state.c **** 
+ 120              		.loc 1 70 5
+ 121 009c 6FF05FFE 		j	.L9
+ 122              	.LVL9:
+ 123              	.L3:
+ 124              	.LBE5:
+ 125              	.LBE4:
+  54:../src/CameraStates/camera_low_power_state.c ****         break;
+ 126              		.loc 1 54 9
+ 127 00a0 97000000 		call	v_Reset_Camera_Buffer
+ 127      E7800000 
+ 128              	.LVL10:
+  55:../src/CameraStates/camera_low_power_state.c **** 
+ 129              		.loc 1 55 9
+ 130 00a8 6FF09FFD 		j	.L9
+ 131              	.LVL11:
+ 132              	.L6:
+  58:../src/CameraStates/camera_low_power_state.c ****         break;
+ 133              		.loc 1 58 9
+  59:../src/CameraStates/camera_low_power_state.c **** 
+ 134              		.loc 1 59 9
+  58:../src/CameraStates/camera_low_power_state.c ****         break;
+ 135              		.loc 1 58 20 is_stmt 0
+ 136 00ac 17050000 		lla	a0,Camera_Transfer_State
+ 136      13050500 
+  59:../src/CameraStates/camera_low_power_state.c **** 
+ 137              		.loc 1 59 9
+ 138 00b4 6FF01FF9 		j	.L1
+ 139              	.LVL12:
+ 140              	.L11:
+ 141              		.cfi_def_cfa_offset 0
+ 142              		.cfi_restore 1
+ 143              		.cfi_restore 8
+ 144              		.cfi_restore 9
+  27:../src/CameraStates/camera_low_power_state.c ****     Camera_Instance_t *camera_instance = context->instance;
+ 145              		.loc 1 27 13
+ 146 00b8 17050000 		lla	a0,Camera_Low_Power_State
+ 146      13050500 
+ 147              	.LVL13:
+  70:../src/CameraStates/camera_low_power_state.c **** 
+ 148              		.loc 1 70 5 is_stmt 1
+ 149              		.loc 1 72 1 is_stmt 0
+ 150 00c0 67800000 		ret
+ 151              		.cfi_endproc
+ 152              	.LFE0:
+ 154              		.text
+ 155              	.Letext0:
+ 156              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 157              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 158              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 159              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/errors.h"
+ 160              		.file 6 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 161              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/core_gpio.h"
+ 162              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/core_spi.h"
+ 163              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/eth.h"
+ 164              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/camera.h"
+ 165              		.file 11 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 166              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 167              		.file 13 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 168              		.file 14 "/home/iboard/farsight/avtemp/Camera/include/camera_states.h"
+ 169              		.file 15 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 camera_low_power_state.c
+<<<<<<< HEAD
+     /tmp/ccqBQu4j.s:13     .text.Camera_Low_Power_State:0000000000000000 Camera_Low_Power_State
+     /tmp/ccqBQu4j.s:17     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:19     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:20     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:21     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:22     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:23     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:31     .text.Camera_Low_Power_State:0000000000000020 .L0 
+     /tmp/ccqBQu4j.s:32     .text.Camera_Low_Power_State:0000000000000024 .L0 
+     /tmp/ccqBQu4j.s:36     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccqBQu4j.s:37     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccqBQu4j.s:38     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccqBQu4j.s:40     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccqBQu4j.s:69     .text.Camera_Low_Power_State:000000000000003c .L0 
+     /tmp/ccqBQu4j.s:73     .text.Camera_Low_Power_State:0000000000000044 .L0 
+     /tmp/ccqBQu4j.s:74     .text.Camera_Low_Power_State:0000000000000048 .L0 
+     /tmp/ccqBQu4j.s:75     .text.Camera_Low_Power_State:0000000000000048 .L0 
+     /tmp/ccqBQu4j.s:77     .text.Camera_Low_Power_State:000000000000004c .L0 
+     /tmp/ccqBQu4j.s:80     .text.Camera_Low_Power_State:0000000000000050 .L0 
+     /tmp/ccqBQu4j.s:82     .text.Camera_Low_Power_State:0000000000000054 .L0 
+     /tmp/ccqBQu4j.s:86     .text.Camera_Low_Power_State:0000000000000058 .L0 
+     /tmp/ccqBQu4j.s:88     .text.Camera_Low_Power_State:0000000000000058 .L0 
+     /tmp/ccqBQu4j.s:90     .text.Camera_Low_Power_State:000000000000005c .L0 
+     /tmp/ccqBQu4j.s:94     .text.Camera_Low_Power_State:0000000000000068 .L0 
+     /tmp/ccqBQu4j.s:99     .text.Camera_Low_Power_State:0000000000000078 .L0 
+     /tmp/ccqBQu4j.s:100    .text.Camera_Low_Power_State:0000000000000078 .L0 
+     /tmp/ccqBQu4j.s:104    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccqBQu4j.s:105    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccqBQu4j.s:107    .text.Camera_Low_Power_State:0000000000000088 .L0 
+     /tmp/ccqBQu4j.s:108    .text.Camera_Low_Power_State:0000000000000088 .L0 
+     /tmp/ccqBQu4j.s:114    .text.Camera_Low_Power_State:000000000000008c .L0 
+     /tmp/ccqBQu4j.s:120    .text.Camera_Low_Power_State:000000000000009c .L0 
+     /tmp/ccqBQu4j.s:121    .text.Camera_Low_Power_State:000000000000009c .L0 
+     /tmp/ccqBQu4j.s:127    .text.Camera_Low_Power_State:00000000000000a0 .L0 
+     /tmp/ccqBQu4j.s:130    .text.Camera_Low_Power_State:00000000000000a8 .L0 
+     /tmp/ccqBQu4j.s:134    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccqBQu4j.s:135    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccqBQu4j.s:136    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccqBQu4j.s:138    .text.Camera_Low_Power_State:00000000000000b4 .L0 
+     /tmp/ccqBQu4j.s:141    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:142    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:143    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:144    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:146    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:149    .text.Camera_Low_Power_State:00000000000000c0 .L0 
+     /tmp/ccqBQu4j.s:150    .text.Camera_Low_Power_State:00000000000000c0 .L0 
+     /tmp/ccqBQu4j.s:151    .text.Camera_Low_Power_State:00000000000000c4 .L0 
+     /tmp/ccqBQu4j.s:154    .text.Camera_Low_Power_State:00000000000000c4 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccqBQu4j.s:46     .rodata.Camera_Low_Power_State:0000000000000000 .L4
+     /tmp/ccqBQu4j.s:26     .text.Camera_Low_Power_State:000000000000000c .L0 
+     /tmp/ccqBQu4j.s:69     .text.Camera_Low_Power_State:000000000000003c .L0 
+     /tmp/ccqBQu4j.s:105    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccqBQu4j.s:136    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccqBQu4j.s:146    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccqBQu4j.s:140    .text.Camera_Low_Power_State:00000000000000b8 .L11
+     /tmp/ccqBQu4j.s:71     .text.Camera_Low_Power_State:0000000000000044 .L1
+     /tmp/ccqBQu4j.s:103    .text.Camera_Low_Power_State:0000000000000080 .L9
+     /tmp/ccqBQu4j.s:85     .text.Camera_Low_Power_State:0000000000000058 .L8
+     /tmp/ccqBQu4j.s:67     .text.Camera_Low_Power_State:000000000000003c .L7
+     /tmp/ccqBQu4j.s:132    .text.Camera_Low_Power_State:00000000000000ac .L6
+     /tmp/ccqBQu4j.s:110    .text.Camera_Low_Power_State:000000000000008c .L5
+     /tmp/ccqBQu4j.s:123    .text.Camera_Low_Power_State:00000000000000a0 .L3
+     /tmp/ccqBQu4j.s:1634   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccqBQu4j.s:2749   .debug_str:0000000000000af6 .LASF197
+     /tmp/ccqBQu4j.s:2707   .debug_str:0000000000000995 .LASF198
+     /tmp/ccqBQu4j.s:2693   .debug_str:00000000000008f1 .LASF199
+     /tmp/ccqBQu4j.s:2391   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccqBQu4j.s:2397   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccqBQu4j.s:2539   .debug_str:000000000000043f .LASF4
+     /tmp/ccqBQu4j.s:2429   .debug_str:00000000000000f2 .LASF0
+     /tmp/ccqBQu4j.s:2593   .debug_str:00000000000005e0 .LASF1
+     /tmp/ccqBQu4j.s:2647   .debug_str:0000000000000774 .LASF2
+     /tmp/ccqBQu4j.s:2765   .debug_str:0000000000000c20 .LASF3
+     /tmp/ccqBQu4j.s:2695   .debug_str:0000000000000928 .LASF5
+     /tmp/ccqBQu4j.s:2733   .debug_str:0000000000000a8a .LASF6
+     /tmp/ccqBQu4j.s:2661   .debug_str:00000000000007d7 .LASF7
+     /tmp/ccqBQu4j.s:2515   .debug_str:0000000000000394 .LASF8
+     /tmp/ccqBQu4j.s:2767   .debug_str:0000000000000c2c .LASF9
+     /tmp/ccqBQu4j.s:2437   .debug_str:000000000000013a .LASF10
+     /tmp/ccqBQu4j.s:2669   .debug_str:0000000000000810 .LASF11
+     /tmp/ccqBQu4j.s:2739   .debug_str:0000000000000ab3 .LASF12
+     /tmp/ccqBQu4j.s:2709   .debug_str:00000000000009c2 .LASF13
+     /tmp/ccqBQu4j.s:2501   .debug_str:0000000000000328 .LASF14
+     /tmp/ccqBQu4j.s:2583   .debug_str:00000000000005b0 .LASF15
+     /tmp/ccqBQu4j.s:2649   .debug_str:0000000000000780 .LASF16
+     /tmp/ccqBQu4j.s:2725   .debug_str:0000000000000a59 .LASF17
+     /tmp/ccqBQu4j.s:2477   .debug_str:0000000000000280 .LASF18
+     /tmp/ccqBQu4j.s:2405   .debug_str:0000000000000043 .LASF200
+     /tmp/ccqBQu4j.s:2569   .debug_str:0000000000000542 .LASF19
+     /tmp/ccqBQu4j.s:2589   .debug_str:00000000000005cc .LASF20
+     /tmp/ccqBQu4j.s:2505   .debug_str:0000000000000348 .LASF21
+     /tmp/ccqBQu4j.s:2687   .debug_str:00000000000008a8 .LASF22
+     /tmp/ccqBQu4j.s:2445   .debug_str:0000000000000173 .LASF23
+     /tmp/ccqBQu4j.s:2565   .debug_str:0000000000000520 .LASF24
+     /tmp/ccqBQu4j.s:2451   .debug_str:00000000000001a7 .LASF25
+     /tmp/ccqBQu4j.s:2663   .debug_str:00000000000007e1 .LASF26
+     /tmp/ccqBQu4j.s:2401   .debug_str:0000000000000014 .LASF27
+     /tmp/ccqBQu4j.s:2751   .debug_str:0000000000000bbc .LASF28
+     /tmp/ccqBQu4j.s:2627   .debug_str:00000000000006da .LASF29
+     /tmp/ccqBQu4j.s:2561   .debug_str:0000000000000501 .LASF30
+     /tmp/ccqBQu4j.s:2685   .debug_str:0000000000000891 .LASF31
+     /tmp/ccqBQu4j.s:2519   .debug_str:00000000000003a8 .LASF32
+     /tmp/ccqBQu4j.s:2657   .debug_str:00000000000007b9 .LASF33
+     /tmp/ccqBQu4j.s:2753   .debug_str:0000000000000bd2 .LASF34
+     /tmp/ccqBQu4j.s:2659   .debug_str:00000000000007d0 .LASF35
+     /tmp/ccqBQu4j.s:2535   .debug_str:000000000000041b .LASF68
+     /tmp/ccqBQu4j.s:2615   .debug_str:0000000000000682 .LASF36
+     /tmp/ccqBQu4j.s:2559   .debug_str:00000000000004ec .LASF37
+     /tmp/ccqBQu4j.s:2435   .debug_str:0000000000000125 .LASF38
+     /tmp/ccqBQu4j.s:2689   .debug_str:00000000000008bf .LASF39
+     /tmp/ccqBQu4j.s:2495   .debug_str:00000000000002f1 .LASF40
+     /tmp/ccqBQu4j.s:2511   .debug_str:000000000000037a .LASF45
+     /tmp/ccqBQu4j.s:2755   .debug_str:0000000000000bdf .LASF41
+     /tmp/ccqBQu4j.s:2741   .debug_str:0000000000000abe .LASF42
+     /tmp/ccqBQu4j.s:2431   .debug_str:00000000000000ff .LASF43
+     /tmp/ccqBQu4j.s:2735   .debug_str:0000000000000a98 .LASF44
+     /tmp/ccqBQu4j.s:2443   .debug_str:0000000000000166 .LASF46
+     /tmp/ccqBQu4j.s:2507   .debug_str:000000000000035d .LASF47
+     /tmp/ccqBQu4j.s:2463   .debug_str:0000000000000209 .LASF48
+     /tmp/ccqBQu4j.s:2409   .debug_str:0000000000000063 .LASF49
+     /tmp/ccqBQu4j.s:2759   .debug_str:0000000000000bf5 .LASF50
+     /tmp/ccqBQu4j.s:2447   .debug_str:000000000000018b .LASF51
+     /tmp/ccqBQu4j.s:2785   .debug_str:0000000000000cc3 .LASF52
+     /tmp/ccqBQu4j.s:2573   .debug_str:000000000000055b .LASF53
+     /tmp/ccqBQu4j.s:2541   .debug_str:0000000000000446 .LASF54
+     /tmp/ccqBQu4j.s:2681   .debug_str:0000000000000875 .LASF55
+     /tmp/ccqBQu4j.s:2629   .debug_str:00000000000006f2 .LASF56
+     /tmp/ccqBQu4j.s:2763   .debug_str:0000000000000c12 .LASF57
+     /tmp/ccqBQu4j.s:2645   .debug_str:0000000000000767 .LASF58
+     /tmp/ccqBQu4j.s:2531   .debug_str:00000000000003f5 .LASF59
+     /tmp/ccqBQu4j.s:2801   .debug_str:0000000000000d23 .LASF60
+     /tmp/ccqBQu4j.s:2691   .debug_str:00000000000008da .LASF61
+     /tmp/ccqBQu4j.s:2653   .debug_str:0000000000000794 .LASF62
+     /tmp/ccqBQu4j.s:2631   .debug_str:0000000000000702 .LASF63
+     /tmp/ccqBQu4j.s:2779   .debug_str:0000000000000c8f .LASF64
+     /tmp/ccqBQu4j.s:2599   .debug_str:000000000000060b .LASF65
+     /tmp/ccqBQu4j.s:2475   .debug_str:0000000000000269 .LASF66
+     /tmp/ccqBQu4j.s:2551   .debug_str:00000000000004a1 .LASF67
+     /tmp/ccqBQu4j.s:2595   .debug_str:00000000000005ee .LASF69
+     /tmp/ccqBQu4j.s:2509   .debug_str:0000000000000366 .LASF70
+     /tmp/ccqBQu4j.s:2677   .debug_str:000000000000084f .LASF71
+     /tmp/ccqBQu4j.s:2745   .debug_str:0000000000000ad9 .LASF72
+     /tmp/ccqBQu4j.s:2577   .debug_str:0000000000000580 .LASF73
+     /tmp/ccqBQu4j.s:2421   .debug_str:00000000000000b0 .LASF74
+     /tmp/ccqBQu4j.s:2433   .debug_str:000000000000010f .LASF75
+     /tmp/ccqBQu4j.s:2493   .debug_str:00000000000002db .LASF76
+     /tmp/ccqBQu4j.s:2775   .debug_str:0000000000000c6e .LASF77
+     /tmp/ccqBQu4j.s:2545   .debug_str:0000000000000465 .LASF78
+     /tmp/ccqBQu4j.s:2575   .debug_str:000000000000056c .LASF79
+     /tmp/ccqBQu4j.s:2417   .debug_str:000000000000008f .LASF80
+     /tmp/ccqBQu4j.s:2679   .debug_str:0000000000000864 .LASF81
+     /tmp/ccqBQu4j.s:2549   .debug_str:000000000000048b .LASF82
+     /tmp/ccqBQu4j.s:2769   .debug_str:0000000000000c3f .LASF83
+     /tmp/ccqBQu4j.s:2699   .debug_str:000000000000093e .LASF84
+     /tmp/ccqBQu4j.s:2497   .debug_str:0000000000000302 .LASF85
+     /tmp/ccqBQu4j.s:2711   .debug_str:00000000000009d4 .LASF86
+     /tmp/ccqBQu4j.s:2713   .debug_str:00000000000009e9 .LASF87
+     /tmp/ccqBQu4j.s:2715   .debug_str:00000000000009fe .LASF88
+     /tmp/ccqBQu4j.s:2717   .debug_str:0000000000000a13 .LASF89
+     /tmp/ccqBQu4j.s:2719   .debug_str:0000000000000a28 .LASF90
+     /tmp/ccqBQu4j.s:2469   .debug_str:000000000000023e .LASF91
+     /tmp/ccqBQu4j.s:2623   .debug_str:00000000000006be .LASF92
+     /tmp/ccqBQu4j.s:2673   .debug_str:000000000000082d .LASF93
+     /tmp/ccqBQu4j.s:2581   .debug_str:00000000000005a0 .LASF94
+     /tmp/ccqBQu4j.s:2503   .debug_str:000000000000033f .LASF95
+     /tmp/ccqBQu4j.s:2621   .debug_str:00000000000006b5 .LASF96
+     /tmp/ccqBQu4j.s:2793   .debug_str:0000000000000cfb .LASF97
+     /tmp/ccqBQu4j.s:2473   .debug_str:0000000000000262 .LASF98
+     /tmp/ccqBQu4j.s:2487   .debug_str:00000000000002c0 .LASF99
+     /tmp/ccqBQu4j.s:2729   .debug_str:0000000000000a68 .LASF100
+     /tmp/ccqBQu4j.s:2587   .debug_str:00000000000005c0 .LASF101
+     /tmp/ccqBQu4j.s:2427   .debug_str:00000000000000e6 .LASF102
+     /tmp/ccqBQu4j.s:2671   .debug_str:0000000000000819 .LASF103
+     /tmp/ccqBQu4j.s:2441   .debug_str:000000000000015d .LASF104
+     /tmp/ccqBQu4j.s:2491   .debug_str:00000000000002d2 .LASF105
+     /tmp/ccqBQu4j.s:2795   .debug_str:0000000000000d02 .LASF106
+     /tmp/ccqBQu4j.s:2609   .debug_str:000000000000065e .LASF107
+     /tmp/ccqBQu4j.s:2411   .debug_str:0000000000000071 .LASF108
+     /tmp/ccqBQu4j.s:2461   .debug_str:0000000000000200 .LASF109
+     /tmp/ccqBQu4j.s:2563   .debug_str:0000000000000517 .LASF110
+     /tmp/ccqBQu4j.s:2601   .debug_str:0000000000000628 .LASF111
+     /tmp/ccqBQu4j.s:2611   .debug_str:0000000000000668 .LASF112
+     /tmp/ccqBQu4j.s:2683   .debug_str:000000000000087e .LASF113
+     /tmp/ccqBQu4j.s:2423   .debug_str:00000000000000c6 .LASF114
+     /tmp/ccqBQu4j.s:2597   .debug_str:0000000000000601 .LASF115
+     /tmp/ccqBQu4j.s:2607   .debug_str:000000000000064c .LASF116
+     /tmp/ccqBQu4j.s:2603   .debug_str:0000000000000635 .LASF117
+     /tmp/ccqBQu4j.s:2799   .debug_str:0000000000000d15 .LASF118
+     /tmp/ccqBQu4j.s:2697   .debug_str:0000000000000932 .LASF119
+     /tmp/ccqBQu4j.s:2783   .debug_str:0000000000000cb4 .LASF120
+     /tmp/ccqBQu4j.s:2771   .debug_str:0000000000000c59 .LASF121
+     /tmp/ccqBQu4j.s:2483   .debug_str:00000000000002a6 .LASF122
+     /tmp/ccqBQu4j.s:2481   .debug_str:000000000000029d .LASF123
+     /tmp/ccqBQu4j.s:2459   .debug_str:00000000000001fb .LASF124
+     /tmp/ccqBQu4j.s:2703   .debug_str:0000000000000967 .LASF125
+     /tmp/ccqBQu4j.s:2479   .debug_str:0000000000000289 .LASF126
+     /tmp/ccqBQu4j.s:2403   .debug_str:0000000000000029 .LASF127
+     /tmp/ccqBQu4j.s:2781   .debug_str:0000000000000c9f .LASF128
+     /tmp/ccqBQu4j.s:2407   .debug_str:0000000000000054 .LASF129
+     /tmp/ccqBQu4j.s:2547   .debug_str:000000000000047e .LASF130
+     /tmp/ccqBQu4j.s:2529   .debug_str:00000000000003e7 .LASF131
+     /tmp/ccqBQu4j.s:2761   .debug_str:0000000000000c02 .LASF132
+     /tmp/ccqBQu4j.s:2553   .debug_str:00000000000004b8 .LASF133
+     /tmp/ccqBQu4j.s:2523   .debug_str:00000000000003c7 .LASF134
+     /tmp/ccqBQu4j.s:2555   .debug_str:00000000000004ca .LASF135
+     /tmp/ccqBQu4j.s:2655   .debug_str:00000000000007a5 .LASF136
+     /tmp/ccqBQu4j.s:2425   .debug_str:00000000000000d6 .LASF137
+     /tmp/ccqBQu4j.s:2639   .debug_str:0000000000000738 .LASF138
+     /tmp/ccqBQu4j.s:2643   .debug_str:0000000000000753 .LASF139
+     /tmp/ccqBQu4j.s:2773   .debug_str:0000000000000c65 .LASF140
+     /tmp/ccqBQu4j.s:2439   .debug_str:0000000000000144 .LASF141
+     /tmp/ccqBQu4j.s:2617   .debug_str:0000000000000696 .LASF142
+     /tmp/ccqBQu4j.s:2731   .debug_str:0000000000000a74 .LASF143
+     /tmp/ccqBQu4j.s:2557   .debug_str:00000000000004d6 .LASF144
+     /tmp/ccqBQu4j.s:2415   .debug_str:0000000000000082 .LASF145
+     /tmp/ccqBQu4j.s:2705   .debug_str:000000000000097f .LASF146
+     /tmp/ccqBQu4j.s:2723   .debug_str:0000000000000a44 .LASF147
+     /tmp/ccqBQu4j.s:2665   .debug_str:00000000000007fb .LASF148
+     /tmp/ccqBQu4j.s:2579   .debug_str:0000000000000591 .LASF149
+     /tmp/ccqBQu4j.s:2605   .debug_str:000000000000063f .LASF150
+     /tmp/ccqBQu4j.s:2787   .debug_str:0000000000000cd2 .LASF151
+     /tmp/ccqBQu4j.s:2517   .debug_str:000000000000039f .LASF152
+     /tmp/ccqBQu4j.s:2757   .debug_str:0000000000000be9 .LASF153
+     /tmp/ccqBQu4j.s:2625   .debug_str:00000000000006d3 .LASF154
+     /tmp/ccqBQu4j.s:2791   .debug_str:0000000000000cf6 .LASF155
+     /tmp/ccqBQu4j.s:2467   .debug_str:0000000000000226 .LASF156
+     /tmp/ccqBQu4j.s:2667   .debug_str:0000000000000809 .LASF157
+     /tmp/ccqBQu4j.s:2737   .debug_str:0000000000000aa7 .LASF158
+     /tmp/ccqBQu4j.s:2499   .debug_str:0000000000000317 .LASF159
+     /tmp/ccqBQu4j.s:2543   .debug_str:0000000000000452 .LASF160
+     /tmp/ccqBQu4j.s:2399   .debug_str:0000000000000000 .LASF161
+     /tmp/ccqBQu4j.s:2641   .debug_str:000000000000074b .LASF162
+     /tmp/ccqBQu4j.s:2453   .debug_str:00000000000001c0 .LASF163
+     /tmp/ccqBQu4j.s:2777   .debug_str:0000000000000c83 .LASF164
+     /tmp/ccqBQu4j.s:2721   .debug_str:0000000000000a3d .LASF165
+     /tmp/ccqBQu4j.s:2743   .debug_str:0000000000000acc .LASF166
+     /tmp/ccqBQu4j.s:2635   .debug_str:0000000000000723 .LASF167
+     /tmp/ccqBQu4j.s:2533   .debug_str:0000000000000406 .LASF168
+     /tmp/ccqBQu4j.s:2521   .debug_str:00000000000003bd .LASF169
+     /tmp/ccqBQu4j.s:2747   .debug_str:0000000000000aee .LASF170
+     /tmp/ccqBQu4j.s:2449   .debug_str:000000000000019a .LASF171
+     /tmp/ccqBQu4j.s:2455   .debug_str:00000000000001d1 .LASF172
+     /tmp/ccqBQu4j.s:2513   .debug_str:000000000000038c .LASF173
+     /tmp/ccqBQu4j.s:2567   .debug_str:0000000000000539 .LASF174
+     /tmp/ccqBQu4j.s:2619   .debug_str:00000000000006ad .LASF175
+     /tmp/ccqBQu4j.s:2797   .debug_str:0000000000000d0c .LASF176
+     /tmp/ccqBQu4j.s:2471   .debug_str:0000000000000257 .LASF177
+     /tmp/ccqBQu4j.s:2591   .debug_str:00000000000005d5 .LASF178
+     /tmp/ccqBQu4j.s:2525   .debug_str:00000000000003d2 .LASF179
+     /tmp/ccqBQu4j.s:2413   .debug_str:000000000000007a .LASF180
+     /tmp/ccqBQu4j.s:2485   .debug_str:00000000000002ba .LASF181
+     /tmp/ccqBQu4j.s:2585   .debug_str:00000000000005b8 .LASF182
+     /tmp/ccqBQu4j.s:2701   .debug_str:0000000000000959 .LASF183
+     /tmp/ccqBQu4j.s:2675   .debug_str:0000000000000843 .LASF184
+     /tmp/ccqBQu4j.s:2613   .debug_str:000000000000067c .LASF185
+     /tmp/ccqBQu4j.s:2527   .debug_str:00000000000003de .LASF186
+     /tmp/ccqBQu4j.s:2727   .debug_str:0000000000000a61 .LASF187
+     /tmp/ccqBQu4j.s:2537   .debug_str:000000000000042e .LASF188
+     /tmp/ccqBQu4j.s:2789   .debug_str:0000000000000cdf .LASF201
+     /tmp/ccqBQu4j.s:2637   .debug_str:0000000000000730 .LASF189
+     /tmp/ccqBQu4j.s:2489   .debug_str:00000000000002cc .LASF190
+     /tmp/ccqBQu4j.s:2651   .debug_str:0000000000000789 .LASF191
+     /tmp/ccqBQu4j.s:2419   .debug_str:00000000000000a0 .LASF192
+     /tmp/ccqBQu4j.s:14     .text.Camera_Low_Power_State:0000000000000000 .LFB0
+     /tmp/ccqBQu4j.s:152    .text.Camera_Low_Power_State:00000000000000c4 .LFE0
+     /tmp/ccqBQu4j.s:2211   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccqBQu4j.s:2244   .debug_loc:0000000000000050 .LLST1
+     /tmp/ccqBQu4j.s:2295   .debug_loc:00000000000000c7 .LLST2
+     /tmp/ccqBQu4j.s:2316   .debug_loc:00000000000000ff .LLST3
+     /tmp/ccqBQu4j.s:111    .text.Camera_Low_Power_State:000000000000008c .LBB4
+     /tmp/ccqBQu4j.s:125    .text.Camera_Low_Power_State:00000000000000a0 .LBE4
+     /tmp/ccqBQu4j.s:2357   .debug_loc:000000000000015e .LLST4
+     /tmp/ccqBQu4j.s:2364   .debug_loc:0000000000000171 .LLST5
+     /tmp/ccqBQu4j.s:112    .text.Camera_Low_Power_State:000000000000008c .LBB5
+     /tmp/ccqBQu4j.s:124    .text.Camera_Low_Power_State:00000000000000a0 .LBE5
+     /tmp/ccqBQu4j.s:118    .text.Camera_Low_Power_State:000000000000009c .LVL8
+     /tmp/ccqBQu4j.s:92     .text.Camera_Low_Power_State:0000000000000068 .LVL4
+     /tmp/ccqBQu4j.s:97     .text.Camera_Low_Power_State:0000000000000078 .LVL5
+     /tmp/ccqBQu4j.s:128    .text.Camera_Low_Power_State:00000000000000a8 .LVL10
+     /tmp/ccqBQu4j.s:2465   .debug_str:0000000000000219 .LASF193
+     /tmp/ccqBQu4j.s:2571   .debug_str:0000000000000547 .LASF194
+     /tmp/ccqBQu4j.s:2633   .debug_str:000000000000070d .LASF195
+     /tmp/ccqBQu4j.s:2457   .debug_str:00000000000001e5 .LASF196
+     /tmp/ccqBQu4j.s:18     .text.Camera_Low_Power_State:0000000000000000 .LVL0
+     /tmp/ccqBQu4j.s:70     .text.Camera_Low_Power_State:0000000000000044 .LVL1
+     /tmp/ccqBQu4j.s:78     .text.Camera_Low_Power_State:000000000000004c .LVL2
+     /tmp/ccqBQu4j.s:84     .text.Camera_Low_Power_State:0000000000000058 .LVL3
+     /tmp/ccqBQu4j.s:139    .text.Camera_Low_Power_State:00000000000000b8 .LVL12
+     /tmp/ccqBQu4j.s:147    .text.Camera_Low_Power_State:00000000000000c0 .LVL13
+     /tmp/ccqBQu4j.s:109    .text.Camera_Low_Power_State:000000000000008c .LVL6
+     /tmp/ccqBQu4j.s:115    .text.Camera_Low_Power_State:0000000000000090 .LVL7
+     /tmp/ccqBQu4j.s:122    .text.Camera_Low_Power_State:00000000000000a0 .LVL9
+     /tmp/ccqBQu4j.s:131    .text.Camera_Low_Power_State:00000000000000ac .LVL11
+     /tmp/ccqBQu4j.s:171    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccquhw41.s:13     .text.Camera_Low_Power_State:0000000000000000 Camera_Low_Power_State
+     /tmp/ccquhw41.s:17     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:19     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:20     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:21     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:22     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:23     .text.Camera_Low_Power_State:0000000000000000 .L0 
+     /tmp/ccquhw41.s:31     .text.Camera_Low_Power_State:0000000000000020 .L0 
+     /tmp/ccquhw41.s:32     .text.Camera_Low_Power_State:0000000000000024 .L0 
+     /tmp/ccquhw41.s:36     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccquhw41.s:37     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccquhw41.s:38     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccquhw41.s:40     .text.Camera_Low_Power_State:0000000000000030 .L0 
+     /tmp/ccquhw41.s:69     .text.Camera_Low_Power_State:000000000000003c .L0 
+     /tmp/ccquhw41.s:73     .text.Camera_Low_Power_State:0000000000000044 .L0 
+     /tmp/ccquhw41.s:74     .text.Camera_Low_Power_State:0000000000000048 .L0 
+     /tmp/ccquhw41.s:75     .text.Camera_Low_Power_State:0000000000000048 .L0 
+     /tmp/ccquhw41.s:77     .text.Camera_Low_Power_State:000000000000004c .L0 
+     /tmp/ccquhw41.s:80     .text.Camera_Low_Power_State:0000000000000050 .L0 
+     /tmp/ccquhw41.s:82     .text.Camera_Low_Power_State:0000000000000054 .L0 
+     /tmp/ccquhw41.s:86     .text.Camera_Low_Power_State:0000000000000058 .L0 
+     /tmp/ccquhw41.s:88     .text.Camera_Low_Power_State:0000000000000058 .L0 
+     /tmp/ccquhw41.s:90     .text.Camera_Low_Power_State:000000000000005c .L0 
+     /tmp/ccquhw41.s:94     .text.Camera_Low_Power_State:0000000000000068 .L0 
+     /tmp/ccquhw41.s:99     .text.Camera_Low_Power_State:0000000000000078 .L0 
+     /tmp/ccquhw41.s:100    .text.Camera_Low_Power_State:0000000000000078 .L0 
+     /tmp/ccquhw41.s:104    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccquhw41.s:105    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccquhw41.s:107    .text.Camera_Low_Power_State:0000000000000088 .L0 
+     /tmp/ccquhw41.s:108    .text.Camera_Low_Power_State:0000000000000088 .L0 
+     /tmp/ccquhw41.s:114    .text.Camera_Low_Power_State:000000000000008c .L0 
+     /tmp/ccquhw41.s:120    .text.Camera_Low_Power_State:000000000000009c .L0 
+     /tmp/ccquhw41.s:121    .text.Camera_Low_Power_State:000000000000009c .L0 
+     /tmp/ccquhw41.s:127    .text.Camera_Low_Power_State:00000000000000a0 .L0 
+     /tmp/ccquhw41.s:130    .text.Camera_Low_Power_State:00000000000000a8 .L0 
+     /tmp/ccquhw41.s:134    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccquhw41.s:135    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccquhw41.s:136    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccquhw41.s:138    .text.Camera_Low_Power_State:00000000000000b4 .L0 
+     /tmp/ccquhw41.s:141    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:142    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:143    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:144    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:146    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:149    .text.Camera_Low_Power_State:00000000000000c0 .L0 
+     /tmp/ccquhw41.s:150    .text.Camera_Low_Power_State:00000000000000c0 .L0 
+     /tmp/ccquhw41.s:151    .text.Camera_Low_Power_State:00000000000000c4 .L0 
+     /tmp/ccquhw41.s:154    .text.Camera_Low_Power_State:00000000000000c4 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccquhw41.s:46     .rodata.Camera_Low_Power_State:0000000000000000 .L4
+     /tmp/ccquhw41.s:26     .text.Camera_Low_Power_State:000000000000000c .L0 
+     /tmp/ccquhw41.s:69     .text.Camera_Low_Power_State:000000000000003c .L0 
+     /tmp/ccquhw41.s:105    .text.Camera_Low_Power_State:0000000000000080 .L0 
+     /tmp/ccquhw41.s:136    .text.Camera_Low_Power_State:00000000000000ac .L0 
+     /tmp/ccquhw41.s:146    .text.Camera_Low_Power_State:00000000000000b8 .L0 
+     /tmp/ccquhw41.s:140    .text.Camera_Low_Power_State:00000000000000b8 .L11
+     /tmp/ccquhw41.s:71     .text.Camera_Low_Power_State:0000000000000044 .L1
+     /tmp/ccquhw41.s:103    .text.Camera_Low_Power_State:0000000000000080 .L9
+     /tmp/ccquhw41.s:85     .text.Camera_Low_Power_State:0000000000000058 .L8
+     /tmp/ccquhw41.s:67     .text.Camera_Low_Power_State:000000000000003c .L7
+     /tmp/ccquhw41.s:132    .text.Camera_Low_Power_State:00000000000000ac .L6
+     /tmp/ccquhw41.s:110    .text.Camera_Low_Power_State:000000000000008c .L5
+     /tmp/ccquhw41.s:123    .text.Camera_Low_Power_State:00000000000000a0 .L3
+     /tmp/ccquhw41.s:1634   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccquhw41.s:2749   .debug_str:0000000000000af6 .LASF197
+     /tmp/ccquhw41.s:2707   .debug_str:0000000000000995 .LASF198
+     /tmp/ccquhw41.s:2693   .debug_str:00000000000008f1 .LASF199
+     /tmp/ccquhw41.s:2391   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccquhw41.s:2397   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccquhw41.s:2539   .debug_str:000000000000043f .LASF4
+     /tmp/ccquhw41.s:2429   .debug_str:00000000000000f2 .LASF0
+     /tmp/ccquhw41.s:2593   .debug_str:00000000000005e0 .LASF1
+     /tmp/ccquhw41.s:2647   .debug_str:0000000000000774 .LASF2
+     /tmp/ccquhw41.s:2765   .debug_str:0000000000000c20 .LASF3
+     /tmp/ccquhw41.s:2695   .debug_str:0000000000000928 .LASF5
+     /tmp/ccquhw41.s:2733   .debug_str:0000000000000a8a .LASF6
+     /tmp/ccquhw41.s:2661   .debug_str:00000000000007d7 .LASF7
+     /tmp/ccquhw41.s:2515   .debug_str:0000000000000394 .LASF8
+     /tmp/ccquhw41.s:2767   .debug_str:0000000000000c2c .LASF9
+     /tmp/ccquhw41.s:2437   .debug_str:000000000000013a .LASF10
+     /tmp/ccquhw41.s:2669   .debug_str:0000000000000810 .LASF11
+     /tmp/ccquhw41.s:2739   .debug_str:0000000000000ab3 .LASF12
+     /tmp/ccquhw41.s:2709   .debug_str:00000000000009c2 .LASF13
+     /tmp/ccquhw41.s:2501   .debug_str:0000000000000328 .LASF14
+     /tmp/ccquhw41.s:2583   .debug_str:00000000000005b0 .LASF15
+     /tmp/ccquhw41.s:2649   .debug_str:0000000000000780 .LASF16
+     /tmp/ccquhw41.s:2725   .debug_str:0000000000000a59 .LASF17
+     /tmp/ccquhw41.s:2477   .debug_str:0000000000000280 .LASF18
+     /tmp/ccquhw41.s:2405   .debug_str:0000000000000043 .LASF200
+     /tmp/ccquhw41.s:2569   .debug_str:0000000000000542 .LASF19
+     /tmp/ccquhw41.s:2589   .debug_str:00000000000005cc .LASF20
+     /tmp/ccquhw41.s:2505   .debug_str:0000000000000348 .LASF21
+     /tmp/ccquhw41.s:2687   .debug_str:00000000000008a8 .LASF22
+     /tmp/ccquhw41.s:2445   .debug_str:0000000000000173 .LASF23
+     /tmp/ccquhw41.s:2565   .debug_str:0000000000000520 .LASF24
+     /tmp/ccquhw41.s:2451   .debug_str:00000000000001a7 .LASF25
+     /tmp/ccquhw41.s:2663   .debug_str:00000000000007e1 .LASF26
+     /tmp/ccquhw41.s:2401   .debug_str:0000000000000014 .LASF27
+     /tmp/ccquhw41.s:2751   .debug_str:0000000000000bbc .LASF28
+     /tmp/ccquhw41.s:2627   .debug_str:00000000000006da .LASF29
+     /tmp/ccquhw41.s:2561   .debug_str:0000000000000501 .LASF30
+     /tmp/ccquhw41.s:2685   .debug_str:0000000000000891 .LASF31
+     /tmp/ccquhw41.s:2519   .debug_str:00000000000003a8 .LASF32
+     /tmp/ccquhw41.s:2657   .debug_str:00000000000007b9 .LASF33
+     /tmp/ccquhw41.s:2753   .debug_str:0000000000000bd2 .LASF34
+     /tmp/ccquhw41.s:2659   .debug_str:00000000000007d0 .LASF35
+     /tmp/ccquhw41.s:2535   .debug_str:000000000000041b .LASF68
+     /tmp/ccquhw41.s:2615   .debug_str:0000000000000682 .LASF36
+     /tmp/ccquhw41.s:2559   .debug_str:00000000000004ec .LASF37
+     /tmp/ccquhw41.s:2435   .debug_str:0000000000000125 .LASF38
+     /tmp/ccquhw41.s:2689   .debug_str:00000000000008bf .LASF39
+     /tmp/ccquhw41.s:2495   .debug_str:00000000000002f1 .LASF40
+     /tmp/ccquhw41.s:2511   .debug_str:000000000000037a .LASF45
+     /tmp/ccquhw41.s:2755   .debug_str:0000000000000bdf .LASF41
+     /tmp/ccquhw41.s:2741   .debug_str:0000000000000abe .LASF42
+     /tmp/ccquhw41.s:2431   .debug_str:00000000000000ff .LASF43
+     /tmp/ccquhw41.s:2735   .debug_str:0000000000000a98 .LASF44
+     /tmp/ccquhw41.s:2443   .debug_str:0000000000000166 .LASF46
+     /tmp/ccquhw41.s:2507   .debug_str:000000000000035d .LASF47
+     /tmp/ccquhw41.s:2463   .debug_str:0000000000000209 .LASF48
+     /tmp/ccquhw41.s:2409   .debug_str:0000000000000063 .LASF49
+     /tmp/ccquhw41.s:2759   .debug_str:0000000000000bf5 .LASF50
+     /tmp/ccquhw41.s:2447   .debug_str:000000000000018b .LASF51
+     /tmp/ccquhw41.s:2785   .debug_str:0000000000000cc3 .LASF52
+     /tmp/ccquhw41.s:2573   .debug_str:000000000000055b .LASF53
+     /tmp/ccquhw41.s:2541   .debug_str:0000000000000446 .LASF54
+     /tmp/ccquhw41.s:2681   .debug_str:0000000000000875 .LASF55
+     /tmp/ccquhw41.s:2629   .debug_str:00000000000006f2 .LASF56
+     /tmp/ccquhw41.s:2763   .debug_str:0000000000000c12 .LASF57
+     /tmp/ccquhw41.s:2645   .debug_str:0000000000000767 .LASF58
+     /tmp/ccquhw41.s:2531   .debug_str:00000000000003f5 .LASF59
+     /tmp/ccquhw41.s:2801   .debug_str:0000000000000d23 .LASF60
+     /tmp/ccquhw41.s:2691   .debug_str:00000000000008da .LASF61
+     /tmp/ccquhw41.s:2653   .debug_str:0000000000000794 .LASF62
+     /tmp/ccquhw41.s:2631   .debug_str:0000000000000702 .LASF63
+     /tmp/ccquhw41.s:2779   .debug_str:0000000000000c8f .LASF64
+     /tmp/ccquhw41.s:2599   .debug_str:000000000000060b .LASF65
+     /tmp/ccquhw41.s:2475   .debug_str:0000000000000269 .LASF66
+     /tmp/ccquhw41.s:2551   .debug_str:00000000000004a1 .LASF67
+     /tmp/ccquhw41.s:2595   .debug_str:00000000000005ee .LASF69
+     /tmp/ccquhw41.s:2509   .debug_str:0000000000000366 .LASF70
+     /tmp/ccquhw41.s:2677   .debug_str:000000000000084f .LASF71
+     /tmp/ccquhw41.s:2745   .debug_str:0000000000000ad9 .LASF72
+     /tmp/ccquhw41.s:2577   .debug_str:0000000000000580 .LASF73
+     /tmp/ccquhw41.s:2421   .debug_str:00000000000000b0 .LASF74
+     /tmp/ccquhw41.s:2433   .debug_str:000000000000010f .LASF75
+     /tmp/ccquhw41.s:2493   .debug_str:00000000000002db .LASF76
+     /tmp/ccquhw41.s:2775   .debug_str:0000000000000c6e .LASF77
+     /tmp/ccquhw41.s:2545   .debug_str:0000000000000465 .LASF78
+     /tmp/ccquhw41.s:2575   .debug_str:000000000000056c .LASF79
+     /tmp/ccquhw41.s:2417   .debug_str:000000000000008f .LASF80
+     /tmp/ccquhw41.s:2679   .debug_str:0000000000000864 .LASF81
+     /tmp/ccquhw41.s:2549   .debug_str:000000000000048b .LASF82
+     /tmp/ccquhw41.s:2769   .debug_str:0000000000000c3f .LASF83
+     /tmp/ccquhw41.s:2699   .debug_str:000000000000093e .LASF84
+     /tmp/ccquhw41.s:2497   .debug_str:0000000000000302 .LASF85
+     /tmp/ccquhw41.s:2711   .debug_str:00000000000009d4 .LASF86
+     /tmp/ccquhw41.s:2713   .debug_str:00000000000009e9 .LASF87
+     /tmp/ccquhw41.s:2715   .debug_str:00000000000009fe .LASF88
+     /tmp/ccquhw41.s:2717   .debug_str:0000000000000a13 .LASF89
+     /tmp/ccquhw41.s:2719   .debug_str:0000000000000a28 .LASF90
+     /tmp/ccquhw41.s:2469   .debug_str:000000000000023e .LASF91
+     /tmp/ccquhw41.s:2623   .debug_str:00000000000006be .LASF92
+     /tmp/ccquhw41.s:2673   .debug_str:000000000000082d .LASF93
+     /tmp/ccquhw41.s:2581   .debug_str:00000000000005a0 .LASF94
+     /tmp/ccquhw41.s:2503   .debug_str:000000000000033f .LASF95
+     /tmp/ccquhw41.s:2621   .debug_str:00000000000006b5 .LASF96
+     /tmp/ccquhw41.s:2793   .debug_str:0000000000000cfb .LASF97
+     /tmp/ccquhw41.s:2473   .debug_str:0000000000000262 .LASF98
+     /tmp/ccquhw41.s:2487   .debug_str:00000000000002c0 .LASF99
+     /tmp/ccquhw41.s:2729   .debug_str:0000000000000a68 .LASF100
+     /tmp/ccquhw41.s:2587   .debug_str:00000000000005c0 .LASF101
+     /tmp/ccquhw41.s:2427   .debug_str:00000000000000e6 .LASF102
+     /tmp/ccquhw41.s:2671   .debug_str:0000000000000819 .LASF103
+     /tmp/ccquhw41.s:2441   .debug_str:000000000000015d .LASF104
+     /tmp/ccquhw41.s:2491   .debug_str:00000000000002d2 .LASF105
+     /tmp/ccquhw41.s:2795   .debug_str:0000000000000d02 .LASF106
+     /tmp/ccquhw41.s:2609   .debug_str:000000000000065e .LASF107
+     /tmp/ccquhw41.s:2411   .debug_str:0000000000000071 .LASF108
+     /tmp/ccquhw41.s:2461   .debug_str:0000000000000200 .LASF109
+     /tmp/ccquhw41.s:2563   .debug_str:0000000000000517 .LASF110
+     /tmp/ccquhw41.s:2601   .debug_str:0000000000000628 .LASF111
+     /tmp/ccquhw41.s:2611   .debug_str:0000000000000668 .LASF112
+     /tmp/ccquhw41.s:2683   .debug_str:000000000000087e .LASF113
+     /tmp/ccquhw41.s:2423   .debug_str:00000000000000c6 .LASF114
+     /tmp/ccquhw41.s:2597   .debug_str:0000000000000601 .LASF115
+     /tmp/ccquhw41.s:2607   .debug_str:000000000000064c .LASF116
+     /tmp/ccquhw41.s:2603   .debug_str:0000000000000635 .LASF117
+     /tmp/ccquhw41.s:2799   .debug_str:0000000000000d15 .LASF118
+     /tmp/ccquhw41.s:2697   .debug_str:0000000000000932 .LASF119
+     /tmp/ccquhw41.s:2783   .debug_str:0000000000000cb4 .LASF120
+     /tmp/ccquhw41.s:2771   .debug_str:0000000000000c59 .LASF121
+     /tmp/ccquhw41.s:2483   .debug_str:00000000000002a6 .LASF122
+     /tmp/ccquhw41.s:2481   .debug_str:000000000000029d .LASF123
+     /tmp/ccquhw41.s:2459   .debug_str:00000000000001fb .LASF124
+     /tmp/ccquhw41.s:2703   .debug_str:0000000000000967 .LASF125
+     /tmp/ccquhw41.s:2479   .debug_str:0000000000000289 .LASF126
+     /tmp/ccquhw41.s:2403   .debug_str:0000000000000029 .LASF127
+     /tmp/ccquhw41.s:2781   .debug_str:0000000000000c9f .LASF128
+     /tmp/ccquhw41.s:2407   .debug_str:0000000000000054 .LASF129
+     /tmp/ccquhw41.s:2547   .debug_str:000000000000047e .LASF130
+     /tmp/ccquhw41.s:2529   .debug_str:00000000000003e7 .LASF131
+     /tmp/ccquhw41.s:2761   .debug_str:0000000000000c02 .LASF132
+     /tmp/ccquhw41.s:2553   .debug_str:00000000000004b8 .LASF133
+     /tmp/ccquhw41.s:2523   .debug_str:00000000000003c7 .LASF134
+     /tmp/ccquhw41.s:2555   .debug_str:00000000000004ca .LASF135
+     /tmp/ccquhw41.s:2655   .debug_str:00000000000007a5 .LASF136
+     /tmp/ccquhw41.s:2425   .debug_str:00000000000000d6 .LASF137
+     /tmp/ccquhw41.s:2639   .debug_str:0000000000000738 .LASF138
+     /tmp/ccquhw41.s:2643   .debug_str:0000000000000753 .LASF139
+     /tmp/ccquhw41.s:2773   .debug_str:0000000000000c65 .LASF140
+     /tmp/ccquhw41.s:2439   .debug_str:0000000000000144 .LASF141
+     /tmp/ccquhw41.s:2617   .debug_str:0000000000000696 .LASF142
+     /tmp/ccquhw41.s:2731   .debug_str:0000000000000a74 .LASF143
+     /tmp/ccquhw41.s:2557   .debug_str:00000000000004d6 .LASF144
+     /tmp/ccquhw41.s:2415   .debug_str:0000000000000082 .LASF145
+     /tmp/ccquhw41.s:2705   .debug_str:000000000000097f .LASF146
+     /tmp/ccquhw41.s:2723   .debug_str:0000000000000a44 .LASF147
+     /tmp/ccquhw41.s:2665   .debug_str:00000000000007fb .LASF148
+     /tmp/ccquhw41.s:2579   .debug_str:0000000000000591 .LASF149
+     /tmp/ccquhw41.s:2605   .debug_str:000000000000063f .LASF150
+     /tmp/ccquhw41.s:2787   .debug_str:0000000000000cd2 .LASF151
+     /tmp/ccquhw41.s:2517   .debug_str:000000000000039f .LASF152
+     /tmp/ccquhw41.s:2757   .debug_str:0000000000000be9 .LASF153
+     /tmp/ccquhw41.s:2625   .debug_str:00000000000006d3 .LASF154
+     /tmp/ccquhw41.s:2791   .debug_str:0000000000000cf6 .LASF155
+     /tmp/ccquhw41.s:2467   .debug_str:0000000000000226 .LASF156
+     /tmp/ccquhw41.s:2667   .debug_str:0000000000000809 .LASF157
+     /tmp/ccquhw41.s:2737   .debug_str:0000000000000aa7 .LASF158
+     /tmp/ccquhw41.s:2499   .debug_str:0000000000000317 .LASF159
+     /tmp/ccquhw41.s:2543   .debug_str:0000000000000452 .LASF160
+     /tmp/ccquhw41.s:2399   .debug_str:0000000000000000 .LASF161
+     /tmp/ccquhw41.s:2641   .debug_str:000000000000074b .LASF162
+     /tmp/ccquhw41.s:2453   .debug_str:00000000000001c0 .LASF163
+     /tmp/ccquhw41.s:2777   .debug_str:0000000000000c83 .LASF164
+     /tmp/ccquhw41.s:2721   .debug_str:0000000000000a3d .LASF165
+     /tmp/ccquhw41.s:2743   .debug_str:0000000000000acc .LASF166
+     /tmp/ccquhw41.s:2635   .debug_str:0000000000000723 .LASF167
+     /tmp/ccquhw41.s:2533   .debug_str:0000000000000406 .LASF168
+     /tmp/ccquhw41.s:2521   .debug_str:00000000000003bd .LASF169
+     /tmp/ccquhw41.s:2747   .debug_str:0000000000000aee .LASF170
+     /tmp/ccquhw41.s:2449   .debug_str:000000000000019a .LASF171
+     /tmp/ccquhw41.s:2455   .debug_str:00000000000001d1 .LASF172
+     /tmp/ccquhw41.s:2513   .debug_str:000000000000038c .LASF173
+     /tmp/ccquhw41.s:2567   .debug_str:0000000000000539 .LASF174
+     /tmp/ccquhw41.s:2619   .debug_str:00000000000006ad .LASF175
+     /tmp/ccquhw41.s:2797   .debug_str:0000000000000d0c .LASF176
+     /tmp/ccquhw41.s:2471   .debug_str:0000000000000257 .LASF177
+     /tmp/ccquhw41.s:2591   .debug_str:00000000000005d5 .LASF178
+     /tmp/ccquhw41.s:2525   .debug_str:00000000000003d2 .LASF179
+     /tmp/ccquhw41.s:2413   .debug_str:000000000000007a .LASF180
+     /tmp/ccquhw41.s:2485   .debug_str:00000000000002ba .LASF181
+     /tmp/ccquhw41.s:2585   .debug_str:00000000000005b8 .LASF182
+     /tmp/ccquhw41.s:2701   .debug_str:0000000000000959 .LASF183
+     /tmp/ccquhw41.s:2675   .debug_str:0000000000000843 .LASF184
+     /tmp/ccquhw41.s:2613   .debug_str:000000000000067c .LASF185
+     /tmp/ccquhw41.s:2527   .debug_str:00000000000003de .LASF186
+     /tmp/ccquhw41.s:2727   .debug_str:0000000000000a61 .LASF187
+     /tmp/ccquhw41.s:2537   .debug_str:000000000000042e .LASF188
+     /tmp/ccquhw41.s:2789   .debug_str:0000000000000cdf .LASF201
+     /tmp/ccquhw41.s:2637   .debug_str:0000000000000730 .LASF189
+     /tmp/ccquhw41.s:2489   .debug_str:00000000000002cc .LASF190
+     /tmp/ccquhw41.s:2651   .debug_str:0000000000000789 .LASF191
+     /tmp/ccquhw41.s:2419   .debug_str:00000000000000a0 .LASF192
+     /tmp/ccquhw41.s:14     .text.Camera_Low_Power_State:0000000000000000 .LFB0
+     /tmp/ccquhw41.s:152    .text.Camera_Low_Power_State:00000000000000c4 .LFE0
+     /tmp/ccquhw41.s:2211   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccquhw41.s:2244   .debug_loc:0000000000000050 .LLST1
+     /tmp/ccquhw41.s:2295   .debug_loc:00000000000000c7 .LLST2
+     /tmp/ccquhw41.s:2316   .debug_loc:00000000000000ff .LLST3
+     /tmp/ccquhw41.s:111    .text.Camera_Low_Power_State:000000000000008c .LBB4
+     /tmp/ccquhw41.s:125    .text.Camera_Low_Power_State:00000000000000a0 .LBE4
+     /tmp/ccquhw41.s:2357   .debug_loc:000000000000015e .LLST4
+     /tmp/ccquhw41.s:2364   .debug_loc:0000000000000171 .LLST5
+     /tmp/ccquhw41.s:112    .text.Camera_Low_Power_State:000000000000008c .LBB5
+     /tmp/ccquhw41.s:124    .text.Camera_Low_Power_State:00000000000000a0 .LBE5
+     /tmp/ccquhw41.s:118    .text.Camera_Low_Power_State:000000000000009c .LVL8
+     /tmp/ccquhw41.s:92     .text.Camera_Low_Power_State:0000000000000068 .LVL4
+     /tmp/ccquhw41.s:97     .text.Camera_Low_Power_State:0000000000000078 .LVL5
+     /tmp/ccquhw41.s:128    .text.Camera_Low_Power_State:00000000000000a8 .LVL10
+     /tmp/ccquhw41.s:2465   .debug_str:0000000000000219 .LASF193
+     /tmp/ccquhw41.s:2571   .debug_str:0000000000000547 .LASF194
+     /tmp/ccquhw41.s:2633   .debug_str:000000000000070d .LASF195
+     /tmp/ccquhw41.s:2457   .debug_str:00000000000001e5 .LASF196
+     /tmp/ccquhw41.s:18     .text.Camera_Low_Power_State:0000000000000000 .LVL0
+     /tmp/ccquhw41.s:70     .text.Camera_Low_Power_State:0000000000000044 .LVL1
+     /tmp/ccquhw41.s:78     .text.Camera_Low_Power_State:000000000000004c .LVL2
+     /tmp/ccquhw41.s:84     .text.Camera_Low_Power_State:0000000000000058 .LVL3
+     /tmp/ccquhw41.s:139    .text.Camera_Low_Power_State:00000000000000b8 .LVL12
+     /tmp/ccquhw41.s:147    .text.Camera_Low_Power_State:00000000000000c0 .LVL13
+     /tmp/ccquhw41.s:109    .text.Camera_Low_Power_State:000000000000008c .LVL6
+     /tmp/ccquhw41.s:115    .text.Camera_Low_Power_State:0000000000000090 .LVL7
+     /tmp/ccquhw41.s:122    .text.Camera_Low_Power_State:00000000000000a0 .LVL9
+     /tmp/ccquhw41.s:131    .text.Camera_Low_Power_State:00000000000000ac .LVL11
+     /tmp/ccquhw41.s:171    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+Camera_Idle_State
+v_Enable_Camera_IRQ
+v_Enable_Camera_Power
+test_udp_dbg
+v_Reset_Camera_Buffer
+Camera_Transfer_State

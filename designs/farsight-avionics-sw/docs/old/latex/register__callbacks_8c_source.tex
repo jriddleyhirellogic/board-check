@@ -1,0 +1,97 @@
+\doxysection{register\+\_\+callbacks.\+c}
+\hypertarget{register__callbacks_8c_source}{}\label{register__callbacks_8c_source}\index{src/register\_callbacks.c@{src/register\_callbacks.c}}
+\doxymbox{\hyperlink{register__callbacks_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00002}00002\ \textcolor{comment}{\ *\ register\_callbacks.c}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Dec\ 10,\ 2025}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}register.h"{}}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{register__callbacks_8h}{register\_callbacks.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00010}00010\ \textcolor{comment}{//\ Read\ Callbacks}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00012}\doxymbox{\hyperlink{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201}{00012}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201}{Get\_Sensor\_State}}(\ uint32\_t\ *state\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00013}00013\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00014}00014\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00015}00015\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00017}\doxymbox{\hyperlink{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39}{00017}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39}{Get\_Sensor\_Frame\_Count}}(\ uint32\_t\ *count\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00018}00018\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00019}00019\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00020}00020\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00022}00022\ \textcolor{comment}{/*\ Focus\ distance\ requested\ by\ the\ user\ from\ a\ FOCUS\_SYS\_CMD,}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00023}00023\ \textcolor{comment}{\ *\ which\ is\ the\ only\ way\ to\ update\ this\ register\ value.}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00024}00024\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00025}\doxymbox{\hyperlink{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd}{00025}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd}{Get\_Requested\_Focus\_Distance}}(\ uint32\_t\ *count\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00026}00026\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00027}00027\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00028}00028\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00030}00030\ \textcolor{comment}{/*Focus\ distance\ computed\ from\ LVDT\ position\ and\ calibrated\ LUT\ */}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00031}\doxymbox{\hyperlink{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f}{00031}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f}{Get\_Computed\_Focus\_Distance}}(\ uint32\_t\ *count\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00032}00032\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00033}00033\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00034}00034\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00036}00036\ \textcolor{comment}{/*Reading\ of\ the\ sensor\ position\ in\ nanometers\ that\ can\ be\ mapped\ to\ focus\ distance.\ */}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00037}\doxymbox{\hyperlink{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124}{00037}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124}{Get\_LVDT\_Position}}(\ uint32\_t\ *count\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00039}00039\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00040}00040\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00042}\doxymbox{\hyperlink{register__callbacks_8c_a4db6c8105962792738524ea049eb8133}{00042}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a4db6c8105962792738524ea049eb8133}{Get\_Sensor\_Temperature}}(\ uint32\_t\ *temp\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00043}00043\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00044}00044\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00045}00045\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00047}00047\ \textcolor{comment}{//\ Write\ Callbacks}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00049}\doxymbox{\hyperlink{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0}{00049}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0}{Read\_Only}}(\ uint32\_t\ dummy\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00050}00050\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00051}00051\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0ba492352f9c0ad2c7f09c4941b2e07d0d7}{ERR\_REG\_WRITE\_DENIED\_RO}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00052}00052\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00054}\doxymbox{\hyperlink{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c}{00054}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c}{Set\_Sensor\_Frame\_Mode}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00055}00055\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00056}00056\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00057}00057\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00059}\doxymbox{\hyperlink{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841}{00059}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841}{Set\_Sensor\_Bit\_Depth}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00060}00060\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00061}00061\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00062}00062\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00064}\doxymbox{\hyperlink{register__callbacks_8c_a1b93f53805f41a2a5be688c48477d2fc}{00064}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a1b93f53805f41a2a5be688c48477d2fc}{Set\_Sensor\_Black\_Level\_Offset}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00065}00065\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00066}00066\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00067}00067\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00068}\doxymbox{\hyperlink{register__callbacks_8c_ab5bb6235fe5b95acdd749120a2153a68}{00068}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_ab5bb6235fe5b95acdd749120a2153a68}{Set\_Sensor\_Exposure}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00069}00069\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00071}00071\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00073}\doxymbox{\hyperlink{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c}{00073}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c}{Set\_Sensor\_Trigger\_Mode}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00074}00074\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00075}00075\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00076}00076\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00078}\doxymbox{\hyperlink{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b}{00078}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b}{Set\_Sensor\_Images\_Per\_Trigger}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00079}00079\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00080}00080\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00083}\doxymbox{\hyperlink{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa}{00083}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa}{Set\_Sensor\_Frames\_Per\_Second}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00085}00085\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00086}00086\ \}}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00088}\doxymbox{\hyperlink{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631}{00088}}\ \doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\_Code\_t}}\ \doxymbox{\hyperlink{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631}{Set\_Sensor\_Capture\_Delay}}(\ uint32\_t\ u32\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00089}00089\ \{}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00090}00090\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{error__id_8h_ae7504b2e4f50649605654ae59d053c0babf350750d0d4fabd8954c0f1e9bbae94}{NO\_ERROR}};}
+\DoxyCodeLine{\Hypertarget{register__callbacks_8c_source_l00091}00091\ \}}
+
+\end{DoxyCode}

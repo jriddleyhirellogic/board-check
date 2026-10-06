@@ -1,0 +1,314 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+command.h File Reference}
+\hypertarget{command_8h}{}\label{command_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/command.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/command.h}}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structGeneric__Packet__t}{Generic\+\_\+\+Packet\+\_\+t}}
+\item 
+struct \doxymbox{\hyperlink{structEcho__Packet__t}{Echo\+\_\+\+Packet\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191e}{Serial\+\_\+\+Function\+\_\+\+Code\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eaad643e9fe0f7d76d9707e4324cc9578e}{GET\+\_\+\+VERSION\+\_\+\+SYS\+\_\+\+CMD}} = 0x00
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eaa048867112c186ddf327eeecdbeed360}{SET\+\_\+\+MODE\+\_\+\+SYS\+\_\+\+CMD}} = 0x01
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea600b471ce2a01690c5f0c5b079ba5353}{RESET\+\_\+\+SYS\+\_\+\+CMD}} = 0x02
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2bc0cf1708c8b3ef514c4fdd1e79da6d}{REG\+\_\+\+READ\+\_\+\+SYS\+\_\+\+CMD}} = 0x03
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eab9c52b711ca7d7da6c03b25002934e1f}{REG\+\_\+\+WRITE\+\_\+\+SYS\+\_\+\+CMD}} = 0x04
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eadabbe86d204b9b9c6980cfa31b578a09}{SET\+\_\+\+TIME\+\_\+\+SYS\+\_\+\+CMD}} = 0x05
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea95ae5811f46207f9b7f62a0ec915e727}{START\+\_\+\+ACQ\+\_\+\+SYS\+\_\+\+CMD}} = 0x06
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea8d0fbcedf80ff0b412d4e97187c031e2}{STOP\+\_\+\+ACQ\+\_\+\+SYS\+\_\+\+CMD}} = 0x07
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea06f4031a5e212f0211beba2618e5556f}{FOCUS\+\_\+\+SYS\+\_\+\+CMD}} = 0x08
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eaff3bfad694721c80aad472befbcf63f1}{HALT\+\_\+\+FOCUS\+\_\+\+SYS\+\_\+\+CMD}} = 0x09
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea5080bf84f150132f9821b65b1e17de50}{XFER\+\_\+\+BUFF\+\_\+\+SYS\+\_\+\+CMD}} = 0x0A
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea258f86b070b63f4603ce0c733221ab17}{RESET\+\_\+\+BUFF\+\_\+\+SYS\+\_\+\+CMD}} = 0x0B
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eaf379c01b72840222918e00621ecf9767}{GET\+\_\+\+INFO\+\_\+\+SYS\+\_\+\+CMD}} = 0x0C
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9f9f5f79a6c0eed2c36b38aeb11f9cfb}{CONF\+\_\+\+EVENT\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD}} = 0x0D
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea22f750c50910c0cfd3b1c3ddcb54887f}{EN\+\_\+\+TL\+\_\+\+CHAN\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD}} = 0x0E
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea6abc03db577d2eb87e39fa63b8955320}{XFER\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD}} = 0x0F
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea7673b406e2c9cc5dc7d41f4d6467d122}{ECHO\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eab408cc2fc967812e15043f4ea205e3a1}{GET\+\_\+\+STATUS\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea26e1159d5bd85957584bf53dd949342c}{SET\+\_\+\+VREF\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea110a94304f6578acf6305e52a9ee93e4}{SET\+\_\+\+POSITION}}
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea34b7af99e09348952e1b3ed5a3cea178}{SET\+\_\+\+CONTROL\+\_\+\+OUTPUTS\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2ba2d28246bedc5fadabbca4666f22a8}{ZERO\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191eaae4ed23bbbe007fe3f18d790d3d3307f}{SET\+\_\+\+LVDT\+\_\+\+OFFSET\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea3927efed8318e4abd6494dc0c7d8d840}{GET\+\_\+\+POSITION\+\_\+\+FUNCTION}}
+, \newline
+\doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea36b30099e16abcc14606ce55363db222}{RESET\+\_\+\+FUNCTION}}
+, \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9972081176d8b250faed63fa585dcdef}{GET\+\_\+\+PROJECTION}}
+ \}
+\item 
+enum \doxymbox{\hyperlink{command_8h_a99027e0a887e260d7c0c7819c4014fa8}{Command\+\_\+\+Exec\+\_\+\+Status\+\_\+t}} \{ \doxymbox{\hyperlink{command_8h_a99027e0a887e260d7c0c7819c4014fa8a2bc49ec37d6a5715dd23e85f1ff5bb59}{OK}}
+, \doxymbox{\hyperlink{command_8h_a99027e0a887e260d7c0c7819c4014fa8ae3f3b9f3865902a161887cdc50a10602}{MALFORMED\+\_\+\+PACKET}}
+, \doxymbox{\hyperlink{command_8h_a99027e0a887e260d7c0c7819c4014fa8af2645dc3e76aada2b584fbc8a088fd76}{UNIMPLEMENTED}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{command_8h_a6e59c976789aaef6bf12f1c18be6e97a}{Execute\+\_\+\+Command}} (\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+\+Header, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+u8\+\_\+\+Data, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+u8\+\_\+\+Response\+\_\+\+Length)
+\begin{DoxyCompactList}\small\item\em Executes a TMTC command This executes the command and constructs a response packet to be sent through the serial port. The opcode is extracted from the header information and is used to signal a task through the message queue. The response packet header defaults to that of the request packet. Errors in the response packet only indicate the correctness of the request, as some take a long time to execute. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{command_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{command_8h_a99027e0a887e260d7c0c7819c4014fa8}\index{command.h@{command.h}!Command\_Exec\_Status\_t@{Command\_Exec\_Status\_t}}
+\index{Command\_Exec\_Status\_t@{Command\_Exec\_Status\_t}!command.h@{command.h}}
+\doxysubsubsection{\texorpdfstring{Command\_Exec\_Status\_t}{Command\_Exec\_Status\_t}}
+{\footnotesize\ttfamily \label{command_8h_a99027e0a887e260d7c0c7819c4014fa8} 
+enum \doxymbox{\hyperlink{command_8h_a99027e0a887e260d7c0c7819c4014fa8}{Command\+\_\+\+Exec\+\_\+\+Status\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OK@{OK}!command.h@{command.h}}
+\index{command.h@{command.h}!OK@{OK}}
+}\Hypertarget{command_8h_a99027e0a887e260d7c0c7819c4014fa8a2bc49ec37d6a5715dd23e85f1ff5bb59}\label{command_8h_a99027e0a887e260d7c0c7819c4014fa8a2bc49ec37d6a5715dd23e85f1ff5bb59} 
+OK&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MALFORMED\_PACKET@{MALFORMED\_PACKET}!command.h@{command.h}}
+\index{command.h@{command.h}!MALFORMED\_PACKET@{MALFORMED\_PACKET}}
+}\Hypertarget{command_8h_a99027e0a887e260d7c0c7819c4014fa8ae3f3b9f3865902a161887cdc50a10602}\label{command_8h_a99027e0a887e260d7c0c7819c4014fa8ae3f3b9f3865902a161887cdc50a10602} 
+MALFORMED\+\_\+\+PACKET&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{UNIMPLEMENTED@{UNIMPLEMENTED}!command.h@{command.h}}
+\index{command.h@{command.h}!UNIMPLEMENTED@{UNIMPLEMENTED}}
+}\Hypertarget{command_8h_a99027e0a887e260d7c0c7819c4014fa8af2645dc3e76aada2b584fbc8a088fd76}\label{command_8h_a99027e0a887e260d7c0c7819c4014fa8af2645dc3e76aada2b584fbc8a088fd76} 
+UNIMPLEMENTED&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{command_8h_source_l00045}{45}} of file \doxymbox{\hyperlink{command_8h_source}{command.\+h}}.
+
+\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191e}\index{command.h@{command.h}!Serial\_Function\_Code\_t@{Serial\_Function\_Code\_t}}
+\index{Serial\_Function\_Code\_t@{Serial\_Function\_Code\_t}!command.h@{command.h}}
+\doxysubsubsection{\texorpdfstring{Serial\_Function\_Code\_t}{Serial\_Function\_Code\_t}}
+{\footnotesize\ttfamily \label{command_8h_a5e83b6413ca83d5e3b97da06b132191e} 
+enum \doxymbox{\hyperlink{command_8h_a5e83b6413ca83d5e3b97da06b132191e}{Serial\+\_\+\+Function\+\_\+\+Code\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GET\_VERSION\_SYS\_CMD@{GET\_VERSION\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!GET\_VERSION\_SYS\_CMD@{GET\_VERSION\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eaad643e9fe0f7d76d9707e4324cc9578e}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eaad643e9fe0f7d76d9707e4324cc9578e} 
+GET\+\_\+\+VERSION\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_MODE\_SYS\_CMD@{SET\_MODE\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_MODE\_SYS\_CMD@{SET\_MODE\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eaa048867112c186ddf327eeecdbeed360}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eaa048867112c186ddf327eeecdbeed360} 
+SET\+\_\+\+MODE\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESET\_SYS\_CMD@{RESET\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!RESET\_SYS\_CMD@{RESET\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea600b471ce2a01690c5f0c5b079ba5353}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea600b471ce2a01690c5f0c5b079ba5353} 
+RESET\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REG\_READ\_SYS\_CMD@{REG\_READ\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!REG\_READ\_SYS\_CMD@{REG\_READ\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2bc0cf1708c8b3ef514c4fdd1e79da6d}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2bc0cf1708c8b3ef514c4fdd1e79da6d} 
+REG\+\_\+\+READ\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{REG\_WRITE\_SYS\_CMD@{REG\_WRITE\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!REG\_WRITE\_SYS\_CMD@{REG\_WRITE\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eab9c52b711ca7d7da6c03b25002934e1f}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eab9c52b711ca7d7da6c03b25002934e1f} 
+REG\+\_\+\+WRITE\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_TIME\_SYS\_CMD@{SET\_TIME\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_TIME\_SYS\_CMD@{SET\_TIME\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eadabbe86d204b9b9c6980cfa31b578a09}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eadabbe86d204b9b9c6980cfa31b578a09} 
+SET\+\_\+\+TIME\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{START\_ACQ\_SYS\_CMD@{START\_ACQ\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!START\_ACQ\_SYS\_CMD@{START\_ACQ\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea95ae5811f46207f9b7f62a0ec915e727}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea95ae5811f46207f9b7f62a0ec915e727} 
+START\+\_\+\+ACQ\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{STOP\_ACQ\_SYS\_CMD@{STOP\_ACQ\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!STOP\_ACQ\_SYS\_CMD@{STOP\_ACQ\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea8d0fbcedf80ff0b412d4e97187c031e2}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea8d0fbcedf80ff0b412d4e97187c031e2} 
+STOP\+\_\+\+ACQ\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{FOCUS\_SYS\_CMD@{FOCUS\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!FOCUS\_SYS\_CMD@{FOCUS\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea06f4031a5e212f0211beba2618e5556f}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea06f4031a5e212f0211beba2618e5556f} 
+FOCUS\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{HALT\_FOCUS\_SYS\_CMD@{HALT\_FOCUS\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!HALT\_FOCUS\_SYS\_CMD@{HALT\_FOCUS\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eaff3bfad694721c80aad472befbcf63f1}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eaff3bfad694721c80aad472befbcf63f1} 
+HALT\+\_\+\+FOCUS\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{XFER\_BUFF\_SYS\_CMD@{XFER\_BUFF\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!XFER\_BUFF\_SYS\_CMD@{XFER\_BUFF\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea5080bf84f150132f9821b65b1e17de50}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea5080bf84f150132f9821b65b1e17de50} 
+XFER\+\_\+\+BUFF\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESET\_BUFF\_SYS\_CMD@{RESET\_BUFF\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!RESET\_BUFF\_SYS\_CMD@{RESET\_BUFF\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea258f86b070b63f4603ce0c733221ab17}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea258f86b070b63f4603ce0c733221ab17} 
+RESET\+\_\+\+BUFF\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GET\_INFO\_SYS\_CMD@{GET\_INFO\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!GET\_INFO\_SYS\_CMD@{GET\_INFO\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eaf379c01b72840222918e00621ecf9767}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eaf379c01b72840222918e00621ecf9767} 
+GET\+\_\+\+INFO\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CONF\_EVENT\_LOG\_SYS\_CMD@{CONF\_EVENT\_LOG\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!CONF\_EVENT\_LOG\_SYS\_CMD@{CONF\_EVENT\_LOG\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9f9f5f79a6c0eed2c36b38aeb11f9cfb}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9f9f5f79a6c0eed2c36b38aeb11f9cfb} 
+CONF\+\_\+\+EVENT\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{EN\_TL\_CHAN\_LOG\_SYS\_CMD@{EN\_TL\_CHAN\_LOG\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!EN\_TL\_CHAN\_LOG\_SYS\_CMD@{EN\_TL\_CHAN\_LOG\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea22f750c50910c0cfd3b1c3ddcb54887f}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea22f750c50910c0cfd3b1c3ddcb54887f} 
+EN\+\_\+\+TL\+\_\+\+CHAN\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{XFER\_LOG\_SYS\_CMD@{XFER\_LOG\_SYS\_CMD}!command.h@{command.h}}
+\index{command.h@{command.h}!XFER\_LOG\_SYS\_CMD@{XFER\_LOG\_SYS\_CMD}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea6abc03db577d2eb87e39fa63b8955320}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea6abc03db577d2eb87e39fa63b8955320} 
+XFER\+\_\+\+LOG\+\_\+\+SYS\+\_\+\+CMD&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ECHO\_FUNCTION@{ECHO\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!ECHO\_FUNCTION@{ECHO\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea7673b406e2c9cc5dc7d41f4d6467d122}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea7673b406e2c9cc5dc7d41f4d6467d122} 
+ECHO\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GET\_STATUS\_FUNCTION@{GET\_STATUS\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!GET\_STATUS\_FUNCTION@{GET\_STATUS\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eab408cc2fc967812e15043f4ea205e3a1}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eab408cc2fc967812e15043f4ea205e3a1} 
+GET\+\_\+\+STATUS\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_VREF\_FUNCTION@{SET\_VREF\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_VREF\_FUNCTION@{SET\_VREF\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea26e1159d5bd85957584bf53dd949342c}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea26e1159d5bd85957584bf53dd949342c} 
+SET\+\_\+\+VREF\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_POSITION@{SET\_POSITION}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_POSITION@{SET\_POSITION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea110a94304f6578acf6305e52a9ee93e4}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea110a94304f6578acf6305e52a9ee93e4} 
+SET\+\_\+\+POSITION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_CONTROL\_OUTPUTS\_FUNCTION@{SET\_CONTROL\_OUTPUTS\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_CONTROL\_OUTPUTS\_FUNCTION@{SET\_CONTROL\_OUTPUTS\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea34b7af99e09348952e1b3ed5a3cea178}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea34b7af99e09348952e1b3ed5a3cea178} 
+SET\+\_\+\+CONTROL\+\_\+\+OUTPUTS\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ZERO\_FUNCTION@{ZERO\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!ZERO\_FUNCTION@{ZERO\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2ba2d28246bedc5fadabbca4666f22a8}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea2ba2d28246bedc5fadabbca4666f22a8} 
+ZERO\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SET\_LVDT\_OFFSET\_FUNCTION@{SET\_LVDT\_OFFSET\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!SET\_LVDT\_OFFSET\_FUNCTION@{SET\_LVDT\_OFFSET\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191eaae4ed23bbbe007fe3f18d790d3d3307f}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191eaae4ed23bbbe007fe3f18d790d3d3307f} 
+SET\+\_\+\+LVDT\+\_\+\+OFFSET\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GET\_POSITION\_FUNCTION@{GET\_POSITION\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!GET\_POSITION\_FUNCTION@{GET\_POSITION\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea3927efed8318e4abd6494dc0c7d8d840}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea3927efed8318e4abd6494dc0c7d8d840} 
+GET\+\_\+\+POSITION\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{RESET\_FUNCTION@{RESET\_FUNCTION}!command.h@{command.h}}
+\index{command.h@{command.h}!RESET\_FUNCTION@{RESET\_FUNCTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea36b30099e16abcc14606ce55363db222}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea36b30099e16abcc14606ce55363db222} 
+RESET\+\_\+\+FUNCTION&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{GET\_PROJECTION@{GET\_PROJECTION}!command.h@{command.h}}
+\index{command.h@{command.h}!GET\_PROJECTION@{GET\_PROJECTION}}
+}\Hypertarget{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9972081176d8b250faed63fa585dcdef}\label{command_8h_a5e83b6413ca83d5e3b97da06b132191ea9972081176d8b250faed63fa585dcdef} 
+GET\+\_\+\+PROJECTION&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{command_8h_source_l00012}{12}} of file \doxymbox{\hyperlink{command_8h_source}{command.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{command_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{command_8h_a6e59c976789aaef6bf12f1c18be6e97a}\index{command.h@{command.h}!Execute\_Command@{Execute\_Command}}
+\index{Execute\_Command@{Execute\_Command}!command.h@{command.h}}
+\doxysubsubsection{\texorpdfstring{Execute\_Command()}{Execute\_Command()}}
+{\footnotesize\ttfamily \label{command_8h_a6e59c976789aaef6bf12f1c18be6e97a} 
+uint8\+\_\+t Execute\+\_\+\+Command (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Header}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+u8\+\_\+\+Data}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+u8\+\_\+\+Response\+\_\+\+Length}{}\end{DoxyParamCaption})}
+
+
+
+Executes a TMTC command This executes the command and constructs a response packet to be sent through the serial port. The opcode is extracted from the header information and is used to signal a task through the message queue. The response packet header defaults to that of the request packet. Errors in the response packet only indicate the correctness of the request, as some take a long time to execute. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Header} & Pointer to header structure. This contains the opcode, error code and sequence number \\
+\hline
+{\em p\+\_\+u8\+\_\+\+Data} & Pointer to the data portion of the received TMTC request packet \\
+\hline
+{\em p\+\_\+\+Response\+\_\+\+Buffer} & Pointer to buffer where response packet is constructed. \\
+\hline
+{\em p\+\_\+u8\+\_\+\+Response\+\_\+\+Length} & Pointer to length of response packet \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00054}{54}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8h_a6e59c976789aaef6bf12f1c18be6e97a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8h_a6e59c976789aaef6bf12f1c18be6e97a_icgraph}
+\end{center}
+\end{figure}

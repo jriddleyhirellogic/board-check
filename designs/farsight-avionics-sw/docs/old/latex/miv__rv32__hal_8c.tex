@@ -1,0 +1,391 @@
+\doxysection{src/\+miv\+\_\+rv32\+\_\+hal/\+miv\+\_\+rv32\+\_\+hal.c File Reference}
+\hypertarget{miv__rv32__hal_8c}{}\label{miv__rv32__hal_8c}\index{src/miv\_rv32\_hal/miv\_rv32\_hal.c@{src/miv\_rv32\_hal/miv\_rv32\_hal.c}}
+{\ttfamily \+\#include $<$unistd.\+h$>$}\newline
+{\ttfamily \+\#include "{}miv\+\_\+rv32\+\_\+hal.\+h"{}}\newline
+Include dependency graph for miv\+\_\+rv32\+\_\+hal.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8c_aa90cac659d18e8ef6294c7ae337f6b58}{SUCCESS}}~0U
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8c_a8fe83ac76edc595f6b98cd4a4127aed5}{ERROR}}~1U
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\+\_\+32\+BIT}}~0x\+FFFFFFFFu
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b}{WRITE\+\_\+\+MTIMECMP}}(value)
+\item 
+\+\#define \doxymbox{\hyperlink{miv__rv32__hal_8c_a2772b4d86b782674867ffa80499c501d}{WRITE\+\_\+\+MTIME}}(value)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1}{Software\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf}{External\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c}{MGEUI\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722}{MGECI\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1}{MSYS\+\_\+\+EI0\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437}{MSYS\+\_\+\+EI1\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e}{MSYS\+\_\+\+EI2\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5}{MSYS\+\_\+\+EI3\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc}{MSYS\+\_\+\+EI4\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0}{MSYS\+\_\+\+EI5\+\_\+\+IRQHandler}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61}{OPSRV\+\_\+\+IRQHandler}} (void)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c}{MRV\+\_\+systick\+\_\+config}} (uint64\+\_\+t ticks)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7}{handle\+\_\+m\+\_\+timer\+\_\+interrupt}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f}{handle\+\_\+m\+\_\+soft\+\_\+interrupt}} (void)
+\item 
+void \doxymbox{\hyperlink{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a}{handle\+\_\+trap}} (uintptr\+\_\+t mcause, uintptr\+\_\+t \doxymbox{\hyperlink{portContext_8h_a83d9b6c23f64904c746c45662c911420}{mepc}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static uint64\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}{g\+\_\+systick\+\_\+increment}} = 0U
+\item 
+static uint64\+\_\+t \doxymbox{\hyperlink{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}{g\+\_\+systick\+\_\+cmp\+\_\+value}} = 0U
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{miv__rv32__hal_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{miv__rv32__hal_8c_a8fe83ac76edc595f6b98cd4a4127aed5}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!ERROR@{ERROR}}
+\index{ERROR@{ERROR}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{ERROR}{ERROR}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a8fe83ac76edc595f6b98cd4a4127aed5} 
+\+\#define ERROR~1U}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00019}{19}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+\Hypertarget{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MASK\_32BIT@{MASK\_32BIT}}
+\index{MASK\_32BIT@{MASK\_32BIT}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MASK\_32BIT}{MASK\_32BIT}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789} 
+\+\#define MASK\+\_\+32\+BIT~0x\+FFFFFFFFu}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00020}{20}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+\Hypertarget{miv__rv32__hal_8c_aa90cac659d18e8ef6294c7ae337f6b58}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!SUCCESS@{SUCCESS}}
+\index{SUCCESS@{SUCCESS}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{SUCCESS}{SUCCESS}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_aa90cac659d18e8ef6294c7ae337f6b58} 
+\+\#define SUCCESS~0U}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+\Hypertarget{miv__rv32__hal_8c_a2772b4d86b782674867ffa80499c501d}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!WRITE\_MTIME@{WRITE\_MTIME}}
+\index{WRITE\_MTIME@{WRITE\_MTIME}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{WRITE\_MTIME}{WRITE\_MTIME}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a2772b4d86b782674867ffa80499c501d} 
+\+\#define WRITE\+\_\+\+MTIME(\begin{DoxyParamCaption}\item[{}]{value}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{miv__rv32__hal_8h_a86dbc666da56fe7a39ea928f97c79299}{MTIME}}\ \ =\ value\ \&\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\_32BIT}};\(\backslash\)}
+\DoxyCodeLine{\doxymbox{\hyperlink{miv__rv32__hal_8h_a8d3159576f86af88a9587de4da3b4902}{MTIMEH}}\ =\ (value\ >>\ 32u)\ \&\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\_32BIT}};}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00041}{41}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+\Hypertarget{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!WRITE\_MTIMECMP@{WRITE\_MTIMECMP}}
+\index{WRITE\_MTIMECMP@{WRITE\_MTIMECMP}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{WRITE\_MTIMECMP}{WRITE\_MTIMECMP}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_abb0269fa1177da7690ba0849d1e5b02b} 
+\+\#define WRITE\+\_\+\+MTIMECMP(\begin{DoxyParamCaption}\item[{}]{value}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{miv__rv32__hal_8h_a901d73a76c36463ffad6dd33ca096682}{MTIMECMPH}}\ =\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\_32BIT}};\ \(\backslash\)}
+\DoxyCodeLine{\doxymbox{\hyperlink{miv__rv32__hal_8h_a4bfc9a5f5652e45370287e73011ad03c}{MTIMECMP}}\ \ =\ value\ \&\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\_32BIT}};\(\backslash\)}
+\DoxyCodeLine{\doxymbox{\hyperlink{miv__rv32__hal_8h_a901d73a76c36463ffad6dd33ca096682}{MTIMECMPH}}\ =\ \ (value\ >>\ 32u)\ \&\ \doxymbox{\hyperlink{miv__rv32__hal_8c_a7fd616fd57c2abdc3dbe745fa8bd3789}{MASK\_32BIT}};}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{miv__rv32__hal_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!External\_IRQHandler@{External\_IRQHandler}}
+\index{External\_IRQHandler@{External\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{External\_IRQHandler()}{External\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf} 
+void External\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=308pt]{miv__rv32__hal_8c_acb6a0629ad4111c0d20935401fd325cf_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!handle\_m\_soft\_interrupt@{handle\_m\_soft\_interrupt}}
+\index{handle\_m\_soft\_interrupt@{handle\_m\_soft\_interrupt}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{handle\_m\_soft\_interrupt()}{handle\_m\_soft\_interrupt()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f} 
+void handle\+\_\+m\+\_\+soft\+\_\+interrupt (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00246}{246}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=325pt]{miv__rv32__hal_8c_a38f7c323c1e69de5a49864d3ccacf53f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!handle\_m\_timer\_interrupt@{handle\_m\_timer\_interrupt}}
+\index{handle\_m\_timer\_interrupt@{handle\_m\_timer\_interrupt}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{handle\_m\_timer\_interrupt()}{handle\_m\_timer\_interrupt()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7} 
+void handle\+\_\+m\+\_\+timer\+\_\+interrupt (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00182}{182}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=333pt]{miv__rv32__hal_8c_a21327102ba9787d227e507040c41d0d7_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!handle\_trap@{handle\_trap}}
+\index{handle\_trap@{handle\_trap}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{handle\_trap()}{handle\_trap()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a} 
+void handle\+\_\+trap (\begin{DoxyParamCaption}\item[{uintptr\+\_\+t}]{mcause}{, }\item[{uintptr\+\_\+t}]{mepc}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00255}{255}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c_a723b80d57924293782be9489e40ae93a_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MGECI\_IRQHandler@{MGECI\_IRQHandler}}
+\index{MGECI\_IRQHandler@{MGECI\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MGECI\_IRQHandler()}{MGECI\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722} 
+void MGECI\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=300pt]{miv__rv32__hal_8c_a612d509266ba3f050102a16945492722_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MGEUI\_IRQHandler@{MGEUI\_IRQHandler}}
+\index{MGEUI\_IRQHandler@{MGEUI\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MGEUI\_IRQHandler()}{MGEUI\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c} 
+void MGEUI\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=300pt]{miv__rv32__hal_8c_a979f2b6275b51866c8392789bb0bfe3c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MRV\_systick\_config@{MRV\_systick\_config}}
+\index{MRV\_systick\_config@{MRV\_systick\_config}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MRV\_systick\_config()}{MRV\_systick\_config()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c} 
+uint32\+\_\+t MRV\+\_\+systick\+\_\+config (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{ticks}{}\end{DoxyParamCaption})}
+
+System timer tick configuration. Configures the machine timer to generate a system tick interrupt at regular intervals. Takes the number of system clock ticks between interrupts.
+
+Though this function can take any valid ticks value as parameter, we expect that, for all practical purposes, a small tick value (to generate periodic interrupts every few miliseconds) will be passed. If you need to generate periodic events in the range of seconds or more, you may use the \doxylink{miv__rv32__hal_8h_ab5e09814056d617c521549e542639b7e}{Sys\+Tick\+\_\+\+Handler()} to further count the number of interrupts and hence the larger time intervals.
+
+Returns 0 if successful. Returns 1 if the interrupt interval cannot be achieved. 
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00155}{155}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c_a403d7fe4ec086afc20bb2adb505d6c6c_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI0\_IRQHandler@{MSYS\_EI0\_IRQHandler}}
+\index{MSYS\_EI0\_IRQHandler@{MSYS\_EI0\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI0\_IRQHandler()}{MSYS\_EI0\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1} 
+void MSYS\+\_\+\+EI0\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_a75caed1ad9c75303545f16b8afc990f1_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI1\_IRQHandler@{MSYS\_EI1\_IRQHandler}}
+\index{MSYS\_EI1\_IRQHandler@{MSYS\_EI1\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI1\_IRQHandler()}{MSYS\_EI1\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437} 
+void MSYS\+\_\+\+EI1\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_afc6cba99b49aa1ff9406d48747cb0437_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI2\_IRQHandler@{MSYS\_EI2\_IRQHandler}}
+\index{MSYS\_EI2\_IRQHandler@{MSYS\_EI2\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI2\_IRQHandler()}{MSYS\_EI2\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e} 
+void MSYS\+\_\+\+EI2\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_a6f7a5f800aee6755a5166179a08e6e1e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI3\_IRQHandler@{MSYS\_EI3\_IRQHandler}}
+\index{MSYS\_EI3\_IRQHandler@{MSYS\_EI3\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI3\_IRQHandler()}{MSYS\_EI3\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5} 
+void MSYS\+\_\+\+EI3\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_ae4416f5b19a2fa4d52da23e0b2cba8a5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI4\_IRQHandler@{MSYS\_EI4\_IRQHandler}}
+\index{MSYS\_EI4\_IRQHandler@{MSYS\_EI4\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI4\_IRQHandler()}{MSYS\_EI4\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc} 
+void MSYS\+\_\+\+EI4\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_a5d262de9dcb8f7f02d8d35ff01b247dc_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!MSYS\_EI5\_IRQHandler@{MSYS\_EI5\_IRQHandler}}
+\index{MSYS\_EI5\_IRQHandler@{MSYS\_EI5\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{MSYS\_EI5\_IRQHandler()}{MSYS\_EI5\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0} 
+void MSYS\+\_\+\+EI5\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{miv__rv32__hal_8c_a24b5664e91d20bb38328994b423b1af0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!OPSRV\_IRQHandler@{OPSRV\_IRQHandler}}
+\index{OPSRV\_IRQHandler@{OPSRV\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{OPSRV\_IRQHandler()}{OPSRV\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61} 
+void OPSRV\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=300pt]{miv__rv32__hal_8c_a446168fa41fe3ae92433c726a4bc3e61_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!Software\_IRQHandler@{Software\_IRQHandler}}
+\index{Software\_IRQHandler@{Software\_IRQHandler}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{Software\_IRQHandler()}{Software\_IRQHandler()}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1} 
+void Software\+\_\+\+IRQHandler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [extern]}}
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{miv__rv32__hal_8c_a8d495c01b4280bd025966c6822e87fd1_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{miv__rv32__hal_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!g\_systick\_cmp\_value@{g\_systick\_cmp\_value}}
+\index{g\_systick\_cmp\_value@{g\_systick\_cmp\_value}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{g\_systick\_cmp\_value}{g\_systick\_cmp\_value}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_a5095180e7de6c83009518e7c0a80bd35} 
+uint64\+\_\+t g\+\_\+systick\+\_\+cmp\+\_\+value = 0U\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00150}{150}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+
+\Hypertarget{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1}\index{miv\_rv32\_hal.c@{miv\_rv32\_hal.c}!g\_systick\_increment@{g\_systick\_increment}}
+\index{g\_systick\_increment@{g\_systick\_increment}!miv\_rv32\_hal.c@{miv\_rv32\_hal.c}}
+\doxysubsubsection{\texorpdfstring{g\_systick\_increment}{g\_systick\_increment}}
+{\footnotesize\ttfamily \label{miv__rv32__hal_8c_ab22a4f91b71c9b7e9f1765f391030ce1} 
+uint64\+\_\+t g\+\_\+systick\+\_\+increment = 0U\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{miv__rv32__hal_8c_source_l00149}{149}} of file \doxymbox{\hyperlink{miv__rv32__hal_8c_source}{miv\+\_\+rv32\+\_\+hal.\+c}}.
+

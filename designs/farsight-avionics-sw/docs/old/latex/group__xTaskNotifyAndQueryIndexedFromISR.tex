@@ -1,0 +1,15 @@
+\doxysection{x\+Task\+Notify\+And\+Query\+Indexed\+From\+ISR }
+\hypertarget{group__xTaskNotifyAndQueryIndexedFromISR}{}\label{group__xTaskNotifyAndQueryIndexedFromISR}\index{xTaskNotifyAndQueryIndexedFromISR@{xTaskNotifyAndQueryIndexedFromISR}}
+task. h 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ \doxymbox{\hyperlink{task_8h_a310ee091fef5bf31f23e06bc2a71cfab}{xTaskNotifyAndQueryIndexedFromISR}}(\ \doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{TaskHandle\_t}}\ xTaskToNotify,\ \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBaseType\_t}}\ uxIndexToNotify,\ uint32\_t\ ulValue,\ \doxymbox{\hyperlink{task_8h_ae8abc4f7da5b6880467daafbf19cd233}{eNotifyAction}}\ eAction,\ uint32\_t\ *pulPreviousNotificationValue,\ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ *pxHigherPriorityTaskWoken\ );}
+\DoxyCodeLine{\doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ \doxymbox{\hyperlink{task_8h_a5c491b42e243a91c7473887d1fb96dd5}{xTaskNotifyAndQueryFromISR}}(\ \doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{TaskHandle\_t}}\ xTaskToNotify,\ uint32\_t\ ulValue,\ \doxymbox{\hyperlink{task_8h_ae8abc4f7da5b6880467daafbf19cd233}{eNotifyAction}}\ eAction,\ uint32\_t\ *pulPreviousNotificationValue,\ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ *pxHigherPriorityTaskWoken\ );}
+
+\end{DoxyCode}
+
+
+See \href{https://www.FreeRTOS.org/RTOS-task-notifications.html}{\texttt{https:\+/\+/\+www.\+Free\+RTOS.\+org/\+\+RTOS-\/task-\/notifications.\+html}} for details.
+
+\doxylink{task_8h_a310ee091fef5bf31f23e06bc2a71cfab}{x\+Task\+Notify\+And\+Query\+Indexed\+From\+ISR()} performs the same operation as \doxylink{task_8h_ab86169cb5493142a9e247e2cf2e583e2}{x\+Task\+Notify\+Indexed\+From\+ISR()} with the addition that it also returns the subject task\textquotesingle{}s prior notification value (the notification value at the time the function is called rather than at the time the function returns) in the additional pul\+Previous\+Notify\+Value parameter.
+
+\doxylink{task_8h_a5c491b42e243a91c7473887d1fb96dd5}{x\+Task\+Notify\+And\+Query\+From\+ISR()} performs the same operation as \doxylink{task_8h_a1ed9129068b96a909356bd0369c5ecb0}{x\+Task\+Notify\+From\+ISR()} with the addition that it also returns the subject task\textquotesingle{}s prior notification value (the notification value at the time the function is called rather than at the time the function returns) in the additional pul\+Previous\+Notify\+Value parameter. 

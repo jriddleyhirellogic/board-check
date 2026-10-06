@@ -1,0 +1,64 @@
+\doxysection{src/\+\+Camera\+States/\+camera\+\_\+low\+\_\+power\+\_\+state.c File Reference}
+\hypertarget{camera__low__power__state_8c}{}\label{camera__low__power__state_8c}\index{src/CameraStates/camera\_low\_power\_state.c@{src/CameraStates/camera\_low\_power\_state.c}}
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+Include dependency graph for camera\+\_\+low\+\_\+power\+\_\+state.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__low__power__state_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84}{Camera\+\_\+\+Low\+\_\+\+Power\+\_\+\+State}} (Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Low power event handler for low power state. In this state, the camera camera sensor and oscillator are powered down. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{camera__low__power__state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84}\index{camera\_low\_power\_state.c@{camera\_low\_power\_state.c}!Camera\_Low\_Power\_State@{Camera\_Low\_Power\_State}}
+\index{Camera\_Low\_Power\_State@{Camera\_Low\_Power\_State}!camera\_low\_power\_state.c@{camera\_low\_power\_state.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Low\_Power\_State()}{Camera\_Low\_Power\_State()}}
+{\footnotesize\ttfamily \label{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Camera\+\_\+\+Low\+\_\+\+Power\+\_\+\+State (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Low power event handler for low power state. In this state, the camera camera sensor and oscillator are powered down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & Context info for state \\
+\hline
+{\em event} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Next state 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{camera__low__power__state_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{camera__low__power__state_8c_source}{camera\+\_\+low\+\_\+power\+\_\+state.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__low__power__state_8c_a2dcad775081d1a2a407e9608822e6e84_icgraph}
+\end{center}
+\end{figure}

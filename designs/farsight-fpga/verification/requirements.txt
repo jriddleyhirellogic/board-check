@@ -1,0 +1,25 @@
+# Python dependencies for the PolarFire FPGA verification environment.
+#
+#   python3 -m venv .venv-verif
+#   .venv-verif/bin/python -m pip install -r verification/requirements.txt
+#
+# Verilator is not a Python package. See setup-tools.sh, or install a build
+# of 5.020 or later yourself.
+#
+# Pinned, for the same reason the checkers are: a result names the revision
+# that produced it, and that does not pin what ran if the tools underneath
+# can change between two runs.
+cocotb==2.1.0
+pytest==9.1.1
+# Reads verification/items.yaml and verification/ip.yaml. YAML rather than JSON
+# because every entry in them needs a reason beside it, and JSON cannot carry a
+# comment.
+PyYAML==6.0.3
+# Runs the simulation modules at the same time. They are independent builds in
+# independent processes, and the suite is bounded by its slowest module rather
+# than by their sum.
+pytest-xdist==3.8.0
+# Reads the board's schematic export (verification/board/CM-03545.json) for the
+# inspections. One of the group's private tools: make setup fetches it over SSH
+# with your key.
+ts-altium-sch-json @ git+https://gitlab.com/turionspace/fpga-projects/tools/ts-altium-sch-json.git@v2.6.0

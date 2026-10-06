@@ -1,0 +1,73 @@
+\doxysection{debug\+\_\+gpio.\+h}
+\hypertarget{debug__gpio_8h_source}{}\label{debug__gpio_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/debug\_gpio.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/debug\_gpio.h}}
+\doxymbox{\hyperlink{debug__gpio_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00002}00002\ \textcolor{comment}{\ *\ debug\_gpio.h}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Sep\ 27,\ 2025}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ DEBUG\_GPIO\_H\_}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ DEBUG\_GPIO\_H\_}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00013}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4}{00013}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00014}00014\ \{}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00015}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a89fbe3dd3d5bc4edc7d87965745c673f}{00015}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a89fbe3dd3d5bc4edc7d87965745c673f}{eLED\_PIN}}\ \ =\ 0,}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00016}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a2c77169268d70b50c1216e2d9c793870}{00016}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a2c77169268d70b50c1216e2d9c793870}{eJ8\_DEBUG\_PIN\_3}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00017}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a587578763a9c8f427afc83adac051c20}{00017}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a587578763a9c8f427afc83adac051c20}{eJ8\_DEBUG\_PIN\_5}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00018}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aab00ebe4896dabce0220fd8e3ca46ea5}{00018}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aab00ebe4896dabce0220fd8e3ca46ea5}{eJ8\_DEBUG\_PIN\_13}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00019}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a2ee6784bd4e484d0a9264fea4c5753e9}{00019}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a2ee6784bd4e484d0a9264fea4c5753e9}{eJ7\_PIN\_2}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00020}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4afb8ae9d6b4f771a61451eafa936b12a4}{00020}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4afb8ae9d6b4f771a61451eafa936b12a4}{eJ7\_PIN\_4}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00021}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ae0a97c23e32440c2596c3654db5fb2a7}{00021}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ae0a97c23e32440c2596c3654db5fb2a7}{eJ7\_PIN\_6}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00022}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a28d42760bf66ab2aa8735e2454067c58}{00022}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a28d42760bf66ab2aa8735e2454067c58}{eJ7\_PIN\_1}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00023}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a087e4e44e42fb7358ab3f488b3468c8e}{00023}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a087e4e44e42fb7358ab3f488b3468c8e}{eJ7\_PIN\_3}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00024}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a8667fda074feef21a47f1001e5d7ce35}{00024}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a8667fda074feef21a47f1001e5d7ce35}{eJ7\_PIN\_5}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00025}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aa75da0347fe5c33e6a338877b4eeb6b7}{00025}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aa75da0347fe5c33e6a338877b4eeb6b7}{eJ1\_PIN\_1}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00026}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a1705c91316d4cf67f663417afecedac8}{00026}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a1705c91316d4cf67f663417afecedac8}{eJ1\_PIN\_3}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00027}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aeee4bf973424ded4f1ff1527c07c2b38}{00027}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4aeee4bf973424ded4f1ff1527c07c2b38}{eJ1\_PIN\_5}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00028}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ac33ff2024a8c3c1435900d55f38e6fb5}{00028}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ac33ff2024a8c3c1435900d55f38e6fb5}{eJ1\_PIN\_7}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00029}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a279f4eee0dfd7c440446769e32172044}{00029}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a279f4eee0dfd7c440446769e32172044}{eJ1\_PIN\_9}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00030}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a73f6007fa5eb9fad2c20b4b1f5f70f02}{00030}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a73f6007fa5eb9fad2c20b4b1f5f70f02}{eJ1\_PIN\_11}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00031}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ac480498909abe3e000e3bf143c7044ad}{00031}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ac480498909abe3e000e3bf143c7044ad}{eJ2\_PIN\_1}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00032}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4abe6ab079ec044456070c2de4a3894a2f}{00032}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4abe6ab079ec044456070c2de4a3894a2f}{eJ2\_PIN\_3}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00033}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ad8cbc092c5f16d974092eb6dc4b49f9c}{00033}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ad8cbc092c5f16d974092eb6dc4b49f9c}{eJ2\_PIN\_5}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00034}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a4a1ea32923ec13d84e89190186e240bd}{00034}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a4a1ea32923ec13d84e89190186e240bd}{eJ2\_PIN\_7}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00035}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a998c3db1d785305202864f3497239dd0}{00035}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a998c3db1d785305202864f3497239dd0}{eJ2\_PIN\_9}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00036}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ad6a9baec9c26c4927e346a834b47157a}{00036}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4ad6a9baec9c26c4927e346a834b47157a}{eJ2\_PIN\_11}},}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00037}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a440f9b55a69bdf4e7bf82e571e130438}{00037}}\ \ \ \ \ \doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4a440f9b55a69bdf4e7bf82e571e130438}{NUMBER\_GPIO\_PINS}}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00038}00038\ \}\doxymbox{\hyperlink{debug__gpio_8h_af6ca263a48ce8dc7b25da6ac7b1045a4}{eDebug\_GPIO\_Pin\_t}};}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00040}\doxymbox{\hyperlink{debug__gpio_8h_ab4553be4db9860d940f81d7447173b2f}{00040}}\ \textcolor{preprocessor}{\#define\ LED\_PIN\ \ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 0)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00041}\doxymbox{\hyperlink{debug__gpio_8h_ace90f958571cb1309fe5c7db800e257c}{00041}}\ \textcolor{preprocessor}{\#define\ J8\_DEBUG\_PIN\_3\ \ \ \ \ \ \ (1\ <<\ 1)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00042}\doxymbox{\hyperlink{debug__gpio_8h_ab200d090c0f7f083d82cf9b6e55e5de0}{00042}}\ \textcolor{preprocessor}{\#define\ J8\_DEBUG\_PIN\_5\ \ \ \ \ \ \ (1\ <<\ 2)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00043}\doxymbox{\hyperlink{debug__gpio_8h_a51d8609696d24d9f68b953a8213dd8a4}{00043}}\ \textcolor{preprocessor}{\#define\ J8\_DEBUG\_PIN\_13\ \ \ \ \ \ (1\ <<\ 4)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00044}\doxymbox{\hyperlink{debug__gpio_8h_a6fa4443c4ba3c2d566eca5d104d54fc3}{00044}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_2\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 5)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00045}\doxymbox{\hyperlink{debug__gpio_8h_acc8c1f49fdf5ddf729a85e1427a5331b}{00045}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_4\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 6)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00046}\doxymbox{\hyperlink{debug__gpio_8h_af3ba63c9ab89af80d3e24497d62752d5}{00046}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_6\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 7)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00047}\doxymbox{\hyperlink{debug__gpio_8h_aea5bb76b28dfb156f41f7346713b5247}{00047}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_1\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 8)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00048}\doxymbox{\hyperlink{debug__gpio_8h_a63169b17e33f8319c402036ff12890e0}{00048}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_3\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 9)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00049}\doxymbox{\hyperlink{debug__gpio_8h_a730d3e7bac864e3960b62bdaa4509d13}{00049}}\ \textcolor{preprocessor}{\#define\ J7\_PIN\_5\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 10)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00050}\doxymbox{\hyperlink{debug__gpio_8h_aee0138f3af1cdf41030f4e4d3c4b3a07}{00050}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_1\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 11)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00051}\doxymbox{\hyperlink{debug__gpio_8h_af00f566de1816236f493b27f864c43de}{00051}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_3\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 12)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00052}\doxymbox{\hyperlink{debug__gpio_8h_abed20e16255ee5f3ee54c0bc50c62cb9}{00052}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_5\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 13)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00053}\doxymbox{\hyperlink{debug__gpio_8h_a75ba42ddc8409908232dfc82eeca74ba}{00053}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_7\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 14)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00054}\doxymbox{\hyperlink{debug__gpio_8h_abde8b83476b841b4b5698a6e8e1462ab}{00054}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_9\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 15)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00055}\doxymbox{\hyperlink{debug__gpio_8h_a7e3b98738c54d13f72c6ab79f82a0f75}{00055}}\ \textcolor{preprocessor}{\#define\ J1\_PIN\_11\ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 16)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00056}\doxymbox{\hyperlink{debug__gpio_8h_a69dd8e786e78c0a07ed7cd25b239b0b1}{00056}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_1\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 17)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00057}\doxymbox{\hyperlink{debug__gpio_8h_a2664f157011c4f32398032a3a7906c86}{00057}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_3\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 18)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00058}\doxymbox{\hyperlink{debug__gpio_8h_a0ff231200f7042cc347bc0493629ff1d}{00058}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_5\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 19)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00059}\doxymbox{\hyperlink{debug__gpio_8h_a7269ee4267607007d477817fc2036870}{00059}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_7\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 20)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00060}\doxymbox{\hyperlink{debug__gpio_8h_a1e54e62573c8f6311b3e638c802c2754}{00060}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_9\ \ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 21)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00061}\doxymbox{\hyperlink{debug__gpio_8h_a06d7f22fe18c70bfb0a197262ac24f62}{00061}}\ \textcolor{preprocessor}{\#define\ J2\_PIN\_11\ \ \ \ \ \ \ \ \ \ \ \ (1\ <<\ 22)}}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00063}00063\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{debug__gpio_8h_a206d3d520d97d5bba411d6a6db145ed3}{v\_Init\_Debug\_GPIO}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00064}00064\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{debug__gpio_8h_a78dbac6d4cad71b819310869f1e3c5a3}{v\_Set\_Debug\_GPIO}}(uint32\_t\ u32\_Set,\ uint32\_t\ u32\_Clear\ );}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00065}00065\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{debug__gpio_8h_aa7de0b62ec179533cde17322174fc472}{v\_Set\_LED}}(\ uint8\_t\ b\_On\ );}
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{debug__gpio_8h_source_l00067}00067\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ DEBUG\_GPIO\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

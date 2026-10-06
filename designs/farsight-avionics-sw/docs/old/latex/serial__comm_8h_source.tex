@@ -1,0 +1,32 @@
+\doxysection{serial\+\_\+comm.\+h}
+\hypertarget{serial__comm_8h_source}{}\label{serial__comm_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_comm.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_comm.h}}
+\doxymbox{\hyperlink{serial__comm_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00002}00002\ \textcolor{comment}{\ *\ serial\_comm.h}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 3,\ 2025}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ SERIAL\_COMM\_H\_}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ SERIAL\_COMM\_H\_}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{events_8h}{events.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}hal/timer.h"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal__uart16550_8h}{hal\_uart16550.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00015}\doxymbox{\hyperlink{serial__comm_8h_abddf4da2da6cdc61d65f3a4aefc8d628}{00015}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_abddf4da2da6cdc61d65f3a4aefc8d628}{v\_Reset\_Serial\_Comm\_Buffers}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00016}00016\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2}{v\_Send\_Serial\_Comm}}(\ uint8\_t\ *p\_Buffer,\ uint8\_t\ u8\_Length\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00017}00017\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac}{v\_Enable\_Serial\_Comm}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00018}00018\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_a8f25298ce8f87ad4b70f7bf37ddc588c}{v\_Set\_Serial\_Timer\_Instance}}(\ Timer\_Instance\_t\ *p\_Instance\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00019}00019\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_a0f49441193afd7eda30acfe83460ce47}{Reload\_Comm\_Timer}}(\ uint16\_t\ u16\_Timer\_Reload\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00020}00020\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_ac184fd9d173aaa189206d71f20df8206}{v\_Set\_Serial\_Comm\_Instance}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *p\_Instance\ \ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00022}00022\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_a106faa126ae68b80d3dfd70b92893704}{v\_Post\_Serial\_Event}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00023}00023\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{serial__comm_8h_a57e9130a700d7c3ad9ff0a6609d01b13}{v\_Post\_Serial\_Event\_ISR}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ );}
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{serial__comm_8h_source_l00026}00026\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ SERIAL\_COMM\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

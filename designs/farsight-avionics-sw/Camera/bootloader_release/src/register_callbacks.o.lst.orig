@@ -1,0 +1,902 @@
+   1              		.file	"register_callbacks.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Get_Sensor_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Get_Sensor_State
+  13              	Get_Sensor_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/register_callbacks.c"
+   1:../src/register_callbacks.c **** /*
+   2:../src/register_callbacks.c ****  * register_callbacks.c
+   3:../src/register_callbacks.c ****  *
+   4:../src/register_callbacks.c ****  *  Created on: Dec 10, 2025
+   5:../src/register_callbacks.c ****  *      Author: iboard
+   6:../src/register_callbacks.c ****  */
+   7:../src/register_callbacks.c **** #include "register.h"
+   8:../src/register_callbacks.c **** #include "register_callbacks.h"
+   9:../src/register_callbacks.c **** #include "mem_map.h"
+  10:../src/register_callbacks.c **** #include "hal/hal.h"
+  11:../src/register_callbacks.c **** 
+  12:../src/register_callbacks.c **** #include "cam_trig.h"
+  13:../src/register_callbacks.c **** 
+  14:../src/register_callbacks.c **** // Read Callbacks
+  15:../src/register_callbacks.c **** 
+  16:../src/register_callbacks.c **** Error_Code_t Get_Sensor_State( uint32_t *state )
+  17:../src/register_callbacks.c **** {
+  16              		.loc 1 17 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  18:../src/register_callbacks.c ****     uint8_t u8_State;
+  19              		.loc 1 18 5
+  19:../src/register_callbacks.c ****     Get_Camera_State( &u8_State );
+  20              		.loc 1 19 5
+  17:../src/register_callbacks.c ****     uint8_t u8_State;
+  21              		.loc 1 17 1 is_stmt 0
+  22 0000 130101FE 		addi	sp,sp,-32
+  23              		.cfi_def_cfa_offset 32
+  24 0004 232C8100 		sw	s0,24(sp)
+  25              		.cfi_offset 8, -8
+  26 0008 13040500 		mv	s0,a0
+  27              		.loc 1 19 5
+  28 000c 1305F100 		addi	a0,sp,15
+  29              	.LVL1:
+  17:../src/register_callbacks.c ****     uint8_t u8_State;
+  30              		.loc 1 17 1
+  31 0010 232E1100 		sw	ra,28(sp)
+  32              		.cfi_offset 1, -4
+  33              		.loc 1 19 5
+  34 0014 97000000 		call	Get_Camera_State
+  34      E7800000 
+  35              	.LVL2:
+  20:../src/register_callbacks.c ****     *state = (uint32_t)u8_State;
+  36              		.loc 1 20 5 is_stmt 1
+  37              		.loc 1 20 14 is_stmt 0
+  38 001c 8347F100 		lbu	a5,15(sp)
+  21:../src/register_callbacks.c ****     return NO_ERROR;
+  22:../src/register_callbacks.c **** }
+  39              		.loc 1 22 1
+  40 0020 8320C101 		lw	ra,28(sp)
+  41              		.cfi_restore 1
+  42 0024 13050000 		li	a0,0
+  20:../src/register_callbacks.c ****     *state = (uint32_t)u8_State;
+  43              		.loc 1 20 14
+  44 0028 2320F400 		sw	a5,0(s0)
+  21:../src/register_callbacks.c ****     return NO_ERROR;
+  45              		.loc 1 21 5 is_stmt 1
+  46              		.loc 1 22 1 is_stmt 0
+  47 002c 03248101 		lw	s0,24(sp)
+  48              		.cfi_restore 8
+  49              	.LVL3:
+  50 0030 13010102 		addi	sp,sp,32
+  51              		.cfi_def_cfa_offset 0
+  52 0034 67800000 		jr	ra
+  53              		.cfi_endproc
+  54              	.LFE0:
+  56              		.section	.text.Get_Sensor_Frame_Count,"ax",@progbits
+  57              		.align	2
+  58              		.globl	Get_Sensor_Frame_Count
+  60              	Get_Sensor_Frame_Count:
+  61              	.LFB1:
+  23:../src/register_callbacks.c **** 
+  24:../src/register_callbacks.c **** Error_Code_t Get_Sensor_Frame_Count( uint32_t *count )
+  25:../src/register_callbacks.c **** {
+  62              		.loc 1 25 1 is_stmt 1
+  63              		.cfi_startproc
+  64              	.LVL4:
+  26:../src/register_callbacks.c ****     *count = 0xFFFFFFFF;
+  65              		.loc 1 26 5
+  66              		.loc 1 26 12 is_stmt 0
+  67 0000 9307F0FF 		li	a5,-1
+  68 0004 2320F500 		sw	a5,0(a0)
+  27:../src/register_callbacks.c ****     return NO_ERROR;
+  69              		.loc 1 27 5 is_stmt 1
+  28:../src/register_callbacks.c **** }
+  70              		.loc 1 28 1 is_stmt 0
+  71 0008 13050000 		li	a0,0
+  72              	.LVL5:
+  73 000c 67800000 		ret
+  74              		.cfi_endproc
+  75              	.LFE1:
+  77              		.section	.text.Get_Requested_Focus_Distance,"ax",@progbits
+  78              		.align	2
+  79              		.globl	Get_Requested_Focus_Distance
+  81              	Get_Requested_Focus_Distance:
+  82              	.LFB2:
+  29:../src/register_callbacks.c **** 
+  30:../src/register_callbacks.c **** /* Focus distance requested by the user from a FOCUS_SYS_CMD,
+  31:../src/register_callbacks.c ****  * which is the only way to update this register value.
+  32:../src/register_callbacks.c ****  */
+  33:../src/register_callbacks.c **** Error_Code_t Get_Requested_Focus_Distance( uint32_t *count )
+  34:../src/register_callbacks.c **** {
+  83              		.loc 1 34 1 is_stmt 1
+  84              		.cfi_startproc
+  85              	.LVL6:
+  35:../src/register_callbacks.c ****     return NO_ERROR;
+  86              		.loc 1 35 5
+  36:../src/register_callbacks.c **** }
+  87              		.loc 1 36 1 is_stmt 0
+  88 0000 13050000 		li	a0,0
+  89              	.LVL7:
+  90 0004 67800000 		ret
+  91              		.cfi_endproc
+  92              	.LFE2:
+  94              		.section	.text.Get_Computed_Focus_Distance,"ax",@progbits
+  95              		.align	2
+  96              		.globl	Get_Computed_Focus_Distance
+  98              	Get_Computed_Focus_Distance:
+  99              	.LFB29:
+ 100              		.cfi_startproc
+ 101 0000 13050000 		li	a0,0
+ 102 0004 67800000 		ret
+ 103              		.cfi_endproc
+ 104              	.LFE29:
+ 106              		.section	.text.Get_LVDT_Position,"ax",@progbits
+ 107              		.align	2
+ 108              		.globl	Get_LVDT_Position
+ 110              	Get_LVDT_Position:
+ 111              	.LFB31:
+ 112              		.cfi_startproc
+ 113 0000 13050000 		li	a0,0
+ 114 0004 67800000 		ret
+ 115              		.cfi_endproc
+ 116              	.LFE31:
+ 118              		.section	.text.Get_Sensor_Temperature,"ax",@progbits
+ 119              		.align	2
+ 120              		.globl	Get_Sensor_Temperature
+ 122              	Get_Sensor_Temperature:
+ 123              	.LFB5:
+  37:../src/register_callbacks.c **** 
+  38:../src/register_callbacks.c **** /*Focus distance computed from LVDT position and calibrated LUT */
+  39:../src/register_callbacks.c **** Error_Code_t Get_Computed_Focus_Distance( uint32_t *count )
+  40:../src/register_callbacks.c **** {
+  41:../src/register_callbacks.c ****     return NO_ERROR;
+  42:../src/register_callbacks.c **** }
+  43:../src/register_callbacks.c **** 
+  44:../src/register_callbacks.c **** /*Reading of the sensor position in nanometers that can be mapped to focus distance. */
+  45:../src/register_callbacks.c **** Error_Code_t Get_LVDT_Position( uint32_t *count )
+  46:../src/register_callbacks.c **** {
+  47:../src/register_callbacks.c ****     return NO_ERROR;
+  48:../src/register_callbacks.c **** }
+  49:../src/register_callbacks.c **** 
+  50:../src/register_callbacks.c **** Error_Code_t Get_Sensor_Temperature( uint32_t *temp )
+  51:../src/register_callbacks.c **** {
+ 124              		.loc 1 51 1 is_stmt 1
+ 125              		.cfi_startproc
+ 126              	.LVL8:
+  52:../src/register_callbacks.c ****     uint8_t u8_State;
+ 127              		.loc 1 52 5
+  53:../src/register_callbacks.c ****     Get_Camera_State( &u8_State );
+ 128              		.loc 1 53 5
+  51:../src/register_callbacks.c ****     uint8_t u8_State;
+ 129              		.loc 1 51 1 is_stmt 0
+ 130 0000 130101FE 		addi	sp,sp,-32
+ 131              		.cfi_def_cfa_offset 32
+ 132 0004 232C8100 		sw	s0,24(sp)
+ 133              		.cfi_offset 8, -8
+ 134 0008 13040500 		mv	s0,a0
+ 135              		.loc 1 53 5
+ 136 000c 1305F100 		addi	a0,sp,15
+ 137              	.LVL9:
+  51:../src/register_callbacks.c ****     uint8_t u8_State;
+ 138              		.loc 1 51 1
+ 139 0010 232E1100 		sw	ra,28(sp)
+ 140              		.cfi_offset 1, -4
+ 141              		.loc 1 53 5
+ 142 0014 97000000 		call	Get_Camera_State
+ 142      E7800000 
+ 143              	.LVL10:
+  54:../src/register_callbacks.c ****     if( u8_State > 1 ) // powered up
+ 144              		.loc 1 54 5 is_stmt 1
+ 145              		.loc 1 54 7 is_stmt 0
+ 146 001c 0347F100 		lbu	a4,15(sp)
+ 147 0020 93071000 		li	a5,1
+ 148 0024 63F2E702 		bleu	a4,a5,.L8
+ 149              	.LBB2:
+  55:../src/register_callbacks.c ****     {
+  56:../src/register_callbacks.c ****         *temp = (uint32_t)read_cam_temp();
+ 150              		.loc 1 56 9 is_stmt 1
+ 151              		.loc 1 56 27 is_stmt 0
+ 152 0028 97000000 		call	read_cam_temp
+ 152      E7800000 
+ 153              	.LVL11:
+ 154              		.loc 1 56 15
+ 155 0030 2320A400 		sw	a0,0(s0)
+ 156              	.L9:
+ 157              	.LBE2:
+  57:../src/register_callbacks.c ****     }
+  58:../src/register_callbacks.c ****     else
+  59:../src/register_callbacks.c ****     {
+  60:../src/register_callbacks.c ****         *temp = 0xFFFFFFFF;
+  61:../src/register_callbacks.c ****     }
+  62:../src/register_callbacks.c ****     return NO_ERROR;
+ 158              		.loc 1 62 5 is_stmt 1
+  63:../src/register_callbacks.c **** }
+ 159              		.loc 1 63 1 is_stmt 0
+ 160 0034 8320C101 		lw	ra,28(sp)
+ 161              		.cfi_remember_state
+ 162              		.cfi_restore 1
+ 163 0038 03248101 		lw	s0,24(sp)
+ 164              		.cfi_restore 8
+ 165              	.LVL12:
+ 166 003c 13050000 		li	a0,0
+ 167 0040 13010102 		addi	sp,sp,32
+ 168              		.cfi_def_cfa_offset 0
+ 169 0044 67800000 		jr	ra
+ 170              	.LVL13:
+ 171              	.L8:
+ 172              		.cfi_restore_state
+  60:../src/register_callbacks.c ****     }
+ 173              		.loc 1 60 9 is_stmt 1
+  60:../src/register_callbacks.c ****     }
+ 174              		.loc 1 60 15 is_stmt 0
+ 175 0048 9307F0FF 		li	a5,-1
+ 176 004c 2320F400 		sw	a5,0(s0)
+ 177 0050 6FF05FFE 		j	.L9
+ 178              		.cfi_endproc
+ 179              	.LFE5:
+ 181              		.section	.text.Read_Only,"ax",@progbits
+ 182              		.align	2
+ 183              		.globl	Read_Only
+ 185              	Read_Only:
+ 186              	.LFB6:
+  64:../src/register_callbacks.c **** 
+  65:../src/register_callbacks.c **** // Write Callbacks
+  66:../src/register_callbacks.c **** 
+  67:../src/register_callbacks.c **** Error_Code_t Read_Only( uint32_t dummy )
+  68:../src/register_callbacks.c **** {
+ 187              		.loc 1 68 1 is_stmt 1
+ 188              		.cfi_startproc
+ 189              	.LVL14:
+  69:../src/register_callbacks.c ****     return ERR_REG_WRITE_DENIED_RO;
+ 190              		.loc 1 69 5
+  70:../src/register_callbacks.c **** }
+ 191              		.loc 1 70 1 is_stmt 0
+ 192 0000 13059000 		li	a0,9
+ 193              	.LVL15:
+ 194 0004 67800000 		ret
+ 195              		.cfi_endproc
+ 196              	.LFE6:
+ 198              		.section	.text.Set_Sensor_Frame_Mode,"ax",@progbits
+ 199              		.align	2
+ 200              		.globl	Set_Sensor_Frame_Mode
+ 202              	Set_Sensor_Frame_Mode:
+ 203              	.LFB7:
+  71:../src/register_callbacks.c **** 
+  72:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Frame_Mode( uint32_t u32_Mode )
+  73:../src/register_callbacks.c **** {
+ 204              		.loc 1 73 1 is_stmt 1
+ 205              		.cfi_startproc
+ 206              	.LVL16:
+  74:../src/register_callbacks.c ****     return NO_ERROR;
+ 207              		.loc 1 74 5
+  75:../src/register_callbacks.c **** }
+ 208              		.loc 1 75 1 is_stmt 0
+ 209 0000 13050000 		li	a0,0
+ 210              	.LVL17:
+ 211 0004 67800000 		ret
+ 212              		.cfi_endproc
+ 213              	.LFE7:
+ 215              		.section	.text.Set_Sensor_Bit_Depth,"ax",@progbits
+ 216              		.align	2
+ 217              		.globl	Set_Sensor_Bit_Depth
+ 219              	Set_Sensor_Bit_Depth:
+ 220              	.LFB17:
+ 221              		.cfi_startproc
+ 222 0000 13050000 		li	a0,0
+ 223 0004 67800000 		ret
+ 224              		.cfi_endproc
+ 225              	.LFE17:
+ 227              		.section	.text.Set_Sensor_Black_Level_Offset,"ax",@progbits
+ 228              		.align	2
+ 229              		.globl	Set_Sensor_Black_Level_Offset
+ 231              	Set_Sensor_Black_Level_Offset:
+ 232              	.LFB19:
+ 233              		.cfi_startproc
+ 234 0000 13050000 		li	a0,0
+ 235 0004 67800000 		ret
+ 236              		.cfi_endproc
+ 237              	.LFE19:
+ 239              		.section	.text.Set_Sensor_Exposure,"ax",@progbits
+ 240              		.align	2
+ 241              		.globl	Set_Sensor_Exposure
+ 243              	Set_Sensor_Exposure:
+ 244              	.LFB21:
+ 245              		.cfi_startproc
+ 246 0000 13050000 		li	a0,0
+ 247 0004 67800000 		ret
+ 248              		.cfi_endproc
+ 249              	.LFE21:
+ 251              		.section	.text.Set_Sensor_Trigger_Mode,"ax",@progbits
+ 252              		.align	2
+ 253              		.globl	Set_Sensor_Trigger_Mode
+ 255              	Set_Sensor_Trigger_Mode:
+ 256              	.LFB23:
+ 257              		.cfi_startproc
+ 258 0000 13050000 		li	a0,0
+ 259 0004 67800000 		ret
+ 260              		.cfi_endproc
+ 261              	.LFE23:
+ 263              		.section	.text.Set_Sensor_Images_Per_Trigger,"ax",@progbits
+ 264              		.align	2
+ 265              		.globl	Set_Sensor_Images_Per_Trigger
+ 267              	Set_Sensor_Images_Per_Trigger:
+ 268              	.LFB12:
+  76:../src/register_callbacks.c **** 
+  77:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Bit_Depth( uint32_t u32_Mode )
+  78:../src/register_callbacks.c **** {
+  79:../src/register_callbacks.c ****     return NO_ERROR;
+  80:../src/register_callbacks.c **** }
+  81:../src/register_callbacks.c **** 
+  82:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Black_Level_Offset( uint32_t u32_Mode )
+  83:../src/register_callbacks.c **** {
+  84:../src/register_callbacks.c ****     return NO_ERROR;
+  85:../src/register_callbacks.c **** }
+  86:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Exposure( uint32_t u32_Mode )
+  87:../src/register_callbacks.c **** {
+  88:../src/register_callbacks.c ****     return NO_ERROR;
+  89:../src/register_callbacks.c **** }
+  90:../src/register_callbacks.c **** 
+  91:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Trigger_Mode( uint32_t u32_Mode )
+  92:../src/register_callbacks.c **** {
+  93:../src/register_callbacks.c ****     return NO_ERROR;
+  94:../src/register_callbacks.c **** }
+  95:../src/register_callbacks.c **** 
+  96:../src/register_callbacks.c **** Error_Code_t Set_Sensor_Images_Per_Trigger( uint32_t u32_Images_Per_Trigger )
+  97:../src/register_callbacks.c **** {
+ 269              		.loc 1 97 1 is_stmt 1
+ 270              		.cfi_startproc
+ 271              	.LVL18:
+  98:../src/register_callbacks.c ****     HAL_set_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT, u32_Images_Per_Trigger );
+ 272              		.loc 1 98 5
+ 273 0000 93050500 		mv	a1,a0
+ 274 0004 37F50070 		li	a0,1879109632
+ 275              	.LVL19:
+  97:../src/register_callbacks.c ****     HAL_set_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT, u32_Images_Per_Trigger );
+ 276              		.loc 1 97 1 is_stmt 0
+ 277 0008 130101FF 		addi	sp,sp,-16
+ 278              		.cfi_def_cfa_offset 16
+ 279              		.loc 1 98 5
+ 280 000c 13058500 		addi	a0,a0,8
+  97:../src/register_callbacks.c ****     HAL_set_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT, u32_Images_Per_Trigger );
+ 281              		.loc 1 97 1
+ 282 0010 23261100 		sw	ra,12(sp)
+ 283              		.cfi_offset 1, -4
+ 284              		.loc 1 98 5
+ 285 0014 97000000 		call	HW_set_32bit_reg
+ 285      E7800000 
+ 286              	.LVL20:
+  99:../src/register_callbacks.c ****     return NO_ERROR;
+ 287              		.loc 1 99 5 is_stmt 1
+ 100:../src/register_callbacks.c **** }
+ 288              		.loc 1 100 1 is_stmt 0
+ 289 001c 8320C100 		lw	ra,12(sp)
+ 290              		.cfi_restore 1
+ 291 0020 13050000 		li	a0,0
+ 292 0024 13010101 		addi	sp,sp,16
+ 293              		.cfi_def_cfa_offset 0
+ 294 0028 67800000 		jr	ra
+ 295              		.cfi_endproc
+ 296              	.LFE12:
+ 298              		.section	.text.Get_Sensor_Images_Per_Trigger,"ax",@progbits
+ 299              		.align	2
+ 300              		.globl	Get_Sensor_Images_Per_Trigger
+ 302              	Get_Sensor_Images_Per_Trigger:
+ 303              	.LFB13:
+ 101:../src/register_callbacks.c **** 
+ 102:../src/register_callbacks.c **** Error_Code_t Get_Sensor_Images_Per_Trigger(uint32_t *u32_Images_Per_Trigger )
+ 103:../src/register_callbacks.c **** {
+ 304              		.loc 1 103 1 is_stmt 1
+ 305              		.cfi_startproc
+ 306              	.LVL21:
+ 104:../src/register_callbacks.c ****     *u32_Images_Per_Trigger = HAL_get_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT);
+ 307              		.loc 1 104 5
+ 103:../src/register_callbacks.c ****     *u32_Images_Per_Trigger = HAL_get_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT);
+ 308              		.loc 1 103 1 is_stmt 0
+ 309 0000 130101FF 		addi	sp,sp,-16
+ 310              		.cfi_def_cfa_offset 16
+ 311 0004 23248100 		sw	s0,8(sp)
+ 312              		.cfi_offset 8, -8
+ 313 0008 13040500 		mv	s0,a0
+ 314              		.loc 1 104 31
+ 315 000c 37F50070 		li	a0,1879109632
+ 316              	.LVL22:
+ 317 0010 13058500 		addi	a0,a0,8
+ 103:../src/register_callbacks.c ****     *u32_Images_Per_Trigger = HAL_get_32bit_reg( CAM_TRIG_BASE_ADDR, FRAME_CAPTURE_AMOUNT);
+ 318              		.loc 1 103 1
+ 319 0014 23261100 		sw	ra,12(sp)
+ 320              		.cfi_offset 1, -4
+ 321              		.loc 1 104 31
+ 322 0018 97000000 		call	HW_get_32bit_reg
+ 322      E7800000 
+ 323              	.LVL23:
+ 324              		.loc 1 104 29
+ 325 0020 2320A400 		sw	a0,0(s0)
+ 105:../src/register_callbacks.c ****     return NO_ERROR;
+ 326              		.loc 1 105 5 is_stmt 1
+ 106:../src/register_callbacks.c **** }
+ 327              		.loc 1 106 1 is_stmt 0
+ 328 0024 8320C100 		lw	ra,12(sp)
+ 329              		.cfi_restore 1
+ 330 0028 03248100 		lw	s0,8(sp)
+ 331              		.cfi_restore 8
+ 332              	.LVL24:
+ 333 002c 13050000 		li	a0,0
+ 334 0030 13010101 		addi	sp,sp,16
+ 335              		.cfi_def_cfa_offset 0
+ 336 0034 67800000 		jr	ra
+ 337              		.cfi_endproc
+ 338              	.LFE13:
+ 340              		.section	.text.Set_Sensor_Frames_Per_Second,"ax",@progbits
+ 341              		.align	2
+ 342              		.globl	Set_Sensor_Frames_Per_Second
+ 344              	Set_Sensor_Frames_Per_Second:
+ 345              	.LFB25:
+ 346              		.cfi_startproc
+ 347 0000 13050000 		li	a0,0
+ 348 0004 67800000 		ret
+ 349              		.cfi_endproc
+ 350              	.LFE25:
+ 352              		.section	.text.Set_Sensor_Capture_Delay,"ax",@progbits
+ 353              		.align	2
+ 354              		.globl	Set_Sensor_Capture_Delay
+ 356              	Set_Sensor_Capture_Delay:
+ 357              	.LFB27:
+ 358              		.cfi_startproc
+ 359 0000 13050000 		li	a0,0
+ 360 0004 67800000 		ret
+ 361              		.cfi_endproc
+ 362              	.LFE27:
+ 364              		.text
+ 365              	.Letext0:
+ 366              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 367              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 368              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/errors.h"
+ 369              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/hw_reg_access.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 register_callbacks.c
+<<<<<<< HEAD
+     /tmp/ccAU3cj5.s:13     .text.Get_Sensor_State:0000000000000000 Get_Sensor_State
+     /tmp/ccAU3cj5.s:17     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:19     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:20     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:21     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:22     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:23     .text.Get_Sensor_State:0000000000000004 .L0 
+     /tmp/ccAU3cj5.s:25     .text.Get_Sensor_State:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:28     .text.Get_Sensor_State:000000000000000c .L0 
+     /tmp/ccAU3cj5.s:31     .text.Get_Sensor_State:0000000000000010 .L0 
+     /tmp/ccAU3cj5.s:32     .text.Get_Sensor_State:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:34     .text.Get_Sensor_State:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:37     .text.Get_Sensor_State:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:38     .text.Get_Sensor_State:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:40     .text.Get_Sensor_State:0000000000000020 .L0 
+     /tmp/ccAU3cj5.s:41     .text.Get_Sensor_State:0000000000000024 .L0 
+     /tmp/ccAU3cj5.s:44     .text.Get_Sensor_State:0000000000000028 .L0 
+     /tmp/ccAU3cj5.s:46     .text.Get_Sensor_State:000000000000002c .L0 
+     /tmp/ccAU3cj5.s:47     .text.Get_Sensor_State:000000000000002c .L0 
+     /tmp/ccAU3cj5.s:48     .text.Get_Sensor_State:0000000000000030 .L0 
+     /tmp/ccAU3cj5.s:51     .text.Get_Sensor_State:0000000000000034 .L0 
+     /tmp/ccAU3cj5.s:53     .text.Get_Sensor_State:0000000000000038 .L0 
+     /tmp/ccAU3cj5.s:60     .text.Get_Sensor_Frame_Count:0000000000000000 Get_Sensor_Frame_Count
+     /tmp/ccAU3cj5.s:63     .text.Get_Sensor_Frame_Count:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:65     .text.Get_Sensor_Frame_Count:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:66     .text.Get_Sensor_Frame_Count:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:67     .text.Get_Sensor_Frame_Count:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:70     .text.Get_Sensor_Frame_Count:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:71     .text.Get_Sensor_Frame_Count:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:74     .text.Get_Sensor_Frame_Count:0000000000000010 .L0 
+     /tmp/ccAU3cj5.s:81     .text.Get_Requested_Focus_Distance:0000000000000000 Get_Requested_Focus_Distance
+     /tmp/ccAU3cj5.s:84     .text.Get_Requested_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:86     .text.Get_Requested_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:87     .text.Get_Requested_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:88     .text.Get_Requested_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:91     .text.Get_Requested_Focus_Distance:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:98     .text.Get_Computed_Focus_Distance:0000000000000000 Get_Computed_Focus_Distance
+     /tmp/ccAU3cj5.s:100    .text.Get_Computed_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:103    .text.Get_Computed_Focus_Distance:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:110    .text.Get_LVDT_Position:0000000000000000 Get_LVDT_Position
+     /tmp/ccAU3cj5.s:112    .text.Get_LVDT_Position:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:115    .text.Get_LVDT_Position:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:122    .text.Get_Sensor_Temperature:0000000000000000 Get_Sensor_Temperature
+     /tmp/ccAU3cj5.s:125    .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:127    .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:128    .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:129    .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:130    .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:131    .text.Get_Sensor_Temperature:0000000000000004 .L0 
+     /tmp/ccAU3cj5.s:133    .text.Get_Sensor_Temperature:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:136    .text.Get_Sensor_Temperature:000000000000000c .L0 
+     /tmp/ccAU3cj5.s:139    .text.Get_Sensor_Temperature:0000000000000010 .L0 
+     /tmp/ccAU3cj5.s:140    .text.Get_Sensor_Temperature:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:142    .text.Get_Sensor_Temperature:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:145    .text.Get_Sensor_Temperature:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:146    .text.Get_Sensor_Temperature:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:151    .text.Get_Sensor_Temperature:0000000000000028 .L0 
+     /tmp/ccAU3cj5.s:152    .text.Get_Sensor_Temperature:0000000000000028 .L0 
+     /tmp/ccAU3cj5.s:155    .text.Get_Sensor_Temperature:0000000000000030 .L0 
+     /tmp/ccAU3cj5.s:159    .text.Get_Sensor_Temperature:0000000000000034 .L0 
+     /tmp/ccAU3cj5.s:160    .text.Get_Sensor_Temperature:0000000000000034 .L0 
+     /tmp/ccAU3cj5.s:161    .text.Get_Sensor_Temperature:0000000000000038 .L0 
+     /tmp/ccAU3cj5.s:162    .text.Get_Sensor_Temperature:0000000000000038 .L0 
+     /tmp/ccAU3cj5.s:164    .text.Get_Sensor_Temperature:000000000000003c .L0 
+     /tmp/ccAU3cj5.s:168    .text.Get_Sensor_Temperature:0000000000000044 .L0 
+     /tmp/ccAU3cj5.s:172    .text.Get_Sensor_Temperature:0000000000000048 .L0 
+     /tmp/ccAU3cj5.s:174    .text.Get_Sensor_Temperature:0000000000000048 .L0 
+     /tmp/ccAU3cj5.s:175    .text.Get_Sensor_Temperature:0000000000000048 .L0 
+     /tmp/ccAU3cj5.s:178    .text.Get_Sensor_Temperature:0000000000000054 .L0 
+     /tmp/ccAU3cj5.s:185    .text.Read_Only:0000000000000000 Read_Only
+     /tmp/ccAU3cj5.s:188    .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:190    .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:191    .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:192    .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:195    .text.Read_Only:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:202    .text.Set_Sensor_Frame_Mode:0000000000000000 Set_Sensor_Frame_Mode
+     /tmp/ccAU3cj5.s:205    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:207    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:208    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:209    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:212    .text.Set_Sensor_Frame_Mode:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:219    .text.Set_Sensor_Bit_Depth:0000000000000000 Set_Sensor_Bit_Depth
+     /tmp/ccAU3cj5.s:221    .text.Set_Sensor_Bit_Depth:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:224    .text.Set_Sensor_Bit_Depth:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:231    .text.Set_Sensor_Black_Level_Offset:0000000000000000 Set_Sensor_Black_Level_Offset
+     /tmp/ccAU3cj5.s:233    .text.Set_Sensor_Black_Level_Offset:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:236    .text.Set_Sensor_Black_Level_Offset:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:243    .text.Set_Sensor_Exposure:0000000000000000 Set_Sensor_Exposure
+     /tmp/ccAU3cj5.s:245    .text.Set_Sensor_Exposure:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:248    .text.Set_Sensor_Exposure:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:255    .text.Set_Sensor_Trigger_Mode:0000000000000000 Set_Sensor_Trigger_Mode
+     /tmp/ccAU3cj5.s:257    .text.Set_Sensor_Trigger_Mode:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:260    .text.Set_Sensor_Trigger_Mode:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:267    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 Set_Sensor_Images_Per_Trigger
+     /tmp/ccAU3cj5.s:270    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:272    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:273    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:277    .text.Set_Sensor_Images_Per_Trigger:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:278    .text.Set_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccAU3cj5.s:280    .text.Set_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccAU3cj5.s:282    .text.Set_Sensor_Images_Per_Trigger:0000000000000010 .L0 
+     /tmp/ccAU3cj5.s:283    .text.Set_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:285    .text.Set_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:288    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:289    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .L0 
+     /tmp/ccAU3cj5.s:290    .text.Set_Sensor_Images_Per_Trigger:0000000000000020 .L0 
+     /tmp/ccAU3cj5.s:293    .text.Set_Sensor_Images_Per_Trigger:0000000000000028 .L0 
+     /tmp/ccAU3cj5.s:295    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccAU3cj5.s:302    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 Get_Sensor_Images_Per_Trigger
+     /tmp/ccAU3cj5.s:305    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:307    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:308    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:309    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:310    .text.Get_Sensor_Images_Per_Trigger:0000000000000004 .L0 
+     /tmp/ccAU3cj5.s:312    .text.Get_Sensor_Images_Per_Trigger:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:315    .text.Get_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccAU3cj5.s:319    .text.Get_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccAU3cj5.s:320    .text.Get_Sensor_Images_Per_Trigger:0000000000000018 .L0 
+     /tmp/ccAU3cj5.s:322    .text.Get_Sensor_Images_Per_Trigger:0000000000000018 .L0 
+     /tmp/ccAU3cj5.s:325    .text.Get_Sensor_Images_Per_Trigger:0000000000000020 .L0 
+     /tmp/ccAU3cj5.s:327    .text.Get_Sensor_Images_Per_Trigger:0000000000000024 .L0 
+     /tmp/ccAU3cj5.s:328    .text.Get_Sensor_Images_Per_Trigger:0000000000000024 .L0 
+     /tmp/ccAU3cj5.s:329    .text.Get_Sensor_Images_Per_Trigger:0000000000000028 .L0 
+     /tmp/ccAU3cj5.s:331    .text.Get_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccAU3cj5.s:335    .text.Get_Sensor_Images_Per_Trigger:0000000000000034 .L0 
+     /tmp/ccAU3cj5.s:337    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .L0 
+     /tmp/ccAU3cj5.s:344    .text.Set_Sensor_Frames_Per_Second:0000000000000000 Set_Sensor_Frames_Per_Second
+     /tmp/ccAU3cj5.s:346    .text.Set_Sensor_Frames_Per_Second:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:349    .text.Set_Sensor_Frames_Per_Second:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:356    .text.Set_Sensor_Capture_Delay:0000000000000000 Set_Sensor_Capture_Delay
+     /tmp/ccAU3cj5.s:358    .text.Set_Sensor_Capture_Delay:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:361    .text.Set_Sensor_Capture_Delay:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:56     .text.Get_Sensor_State:0000000000000038 .L0 
+     /tmp/ccAU3cj5.s:77     .text.Get_Sensor_Frame_Count:0000000000000010 .L0 
+     /tmp/ccAU3cj5.s:94     .text.Get_Requested_Focus_Distance:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:181    .text.Get_Sensor_Temperature:0000000000000054 .L0 
+     /tmp/ccAU3cj5.s:198    .text.Read_Only:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:215    .text.Set_Sensor_Frame_Mode:0000000000000008 .L0 
+     /tmp/ccAU3cj5.s:298    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccAU3cj5.s:340    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccAU3cj5.s:171    .text.Get_Sensor_Temperature:0000000000000048 .L8
+     /tmp/ccAU3cj5.s:156    .text.Get_Sensor_Temperature:0000000000000034 .L9
+     /tmp/ccAU3cj5.s:912    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccAU3cj5.s:1441   .debug_str:00000000000000a9 .LASF55
+     /tmp/ccAU3cj5.s:1439   .debug_str:000000000000008d .LASF56
+     /tmp/ccAU3cj5.s:1453   .debug_str:00000000000001d8 .LASF57
+     /tmp/ccAU3cj5.s:1399   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccAU3cj5.s:1419   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccAU3cj5.s:1481   .debug_str:0000000000000304 .LASF0
+     /tmp/ccAU3cj5.s:1469   .debug_str:0000000000000291 .LASF5
+     /tmp/ccAU3cj5.s:1477   .debug_str:00000000000002e5 .LASF1
+     /tmp/ccAU3cj5.s:1433   .debug_str:0000000000000059 .LASF2
+     /tmp/ccAU3cj5.s:1495   .debug_str:000000000000037a .LASF3
+     /tmp/ccAU3cj5.s:1463   .debug_str:000000000000026a .LASF4
+     /tmp/ccAU3cj5.s:1513   .debug_str:000000000000041d .LASF6
+     /tmp/ccAU3cj5.s:1509   .debug_str:00000000000003ed .LASF7
+     /tmp/ccAU3cj5.s:1459   .debug_str:0000000000000243 .LASF8
+     /tmp/ccAU3cj5.s:1485   .debug_str:000000000000032c .LASF9
+     /tmp/ccAU3cj5.s:1489   .debug_str:000000000000034c .LASF10
+     /tmp/ccAU3cj5.s:1449   .debug_str:00000000000001bf .LASF11
+     /tmp/ccAU3cj5.s:1487   .debug_str:0000000000000343 .LASF12
+     /tmp/ccAU3cj5.s:1427   .debug_str:0000000000000045 .LASF13
+     /tmp/ccAU3cj5.s:1423   .debug_str:0000000000000017 .LASF14
+     /tmp/ccAU3cj5.s:1455   .debug_str:000000000000020f .LASF15
+     /tmp/ccAU3cj5.s:1447   .debug_str:00000000000001a7 .LASF16
+     /tmp/ccAU3cj5.s:1461   .debug_str:0000000000000251 .LASF17
+     /tmp/ccAU3cj5.s:1523   .debug_str:0000000000000461 .LASF18
+     /tmp/ccAU3cj5.s:1443   .debug_str:000000000000016f .LASF19
+     /tmp/ccAU3cj5.s:1437   .debug_str:0000000000000078 .LASF20
+     /tmp/ccAU3cj5.s:1529   .debug_str:00000000000004ad .LASF21
+     /tmp/ccAU3cj5.s:1465   .debug_str:0000000000000273 .LASF22
+     /tmp/ccAU3cj5.s:1525   .debug_str:000000000000047a .LASF23
+     /tmp/ccAU3cj5.s:1421   .debug_str:0000000000000000 .LASF24
+     /tmp/ccAU3cj5.s:1475   .debug_str:00000000000002d0 .LASF25
+     /tmp/ccAU3cj5.s:1535   .debug_str:00000000000004ea .LASF26
+     /tmp/ccAU3cj5.s:1499   .debug_str:000000000000039f .LASF27
+     /tmp/ccAU3cj5.s:1425   .debug_str:000000000000002c .LASF28
+     /tmp/ccAU3cj5.s:1507   .debug_str:00000000000003e4 .LASF30
+     /tmp/ccAU3cj5.s:1527   .debug_str:0000000000000490 .LASF29
+     /tmp/ccAU3cj5.s:1511   .debug_str:00000000000003ff .LASF31
+     /tmp/ccAU3cj5.s:303    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .LFB13
+     /tmp/ccAU3cj5.s:338    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .LFE13
+     /tmp/ccAU3cj5.s:1503   .debug_str:00000000000003b6 .LASF33
+     /tmp/ccAU3cj5.s:1240   .debug_loc:0000000000000000 .LLST7
+     /tmp/ccAU3cj5.s:323    .text.Get_Sensor_Images_Per_Trigger:0000000000000020 .LVL23
+     /tmp/ccAU3cj5.s:1473   .debug_str:00000000000002b2 .LASF32
+     /tmp/ccAU3cj5.s:268    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .LFB12
+     /tmp/ccAU3cj5.s:296    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .LFE12
+     /tmp/ccAU3cj5.s:1258   .debug_loc:000000000000002c .LLST6
+     /tmp/ccAU3cj5.s:286    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .LVL20
+     /tmp/ccAU3cj5.s:1491   .debug_str:0000000000000359 .LASF34
+     /tmp/ccAU3cj5.s:1521   .debug_str:000000000000044d .LASF35
+     /tmp/ccAU3cj5.s:1445   .debug_str:0000000000000189 .LASF36
+     /tmp/ccAU3cj5.s:1435   .debug_str:0000000000000063 .LASF37
+     /tmp/ccAU3cj5.s:1533   .debug_str:00000000000004d4 .LASF47
+     /tmp/ccAU3cj5.s:1501   .debug_str:00000000000003ac .LASF38
+     /tmp/ccAU3cj5.s:186    .text.Read_Only:0000000000000000 .LFB6
+     /tmp/ccAU3cj5.s:196    .text.Read_Only:0000000000000008 .LFE6
+     /tmp/ccAU3cj5.s:1467   .debug_str:000000000000028b .LASF39
+     /tmp/ccAU3cj5.s:1276   .debug_loc:0000000000000058 .LLST4
+     /tmp/ccAU3cj5.s:1471   .debug_str:000000000000029b .LASF40
+     /tmp/ccAU3cj5.s:123    .text.Get_Sensor_Temperature:0000000000000000 .LFB5
+     /tmp/ccAU3cj5.s:179    .text.Get_Sensor_Temperature:0000000000000054 .LFE5
+     /tmp/ccAU3cj5.s:1431   .debug_str:0000000000000054 .LASF41
+     /tmp/ccAU3cj5.s:1290   .debug_loc:0000000000000079 .LLST3
+     /tmp/ccAU3cj5.s:1493   .debug_str:0000000000000371 .LASF52
+     /tmp/ccAU3cj5.s:1479   .debug_str:00000000000002f3 .LASF42
+     /tmp/ccAU3cj5.s:149    .text.Get_Sensor_Temperature:0000000000000028 .LBB2
+     /tmp/ccAU3cj5.s:157    .text.Get_Sensor_Temperature:0000000000000034 .LBE2
+     /tmp/ccAU3cj5.s:1519   .debug_str:000000000000043f .LASF43
+     /tmp/ccAU3cj5.s:153    .text.Get_Sensor_Temperature:0000000000000030 .LVL11
+     /tmp/ccAU3cj5.s:143    .text.Get_Sensor_Temperature:000000000000001c .LVL10
+     /tmp/ccAU3cj5.s:1497   .debug_str:000000000000038d .LASF44
+     /tmp/ccAU3cj5.s:1515   .debug_str:0000000000000428 .LASF45
+     /tmp/ccAU3cj5.s:1483   .debug_str:0000000000000310 .LASF46
+     /tmp/ccAU3cj5.s:1457   .debug_str:0000000000000226 .LASF48
+     /tmp/ccAU3cj5.s:1505   .debug_str:00000000000003cd .LASF49
+     /tmp/ccAU3cj5.s:61     .text.Get_Sensor_Frame_Count:0000000000000000 .LFB1
+     /tmp/ccAU3cj5.s:75     .text.Get_Sensor_Frame_Count:0000000000000010 .LFE1
+     /tmp/ccAU3cj5.s:1312   .debug_loc:00000000000000b0 .LLST1
+     /tmp/ccAU3cj5.s:1451   .debug_str:00000000000001c7 .LASF50
+     /tmp/ccAU3cj5.s:14     .text.Get_Sensor_State:0000000000000000 .LFB0
+     /tmp/ccAU3cj5.s:54     .text.Get_Sensor_State:0000000000000038 .LFE0
+     /tmp/ccAU3cj5.s:1429   .debug_str:000000000000004e .LASF51
+     /tmp/ccAU3cj5.s:1326   .debug_loc:00000000000000d1 .LLST0
+     /tmp/ccAU3cj5.s:35     .text.Get_Sensor_State:000000000000001c .LVL2
+     /tmp/ccAU3cj5.s:82     .text.Get_Requested_Focus_Distance:0000000000000000 .LFB2
+     /tmp/ccAU3cj5.s:92     .text.Get_Requested_Focus_Distance:0000000000000008 .LFE2
+     /tmp/ccAU3cj5.s:1344   .debug_loc:00000000000000fd .LLST2
+     /tmp/ccAU3cj5.s:203    .text.Set_Sensor_Frame_Mode:0000000000000000 .LFB7
+     /tmp/ccAU3cj5.s:213    .text.Set_Sensor_Frame_Mode:0000000000000008 .LFE7
+     /tmp/ccAU3cj5.s:1358   .debug_loc:000000000000011e .LLST5
+     /tmp/ccAU3cj5.s:1517   .debug_str:000000000000042e .LASF53
+     /tmp/ccAU3cj5.s:1531   .debug_str:00000000000004c3 .LASF54
+     /tmp/ccAU3cj5.s:306    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .LVL21
+     /tmp/ccAU3cj5.s:316    .text.Get_Sensor_Images_Per_Trigger:0000000000000010 .LVL22
+     /tmp/ccAU3cj5.s:332    .text.Get_Sensor_Images_Per_Trigger:000000000000002c .LVL24
+     /tmp/ccAU3cj5.s:271    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .LVL18
+     /tmp/ccAU3cj5.s:275    .text.Set_Sensor_Images_Per_Trigger:0000000000000008 .LVL19
+     /tmp/ccAU3cj5.s:189    .text.Read_Only:0000000000000000 .LVL14
+     /tmp/ccAU3cj5.s:193    .text.Read_Only:0000000000000004 .LVL15
+     /tmp/ccAU3cj5.s:126    .text.Get_Sensor_Temperature:0000000000000000 .LVL8
+     /tmp/ccAU3cj5.s:137    .text.Get_Sensor_Temperature:0000000000000010 .LVL9
+     /tmp/ccAU3cj5.s:165    .text.Get_Sensor_Temperature:000000000000003c .LVL12
+     /tmp/ccAU3cj5.s:170    .text.Get_Sensor_Temperature:0000000000000048 .LVL13
+     /tmp/ccAU3cj5.s:64     .text.Get_Sensor_Frame_Count:0000000000000000 .LVL4
+     /tmp/ccAU3cj5.s:72     .text.Get_Sensor_Frame_Count:000000000000000c .LVL5
+     /tmp/ccAU3cj5.s:18     .text.Get_Sensor_State:0000000000000000 .LVL0
+     /tmp/ccAU3cj5.s:29     .text.Get_Sensor_State:0000000000000010 .LVL1
+     /tmp/ccAU3cj5.s:49     .text.Get_Sensor_State:0000000000000030 .LVL3
+     /tmp/ccAU3cj5.s:85     .text.Get_Requested_Focus_Distance:0000000000000000 .LVL6
+     /tmp/ccAU3cj5.s:89     .text.Get_Requested_Focus_Distance:0000000000000004 .LVL7
+     /tmp/ccAU3cj5.s:206    .text.Set_Sensor_Frame_Mode:0000000000000000 .LVL16
+     /tmp/ccAU3cj5.s:210    .text.Set_Sensor_Frame_Mode:0000000000000004 .LVL17
+     /tmp/ccAU3cj5.s:371    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccUTs1m3.s:13     .text.Get_Sensor_State:0000000000000000 Get_Sensor_State
+     /tmp/ccUTs1m3.s:17     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:19     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:20     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:21     .text.Get_Sensor_State:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:24     .text.Get_Sensor_State:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:31     .text.Get_Sensor_Frame_Count:0000000000000000 Get_Sensor_Frame_Count
+     /tmp/ccUTs1m3.s:33     .text.Get_Sensor_Frame_Count:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:36     .text.Get_Sensor_Frame_Count:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:43     .text.Get_Requested_Focus_Distance:0000000000000000 Get_Requested_Focus_Distance
+     /tmp/ccUTs1m3.s:45     .text.Get_Requested_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:48     .text.Get_Requested_Focus_Distance:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:55     .text.Get_Computed_Focus_Distance:0000000000000000 Get_Computed_Focus_Distance
+     /tmp/ccUTs1m3.s:57     .text.Get_Computed_Focus_Distance:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:60     .text.Get_Computed_Focus_Distance:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:67     .text.Get_LVDT_Position:0000000000000000 Get_LVDT_Position
+     /tmp/ccUTs1m3.s:69     .text.Get_LVDT_Position:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:72     .text.Get_LVDT_Position:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:79     .text.Get_Sensor_Temperature:0000000000000000 Get_Sensor_Temperature
+     /tmp/ccUTs1m3.s:81     .text.Get_Sensor_Temperature:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:84     .text.Get_Sensor_Temperature:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:91     .text.Read_Only:0000000000000000 Read_Only
+     /tmp/ccUTs1m3.s:94     .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:96     .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:97     .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:98     .text.Read_Only:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:101    .text.Read_Only:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:108    .text.Set_Sensor_Frame_Mode:0000000000000000 Set_Sensor_Frame_Mode
+     /tmp/ccUTs1m3.s:111    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:113    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:114    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:115    .text.Set_Sensor_Frame_Mode:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:118    .text.Set_Sensor_Frame_Mode:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:125    .text.Set_Sensor_Bit_Depth:0000000000000000 Set_Sensor_Bit_Depth
+     /tmp/ccUTs1m3.s:127    .text.Set_Sensor_Bit_Depth:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:130    .text.Set_Sensor_Bit_Depth:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:137    .text.Set_Sensor_Black_Level_Offset:0000000000000000 Set_Sensor_Black_Level_Offset
+     /tmp/ccUTs1m3.s:139    .text.Set_Sensor_Black_Level_Offset:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:142    .text.Set_Sensor_Black_Level_Offset:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:149    .text.Set_Sensor_Exposure:0000000000000000 Set_Sensor_Exposure
+     /tmp/ccUTs1m3.s:151    .text.Set_Sensor_Exposure:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:154    .text.Set_Sensor_Exposure:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:161    .text.Set_Sensor_Trigger_Mode:0000000000000000 Set_Sensor_Trigger_Mode
+     /tmp/ccUTs1m3.s:163    .text.Set_Sensor_Trigger_Mode:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:166    .text.Set_Sensor_Trigger_Mode:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:173    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 Set_Sensor_Images_Per_Trigger
+     /tmp/ccUTs1m3.s:176    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:178    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:179    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:183    .text.Set_Sensor_Images_Per_Trigger:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:184    .text.Set_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccUTs1m3.s:186    .text.Set_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccUTs1m3.s:188    .text.Set_Sensor_Images_Per_Trigger:0000000000000010 .L0 
+     /tmp/ccUTs1m3.s:189    .text.Set_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccUTs1m3.s:191    .text.Set_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccUTs1m3.s:194    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .L0 
+     /tmp/ccUTs1m3.s:195    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .L0 
+     /tmp/ccUTs1m3.s:196    .text.Set_Sensor_Images_Per_Trigger:0000000000000020 .L0 
+     /tmp/ccUTs1m3.s:199    .text.Set_Sensor_Images_Per_Trigger:0000000000000028 .L0 
+     /tmp/ccUTs1m3.s:201    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccUTs1m3.s:208    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 Get_Sensor_Images_Per_Trigger
+     /tmp/ccUTs1m3.s:211    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:213    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:214    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:215    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:216    .text.Get_Sensor_Images_Per_Trigger:0000000000000004 .L0 
+     /tmp/ccUTs1m3.s:218    .text.Get_Sensor_Images_Per_Trigger:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:221    .text.Get_Sensor_Images_Per_Trigger:000000000000000c .L0 
+     /tmp/ccUTs1m3.s:225    .text.Get_Sensor_Images_Per_Trigger:0000000000000014 .L0 
+     /tmp/ccUTs1m3.s:226    .text.Get_Sensor_Images_Per_Trigger:0000000000000018 .L0 
+     /tmp/ccUTs1m3.s:228    .text.Get_Sensor_Images_Per_Trigger:0000000000000018 .L0 
+     /tmp/ccUTs1m3.s:231    .text.Get_Sensor_Images_Per_Trigger:0000000000000020 .L0 
+     /tmp/ccUTs1m3.s:233    .text.Get_Sensor_Images_Per_Trigger:0000000000000024 .L0 
+     /tmp/ccUTs1m3.s:234    .text.Get_Sensor_Images_Per_Trigger:0000000000000024 .L0 
+     /tmp/ccUTs1m3.s:235    .text.Get_Sensor_Images_Per_Trigger:0000000000000028 .L0 
+     /tmp/ccUTs1m3.s:237    .text.Get_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccUTs1m3.s:241    .text.Get_Sensor_Images_Per_Trigger:0000000000000034 .L0 
+     /tmp/ccUTs1m3.s:243    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .L0 
+     /tmp/ccUTs1m3.s:250    .text.Set_Sensor_Frames_Per_Second:0000000000000000 Set_Sensor_Frames_Per_Second
+     /tmp/ccUTs1m3.s:252    .text.Set_Sensor_Frames_Per_Second:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:255    .text.Set_Sensor_Frames_Per_Second:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:262    .text.Set_Sensor_Capture_Delay:0000000000000000 Set_Sensor_Capture_Delay
+     /tmp/ccUTs1m3.s:264    .text.Set_Sensor_Capture_Delay:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:267    .text.Set_Sensor_Capture_Delay:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:27     .text.Get_Sensor_State:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:104    .text.Read_Only:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:121    .text.Set_Sensor_Frame_Mode:0000000000000008 .L0 
+     /tmp/ccUTs1m3.s:204    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .L0 
+     /tmp/ccUTs1m3.s:246    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccUTs1m3.s:706    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccUTs1m3.s:1106   .debug_str:00000000000000a9 .LASF50
+     /tmp/ccUTs1m3.s:1104   .debug_str:000000000000008d .LASF51
+     /tmp/ccUTs1m3.s:1116   .debug_str:00000000000001d0 .LASF52
+     /tmp/ccUTs1m3.s:1070   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccUTs1m3.s:1084   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccUTs1m3.s:1142   .debug_str:00000000000002f8 .LASF0
+     /tmp/ccUTs1m3.s:1140   .debug_str:00000000000002ea .LASF1
+     /tmp/ccUTs1m3.s:1098   .debug_str:0000000000000059 .LASF2
+     /tmp/ccUTs1m3.s:1154   .debug_str:0000000000000365 .LASF3
+     /tmp/ccUTs1m3.s:1126   .debug_str:0000000000000262 .LASF4
+     /tmp/ccUTs1m3.s:1170   .debug_str:00000000000003f1 .LASF9
+     /tmp/ccUTs1m3.s:1166   .debug_str:00000000000003c1 .LASF5
+     /tmp/ccUTs1m3.s:1122   .debug_str:000000000000023b .LASF6
+     /tmp/ccUTs1m3.s:1146   .debug_str:0000000000000320 .LASF7
+     /tmp/ccUTs1m3.s:1150   .debug_str:0000000000000340 .LASF8
+     /tmp/ccUTs1m3.s:1148   .debug_str:0000000000000337 .LASF10
+     /tmp/ccUTs1m3.s:1092   .debug_str:0000000000000045 .LASF11
+     /tmp/ccUTs1m3.s:1088   .debug_str:0000000000000017 .LASF12
+     /tmp/ccUTs1m3.s:1118   .debug_str:0000000000000207 .LASF13
+     /tmp/ccUTs1m3.s:1112   .debug_str:00000000000001a7 .LASF14
+     /tmp/ccUTs1m3.s:1124   .debug_str:0000000000000249 .LASF15
+     /tmp/ccUTs1m3.s:1178   .debug_str:0000000000000427 .LASF16
+     /tmp/ccUTs1m3.s:1108   .debug_str:000000000000016f .LASF17
+     /tmp/ccUTs1m3.s:1102   .debug_str:0000000000000078 .LASF18
+     /tmp/ccUTs1m3.s:1184   .debug_str:0000000000000473 .LASF19
+     /tmp/ccUTs1m3.s:1128   .debug_str:000000000000026b .LASF20
+     /tmp/ccUTs1m3.s:1180   .debug_str:0000000000000440 .LASF21
+     /tmp/ccUTs1m3.s:1086   .debug_str:0000000000000000 .LASF22
+     /tmp/ccUTs1m3.s:1138   .debug_str:00000000000002d5 .LASF23
+     /tmp/ccUTs1m3.s:1190   .debug_str:00000000000004b0 .LASF24
+     /tmp/ccUTs1m3.s:1158   .debug_str:000000000000038a .LASF25
+     /tmp/ccUTs1m3.s:1090   .debug_str:000000000000002c .LASF26
+     /tmp/ccUTs1m3.s:1164   .debug_str:00000000000003b8 .LASF28
+     /tmp/ccUTs1m3.s:1182   .debug_str:0000000000000456 .LASF27
+     /tmp/ccUTs1m3.s:1168   .debug_str:00000000000003d3 .LASF29
+     /tmp/ccUTs1m3.s:209    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .LFB13
+     /tmp/ccUTs1m3.s:244    .text.Get_Sensor_Images_Per_Trigger:0000000000000038 .LFE13
+     /tmp/ccUTs1m3.s:1132   .debug_str:0000000000000289 .LASF31
+     /tmp/ccUTs1m3.s:971    .debug_loc:0000000000000000 .LLST4
+     /tmp/ccUTs1m3.s:229    .text.Get_Sensor_Images_Per_Trigger:0000000000000020 .LVL11
+     /tmp/ccUTs1m3.s:1136   .debug_str:00000000000002b7 .LASF30
+     /tmp/ccUTs1m3.s:174    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .LFB12
+     /tmp/ccUTs1m3.s:202    .text.Set_Sensor_Images_Per_Trigger:000000000000002c .LFE12
+     /tmp/ccUTs1m3.s:989    .debug_loc:000000000000002c .LLST3
+     /tmp/ccUTs1m3.s:192    .text.Set_Sensor_Images_Per_Trigger:000000000000001c .LVL8
+     /tmp/ccUTs1m3.s:1152   .debug_str:000000000000034d .LASF32
+     /tmp/ccUTs1m3.s:1176   .debug_str:0000000000000413 .LASF33
+     /tmp/ccUTs1m3.s:1110   .debug_str:0000000000000189 .LASF34
+     /tmp/ccUTs1m3.s:1100   .debug_str:0000000000000063 .LASF35
+     /tmp/ccUTs1m3.s:1188   .debug_str:000000000000049a .LASF45
+     /tmp/ccUTs1m3.s:1160   .debug_str:0000000000000397 .LASF36
+     /tmp/ccUTs1m3.s:92     .text.Read_Only:0000000000000000 .LFB6
+     /tmp/ccUTs1m3.s:102    .text.Read_Only:0000000000000008 .LFE6
+     /tmp/ccUTs1m3.s:1130   .debug_str:0000000000000283 .LASF37
+     /tmp/ccUTs1m3.s:1007   .debug_loc:0000000000000058 .LLST1
+     /tmp/ccUTs1m3.s:1134   .debug_str:00000000000002a0 .LASF38
+     /tmp/ccUTs1m3.s:1096   .debug_str:0000000000000054 .LASF39
+     /tmp/ccUTs1m3.s:1156   .debug_str:0000000000000378 .LASF40
+     /tmp/ccUTs1m3.s:1172   .debug_str:00000000000003fc .LASF41
+     /tmp/ccUTs1m3.s:1144   .debug_str:0000000000000304 .LASF42
+     /tmp/ccUTs1m3.s:1120   .debug_str:000000000000021e .LASF43
+     /tmp/ccUTs1m3.s:1162   .debug_str:00000000000003a1 .LASF44
+     /tmp/ccUTs1m3.s:1114   .debug_str:00000000000001bf .LASF46
+     /tmp/ccUTs1m3.s:1094   .debug_str:000000000000004e .LASF47
+     /tmp/ccUTs1m3.s:14     .text.Get_Sensor_State:0000000000000000 .LFB0
+     /tmp/ccUTs1m3.s:25     .text.Get_Sensor_State:0000000000000008 .LFE0
+     /tmp/ccUTs1m3.s:1021   .debug_loc:0000000000000079 .LLST0
+     /tmp/ccUTs1m3.s:109    .text.Set_Sensor_Frame_Mode:0000000000000000 .LFB7
+     /tmp/ccUTs1m3.s:119    .text.Set_Sensor_Frame_Mode:0000000000000008 .LFE7
+     /tmp/ccUTs1m3.s:1035   .debug_loc:000000000000009a .LLST2
+     /tmp/ccUTs1m3.s:1174   .debug_str:0000000000000402 .LASF48
+     /tmp/ccUTs1m3.s:1186   .debug_str:0000000000000489 .LASF49
+     /tmp/ccUTs1m3.s:212    .text.Get_Sensor_Images_Per_Trigger:0000000000000000 .LVL9
+     /tmp/ccUTs1m3.s:222    .text.Get_Sensor_Images_Per_Trigger:0000000000000010 .LVL10
+     /tmp/ccUTs1m3.s:238    .text.Get_Sensor_Images_Per_Trigger:000000000000002c .LVL12
+     /tmp/ccUTs1m3.s:177    .text.Set_Sensor_Images_Per_Trigger:0000000000000000 .LVL6
+     /tmp/ccUTs1m3.s:181    .text.Set_Sensor_Images_Per_Trigger:0000000000000008 .LVL7
+     /tmp/ccUTs1m3.s:95     .text.Read_Only:0000000000000000 .LVL2
+     /tmp/ccUTs1m3.s:99     .text.Read_Only:0000000000000004 .LVL3
+     /tmp/ccUTs1m3.s:18     .text.Get_Sensor_State:0000000000000000 .LVL0
+     /tmp/ccUTs1m3.s:22     .text.Get_Sensor_State:0000000000000004 .LVL1
+     /tmp/ccUTs1m3.s:112    .text.Set_Sensor_Frame_Mode:0000000000000000 .LVL4
+     /tmp/ccUTs1m3.s:116    .text.Set_Sensor_Frame_Mode:0000000000000004 .LVL5
+     /tmp/ccUTs1m3.s:277    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+Get_Camera_State
+read_cam_temp
+HW_set_32bit_reg
+HW_get_32bit_reg

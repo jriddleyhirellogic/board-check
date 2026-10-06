@@ -1,0 +1,34 @@
+\doxysection{states.\+h}
+\hypertarget{states_8h_source}{}\label{states_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/states.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/states.h}}
+\doxymbox{\hyperlink{states_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00002}00002\ \textcolor{comment}{\ *\ states.h}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 17,\ 2025}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ STATES\_H\_}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ STATES\_H\_}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{events_8h}{events.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{pid_8h}{pid.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00013}\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{00013}}\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{void}\ *\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}};}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00015}\doxymbox{\hyperlink{structContext__t}{00015}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00016}00016\ \{}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00017}\doxymbox{\hyperlink{structContext__t_aae419efef4a0d2b1a7ad68cb49a42389}{00017}}\ \ \ \ \ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{structContext__t_aae419efef4a0d2b1a7ad68cb49a42389}{current\_state}};}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00018}\doxymbox{\hyperlink{structContext__t_a99038b3ed7d0053e4e1c58cbe18462bc}{00018}}\ \ \ \ \ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ \doxymbox{\hyperlink{structContext__t_a99038b3ed7d0053e4e1c58cbe18462bc}{saved\_state}};\ \ \ \ \ \textcolor{comment}{//To\ facilitate\ return\ to\ a\ remembered\ state}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00019}\doxymbox{\hyperlink{structContext__t_a13623f1d68513495c21f8b061b1a5aec}{00019}}\ \ \ \ \ \textcolor{keywordtype}{void}\ *\doxymbox{\hyperlink{structContext__t_a13623f1d68513495c21f8b061b1a5aec}{param}};\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//For\ the\ rare\ instances\ where\ something\ needs\ to\ be\ saved\ across\ state\ transitions}}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00020}\doxymbox{\hyperlink{structContext__t_a4c20b7380821b569ff2f0137309b5a3d}{00020}}\ \ \ \ \ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{structContext__t_a4c20b7380821b569ff2f0137309b5a3d}{p\_PID\_Instance}};}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00021}00021\ \}\doxymbox{\hyperlink{structContext__t}{Context\_t}};}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00023}\doxymbox{\hyperlink{states_8h_aa9fe31985019935397a5a2407bd796a2}{00023}}\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{void}\ *(*State\_Handler\_t)(\ \doxymbox{\hyperlink{structContext__t}{Context\_t}}*,\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *\ );}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00025}\doxymbox{\hyperlink{states_8h_afaab48f145f4e6fbce5f2577365756b7}{00025}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{states_8h_afaab48f145f4e6fbce5f2577365756b7}{v\_Update\_Control\_State}}(\ \doxymbox{\hyperlink{structContext__t}{Context\_t}}\ *,\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *\ );}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00026}\doxymbox{\hyperlink{states_8h_a651d0f3159642470f9e96b86d8297161}{00026}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{states_8h_a651d0f3159642470f9e96b86d8297161}{v\_Init\_Control\_State\_Machine}}(\ \doxymbox{\hyperlink{structContext__t}{Context\_t}}\ *context,\ \doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}}\ initial\_state\ );}
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{states_8h_source_l00028}00028\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ STATES\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

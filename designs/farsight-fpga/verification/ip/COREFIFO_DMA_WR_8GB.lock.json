@@ -1,0 +1,8 @@
+{
+  "core_id": "Actel:DirectCore:COREFIFO:3.1.101",
+  "definition_digest": "23e86c72820e42c6e5cfe73c4fd09356188a40c50801040e64d0e46c0083e463",
+  "generated": "2026-09-25T18:35:23Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "COREFIFO_DMA_WR_8GB",
+  "sources_digest": "eb8946f97e95b5c561316eab2b42b9cbc60ae415f0d56faefe0f34556f42c4af"
+}

@@ -1,0 +1,45 @@
+var serial__sm_8h =
+[
+    [ "Serial_Msg_Header_t", "structSerial__Msg__Header__t.html", "structSerial__Msg__Header__t" ],
+    [ "CRC_LENGTH", "serial__sm_8h.html#a3b739c5ac3ba3ca92a3cea35990c88fb", null ],
+    [ "HEADER_SIZE", "serial__sm_8h.html#a49999be01380f41cc0d0f1f1406fb277", null ],
+    [ "MAX_MSG_SIZE", "serial__sm_8h.html#a17e333794ae761cd55ec6fd6fc0f1bac", null ],
+    [ "RESERVED_SIZE", "serial__sm_8h.html#a40269eccee35199ba216678b8891ca5a", null ],
+    [ "SYNC1_CODE", "serial__sm_8h.html#a2f5ce3983045dcf19897b1337643565b", null ],
+    [ "SYNC2_CODE", "serial__sm_8h.html#adf4c7b1c63e624f452dbc8423bc9a73b", null ],
+    [ "SYNC3_CODE", "serial__sm_8h.html#a70a8f18b872e7392d66cfe2748d617ed", null ],
+    [ "SYNC4_CODE", "serial__sm_8h.html#a264257ef3a67b018dd37e426218e40c8", null ],
+    [ "SYNC_LENGTH", "serial__sm_8h.html#a07ab47e2ed266cd713cdd5fc34b91b5c", null ],
+    [ "Packet_Field_Offset_t", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8f", [
+      [ "SYNC1_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa40c6bc659442571c1883074a9c6739d3", null ],
+      [ "SYNC2_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa204a57de16ca79449b17ba31f0a918fb", null ],
+      [ "SYNC3_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8faf128b868be9974b3ee0d64935c06c511", null ],
+      [ "SYNC4_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa8075f47c572af2748dd119c5d58cbd07", null ],
+      [ "OPCODE_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa918b0e9018af37f0455f3c15ee0773b6", null ],
+      [ "ERROR_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa66fe8dc53456d12695530dcb87003731", null ],
+      [ "SEQUENCE_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa7e1c5dd2670dbc88e98b556b9b80c9db", null ],
+      [ "DATA_LENGTH_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa270f0e3d23b1b8ce9e1f581b2bdaf35c", null ],
+      [ "RESERVED_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fa55659c75ef620a1800ba02820bc671e6", null ],
+      [ "DATA_OFFSET", "serial__sm_8h.html#ab093609b7b26b65cffd5b13d6a429d8fae81cd8da0c30a1d852eb87d4f16b7899", null ]
+    ] ],
+    [ "Serial_Msg_State_t", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41f", [
+      [ "SYNC_WAIT", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa18a6fa8889d7501469a972a54da8943c", null ],
+      [ "SYNC1", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faea17d337f23d1a4a5efab58c258c75e7", null ],
+      [ "SYNC2", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa1a24872e07c637a29611d9819552a3c8", null ],
+      [ "SYNC3", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faddfc8ee5b97c178a4ea9d019bd7a3e75", null ],
+      [ "SYNC4", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fae4050daed5413dff57d692d036ccb479", null ],
+      [ "FUNCTION", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faab8c4d8135967b887502fda4f76deaa6", null ],
+      [ "ERROR_CODE", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faf92feceab1e86b1db3922220d4e26664", null ],
+      [ "SEQUENCE", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fab8f22878cbe7cc7489be00dcf9afe313", null ],
+      [ "DATA_COUNT", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa86b0f02738a3e35cae6724a4d66c1846", null ],
+      [ "RESERVED", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fafe4c21755babfece7188666f75c7386b", null ],
+      [ "DATA", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa9d7d6f31868d66330397c967c4afd2d2", null ],
+      [ "CRC1", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa31ae2bf812f4d5f3a631c1a3a90b8e57", null ],
+      [ "CRC2", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faca45a29cf27145155a3052e68f70e0f7", null ],
+      [ "CRC3", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faa800f9e6938dc8a556685cf54517e825", null ],
+      [ "CRC4", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41faef5caa552f890f4c7e887dfe1a06bc22", null ],
+      [ "SM_ERROR", "serial__sm_8h.html#aaee796a365b5f3ec5dfdef0dabbcd41fa89ec3974ce52ffc03ef0f5f06d84bb10", null ]
+    ] ],
+    [ "Reset_Serial_SM", "serial__sm_8h.html#add62247398443f8539532c99b386c595", null ],
+    [ "v_Update_Serial_SM", "serial__sm_8h.html#a318ca21f6a277906e99215773de6db53", null ]
+];

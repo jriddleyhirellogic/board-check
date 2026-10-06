@@ -1,0 +1,6 @@
+source [file join [file dirname [info script]] components/COREFIFO_MAC_BACKPRES.tcl]
+source [file join [file dirname [info script]] components/udp_mux.tcl]
+source [file join [file dirname [info script]] components/udp_tx.tcl]
+source [file join [file dirname [info script]] components/udp_tx_apb_reg.tcl]
+source [file join [file dirname [info script]] components/mtx_mux.tcl]
+source [file join [file dirname [info script]] components/udp_tx_top.tcl]

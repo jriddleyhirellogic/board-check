@@ -1,0 +1,983 @@
+   1              		.file	"port.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.vPortSetupTimerInterrupt,"ax",@progbits
+  10              		.align	2
+  11              		.weak	vPortSetupTimerInterrupt
+  13              	vPortSetupTimerInterrupt:
+  14              	.LFB1:
+  15              		.file 1 "../src/FreeRTOS/port.c"
+   1:../src/FreeRTOS/port.c **** /*
+   2:../src/FreeRTOS/port.c ****  * FreeRTOS Kernel V11.2.0
+   3:../src/FreeRTOS/port.c ****  * Copyright (C) 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+   4:../src/FreeRTOS/port.c ****  *
+   5:../src/FreeRTOS/port.c ****  * SPDX-License-Identifier: MIT
+   6:../src/FreeRTOS/port.c ****  *
+   7:../src/FreeRTOS/port.c ****  * Permission is hereby granted, free of charge, to any person obtaining a copy of
+   8:../src/FreeRTOS/port.c ****  * this software and associated documentation files (the "Software"), to deal in
+   9:../src/FreeRTOS/port.c ****  * the Software without restriction, including without limitation the rights to
+  10:../src/FreeRTOS/port.c ****  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+  11:../src/FreeRTOS/port.c ****  * the Software, and to permit persons to whom the Software is furnished to do so,
+  12:../src/FreeRTOS/port.c ****  * subject to the following conditions:
+  13:../src/FreeRTOS/port.c ****  *
+  14:../src/FreeRTOS/port.c ****  * The above copyright notice and this permission notice shall be included in all
+  15:../src/FreeRTOS/port.c ****  * copies or substantial portions of the Software.
+  16:../src/FreeRTOS/port.c ****  *
+  17:../src/FreeRTOS/port.c ****  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  18:../src/FreeRTOS/port.c ****  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+  19:../src/FreeRTOS/port.c ****  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+  20:../src/FreeRTOS/port.c ****  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+  21:../src/FreeRTOS/port.c ****  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  22:../src/FreeRTOS/port.c ****  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  23:../src/FreeRTOS/port.c ****  *
+  24:../src/FreeRTOS/port.c ****  * https://www.FreeRTOS.org
+  25:../src/FreeRTOS/port.c ****  * https://github.com/FreeRTOS
+  26:../src/FreeRTOS/port.c ****  *
+  27:../src/FreeRTOS/port.c ****  */
+  28:../src/FreeRTOS/port.c **** 
+  29:../src/FreeRTOS/port.c **** /*-----------------------------------------------------------
+  30:../src/FreeRTOS/port.c ****  * Implementation of functions defined in portable.h for the RISC-V port.
+  31:../src/FreeRTOS/port.c ****  *----------------------------------------------------------*/
+  32:../src/FreeRTOS/port.c **** 
+  33:../src/FreeRTOS/port.c **** /* Scheduler includes. */
+  34:../src/FreeRTOS/port.c **** #include "FreeRTOS.h"
+  35:../src/FreeRTOS/port.c **** #include "task.h"
+  36:../src/FreeRTOS/port.c **** #include "portmacro.h"
+  37:../src/FreeRTOS/port.c **** 
+  38:../src/FreeRTOS/port.c **** /* Standard includes. */
+  39:../src/FreeRTOS/port.c **** #include "string.h"
+  40:../src/FreeRTOS/port.c **** 
+  41:../src/FreeRTOS/port.c **** #ifdef configCLINT_BASE_ADDRESS
+  42:../src/FreeRTOS/port.c ****     #warning "The configCLINT_BASE_ADDRESS constant has been deprecated. configMTIME_BASE_ADDRESS a
+  43:../src/FreeRTOS/port.c **** #endif
+  44:../src/FreeRTOS/port.c **** 
+  45:../src/FreeRTOS/port.c **** #ifndef configMTIME_BASE_ADDRESS
+  46:../src/FreeRTOS/port.c ****     #warning "configMTIME_BASE_ADDRESS must be defined in FreeRTOSConfig.h. If the target chip incl
+  47:../src/FreeRTOS/port.c **** #endif
+  48:../src/FreeRTOS/port.c **** 
+  49:../src/FreeRTOS/port.c **** #ifndef configMTIMECMP_BASE_ADDRESS
+  50:../src/FreeRTOS/port.c ****     #warning "configMTIMECMP_BASE_ADDRESS must be defined in FreeRTOSConfig.h. If the target chip i
+  51:../src/FreeRTOS/port.c **** #endif
+  52:../src/FreeRTOS/port.c **** 
+  53:../src/FreeRTOS/port.c **** /* Let the user override the pre-loading of the initial RA. */
+  54:../src/FreeRTOS/port.c **** #ifdef configTASK_RETURN_ADDRESS
+  55:../src/FreeRTOS/port.c ****     #define portTASK_RETURN_ADDRESS    configTASK_RETURN_ADDRESS
+  56:../src/FreeRTOS/port.c **** #else
+  57:../src/FreeRTOS/port.c ****     #define portTASK_RETURN_ADDRESS    0
+  58:../src/FreeRTOS/port.c **** #endif
+  59:../src/FreeRTOS/port.c **** 
+  60:../src/FreeRTOS/port.c **** /* The stack used by interrupt service routines.  Set configISR_STACK_SIZE_WORDS
+  61:../src/FreeRTOS/port.c ****  * to use a statically allocated array as the interrupt stack.  Alternative leave
+  62:../src/FreeRTOS/port.c ****  * configISR_STACK_SIZE_WORDS undefined and update the linker script so that a
+  63:../src/FreeRTOS/port.c ****  * linker variable names __freertos_irq_stack_top has the same value as the top
+  64:../src/FreeRTOS/port.c ****  * of the stack used by main.  Using the linker script method will repurpose the
+  65:../src/FreeRTOS/port.c ****  * stack that was used by main before the scheduler was started for use as the
+  66:../src/FreeRTOS/port.c ****  * interrupt stack after the scheduler has started. */
+  67:../src/FreeRTOS/port.c **** #ifdef configISR_STACK_SIZE_WORDS
+  68:../src/FreeRTOS/port.c **** static __attribute__( ( aligned( 16 ) ) ) StackType_t xISRStack[ configISR_STACK_SIZE_WORDS ] = { 0
+  69:../src/FreeRTOS/port.c **** const StackType_t xISRStackTop = ( StackType_t ) &( xISRStack[ configISR_STACK_SIZE_WORDS & ~portBY
+  70:../src/FreeRTOS/port.c **** 
+  71:../src/FreeRTOS/port.c **** /* Don't use 0xa5 as the stack fill bytes as that is used by the kernel for
+  72:../src/FreeRTOS/port.c ****  * the task stacks, and so will legitimately appear in many positions within
+  73:../src/FreeRTOS/port.c ****  * the ISR stack. */
+  74:../src/FreeRTOS/port.c ****     #define portISR_STACK_FILL_BYTE    0xee
+  75:../src/FreeRTOS/port.c **** #else
+  76:../src/FreeRTOS/port.c ****     extern const uint32_t __freertos_irq_stack_top[];
+  77:../src/FreeRTOS/port.c ****     const StackType_t xISRStackTop = ( StackType_t ) __freertos_irq_stack_top;
+  78:../src/FreeRTOS/port.c ****     //const StackType_t xISRStackTop __attribute__((section(".data"))) = ( StackType_t ) __freertos
+  79:../src/FreeRTOS/port.c **** #endif
+  80:../src/FreeRTOS/port.c **** 
+  81:../src/FreeRTOS/port.c **** /*
+  82:../src/FreeRTOS/port.c ****  * Setup the timer to generate the tick interrupts.  The implementation in this
+  83:../src/FreeRTOS/port.c ****  * file is weak to allow application writers to change the timer used to
+  84:../src/FreeRTOS/port.c ****  * generate the tick interrupt.
+  85:../src/FreeRTOS/port.c ****  */
+  86:../src/FreeRTOS/port.c **** void vPortSetupTimerInterrupt( void ) __attribute__( ( weak ) );
+  87:../src/FreeRTOS/port.c **** 
+  88:../src/FreeRTOS/port.c **** /*-----------------------------------------------------------*/
+  89:../src/FreeRTOS/port.c **** 
+  90:../src/FreeRTOS/port.c **** /* Used to program the machine timer compare register. */
+  91:../src/FreeRTOS/port.c **** uint64_t ullNextTime = 0ULL;
+  92:../src/FreeRTOS/port.c **** const uint64_t * pullNextTime = &ullNextTime;
+  93:../src/FreeRTOS/port.c **** 
+  94:../src/FreeRTOS/port.c **** #ifdef RTC_PRESCALER
+  95:../src/FreeRTOS/port.c **** const size_t uxTimerIncrementsForOneTick = ( size_t ) ( ( configCPU_CLOCK_HZ / RTC_PRESCALER ) / ( 
+  96:../src/FreeRTOS/port.c **** #else
+  97:../src/FreeRTOS/port.c **** const size_t uxTimerIncrementsForOneTick = ( size_t ) ( ( configCPU_CLOCK_HZ ) / ( configTICK_RATE_
+  98:../src/FreeRTOS/port.c **** #endif
+  99:../src/FreeRTOS/port.c **** 
+ 100:../src/FreeRTOS/port.c **** uint64_t const ullMachineTimerCompareRegisterBase = configMTIMECMP_BASE_ADDRESS;
+ 101:../src/FreeRTOS/port.c **** volatile uint64_t * pullMachineTimerCompareRegister = NULL;
+ 102:../src/FreeRTOS/port.c **** 
+ 103:../src/FreeRTOS/port.c **** /* Holds the critical nesting value - deliberately non-zero at start up to
+ 104:../src/FreeRTOS/port.c ****  * ensure interrupts are not accidentally enabled before the scheduler starts. */
+ 105:../src/FreeRTOS/port.c **** size_t xCriticalNesting = ( size_t ) 0xaaaaaaaa;
+ 106:../src/FreeRTOS/port.c **** size_t * pxCriticalNesting = &xCriticalNesting;
+ 107:../src/FreeRTOS/port.c **** 
+ 108:../src/FreeRTOS/port.c **** /* Used to catch tasks that attempt to return from their implementing function. */
+ 109:../src/FreeRTOS/port.c **** size_t xTaskReturnAddress = ( size_t ) portTASK_RETURN_ADDRESS;
+ 110:../src/FreeRTOS/port.c **** 
+ 111:../src/FreeRTOS/port.c **** /* Set configCHECK_FOR_STACK_OVERFLOW to 3 to add ISR stack checking to task
+ 112:../src/FreeRTOS/port.c ****  * stack checking.  A problem in the ISR stack will trigger an assert, not call
+ 113:../src/FreeRTOS/port.c ****  * the stack overflow hook function (because the stack overflow hook is specific
+ 114:../src/FreeRTOS/port.c ****  * to a task stack, not the ISR stack). */
+ 115:../src/FreeRTOS/port.c **** #if defined( configISR_STACK_SIZE_WORDS ) && ( configCHECK_FOR_STACK_OVERFLOW > 2 )
+ 116:../src/FreeRTOS/port.c ****     #warning "This path not tested, or even compiled yet."
+ 117:../src/FreeRTOS/port.c **** 
+ 118:../src/FreeRTOS/port.c ****     static const uint8_t ucExpectedStackBytes[] =
+ 119:../src/FreeRTOS/port.c ****     {
+ 120:../src/FreeRTOS/port.c ****         portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FI
+ 121:../src/FreeRTOS/port.c ****         portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FI
+ 122:../src/FreeRTOS/port.c ****         portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FI
+ 123:../src/FreeRTOS/port.c ****         portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FI
+ 124:../src/FreeRTOS/port.c ****         portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FILL_BYTE, portISR_STACK_FI
+ 125:../src/FreeRTOS/port.c ****     }; \
+ 126:../src/FreeRTOS/port.c **** 
+ 127:../src/FreeRTOS/port.c ****     #define portCHECK_ISR_STACK()    configASSERT( ( memcmp( ( void * ) xISRStack, ( void * ) ucExp
+ 128:../src/FreeRTOS/port.c **** #else /* if defined( configISR_STACK_SIZE_WORDS ) && ( configCHECK_FOR_STACK_OVERFLOW > 2 ) */
+ 129:../src/FreeRTOS/port.c ****     /* Define the function away. */
+ 130:../src/FreeRTOS/port.c ****     #define portCHECK_ISR_STACK()
+ 131:../src/FreeRTOS/port.c **** #endif /* configCHECK_FOR_STACK_OVERFLOW > 2 */
+ 132:../src/FreeRTOS/port.c **** 
+ 133:../src/FreeRTOS/port.c **** /*-----------------------------------------------------------*/
+ 134:../src/FreeRTOS/port.c **** 
+ 135:../src/FreeRTOS/port.c **** #if ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIMECMP_BASE_ADDRESS != 0 )
+ 136:../src/FreeRTOS/port.c **** 
+ 137:../src/FreeRTOS/port.c ****     void vPortSetupTimerInterrupt( void )
+ 138:../src/FreeRTOS/port.c ****     {
+  16              		.loc 1 138 5
+  17              		.cfi_startproc
+ 139:../src/FreeRTOS/port.c ****         uint32_t ulCurrentTimeHigh, ulCurrentTimeLow;
+  18              		.loc 1 139 9
+ 140:../src/FreeRTOS/port.c ****         volatile uint32_t * const pulTimeHigh = ( volatile uint32_t * const ) ( ( configMTIME_BASE_
+  19              		.loc 1 140 9
+  20              	.LVL0:
+ 141:../src/FreeRTOS/port.c ****         volatile uint32_t * const pulTimeLow = ( volatile uint32_t * const ) ( configMTIME_BASE_ADD
+  21              		.loc 1 141 9
+ 142:../src/FreeRTOS/port.c ****         volatile uint32_t ulHartId;
+  22              		.loc 1 142 9
+ 143:../src/FreeRTOS/port.c **** 
+ 144:../src/FreeRTOS/port.c ****         __asm volatile ( "csrr %0, mhartid" : "=r" ( ulHartId ) );
+  23              		.loc 1 144 9
+ 138:../src/FreeRTOS/port.c ****         uint32_t ulCurrentTimeHigh, ulCurrentTimeLow;
+  24              		.loc 1 138 5 is_stmt 0
+  25 0000 130101FF 		addi	sp,sp,-16
+  26              		.cfi_def_cfa_offset 16
+  27              		.loc 1 144 9
+  28              	 #APP
+  29              	# 144 "../src/FreeRTOS/port.c" 1
+ 145              	
+  30              		csrr a5, mhartid
+  31              	# 0 "" 2
+  32              	 #NO_APP
+  33 0008 2326F100 		sw	a5,12(sp)
+ 146:../src/FreeRTOS/port.c ****         pullMachineTimerCompareRegister = ( volatile uint64_t * ) ( ullMachineTimerCompareRegisterB
+  34              		.loc 1 146 9 is_stmt 1
+  35              		.loc 1 146 117 is_stmt 0
+  36 000c 0327C100 		lw	a4,12(sp)
+  37              		.loc 1 146 104
+  38 0010 B7470002 		li	a5,33570816
+ 147:../src/FreeRTOS/port.c **** 
+ 148:../src/FreeRTOS/port.c ****         do
+ 149:../src/FreeRTOS/port.c ****         {
+ 150:../src/FreeRTOS/port.c ****             ulCurrentTimeHigh = *pulTimeHigh;
+  39              		.loc 1 150 31
+  40 0014 37C60002 		li	a2,33603584
+ 146:../src/FreeRTOS/port.c ****         pullMachineTimerCompareRegister = ( volatile uint64_t * ) ( ullMachineTimerCompareRegisterB
+  41              		.loc 1 146 117
+  42 0018 13173700 		slli	a4,a4,3
+ 146:../src/FreeRTOS/port.c ****         pullMachineTimerCompareRegister = ( volatile uint64_t * ) ( ullMachineTimerCompareRegisterB
+  43              		.loc 1 146 104
+  44 001c 3307F700 		add	a4,a4,a5
+ 146:../src/FreeRTOS/port.c ****         pullMachineTimerCompareRegister = ( volatile uint64_t * ) ( ullMachineTimerCompareRegisterB
+  45              		.loc 1 146 41
+  46 0020 97070000 		sw	a4,.LANCHOR0,a5
+  46      23A0E700 
+  47              	.L2:
+ 148:../src/FreeRTOS/port.c ****         {
+  48              		.loc 1 148 9 is_stmt 1 discriminator 1
+  49              		.loc 1 150 13 discriminator 1
+  50              		.loc 1 150 31 is_stmt 0 discriminator 1
+  51 0028 8325C6FF 		lw	a1,-4(a2)
+  52              	.LVL1:
+ 151:../src/FreeRTOS/port.c ****             ulCurrentTimeLow = *pulTimeLow;
+  53              		.loc 1 151 13 is_stmt 1 discriminator 1
+  54              		.loc 1 151 30 is_stmt 0 discriminator 1
+  55 002c 832786FF 		lw	a5,-8(a2)
+  56              	.LVL2:
+ 152:../src/FreeRTOS/port.c ****         } while( ulCurrentTimeHigh != *pulTimeHigh );
+  57              		.loc 1 152 39 discriminator 1
+  58 0030 8326C6FF 		lw	a3,-4(a2)
+  59              		.loc 1 152 9 discriminator 1
+  60 0034 E39AB6FE 		bne	a3,a1,.L2
+ 153:../src/FreeRTOS/port.c **** 
+ 154:../src/FreeRTOS/port.c ****         ullNextTime = ( uint64_t ) ulCurrentTimeHigh;
+  61              		.loc 1 154 9 is_stmt 1
+ 155:../src/FreeRTOS/port.c ****         ullNextTime <<= 32ULL; /* High 4-byte word is 32-bits up. */
+  62              		.loc 1 155 9
+ 156:../src/FreeRTOS/port.c ****         ullNextTime |= ( uint64_t ) ulCurrentTimeLow;
+  63              		.loc 1 156 9
+ 157:../src/FreeRTOS/port.c ****         ullNextTime += ( uint64_t ) uxTimerIncrementsForOneTick;
+  64              		.loc 1 157 9
+  65              		.loc 1 157 21 is_stmt 0
+  66 0038 1386471F 		addi	a2,a5,500
+  67 003c 3338F600 		sltu	a6,a2,a5
+ 158:../src/FreeRTOS/port.c ****         *pullMachineTimerCompareRegister = ullNextTime;
+  68              		.loc 1 158 42
+  69 0040 2320C700 		sw	a2,0(a4)
+ 157:../src/FreeRTOS/port.c ****         ullNextTime += ( uint64_t ) uxTimerIncrementsForOneTick;
+  70              		.loc 1 157 21
+  71 0044 B305D800 		add	a1,a6,a3
+  72              	.LVL3:
+  73              		.loc 1 158 9 is_stmt 1
+  74              		.loc 1 158 42 is_stmt 0
+  75 0048 2322B700 		sw	a1,4(a4)
+ 159:../src/FreeRTOS/port.c **** 
+ 160:../src/FreeRTOS/port.c ****         /* Prepare the time to use after the next tick interrupt. */
+ 161:../src/FreeRTOS/port.c ****         ullNextTime += ( uint64_t ) uxTimerIncrementsForOneTick;
+  76              		.loc 1 161 9 is_stmt 1
+  77              		.loc 1 161 21 is_stmt 0
+  78 004c 1387873E 		addi	a4,a5,1000
+  79 0050 B337F700 		sltu	a5,a4,a5
+  80              	.LVL4:
+  81 0054 B387D700 		add	a5,a5,a3
+  82 0058 97060000 		sw	a4,.LANCHOR1,a3
+  82      23A0E600 
+  83 0060 17070000 		sw	a5,.LANCHOR1+4,a4
+  83      2320F700 
+  84              	.LVL5:
+ 162:../src/FreeRTOS/port.c ****     }
+  85              		.loc 1 162 5
+  86 0068 13010101 		addi	sp,sp,16
+  87              		.cfi_def_cfa_offset 0
+  88 006c 67800000 		jr	ra
+  89              		.cfi_endproc
+  90              	.LFE1:
+  92              		.section	.text.xPortStartScheduler,"ax",@progbits
+  93              		.align	2
+  94              		.globl	xPortStartScheduler
+  96              	xPortStartScheduler:
+  97              	.LFB2:
+ 163:../src/FreeRTOS/port.c **** 
+ 164:../src/FreeRTOS/port.c **** #endif /* ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIME_BASE_ADDRESS != 0 ) */
+ 165:../src/FreeRTOS/port.c **** /*-----------------------------------------------------------*/
+ 166:../src/FreeRTOS/port.c **** 
+ 167:../src/FreeRTOS/port.c **** BaseType_t xPortStartScheduler( void )
+ 168:../src/FreeRTOS/port.c **** {
+  98              		.loc 1 168 1 is_stmt 1
+  99              		.cfi_startproc
+ 169:../src/FreeRTOS/port.c ****     extern void xPortStartFirstTask( void );
+ 100              		.loc 1 169 5
+ 170:../src/FreeRTOS/port.c **** 
+ 171:../src/FreeRTOS/port.c ****     #if ( configASSERT_DEFINED == 1 )
+ 172:../src/FreeRTOS/port.c ****     {
+ 173:../src/FreeRTOS/port.c ****         /* Check alignment of the interrupt stack - which is the same as the
+ 174:../src/FreeRTOS/port.c ****          * stack that was being used by main() prior to the scheduler being
+ 175:../src/FreeRTOS/port.c ****          * started. */
+ 176:../src/FreeRTOS/port.c ****         configASSERT( ( xISRStackTop & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 101              		.loc 1 176 9
+ 102 0000 97070000 		lla	a5,__freertos_irq_stack_top
+ 102      93870700 
+ 103 0008 93F7F700 		andi	a5,a5,15
+ 104 000c 63880700 		beq	a5,zero,.L6
+ 105              		.loc 1 176 9 discriminator 1
+ 106              	 #APP
+ 107              	# 176 "../src/FreeRTOS/port.c" 1
+ 177              	
+ 176:../src/FreeRTOS/port.c ****         configASSERT( ( xISRStackTop & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 108              		csrc mstatus, 8
+ 109              	# 0 "" 2
+ 110              		.loc 1 176 9 discriminator 1
+ 111              	# 176 "../src/FreeRTOS/port.c" 1
+ 112              		ebreak
+ 113              	# 0 "" 2
+ 114              	 #NO_APP
+ 115              	.L7:
+ 176:../src/FreeRTOS/port.c ****         configASSERT( ( xISRStackTop & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 116              		.loc 1 176 9 discriminator 1
+ 176:../src/FreeRTOS/port.c ****         configASSERT( ( xISRStackTop & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 117              		.loc 1 176 9 discriminator 1
+ 118 0018 6F000000 		j	.L7
+ 119              	.L6:
+ 176:../src/FreeRTOS/port.c ****         configASSERT( ( xISRStackTop & portBYTE_ALIGNMENT_MASK ) == 0 );
+ 120              		.loc 1 176 72 discriminator 2
+ 178:../src/FreeRTOS/port.c ****         #ifdef configISR_STACK_SIZE_WORDS
+ 179:../src/FreeRTOS/port.c ****         {
+ 180:../src/FreeRTOS/port.c ****             memset( ( void * ) xISRStack, portISR_STACK_FILL_BYTE, sizeof( xISRStack ) );
+ 181:../src/FreeRTOS/port.c ****         }
+ 182:../src/FreeRTOS/port.c ****         #endif /* configISR_STACK_SIZE_WORDS */
+ 183:../src/FreeRTOS/port.c ****     }
+ 184:../src/FreeRTOS/port.c ****     #endif /* configASSERT_DEFINED */
+ 185:../src/FreeRTOS/port.c **** 
+ 186:../src/FreeRTOS/port.c ****     /* If there is a CLINT then it is ok to use the default implementation
+ 187:../src/FreeRTOS/port.c ****      * in this file, otherwise vPortSetupTimerInterrupt() must be implemented to
+ 188:../src/FreeRTOS/port.c ****      * configure whichever clock is to be used to generate the tick interrupt. */
+ 189:../src/FreeRTOS/port.c ****     vPortSetupTimerInterrupt();
+ 121              		.loc 1 189 5 discriminator 2
+ 168:../src/FreeRTOS/port.c ****     extern void xPortStartFirstTask( void );
+ 122              		.loc 1 168 1 is_stmt 0 discriminator 2
+ 123 001c 130101FF 		addi	sp,sp,-16
+ 124              		.cfi_def_cfa_offset 16
+ 125 0020 23261100 		sw	ra,12(sp)
+ 126              		.cfi_offset 1, -4
+ 127              		.loc 1 189 5 discriminator 2
+ 128 0024 97000000 		call	vPortSetupTimerInterrupt
+ 128      E7800000 
+ 129              	.LVL6:
+ 190:../src/FreeRTOS/port.c **** 
+ 191:../src/FreeRTOS/port.c ****     #if ( ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIMECMP_BASE_ADDRESS != 0 ) )
+ 192:../src/FreeRTOS/port.c ****     {
+ 193:../src/FreeRTOS/port.c ****         /* Enable mtime and external interrupts.  1<<7 for timer interrupt,
+ 194:../src/FreeRTOS/port.c ****          * 1<<11 for external interrupt.  _RB_ What happens here when mtime is
+ 195:../src/FreeRTOS/port.c ****          * not present as with pulpino? */
+ 196:../src/FreeRTOS/port.c ****         //__asm volatile ( "csrs mie, %0" ::"r" ( 0x880 ) ); // (1 << 11) | (1 << 7)
+ 197:../src/FreeRTOS/port.c ****         __asm volatile ( "csrs mie, %0" ::"r" ( 0x080 ) ); // IRB
+ 130              		.loc 1 197 9 is_stmt 1 discriminator 2
+ 131 002c 93070008 		li	a5,128
+ 132              	 #APP
+ 133              	# 197 "../src/FreeRTOS/port.c" 1
+ 198              	    }
+ 199:../src/FreeRTOS/port.c ****     #endif /* ( configMTIME_BASE_ADDRESS != 0 ) && ( configMTIMECMP_BASE_ADDRESS != 0 ) */
+ 200:../src/FreeRTOS/port.c **** 
+ 201:../src/FreeRTOS/port.c ****     xPortStartFirstTask();
+ 134              		csrs mie, a5
+ 135              	# 0 "" 2
+ 136              		.loc 1 201 5 discriminator 2
+ 137              	 #NO_APP
+ 138 0034 97000000 		call	xPortStartFirstTask
+ 138      E7800000 
+ 139              	.LVL7:
+ 202:../src/FreeRTOS/port.c **** 
+ 203:../src/FreeRTOS/port.c ****     /* Should not get here as after calling xPortStartFirstTask() only tasks
+ 204:../src/FreeRTOS/port.c ****      * should be executing. */
+ 205:../src/FreeRTOS/port.c ****     return pdFAIL;
+ 140              		.loc 1 205 5 discriminator 2
+ 206:../src/FreeRTOS/port.c **** }
+ 141              		.loc 1 206 1 is_stmt 0 discriminator 2
+ 142 003c 8320C100 		lw	ra,12(sp)
+ 143              		.cfi_restore 1
+ 144 0040 13050000 		li	a0,0
+ 145 0044 13010101 		addi	sp,sp,16
+ 146              		.cfi_def_cfa_offset 0
+ 147 0048 67800000 		jr	ra
+ 148              		.cfi_endproc
+ 149              	.LFE2:
+ 151              		.section	.text.vPortEndScheduler,"ax",@progbits
+ 152              		.align	2
+ 153              		.globl	vPortEndScheduler
+ 155              	vPortEndScheduler:
+ 156              	.LFB3:
+ 207:../src/FreeRTOS/port.c **** /*-----------------------------------------------------------*/
+ 208:../src/FreeRTOS/port.c **** 
+ 209:../src/FreeRTOS/port.c **** void vPortEndScheduler( void )
+ 210:../src/FreeRTOS/port.c **** {
+ 157              		.loc 1 210 1 is_stmt 1
+ 158              		.cfi_startproc
+ 159              	.L11:
+ 211:../src/FreeRTOS/port.c ****     /* Not implemented. */
+ 212:../src/FreeRTOS/port.c ****     for( ; ; )
+ 160              		.loc 1 212 5 discriminator 1
+ 213:../src/FreeRTOS/port.c ****     {
+ 214:../src/FreeRTOS/port.c ****     }
+ 161              		.loc 1 214 5 discriminator 1
+ 162 0000 6F000000 		j	.L11
+ 163              		.cfi_endproc
+ 164              	.LFE3:
+ 166              		.globl	xTaskReturnAddress
+ 167              		.globl	pxCriticalNesting
+ 168              		.globl	xCriticalNesting
+ 169              		.globl	pullMachineTimerCompareRegister
+ 170              		.globl	ullMachineTimerCompareRegisterBase
+ 171              		.globl	uxTimerIncrementsForOneTick
+ 172              		.globl	pullNextTime
+ 173              		.globl	ullNextTime
+ 174              		.globl	xISRStackTop
+ 175              		.section	.sbss.pullMachineTimerCompareRegister,"aw",@nobits
+ 176              		.align	2
+ 177              		.set	.LANCHOR0,. + 0
+ 180              	pullMachineTimerCompareRegister:
+ 181 0000 00000000 		.zero	4
+ 182              		.section	.sbss.ullNextTime,"aw",@nobits
+ 183              		.align	3
+ 184              		.set	.LANCHOR1,. + 0
+ 187              	ullNextTime:
+ 188 0000 00000000 		.zero	8
+ 188      00000000 
+ 189              		.section	.sbss.xTaskReturnAddress,"aw",@nobits
+ 190              		.align	2
+ 193              	xTaskReturnAddress:
+ 194 0000 00000000 		.zero	4
+ 195              		.section	.sdata.pullNextTime,"aw"
+ 196              		.align	2
+ 199              	pullNextTime:
+ 200 0000 00000000 		.word	ullNextTime
+ 201              		.section	.sdata.pxCriticalNesting,"aw"
+ 202              		.align	2
+ 205              	pxCriticalNesting:
+ 206 0000 00000000 		.word	xCriticalNesting
+ 207              		.section	.sdata.xCriticalNesting,"aw"
+ 208              		.align	2
+ 211              	xCriticalNesting:
+ 212 0000 AAAAAAAA 		.word	-1431655766
+ 213              		.section	.sdata2.ullMachineTimerCompareRegisterBase,"a"
+ 214              		.align	3
+ 217              	ullMachineTimerCompareRegisterBase:
+ 218 0000 00400002 		.word	33570816
+ 219 0004 00000000 		.word	0
+ 220              		.section	.sdata2.uxTimerIncrementsForOneTick,"a"
+ 221              		.align	2
+ 224              	uxTimerIncrementsForOneTick:
+ 225 0000 F4010000 		.word	500
+ 226              		.section	.sdata2.xISRStackTop,"a"
+ 227              		.align	2
+ 230              	xISRStackTop:
+ 231 0000 00000000 		.word	__freertos_irq_stack_top
+ 232              		.text
+ 233              	.Letext0:
+ 234              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 235              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 236              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 237              		.file 5 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 238              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 239              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 240              		.file 8 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 port.c
+<<<<<<< HEAD
+     /tmp/ccOnQ4RF.s:13     .text.vPortSetupTimerInterrupt:0000000000000000 vPortSetupTimerInterrupt
+     /tmp/ccOnQ4RF.s:17     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:18     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:19     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:21     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:22     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:23     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:24     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:25     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:26     .text.vPortSetupTimerInterrupt:0000000000000004 .L0 
+../src/FreeRTOS/port.c:144    .text.vPortSetupTimerInterrupt:0000000000000004 .L0 
+     /tmp/ccOnQ4RF.s:35     .text.vPortSetupTimerInterrupt:000000000000000c .L0 
+     /tmp/ccOnQ4RF.s:36     .text.vPortSetupTimerInterrupt:000000000000000c .L0 
+     /tmp/ccOnQ4RF.s:38     .text.vPortSetupTimerInterrupt:0000000000000010 .L0 
+     /tmp/ccOnQ4RF.s:40     .text.vPortSetupTimerInterrupt:0000000000000014 .L0 
+     /tmp/ccOnQ4RF.s:42     .text.vPortSetupTimerInterrupt:0000000000000018 .L0 
+     /tmp/ccOnQ4RF.s:44     .text.vPortSetupTimerInterrupt:000000000000001c .L0 
+     /tmp/ccOnQ4RF.s:46     .text.vPortSetupTimerInterrupt:0000000000000020 .L0 
+     /tmp/ccOnQ4RF.s:49     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccOnQ4RF.s:50     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccOnQ4RF.s:51     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccOnQ4RF.s:54     .text.vPortSetupTimerInterrupt:000000000000002c .L0 
+     /tmp/ccOnQ4RF.s:55     .text.vPortSetupTimerInterrupt:000000000000002c .L0 
+     /tmp/ccOnQ4RF.s:58     .text.vPortSetupTimerInterrupt:0000000000000030 .L0 
+     /tmp/ccOnQ4RF.s:60     .text.vPortSetupTimerInterrupt:0000000000000034 .L0 
+     /tmp/ccOnQ4RF.s:62     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccOnQ4RF.s:63     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccOnQ4RF.s:64     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccOnQ4RF.s:65     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccOnQ4RF.s:66     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccOnQ4RF.s:69     .text.vPortSetupTimerInterrupt:0000000000000040 .L0 
+     /tmp/ccOnQ4RF.s:71     .text.vPortSetupTimerInterrupt:0000000000000044 .L0 
+     /tmp/ccOnQ4RF.s:74     .text.vPortSetupTimerInterrupt:0000000000000048 .L0 
+     /tmp/ccOnQ4RF.s:75     .text.vPortSetupTimerInterrupt:0000000000000048 .L0 
+     /tmp/ccOnQ4RF.s:77     .text.vPortSetupTimerInterrupt:000000000000004c .L0 
+     /tmp/ccOnQ4RF.s:78     .text.vPortSetupTimerInterrupt:000000000000004c .L0 
+     /tmp/ccOnQ4RF.s:86     .text.vPortSetupTimerInterrupt:0000000000000068 .L0 
+     /tmp/ccOnQ4RF.s:87     .text.vPortSetupTimerInterrupt:000000000000006c .L0 
+     /tmp/ccOnQ4RF.s:89     .text.vPortSetupTimerInterrupt:0000000000000070 .L0 
+     /tmp/ccOnQ4RF.s:96     .text.xPortStartScheduler:0000000000000000 xPortStartScheduler
+     /tmp/ccOnQ4RF.s:99     .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:100    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:101    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:102    .text.xPortStartScheduler:0000000000000000 .L0 
+../src/FreeRTOS/port.c:176    .text.xPortStartScheduler:0000000000000010 .L0 
+../src/FreeRTOS/port.c:176    .text.xPortStartScheduler:0000000000000014 .L0 
+     /tmp/ccOnQ4RF.s:117    .text.xPortStartScheduler:0000000000000018 .L0 
+     /tmp/ccOnQ4RF.s:118    .text.xPortStartScheduler:0000000000000018 .L0 
+     /tmp/ccOnQ4RF.s:121    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccOnQ4RF.s:122    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccOnQ4RF.s:123    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccOnQ4RF.s:124    .text.xPortStartScheduler:0000000000000020 .L0 
+     /tmp/ccOnQ4RF.s:126    .text.xPortStartScheduler:0000000000000024 .L0 
+     /tmp/ccOnQ4RF.s:128    .text.xPortStartScheduler:0000000000000024 .L0 
+     /tmp/ccOnQ4RF.s:131    .text.xPortStartScheduler:000000000000002c .L0 
+     /tmp/ccOnQ4RF.s:138    .text.xPortStartScheduler:0000000000000034 .L0 
+     /tmp/ccOnQ4RF.s:141    .text.xPortStartScheduler:000000000000003c .L0 
+     /tmp/ccOnQ4RF.s:142    .text.xPortStartScheduler:000000000000003c .L0 
+     /tmp/ccOnQ4RF.s:143    .text.xPortStartScheduler:0000000000000040 .L0 
+     /tmp/ccOnQ4RF.s:146    .text.xPortStartScheduler:0000000000000048 .L0 
+     /tmp/ccOnQ4RF.s:148    .text.xPortStartScheduler:000000000000004c .L0 
+     /tmp/ccOnQ4RF.s:155    .text.vPortEndScheduler:0000000000000000 vPortEndScheduler
+     /tmp/ccOnQ4RF.s:158    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:160    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:161    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:162    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:163    .text.vPortEndScheduler:0000000000000004 .L0 
+     /tmp/ccOnQ4RF.s:193    .sbss.xTaskReturnAddress:0000000000000000 xTaskReturnAddress
+     /tmp/ccOnQ4RF.s:205    .sdata.pxCriticalNesting:0000000000000000 pxCriticalNesting
+     /tmp/ccOnQ4RF.s:211    .sdata.xCriticalNesting:0000000000000000 xCriticalNesting
+     /tmp/ccOnQ4RF.s:180    .sbss.pullMachineTimerCompareRegister:0000000000000000 pullMachineTimerCompareRegister
+     /tmp/ccOnQ4RF.s:217    .sdata2.ullMachineTimerCompareRegisterBase:0000000000000000 ullMachineTimerCompareRegisterBase
+     /tmp/ccOnQ4RF.s:224    .sdata2.uxTimerIncrementsForOneTick:0000000000000000 uxTimerIncrementsForOneTick
+     /tmp/ccOnQ4RF.s:199    .sdata.pullNextTime:0000000000000000 pullNextTime
+     /tmp/ccOnQ4RF.s:187    .sbss.ullNextTime:0000000000000000 ullNextTime
+     /tmp/ccOnQ4RF.s:230    .sdata2.xISRStackTop:0000000000000000 xISRStackTop
+     /tmp/ccOnQ4RF.s:177    .sbss.pullMachineTimerCompareRegister:0000000000000000 .LANCHOR0
+     /tmp/ccOnQ4RF.s:184    .sbss.ullNextTime:0000000000000000 .LANCHOR1
+     /tmp/ccOnQ4RF.s:92     .text.vPortSetupTimerInterrupt:0000000000000070 .L0 
+     /tmp/ccOnQ4RF.s:151    .text.xPortStartScheduler:000000000000004c .L0 
+     /tmp/ccOnQ4RF.s:175    .text.vPortEndScheduler:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:46     .text.vPortSetupTimerInterrupt:0000000000000020 .L0 
+     /tmp/ccOnQ4RF.s:82     .text.vPortSetupTimerInterrupt:0000000000000058 .L0 
+     /tmp/ccOnQ4RF.s:83     .text.vPortSetupTimerInterrupt:0000000000000060 .L0 
+     /tmp/ccOnQ4RF.s:47     .text.vPortSetupTimerInterrupt:0000000000000028 .L2
+     /tmp/ccOnQ4RF.s:102    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccOnQ4RF.s:119    .text.xPortStartScheduler:000000000000001c .L6
+     /tmp/ccOnQ4RF.s:115    .text.xPortStartScheduler:0000000000000018 .L7
+     /tmp/ccOnQ4RF.s:159    .text.vPortEndScheduler:0000000000000000 .L11
+     /tmp/ccOnQ4RF.s:1693   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccOnQ4RF.s:2695   .debug_str:000000000000060a .LASF147
+     /tmp/ccOnQ4RF.s:2691   .debug_str:00000000000005e2 .LASF148
+     /tmp/ccOnQ4RF.s:2483   .debug_str:0000000000000157 .LASF149
+     /tmp/ccOnQ4RF.s:2405   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccOnQ4RF.s:2415   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccOnQ4RF.s:2421   .debug_str:0000000000000012 .LASF7
+     /tmp/ccOnQ4RF.s:2513   .debug_str:0000000000000211 .LASF0
+     /tmp/ccOnQ4RF.s:2445   .debug_str:000000000000009e .LASF1
+     /tmp/ccOnQ4RF.s:2561   .debug_str:0000000000000306 .LASF2
+     /tmp/ccOnQ4RF.s:2447   .debug_str:00000000000000ac .LASF3
+     /tmp/ccOnQ4RF.s:2595   .debug_str:00000000000003fd .LASF4
+     /tmp/ccOnQ4RF.s:2607   .debug_str:0000000000000452 .LASF5
+     /tmp/ccOnQ4RF.s:2529   .debug_str:0000000000000261 .LASF6
+     /tmp/ccOnQ4RF.s:2663   .debug_str:000000000000055f .LASF8
+     /tmp/ccOnQ4RF.s:2463   .debug_str:00000000000000f1 .LASF9
+     /tmp/ccOnQ4RF.s:2493   .debug_str:00000000000001ba .LASF10
+     /tmp/ccOnQ4RF.s:2523   .debug_str:0000000000000242 .LASF11
+     /tmp/ccOnQ4RF.s:2581   .debug_str:0000000000000386 .LASF12
+     /tmp/ccOnQ4RF.s:2435   .debug_str:000000000000005b .LASF13
+     /tmp/ccOnQ4RF.s:2593   .debug_str:00000000000003f5 .LASF14
+     /tmp/ccOnQ4RF.s:2649   .debug_str:0000000000000527 .LASF15
+     /tmp/ccOnQ4RF.s:2427   .debug_str:000000000000002c .LASF16
+     /tmp/ccOnQ4RF.s:2531   .debug_str:0000000000000274 .LASF17
+     /tmp/ccOnQ4RF.s:2477   .debug_str:000000000000013c .LASF18
+     /tmp/ccOnQ4RF.s:2563   .debug_str:0000000000000312 .LASF19
+     /tmp/ccOnQ4RF.s:2693   .debug_str:00000000000005f9 .LASF130
+     /tmp/ccOnQ4RF.s:2659   .debug_str:0000000000000551 .LASF20
+     /tmp/ccOnQ4RF.s:2547   .debug_str:00000000000002c4 .LASF21
+     /tmp/ccOnQ4RF.s:2579   .debug_str:000000000000037f .LASF22
+     /tmp/ccOnQ4RF.s:2655   .debug_str:0000000000000542 .LASF23
+     /tmp/ccOnQ4RF.s:2697   .debug_str:00000000000006d0 .LASF24
+     /tmp/ccOnQ4RF.s:2543   .debug_str:00000000000002b6 .LASF25
+     /tmp/ccOnQ4RF.s:2515   .debug_str:000000000000021e .LASF26
+     /tmp/ccOnQ4RF.s:2645   .debug_str:0000000000000518 .LASF27
+     /tmp/ccOnQ4RF.s:2671   .debug_str:0000000000000582 .LASF28
+     /tmp/ccOnQ4RF.s:2617   .debug_str:000000000000047a .LASF29
+     /tmp/ccOnQ4RF.s:2677   .debug_str:0000000000000598 .LASF30
+     /tmp/ccOnQ4RF.s:2545   .debug_str:00000000000002bc .LASF31
+     /tmp/ccOnQ4RF.s:2647   .debug_str:0000000000000520 .LASF128
+     /tmp/ccOnQ4RF.s:2499   .debug_str:00000000000001d4 .LASF32
+     /tmp/ccOnQ4RF.s:2503   .debug_str:00000000000001e5 .LASF37
+     /tmp/ccOnQ4RF.s:2667   .debug_str:000000000000056f .LASF33
+     /tmp/ccOnQ4RF.s:2639   .debug_str:0000000000000503 .LASF34
+     /tmp/ccOnQ4RF.s:2495   .debug_str:00000000000001c5 .LASF35
+     /tmp/ccOnQ4RF.s:2685   .debug_str:00000000000005cd .LASF36
+     /tmp/ccOnQ4RF.s:2511   .debug_str:000000000000020c .LASF38
+     /tmp/ccOnQ4RF.s:2443   .debug_str:0000000000000095 .LASF39
+     /tmp/ccOnQ4RF.s:2661   .debug_str:0000000000000556 .LASF40
+     /tmp/ccOnQ4RF.s:2453   .debug_str:00000000000000c4 .LASF41
+     /tmp/ccOnQ4RF.s:2723   .debug_str:0000000000000751 .LASF42
+     /tmp/ccOnQ4RF.s:2571   .debug_str:000000000000034a .LASF43
+     /tmp/ccOnQ4RF.s:2557   .debug_str:00000000000002f3 .LASF44
+     /tmp/ccOnQ4RF.s:2687   .debug_str:00000000000005d2 .LASF45
+     /tmp/ccOnQ4RF.s:2609   .debug_str:000000000000045c .LASF46
+     /tmp/ccOnQ4RF.s:2709   .debug_str:0000000000000706 .LASF47
+     /tmp/ccOnQ4RF.s:2457   .debug_str:00000000000000d3 .LASF48
+     /tmp/ccOnQ4RF.s:2489   .debug_str:00000000000001ad .LASF49
+     /tmp/ccOnQ4RF.s:2417   .debug_str:0000000000000000 .LASF50
+     /tmp/ccOnQ4RF.s:2673   .debug_str:000000000000058a .LASF51
+     /tmp/ccOnQ4RF.s:2469   .debug_str:0000000000000112 .LASF52
+     /tmp/ccOnQ4RF.s:2573   .debug_str:0000000000000353 .LASF53
+     /tmp/ccOnQ4RF.s:2629   .debug_str:00000000000004b3 .LASF54
+     /tmp/ccOnQ4RF.s:2491   .debug_str:00000000000001b5 .LASF55
+     /tmp/ccOnQ4RF.s:2611   .debug_str:0000000000000466 .LASF56
+     /tmp/ccOnQ4RF.s:2451   .debug_str:00000000000000be .LASF57
+     /tmp/ccOnQ4RF.s:2419   .debug_str:000000000000000c .LASF58
+     /tmp/ccOnQ4RF.s:2619   .debug_str:0000000000000485 .LASF59
+     /tmp/ccOnQ4RF.s:2467   .debug_str:000000000000010b .LASF60
+     /tmp/ccOnQ4RF.s:2525   .debug_str:0000000000000254 .LASF61
+     /tmp/ccOnQ4RF.s:2437   .debug_str:0000000000000072 .LASF62
+     /tmp/ccOnQ4RF.s:2459   .debug_str:00000000000000e1 .LASF63
+     /tmp/ccOnQ4RF.s:2507   .debug_str:00000000000001fc .LASF64
+     /tmp/ccOnQ4RF.s:2555   .debug_str:00000000000002ec .LASF65
+     /tmp/ccOnQ4RF.s:2651   .debug_str:0000000000000530 .LASF66
+     /tmp/ccOnQ4RF.s:2713   .debug_str:0000000000000720 .LASF67
+     /tmp/ccOnQ4RF.s:2449   .debug_str:00000000000000b8 .LASF68
+     /tmp/ccOnQ4RF.s:2703   .debug_str:00000000000006ed .LASF69
+     /tmp/ccOnQ4RF.s:2473   .debug_str:0000000000000121 .LASF70
+     /tmp/ccOnQ4RF.s:2481   .debug_str:000000000000014f .LASF71
+     /tmp/ccOnQ4RF.s:2429   .debug_str:0000000000000035 .LASF72
+     /tmp/ccOnQ4RF.s:2549   .debug_str:00000000000002cb .LASF73
+     /tmp/ccOnQ4RF.s:2621   .debug_str:000000000000048d .LASF74
+     /tmp/ccOnQ4RF.s:2553   .debug_str:00000000000002e4 .LASF75
+     /tmp/ccOnQ4RF.s:2641   .debug_str:000000000000050b .LASF76
+     /tmp/ccOnQ4RF.s:2657   .debug_str:000000000000054a .LASF77
+     /tmp/ccOnQ4RF.s:2471   .debug_str:000000000000011a .LASF78
+     /tmp/ccOnQ4RF.s:2517   .debug_str:0000000000000225 .LASF79
+     /tmp/ccOnQ4RF.s:2501   .debug_str:00000000000001dd .LASF80
+     /tmp/ccOnQ4RF.s:2627   .debug_str:00000000000004ae .LASF81
+     /tmp/ccOnQ4RF.s:2425   .debug_str:0000000000000021 .LASF82
+     /tmp/ccOnQ4RF.s:2635   .debug_str:00000000000004ca .LASF83
+     /tmp/ccOnQ4RF.s:2631   .debug_str:00000000000004b8 .LASF84
+     /tmp/ccOnQ4RF.s:2577   .debug_str:0000000000000374 .LASF85
+     /tmp/ccOnQ4RF.s:2633   .debug_str:00000000000004c0 .LASF86
+     /tmp/ccOnQ4RF.s:2541   .debug_str:00000000000002ae .LASF87
+     /tmp/ccOnQ4RF.s:2509   .debug_str:0000000000000202 .LASF88
+     /tmp/ccOnQ4RF.s:2719   .debug_str:000000000000073a .LASF89
+     /tmp/ccOnQ4RF.s:2585   .debug_str:000000000000039e .LASF90
+     /tmp/ccOnQ4RF.s:2519   .debug_str:000000000000022d .LASF91
+     /tmp/ccOnQ4RF.s:2479   .debug_str:0000000000000147 .LASF92
+     /tmp/ccOnQ4RF.s:2601   .debug_str:0000000000000438 .LASF93
+     /tmp/ccOnQ4RF.s:2533   .debug_str:0000000000000280 .LASF94
+     /tmp/ccOnQ4RF.s:2701   .debug_str:00000000000006e3 .LASF95
+     /tmp/ccOnQ4RF.s:2461   .debug_str:00000000000000e9 .LASF96
+     /tmp/ccOnQ4RF.s:2455   .debug_str:00000000000000ce .LASF97
+     /tmp/ccOnQ4RF.s:2615   .debug_str:0000000000000473 .LASF98
+     /tmp/ccOnQ4RF.s:2689   .debug_str:00000000000005dc .LASF99
+     /tmp/ccOnQ4RF.s:2527   .debug_str:000000000000025a .LASF100
+     /tmp/ccOnQ4RF.s:2613   .debug_str:000000000000046d .LASF101
+     /tmp/ccOnQ4RF.s:2423   .debug_str:0000000000000019 .LASF102
+     /tmp/ccOnQ4RF.s:2643   .debug_str:0000000000000512 .LASF103
+     /tmp/ccOnQ4RF.s:2665   .debug_str:0000000000000569 .LASF104
+     /tmp/ccOnQ4RF.s:2675   .debug_str:0000000000000593 .LASF105
+     /tmp/ccOnQ4RF.s:2683   .debug_str:00000000000005c0 .LASF106
+     /tmp/ccOnQ4RF.s:2669   .debug_str:0000000000000575 .LASF107
+     /tmp/ccOnQ4RF.s:2537   .debug_str:0000000000000295 .LASF108
+     /tmp/ccOnQ4RF.s:2711   .debug_str:0000000000000711 .LASF109
+     /tmp/ccOnQ4RF.s:2505   .debug_str:00000000000001ed .LASF110
+     /tmp/ccOnQ4RF.s:2623   .debug_str:0000000000000496 .LASF111
+     /tmp/ccOnQ4RF.s:2715   .debug_str:0000000000000727 .LASF112
+     /tmp/ccOnQ4RF.s:2625   .debug_str:00000000000004a1 .LASF113
+     /tmp/ccOnQ4RF.s:2717   .debug_str:000000000000072c .LASF114
+     /tmp/ccOnQ4RF.s:2589   .debug_str:00000000000003c4 .LASF115
+     /tmp/ccOnQ4RF.s:2699   .debug_str:00000000000006d9 .LASF116
+     /tmp/ccOnQ4RF.s:2535   .debug_str:0000000000000289 .LASF117
+     /tmp/ccOnQ4RF.s:2679   .debug_str:00000000000005a0 .LASF118
+     /tmp/ccOnQ4RF.s:2487   .debug_str:000000000000019f .LASF119
+     /tmp/ccOnQ4RF.s:2441   .debug_str:0000000000000086 .LASF120
+     /tmp/ccOnQ4RF.s:2485   .debug_str:000000000000018e .LASF121
+     /tmp/ccOnQ4RF.s:2431   .debug_str:000000000000003b .LASF122
+     /tmp/ccOnQ4RF.s:2433   .debug_str:000000000000004a .LASF123
+     /tmp/ccOnQ4RF.s:2605   .debug_str:0000000000000449 .LASF124
+     /tmp/ccOnQ4RF.s:2567   .debug_str:0000000000000331 .LASF125
+     /tmp/ccOnQ4RF.s:2559   .debug_str:00000000000002fd .LASF126
+     /tmp/ccOnQ4RF.s:2705   .debug_str:00000000000006f3 .LASF127
+     /tmp/ccOnQ4RF.s:2439   .debug_str:000000000000007b .LASF129
+     /tmp/ccOnQ4RF.s:2653   .debug_str:0000000000000536 .LASF131
+     /tmp/ccOnQ4RF.s:2681   .debug_str:00000000000005ad .LASF132
+     /tmp/ccOnQ4RF.s:2575   .debug_str:000000000000035b .LASF133
+     /tmp/ccOnQ4RF.s:2521   .debug_str:0000000000000235 .LASF134
+     /tmp/ccOnQ4RF.s:2603   .debug_str:000000000000043d .LASF135
+     /tmp/ccOnQ4RF.s:2583   .debug_str:0000000000000391 .LASF136
+     /tmp/ccOnQ4RF.s:2587   .debug_str:00000000000003a8 .LASF137
+     /tmp/ccOnQ4RF.s:2591   .debug_str:00000000000003d2 .LASF138
+     /tmp/ccOnQ4RF.s:2637   .debug_str:00000000000004e3 .LASF139
+     /tmp/ccOnQ4RF.s:2475   .debug_str:000000000000012a .LASF140
+     /tmp/ccOnQ4RF.s:2551   .debug_str:00000000000002d1 .LASF141
+     /tmp/ccOnQ4RF.s:2569   .debug_str:0000000000000338 .LASF150
+     /tmp/ccOnQ4RF.s:156    .text.vPortEndScheduler:0000000000000000 .LFB3
+     /tmp/ccOnQ4RF.s:164    .text.vPortEndScheduler:0000000000000004 .LFE3
+     /tmp/ccOnQ4RF.s:2565   .debug_str:000000000000031d .LASF151
+     /tmp/ccOnQ4RF.s:97     .text.xPortStartScheduler:0000000000000000 .LFB2
+     /tmp/ccOnQ4RF.s:149    .text.xPortStartScheduler:000000000000004c .LFE2
+     /tmp/ccOnQ4RF.s:2597   .debug_str:000000000000040b .LASF152
+     /tmp/ccOnQ4RF.s:129    .text.xPortStartScheduler:000000000000002c .LVL6
+     /tmp/ccOnQ4RF.s:139    .text.xPortStartScheduler:000000000000003c .LVL7
+     /tmp/ccOnQ4RF.s:2599   .debug_str:000000000000041f .LASF153
+     /tmp/ccOnQ4RF.s:14     .text.vPortSetupTimerInterrupt:0000000000000000 .LFB1
+     /tmp/ccOnQ4RF.s:90     .text.vPortSetupTimerInterrupt:0000000000000070 .LFE1
+     /tmp/ccOnQ4RF.s:2721   .debug_str:000000000000073f .LASF142
+     /tmp/ccOnQ4RF.s:2358   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccOnQ4RF.s:2465   .debug_str:00000000000000fa .LASF143
+     /tmp/ccOnQ4RF.s:2365   .debug_loc:0000000000000013 .LLST1
+     /tmp/ccOnQ4RF.s:2539   .debug_str:00000000000002a2 .LASF144
+     /tmp/ccOnQ4RF.s:2707   .debug_str:00000000000006fb .LASF145
+     /tmp/ccOnQ4RF.s:2497   .debug_str:00000000000001cb .LASF146
+     /tmp/ccOnQ4RF.s:52     .text.vPortSetupTimerInterrupt:000000000000002c .LVL1
+     /tmp/ccOnQ4RF.s:72     .text.vPortSetupTimerInterrupt:0000000000000048 .LVL3
+     /tmp/ccOnQ4RF.s:56     .text.vPortSetupTimerInterrupt:0000000000000030 .LVL2
+     /tmp/ccOnQ4RF.s:80     .text.vPortSetupTimerInterrupt:0000000000000054 .LVL4
+     /tmp/ccOnQ4RF.s:84     .text.vPortSetupTimerInterrupt:0000000000000068 .LVL5
+     /tmp/ccOnQ4RF.s:242    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccupfqWj.s:13     .text.vPortSetupTimerInterrupt:0000000000000000 vPortSetupTimerInterrupt
+     /tmp/ccupfqWj.s:17     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:18     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:19     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:21     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:22     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:23     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:24     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:25     .text.vPortSetupTimerInterrupt:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:26     .text.vPortSetupTimerInterrupt:0000000000000004 .L0 
+../src/FreeRTOS/port.c:144    .text.vPortSetupTimerInterrupt:0000000000000004 .L0 
+     /tmp/ccupfqWj.s:35     .text.vPortSetupTimerInterrupt:000000000000000c .L0 
+     /tmp/ccupfqWj.s:36     .text.vPortSetupTimerInterrupt:000000000000000c .L0 
+     /tmp/ccupfqWj.s:38     .text.vPortSetupTimerInterrupt:0000000000000010 .L0 
+     /tmp/ccupfqWj.s:40     .text.vPortSetupTimerInterrupt:0000000000000014 .L0 
+     /tmp/ccupfqWj.s:42     .text.vPortSetupTimerInterrupt:0000000000000018 .L0 
+     /tmp/ccupfqWj.s:44     .text.vPortSetupTimerInterrupt:000000000000001c .L0 
+     /tmp/ccupfqWj.s:46     .text.vPortSetupTimerInterrupt:0000000000000020 .L0 
+     /tmp/ccupfqWj.s:49     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccupfqWj.s:50     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccupfqWj.s:51     .text.vPortSetupTimerInterrupt:0000000000000028 .L0 
+     /tmp/ccupfqWj.s:54     .text.vPortSetupTimerInterrupt:000000000000002c .L0 
+     /tmp/ccupfqWj.s:55     .text.vPortSetupTimerInterrupt:000000000000002c .L0 
+     /tmp/ccupfqWj.s:58     .text.vPortSetupTimerInterrupt:0000000000000030 .L0 
+     /tmp/ccupfqWj.s:60     .text.vPortSetupTimerInterrupt:0000000000000034 .L0 
+     /tmp/ccupfqWj.s:62     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccupfqWj.s:63     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccupfqWj.s:64     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccupfqWj.s:65     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccupfqWj.s:66     .text.vPortSetupTimerInterrupt:0000000000000038 .L0 
+     /tmp/ccupfqWj.s:69     .text.vPortSetupTimerInterrupt:0000000000000040 .L0 
+     /tmp/ccupfqWj.s:71     .text.vPortSetupTimerInterrupt:0000000000000044 .L0 
+     /tmp/ccupfqWj.s:74     .text.vPortSetupTimerInterrupt:0000000000000048 .L0 
+     /tmp/ccupfqWj.s:75     .text.vPortSetupTimerInterrupt:0000000000000048 .L0 
+     /tmp/ccupfqWj.s:77     .text.vPortSetupTimerInterrupt:000000000000004c .L0 
+     /tmp/ccupfqWj.s:78     .text.vPortSetupTimerInterrupt:000000000000004c .L0 
+     /tmp/ccupfqWj.s:86     .text.vPortSetupTimerInterrupt:0000000000000068 .L0 
+     /tmp/ccupfqWj.s:87     .text.vPortSetupTimerInterrupt:000000000000006c .L0 
+     /tmp/ccupfqWj.s:89     .text.vPortSetupTimerInterrupt:0000000000000070 .L0 
+     /tmp/ccupfqWj.s:96     .text.xPortStartScheduler:0000000000000000 xPortStartScheduler
+     /tmp/ccupfqWj.s:99     .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:100    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:101    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:102    .text.xPortStartScheduler:0000000000000000 .L0 
+../src/FreeRTOS/port.c:176    .text.xPortStartScheduler:0000000000000010 .L0 
+../src/FreeRTOS/port.c:176    .text.xPortStartScheduler:0000000000000014 .L0 
+     /tmp/ccupfqWj.s:117    .text.xPortStartScheduler:0000000000000018 .L0 
+     /tmp/ccupfqWj.s:118    .text.xPortStartScheduler:0000000000000018 .L0 
+     /tmp/ccupfqWj.s:121    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccupfqWj.s:122    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccupfqWj.s:123    .text.xPortStartScheduler:000000000000001c .L0 
+     /tmp/ccupfqWj.s:124    .text.xPortStartScheduler:0000000000000020 .L0 
+     /tmp/ccupfqWj.s:126    .text.xPortStartScheduler:0000000000000024 .L0 
+     /tmp/ccupfqWj.s:128    .text.xPortStartScheduler:0000000000000024 .L0 
+     /tmp/ccupfqWj.s:131    .text.xPortStartScheduler:000000000000002c .L0 
+     /tmp/ccupfqWj.s:138    .text.xPortStartScheduler:0000000000000034 .L0 
+     /tmp/ccupfqWj.s:141    .text.xPortStartScheduler:000000000000003c .L0 
+     /tmp/ccupfqWj.s:142    .text.xPortStartScheduler:000000000000003c .L0 
+     /tmp/ccupfqWj.s:143    .text.xPortStartScheduler:0000000000000040 .L0 
+     /tmp/ccupfqWj.s:146    .text.xPortStartScheduler:0000000000000048 .L0 
+     /tmp/ccupfqWj.s:148    .text.xPortStartScheduler:000000000000004c .L0 
+     /tmp/ccupfqWj.s:155    .text.vPortEndScheduler:0000000000000000 vPortEndScheduler
+     /tmp/ccupfqWj.s:158    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:160    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:161    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:162    .text.vPortEndScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:163    .text.vPortEndScheduler:0000000000000004 .L0 
+     /tmp/ccupfqWj.s:193    .sbss.xTaskReturnAddress:0000000000000000 xTaskReturnAddress
+     /tmp/ccupfqWj.s:205    .sdata.pxCriticalNesting:0000000000000000 pxCriticalNesting
+     /tmp/ccupfqWj.s:211    .sdata.xCriticalNesting:0000000000000000 xCriticalNesting
+     /tmp/ccupfqWj.s:180    .sbss.pullMachineTimerCompareRegister:0000000000000000 pullMachineTimerCompareRegister
+     /tmp/ccupfqWj.s:217    .sdata2.ullMachineTimerCompareRegisterBase:0000000000000000 ullMachineTimerCompareRegisterBase
+     /tmp/ccupfqWj.s:224    .sdata2.uxTimerIncrementsForOneTick:0000000000000000 uxTimerIncrementsForOneTick
+     /tmp/ccupfqWj.s:199    .sdata.pullNextTime:0000000000000000 pullNextTime
+     /tmp/ccupfqWj.s:187    .sbss.ullNextTime:0000000000000000 ullNextTime
+     /tmp/ccupfqWj.s:230    .sdata2.xISRStackTop:0000000000000000 xISRStackTop
+     /tmp/ccupfqWj.s:177    .sbss.pullMachineTimerCompareRegister:0000000000000000 .LANCHOR0
+     /tmp/ccupfqWj.s:184    .sbss.ullNextTime:0000000000000000 .LANCHOR1
+     /tmp/ccupfqWj.s:92     .text.vPortSetupTimerInterrupt:0000000000000070 .L0 
+     /tmp/ccupfqWj.s:151    .text.xPortStartScheduler:000000000000004c .L0 
+     /tmp/ccupfqWj.s:175    .text.vPortEndScheduler:0000000000000004 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:46     .text.vPortSetupTimerInterrupt:0000000000000020 .L0 
+     /tmp/ccupfqWj.s:82     .text.vPortSetupTimerInterrupt:0000000000000058 .L0 
+     /tmp/ccupfqWj.s:83     .text.vPortSetupTimerInterrupt:0000000000000060 .L0 
+     /tmp/ccupfqWj.s:47     .text.vPortSetupTimerInterrupt:0000000000000028 .L2
+     /tmp/ccupfqWj.s:102    .text.xPortStartScheduler:0000000000000000 .L0 
+     /tmp/ccupfqWj.s:119    .text.xPortStartScheduler:000000000000001c .L6
+     /tmp/ccupfqWj.s:115    .text.xPortStartScheduler:0000000000000018 .L7
+     /tmp/ccupfqWj.s:159    .text.vPortEndScheduler:0000000000000000 .L11
+     /tmp/ccupfqWj.s:1693   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccupfqWj.s:2695   .debug_str:000000000000060a .LASF147
+     /tmp/ccupfqWj.s:2691   .debug_str:00000000000005e2 .LASF148
+     /tmp/ccupfqWj.s:2483   .debug_str:0000000000000157 .LASF149
+     /tmp/ccupfqWj.s:2405   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccupfqWj.s:2415   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccupfqWj.s:2421   .debug_str:0000000000000012 .LASF7
+     /tmp/ccupfqWj.s:2513   .debug_str:0000000000000211 .LASF0
+     /tmp/ccupfqWj.s:2445   .debug_str:000000000000009e .LASF1
+     /tmp/ccupfqWj.s:2561   .debug_str:0000000000000306 .LASF2
+     /tmp/ccupfqWj.s:2447   .debug_str:00000000000000ac .LASF3
+     /tmp/ccupfqWj.s:2595   .debug_str:00000000000003fd .LASF4
+     /tmp/ccupfqWj.s:2607   .debug_str:0000000000000452 .LASF5
+     /tmp/ccupfqWj.s:2529   .debug_str:0000000000000261 .LASF6
+     /tmp/ccupfqWj.s:2663   .debug_str:000000000000055f .LASF8
+     /tmp/ccupfqWj.s:2463   .debug_str:00000000000000f1 .LASF9
+     /tmp/ccupfqWj.s:2493   .debug_str:00000000000001ba .LASF10
+     /tmp/ccupfqWj.s:2523   .debug_str:0000000000000242 .LASF11
+     /tmp/ccupfqWj.s:2581   .debug_str:0000000000000386 .LASF12
+     /tmp/ccupfqWj.s:2435   .debug_str:000000000000005b .LASF13
+     /tmp/ccupfqWj.s:2593   .debug_str:00000000000003f5 .LASF14
+     /tmp/ccupfqWj.s:2649   .debug_str:0000000000000527 .LASF15
+     /tmp/ccupfqWj.s:2427   .debug_str:000000000000002c .LASF16
+     /tmp/ccupfqWj.s:2531   .debug_str:0000000000000274 .LASF17
+     /tmp/ccupfqWj.s:2477   .debug_str:000000000000013c .LASF18
+     /tmp/ccupfqWj.s:2563   .debug_str:0000000000000312 .LASF19
+     /tmp/ccupfqWj.s:2693   .debug_str:00000000000005f9 .LASF130
+     /tmp/ccupfqWj.s:2659   .debug_str:0000000000000551 .LASF20
+     /tmp/ccupfqWj.s:2547   .debug_str:00000000000002c4 .LASF21
+     /tmp/ccupfqWj.s:2579   .debug_str:000000000000037f .LASF22
+     /tmp/ccupfqWj.s:2655   .debug_str:0000000000000542 .LASF23
+     /tmp/ccupfqWj.s:2697   .debug_str:00000000000006d0 .LASF24
+     /tmp/ccupfqWj.s:2543   .debug_str:00000000000002b6 .LASF25
+     /tmp/ccupfqWj.s:2515   .debug_str:000000000000021e .LASF26
+     /tmp/ccupfqWj.s:2645   .debug_str:0000000000000518 .LASF27
+     /tmp/ccupfqWj.s:2671   .debug_str:0000000000000582 .LASF28
+     /tmp/ccupfqWj.s:2617   .debug_str:000000000000047a .LASF29
+     /tmp/ccupfqWj.s:2677   .debug_str:0000000000000598 .LASF30
+     /tmp/ccupfqWj.s:2545   .debug_str:00000000000002bc .LASF31
+     /tmp/ccupfqWj.s:2647   .debug_str:0000000000000520 .LASF128
+     /tmp/ccupfqWj.s:2499   .debug_str:00000000000001d4 .LASF32
+     /tmp/ccupfqWj.s:2503   .debug_str:00000000000001e5 .LASF37
+     /tmp/ccupfqWj.s:2667   .debug_str:000000000000056f .LASF33
+     /tmp/ccupfqWj.s:2639   .debug_str:0000000000000503 .LASF34
+     /tmp/ccupfqWj.s:2495   .debug_str:00000000000001c5 .LASF35
+     /tmp/ccupfqWj.s:2685   .debug_str:00000000000005cd .LASF36
+     /tmp/ccupfqWj.s:2511   .debug_str:000000000000020c .LASF38
+     /tmp/ccupfqWj.s:2443   .debug_str:0000000000000095 .LASF39
+     /tmp/ccupfqWj.s:2661   .debug_str:0000000000000556 .LASF40
+     /tmp/ccupfqWj.s:2453   .debug_str:00000000000000c4 .LASF41
+     /tmp/ccupfqWj.s:2723   .debug_str:0000000000000751 .LASF42
+     /tmp/ccupfqWj.s:2571   .debug_str:000000000000034a .LASF43
+     /tmp/ccupfqWj.s:2557   .debug_str:00000000000002f3 .LASF44
+     /tmp/ccupfqWj.s:2687   .debug_str:00000000000005d2 .LASF45
+     /tmp/ccupfqWj.s:2609   .debug_str:000000000000045c .LASF46
+     /tmp/ccupfqWj.s:2709   .debug_str:0000000000000706 .LASF47
+     /tmp/ccupfqWj.s:2457   .debug_str:00000000000000d3 .LASF48
+     /tmp/ccupfqWj.s:2489   .debug_str:00000000000001ad .LASF49
+     /tmp/ccupfqWj.s:2417   .debug_str:0000000000000000 .LASF50
+     /tmp/ccupfqWj.s:2673   .debug_str:000000000000058a .LASF51
+     /tmp/ccupfqWj.s:2469   .debug_str:0000000000000112 .LASF52
+     /tmp/ccupfqWj.s:2573   .debug_str:0000000000000353 .LASF53
+     /tmp/ccupfqWj.s:2629   .debug_str:00000000000004b3 .LASF54
+     /tmp/ccupfqWj.s:2491   .debug_str:00000000000001b5 .LASF55
+     /tmp/ccupfqWj.s:2611   .debug_str:0000000000000466 .LASF56
+     /tmp/ccupfqWj.s:2451   .debug_str:00000000000000be .LASF57
+     /tmp/ccupfqWj.s:2419   .debug_str:000000000000000c .LASF58
+     /tmp/ccupfqWj.s:2619   .debug_str:0000000000000485 .LASF59
+     /tmp/ccupfqWj.s:2467   .debug_str:000000000000010b .LASF60
+     /tmp/ccupfqWj.s:2525   .debug_str:0000000000000254 .LASF61
+     /tmp/ccupfqWj.s:2437   .debug_str:0000000000000072 .LASF62
+     /tmp/ccupfqWj.s:2459   .debug_str:00000000000000e1 .LASF63
+     /tmp/ccupfqWj.s:2507   .debug_str:00000000000001fc .LASF64
+     /tmp/ccupfqWj.s:2555   .debug_str:00000000000002ec .LASF65
+     /tmp/ccupfqWj.s:2651   .debug_str:0000000000000530 .LASF66
+     /tmp/ccupfqWj.s:2713   .debug_str:0000000000000720 .LASF67
+     /tmp/ccupfqWj.s:2449   .debug_str:00000000000000b8 .LASF68
+     /tmp/ccupfqWj.s:2703   .debug_str:00000000000006ed .LASF69
+     /tmp/ccupfqWj.s:2473   .debug_str:0000000000000121 .LASF70
+     /tmp/ccupfqWj.s:2481   .debug_str:000000000000014f .LASF71
+     /tmp/ccupfqWj.s:2429   .debug_str:0000000000000035 .LASF72
+     /tmp/ccupfqWj.s:2549   .debug_str:00000000000002cb .LASF73
+     /tmp/ccupfqWj.s:2621   .debug_str:000000000000048d .LASF74
+     /tmp/ccupfqWj.s:2553   .debug_str:00000000000002e4 .LASF75
+     /tmp/ccupfqWj.s:2641   .debug_str:000000000000050b .LASF76
+     /tmp/ccupfqWj.s:2657   .debug_str:000000000000054a .LASF77
+     /tmp/ccupfqWj.s:2471   .debug_str:000000000000011a .LASF78
+     /tmp/ccupfqWj.s:2517   .debug_str:0000000000000225 .LASF79
+     /tmp/ccupfqWj.s:2501   .debug_str:00000000000001dd .LASF80
+     /tmp/ccupfqWj.s:2627   .debug_str:00000000000004ae .LASF81
+     /tmp/ccupfqWj.s:2425   .debug_str:0000000000000021 .LASF82
+     /tmp/ccupfqWj.s:2635   .debug_str:00000000000004ca .LASF83
+     /tmp/ccupfqWj.s:2631   .debug_str:00000000000004b8 .LASF84
+     /tmp/ccupfqWj.s:2577   .debug_str:0000000000000374 .LASF85
+     /tmp/ccupfqWj.s:2633   .debug_str:00000000000004c0 .LASF86
+     /tmp/ccupfqWj.s:2541   .debug_str:00000000000002ae .LASF87
+     /tmp/ccupfqWj.s:2509   .debug_str:0000000000000202 .LASF88
+     /tmp/ccupfqWj.s:2719   .debug_str:000000000000073a .LASF89
+     /tmp/ccupfqWj.s:2585   .debug_str:000000000000039e .LASF90
+     /tmp/ccupfqWj.s:2519   .debug_str:000000000000022d .LASF91
+     /tmp/ccupfqWj.s:2479   .debug_str:0000000000000147 .LASF92
+     /tmp/ccupfqWj.s:2601   .debug_str:0000000000000438 .LASF93
+     /tmp/ccupfqWj.s:2533   .debug_str:0000000000000280 .LASF94
+     /tmp/ccupfqWj.s:2701   .debug_str:00000000000006e3 .LASF95
+     /tmp/ccupfqWj.s:2461   .debug_str:00000000000000e9 .LASF96
+     /tmp/ccupfqWj.s:2455   .debug_str:00000000000000ce .LASF97
+     /tmp/ccupfqWj.s:2615   .debug_str:0000000000000473 .LASF98
+     /tmp/ccupfqWj.s:2689   .debug_str:00000000000005dc .LASF99
+     /tmp/ccupfqWj.s:2527   .debug_str:000000000000025a .LASF100
+     /tmp/ccupfqWj.s:2613   .debug_str:000000000000046d .LASF101
+     /tmp/ccupfqWj.s:2423   .debug_str:0000000000000019 .LASF102
+     /tmp/ccupfqWj.s:2643   .debug_str:0000000000000512 .LASF103
+     /tmp/ccupfqWj.s:2665   .debug_str:0000000000000569 .LASF104
+     /tmp/ccupfqWj.s:2675   .debug_str:0000000000000593 .LASF105
+     /tmp/ccupfqWj.s:2683   .debug_str:00000000000005c0 .LASF106
+     /tmp/ccupfqWj.s:2669   .debug_str:0000000000000575 .LASF107
+     /tmp/ccupfqWj.s:2537   .debug_str:0000000000000295 .LASF108
+     /tmp/ccupfqWj.s:2711   .debug_str:0000000000000711 .LASF109
+     /tmp/ccupfqWj.s:2505   .debug_str:00000000000001ed .LASF110
+     /tmp/ccupfqWj.s:2623   .debug_str:0000000000000496 .LASF111
+     /tmp/ccupfqWj.s:2715   .debug_str:0000000000000727 .LASF112
+     /tmp/ccupfqWj.s:2625   .debug_str:00000000000004a1 .LASF113
+     /tmp/ccupfqWj.s:2717   .debug_str:000000000000072c .LASF114
+     /tmp/ccupfqWj.s:2589   .debug_str:00000000000003c4 .LASF115
+     /tmp/ccupfqWj.s:2699   .debug_str:00000000000006d9 .LASF116
+     /tmp/ccupfqWj.s:2535   .debug_str:0000000000000289 .LASF117
+     /tmp/ccupfqWj.s:2679   .debug_str:00000000000005a0 .LASF118
+     /tmp/ccupfqWj.s:2487   .debug_str:000000000000019f .LASF119
+     /tmp/ccupfqWj.s:2441   .debug_str:0000000000000086 .LASF120
+     /tmp/ccupfqWj.s:2485   .debug_str:000000000000018e .LASF121
+     /tmp/ccupfqWj.s:2431   .debug_str:000000000000003b .LASF122
+     /tmp/ccupfqWj.s:2433   .debug_str:000000000000004a .LASF123
+     /tmp/ccupfqWj.s:2605   .debug_str:0000000000000449 .LASF124
+     /tmp/ccupfqWj.s:2567   .debug_str:0000000000000331 .LASF125
+     /tmp/ccupfqWj.s:2559   .debug_str:00000000000002fd .LASF126
+     /tmp/ccupfqWj.s:2705   .debug_str:00000000000006f3 .LASF127
+     /tmp/ccupfqWj.s:2439   .debug_str:000000000000007b .LASF129
+     /tmp/ccupfqWj.s:2653   .debug_str:0000000000000536 .LASF131
+     /tmp/ccupfqWj.s:2681   .debug_str:00000000000005ad .LASF132
+     /tmp/ccupfqWj.s:2575   .debug_str:000000000000035b .LASF133
+     /tmp/ccupfqWj.s:2521   .debug_str:0000000000000235 .LASF134
+     /tmp/ccupfqWj.s:2603   .debug_str:000000000000043d .LASF135
+     /tmp/ccupfqWj.s:2583   .debug_str:0000000000000391 .LASF136
+     /tmp/ccupfqWj.s:2587   .debug_str:00000000000003a8 .LASF137
+     /tmp/ccupfqWj.s:2591   .debug_str:00000000000003d2 .LASF138
+     /tmp/ccupfqWj.s:2637   .debug_str:00000000000004e3 .LASF139
+     /tmp/ccupfqWj.s:2475   .debug_str:000000000000012a .LASF140
+     /tmp/ccupfqWj.s:2551   .debug_str:00000000000002d1 .LASF141
+     /tmp/ccupfqWj.s:2569   .debug_str:0000000000000338 .LASF150
+     /tmp/ccupfqWj.s:156    .text.vPortEndScheduler:0000000000000000 .LFB3
+     /tmp/ccupfqWj.s:164    .text.vPortEndScheduler:0000000000000004 .LFE3
+     /tmp/ccupfqWj.s:2565   .debug_str:000000000000031d .LASF151
+     /tmp/ccupfqWj.s:97     .text.xPortStartScheduler:0000000000000000 .LFB2
+     /tmp/ccupfqWj.s:149    .text.xPortStartScheduler:000000000000004c .LFE2
+     /tmp/ccupfqWj.s:2597   .debug_str:000000000000040b .LASF152
+     /tmp/ccupfqWj.s:129    .text.xPortStartScheduler:000000000000002c .LVL6
+     /tmp/ccupfqWj.s:139    .text.xPortStartScheduler:000000000000003c .LVL7
+     /tmp/ccupfqWj.s:2599   .debug_str:000000000000041f .LASF153
+     /tmp/ccupfqWj.s:14     .text.vPortSetupTimerInterrupt:0000000000000000 .LFB1
+     /tmp/ccupfqWj.s:90     .text.vPortSetupTimerInterrupt:0000000000000070 .LFE1
+     /tmp/ccupfqWj.s:2721   .debug_str:000000000000073f .LASF142
+     /tmp/ccupfqWj.s:2358   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccupfqWj.s:2465   .debug_str:00000000000000fa .LASF143
+     /tmp/ccupfqWj.s:2365   .debug_loc:0000000000000013 .LLST1
+     /tmp/ccupfqWj.s:2539   .debug_str:00000000000002a2 .LASF144
+     /tmp/ccupfqWj.s:2707   .debug_str:00000000000006fb .LASF145
+     /tmp/ccupfqWj.s:2497   .debug_str:00000000000001cb .LASF146
+     /tmp/ccupfqWj.s:52     .text.vPortSetupTimerInterrupt:000000000000002c .LVL1
+     /tmp/ccupfqWj.s:72     .text.vPortSetupTimerInterrupt:0000000000000048 .LVL3
+     /tmp/ccupfqWj.s:56     .text.vPortSetupTimerInterrupt:0000000000000030 .LVL2
+     /tmp/ccupfqWj.s:80     .text.vPortSetupTimerInterrupt:0000000000000054 .LVL4
+     /tmp/ccupfqWj.s:84     .text.vPortSetupTimerInterrupt:0000000000000068 .LVL5
+     /tmp/ccupfqWj.s:242    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+__freertos_irq_stack_top
+xPortStartFirstTask

@@ -1,0 +1,109 @@
+\doxysection{misc.\+c}
+\hypertarget{misc_8c_source}{}\label{misc_8c_source}\index{src/misc.c@{src/misc.c}}
+\doxymbox{\hyperlink{misc_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00002}00002\ \textcolor{comment}{\ *\ misc.c}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Sep\ 27,\ 2025}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <focus.h>}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__switches_8h}{debug\_switches.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__comm_8h}{serial\_comm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00018}\doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{00018}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{volatile}\ uint8\_t\ \doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\_Logging\_Enabled}};}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00020}\doxymbox{\hyperlink{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c}{00020}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a73f6aa45470ada02a5d6f3a522d8f13c}{vApplicationMallocFailedHook}}()}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00022}00022\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00024}\doxymbox{\hyperlink{misc_8c_a11cbdd335da884dec1204e230554bfd9}{00024}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a11cbdd335da884dec1204e230554bfd9}{vApplicationIdleHook}}()}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00025}00025\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00026}00026\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00029}\doxymbox{\hyperlink{misc_8c_a2850b09d1bb227364b5ff6de6f85f740}{00029}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a2850b09d1bb227364b5ff6de6f85f740}{vApplicationTickHook}}()}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00030}00030\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00031}00031\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00033}\doxymbox{\hyperlink{misc_8c_a54b14b665d04a631991869b21065bf90}{00033}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a54b14b665d04a631991869b21065bf90}{vApplicationStackOverflowHook}}(\ \doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{TaskHandle\_t}}\ xTask,\ \ \textcolor{keywordtype}{char}\ *\ pcTaskName\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00034}00034\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00035}00035\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00037}00037\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ push}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00038}00038\ \textcolor{preprocessor}{\#pragma\ GCC\ diagnostic\ ignored\ "{}-\/Wbuiltin-\/declaration-\/mismatch"{}}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00048}\doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{00048}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{memcpy}}(\ \textcolor{keywordtype}{void}\ *dest,\ \textcolor{keywordtype}{void}\ *from,\ \textcolor{keywordtype}{size\_t}\ \ n\_bytes)}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00049}00049\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00050}00050\ \ \ \ \textcolor{keywordtype}{size\_t}\ n;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00051}00051\ \ \ \ \textcolor{keywordtype}{char}\ *p\_dest\ =\ (\textcolor{keywordtype}{char}\ *)dest;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00052}00052\ \ \ \ \textcolor{keywordtype}{char}\ *p\_from\ =\ (\textcolor{keywordtype}{char}\ *)from;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00054}00054\ \ \ \ \textcolor{keywordflow}{for}(\ n\ =\ 0;\ n\ <\ n\_bytes;\ n++\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00055}00055\ \ \ \ \ \ \ \ *p\_dest++\ =\ *p\_from++;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00056}00056\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00058}\doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{00058}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{memset}}(\textcolor{keywordtype}{void}\ *s,\ \textcolor{keywordtype}{int}\ c,\ \textcolor{keywordtype}{size\_t}\ n\_bytes)}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00059}00059\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00060}00060\ \ \ \textcolor{keywordtype}{size\_t}\ n;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00061}00061\ \ \ \textcolor{keywordtype}{char}\ *p\_dest\ =\ (\textcolor{keywordtype}{char}\ *)s;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00063}00063\ \ \ \textcolor{keywordflow}{for}(\ n\ =\ 0;\ n\ <\ n\_bytes;\ n++\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00064}00064\ \ \ \ \ \ \ *p\_dest++\ =\ (\textcolor{keywordtype}{char})c;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00065}00065\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00068}00068\ \textcolor{preprocessor}{\#pragma\ GCC\_diagnostic\ pop}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00070}00070\ \textcolor{preprocessor}{\#ifndef\ VECTORED\_IRQ\_FREERTOS}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00071}00071\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a3aca99352017ec5c655855d2102648d5}{v\_UART16550\_Handler}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00073}\doxymbox{\hyperlink{misc_8c_ac41fb43edcbcee29280c2cb7b80866de}{00073}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_ac41fb43edcbcee29280c2cb7b80866de}{freertos\_risc\_v\_application\_interrupt\_handler}}(\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{long}\ cause\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00074}00074\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00075}00075\ \ \ \ \ uint8\_t\ u8\_Cause\ =\ cause\ \&\ 0xff;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00077}00077\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ u8\_Cause\ ==\ 0xb\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00078}00078\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00079}00079\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a3aca99352017ec5c655855d2102648d5}{v\_UART16550\_Handler}}();}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00080}00080\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00081}00081\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00083}\doxymbox{\hyperlink{misc_8c_adce9ecd2e9e985e8020b0d8d699653c9}{00083}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_adce9ecd2e9e985e8020b0d8d699653c9}{v\_IRQ\_Setup}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00084}00084\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00085}00085\ \textcolor{preprocessor}{\#define\ MIE\_MEIE\ (\ 1UL\ <<\ 11\ )}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00086}00086\ \_\_asm\ \textcolor{keyword}{volatile}\ (\ \textcolor{stringliteral}{"{}csrs\ mie,\ \%0"{}}\ ::\textcolor{stringliteral}{"{}r"{}}\ (\ \doxymbox{\hyperlink{misc_8c_ab4e2e4b72ec1e13b315dcdc910f5595b}{MIE\_MEIE}}\ )\ );}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00087}00087\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00089}00089\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00100}\doxymbox{\hyperlink{misc_8c_a3a2d7c49268218a94eab25229689e937}{00100}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a3a2d7c49268218a94eab25229689e937}{\_ATTRIBUTE}}\ ((\_\_noreturn\_\_))\ \_\_assert\_func\ (\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename,\ \textcolor{keywordtype}{int}\ line\_number,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *function,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *test)}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00101}00101\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00102}00102\ \ \ \ \ \_\_asm\ \textcolor{keyword}{volatile}(\ \textcolor{stringliteral}{"{}ebreak"{}}\ );}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00103}00103\ \ \ \ \ \textcolor{keywordflow}{for}(\ ;;\ );}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00104}00104\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00106}\doxymbox{\hyperlink{misc_8c_a2b86ff97c5a08cf76ccc983c92b92a27}{00106}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a2b86ff97c5a08cf76ccc983c92b92a27}{v\_Enable\_Logging}}(uint8\_t\ u8\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00107}00107\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00108}00108\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\_Logging\_Enabled}}\ =\ u8\_Enable\ !=\ 0\ ?\ 1\ :\ 0;}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00109}00109\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00111}\doxymbox{\hyperlink{misc_8c_a3899159aa291b9f22eba33a16c265ba0}{00111}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{misc_8c_a3899159aa291b9f22eba33a16c265ba0}{v\_Toggle\_Logging}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00112}00112\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00113}00113\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\_Logging\_Enabled}}\ =\ !\doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\_Logging\_Enabled}};}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00114}00114\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00116}\doxymbox{\hyperlink{misc_8c_ae7313e3716ec926ba3cefa4cf6602891}{00116}}\ uint8\_t\ \doxymbox{\hyperlink{misc_8c_ae7313e3716ec926ba3cefa4cf6602891}{b\_Is\_Logging\_Enabled}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00117}00117\ \{}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00118}00118\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{misc_8c_ae95109dc8fc811ee178bfa2a51aaab09}{b\_Logging\_Enabled}};}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00119}00119\ \}}
+\DoxyCodeLine{\Hypertarget{misc_8c_source_l00120}00120\ }
+
+\end{DoxyCode}

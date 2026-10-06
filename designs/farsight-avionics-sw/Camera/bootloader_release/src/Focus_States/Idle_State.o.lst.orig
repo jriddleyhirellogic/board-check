@@ -1,0 +1,701 @@
+   1              		.file	"Idle_State.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Idle_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Idle_State
+  13              	Idle_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/Focus_States/Idle_State.c"
+   1:../src/Focus_States/Idle_State.c **** /*
+   2:../src/Focus_States/Idle_State.c ****  * idle_state.c
+   3:../src/Focus_States/Idle_State.c ****  *
+   4:../src/Focus_States/Idle_State.c ****  *  Created on: Oct 18, 2025
+   5:../src/Focus_States/Idle_State.c ****  *      Author: iboard
+   6:../src/Focus_States/Idle_State.c ****  */
+   7:../src/Focus_States/Idle_State.c **** #include <focus.h>
+   8:../src/Focus_States/Idle_State.c **** #include <focus_states.h>
+   9:../src/Focus_States/Idle_State.c **** #include "states.h"
+  10:../src/Focus_States/Idle_State.c **** #include "debug_gpio.h"
+  11:../src/Focus_States/Idle_State.c **** #include "misc.h"
+  12:../src/Focus_States/Idle_State.c **** #include "hal_stepper.h"
+  13:../src/Focus_States/Idle_State.c **** 
+  14:../src/Focus_States/Idle_State.c **** void v_Set_Focus_Destination( int32_t i32_Destination );
+  15:../src/Focus_States/Idle_State.c **** 
+  16:../src/Focus_States/Idle_State.c **** /**
+  17:../src/Focus_States/Idle_State.c ****  * @fn State_t Idle_State(Context_t*, Event_t*)
+  18:../src/Focus_States/Idle_State.c ****  * @brief Focus mechanism is not moving and not faulted
+  19:../src/Focus_States/Idle_State.c ****  * The focus mechanism has been initialized and is waiting for
+  20:../src/Focus_States/Idle_State.c ****  * a command to move to an indicated position.
+  21:../src/Focus_States/Idle_State.c ****  *
+  22:../src/Focus_States/Idle_State.c ****  * @param context Focus state context
+  23:../src/Focus_States/Idle_State.c ****  * @param event
+  24:../src/Focus_States/Idle_State.c ****  * @return Next state
+  25:../src/Focus_States/Idle_State.c ****  */
+  26:../src/Focus_States/Idle_State.c **** State_t Idle_State( Context_t *context, Event_t *event )
+  27:../src/Focus_States/Idle_State.c **** {
+  16              		.loc 1 27 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  28:../src/Focus_States/Idle_State.c ****     State_t next_state = (State_t)Idle_State;
+  19              		.loc 1 28 5
+  29:../src/Focus_States/Idle_State.c **** 
+  30:../src/Focus_States/Idle_State.c ****     switch( event->no_data.sig )
+  20              		.loc 1 30 5
+  21              		.loc 1 30 27 is_stmt 0
+  22 0000 83A70500 		lw	a5,0(a1)
+  27:../src/Focus_States/Idle_State.c ****     State_t next_state = (State_t)Idle_State;
+  23              		.loc 1 27 1
+  24 0004 130101FF 		addi	sp,sp,-16
+  25              		.cfi_def_cfa_offset 16
+  26 0008 23261100 		sw	ra,12(sp)
+  27              		.cfi_offset 1, -4
+  28              		.loc 1 30 5
+  29 000c 13071000 		li	a4,1
+  30 0010 638EE702 		beq	a5,a4,.L2
+  31 0014 63840702 		beq	a5,zero,.L3
+  32 0018 13073000 		li	a4,3
+  33 001c 638EE704 		beq	a5,a4,.L4
+  34 0020 13078000 		li	a4,8
+  35 0024 6384E706 		beq	a5,a4,.L5
+  36              	.LVL1:
+  37              	.L8:
+  31:../src/Focus_States/Idle_State.c ****     {
+  32:../src/Focus_States/Idle_State.c ****     case ENTRANCE:
+  33:../src/Focus_States/Idle_State.c ****         v_Enable_Stepper(0);
+  34:../src/Focus_States/Idle_State.c ****         break;
+  35:../src/Focus_States/Idle_State.c **** 
+  36:../src/Focus_States/Idle_State.c ****     case EXIT:
+  37:../src/Focus_States/Idle_State.c ****         v_Stop_Focus_Timer();
+  38:../src/Focus_States/Idle_State.c ****         v_Arm_Stepper_Watchdog(); // all other states except for fault are ones that are moving.
+  39:../src/Focus_States/Idle_State.c ****         v_Enable_Stepper(1);
+  40:../src/Focus_States/Idle_State.c ****         vTaskDelay(5);
+  41:../src/Focus_States/Idle_State.c ****         break;
+  42:../src/Focus_States/Idle_State.c **** 
+  43:../src/Focus_States/Idle_State.c ****     case FOCUS_TIMER_EXPIRED:
+  44:../src/Focus_States/Idle_State.c ****         v_Set_Debug_GPIO( J7_PIN_6 , J7_PIN_6  );
+  45:../src/Focus_States/Idle_State.c ****         break;
+  38              		.loc 1 45 9 is_stmt 1
+  28:../src/Focus_States/Idle_State.c **** 
+  39              		.loc 1 28 13 is_stmt 0
+  40 0028 17050000 		lla	a0,Idle_State
+  40      13050500 
+  41              	.LVL2:
+  42              	.L1:
+  46:../src/Focus_States/Idle_State.c **** 
+  47:../src/Focus_States/Idle_State.c ****     case GOTO_POSITION:
+  48:../src/Focus_States/Idle_State.c ****         v_Set_Focus_Destination( event->position.i32_Position );
+  49:../src/Focus_States/Idle_State.c ****         next_state = (State_t)Coarse_Focus_State;
+  50:../src/Focus_States/Idle_State.c ****         break;
+  51:../src/Focus_States/Idle_State.c **** 
+  52:../src/Focus_States/Idle_State.c ****     default:
+  53:../src/Focus_States/Idle_State.c ****         break;
+  54:../src/Focus_States/Idle_State.c ****     }
+  55:../src/Focus_States/Idle_State.c **** 
+  56:../src/Focus_States/Idle_State.c ****     return next_state;
+  57:../src/Focus_States/Idle_State.c **** 
+  58:../src/Focus_States/Idle_State.c **** }
+  43              		.loc 1 58 1
+  44 0030 8320C100 		lw	ra,12(sp)
+  45              		.cfi_remember_state
+  46              		.cfi_restore 1
+  47 0034 13010101 		addi	sp,sp,16
+  48              		.cfi_def_cfa_offset 0
+  49 0038 67800000 		jr	ra
+  50              	.LVL3:
+  51              	.L3:
+  52              		.cfi_restore_state
+  33:../src/Focus_States/Idle_State.c ****         break;
+  53              		.loc 1 33 9 is_stmt 1
+  54 003c 13050000 		li	a0,0
+  55              	.LVL4:
+  56 0040 97000000 		call	v_Enable_Stepper
+  56      E7800000 
+  57              	.LVL5:
+  34:../src/Focus_States/Idle_State.c **** 
+  58              		.loc 1 34 9
+  59 0048 6FF01FFE 		j	.L8
+  60              	.LVL6:
+  61              	.L2:
+  62              	.LBB12:
+  63              	.LBB13:
+  37:../src/Focus_States/Idle_State.c ****         v_Arm_Stepper_Watchdog(); // all other states except for fault are ones that are moving.
+  64              		.loc 1 37 9
+  65 004c 97000000 		call	v_Stop_Focus_Timer
+  65      E7800000 
+  66              	.LVL7:
+  38:../src/Focus_States/Idle_State.c ****         v_Enable_Stepper(1);
+  67              		.loc 1 38 9
+  68 0054 97000000 		call	v_Arm_Stepper_Watchdog
+  68      E7800000 
+  69              	.LVL8:
+  39:../src/Focus_States/Idle_State.c ****         vTaskDelay(5);
+  70              		.loc 1 39 9
+  71 005c 13051000 		li	a0,1
+  72 0060 97000000 		call	v_Enable_Stepper
+  72      E7800000 
+  73              	.LVL9:
+  40:../src/Focus_States/Idle_State.c ****         break;
+  74              		.loc 1 40 9
+  75 0068 13055000 		li	a0,5
+  76 006c 97000000 		call	vTaskDelay
+  76      E7800000 
+  77              	.LVL10:
+  41:../src/Focus_States/Idle_State.c **** 
+  78              		.loc 1 41 9
+  56:../src/Focus_States/Idle_State.c **** 
+  79              		.loc 1 56 5
+  80 0074 6FF05FFB 		j	.L8
+  81              	.LVL11:
+  82              	.L4:
+  83              	.LBE13:
+  84              	.LBE12:
+  44:../src/Focus_States/Idle_State.c ****         break;
+  85              		.loc 1 44 9
+  86 0078 93050008 		li	a1,128
+  87              	.LVL12:
+  88 007c 13050008 		li	a0,128
+  89              	.LVL13:
+  90 0080 97000000 		call	v_Set_Debug_GPIO
+  90      E7800000 
+  91              	.LVL14:
+  92 0088 6FF01FFA 		j	.L8
+  93              	.LVL15:
+  94              	.L5:
+  48:../src/Focus_States/Idle_State.c ****         next_state = (State_t)Coarse_Focus_State;
+  95              		.loc 1 48 9
+  96              	.LBB14:
+  97              	.LBB15:
+  59:../src/Focus_States/Idle_State.c **** 
+  60:../src/Focus_States/Idle_State.c **** int32_t i32_Final_Destination;
+  61:../src/Focus_States/Idle_State.c **** 
+  62:../src/Focus_States/Idle_State.c **** void v_Set_Focus_Destination( int32_t i32_Destination )
+  63:../src/Focus_States/Idle_State.c **** {
+  64:../src/Focus_States/Idle_State.c ****     i32_Final_Destination = i32_Destination;
+  98              		.loc 1 64 5
+  99              		.loc 1 64 27 is_stmt 0
+ 100 008c 83A74500 		lw	a5,4(a1)
+ 101              	.LBE15:
+ 102              	.LBE14:
+  49:../src/Focus_States/Idle_State.c ****         break;
+ 103              		.loc 1 49 20
+ 104 0090 17050000 		lla	a0,Coarse_Focus_State
+ 104      13050500 
+ 105              	.LVL16:
+ 106              	.LBB17:
+ 107              	.LBB16:
+ 108              		.loc 1 64 27
+ 109 0098 17070000 		sw	a5,i32_Final_Destination,a4
+ 109      2320F700 
+ 110              	.LVL17:
+ 111              	.LBE16:
+ 112              	.LBE17:
+  49:../src/Focus_States/Idle_State.c ****         break;
+ 113              		.loc 1 49 9 is_stmt 1
+  50:../src/Focus_States/Idle_State.c **** 
+ 114              		.loc 1 50 9
+  56:../src/Focus_States/Idle_State.c **** 
+ 115              		.loc 1 56 5
+  56:../src/Focus_States/Idle_State.c **** 
+ 116              		.loc 1 56 12 is_stmt 0
+ 117 00a0 6FF01FF9 		j	.L1
+ 118              		.cfi_endproc
+ 119              	.LFE0:
+ 121              		.section	.text.v_Set_Focus_Destination,"ax",@progbits
+ 122              		.align	2
+ 123              		.globl	v_Set_Focus_Destination
+ 125              	v_Set_Focus_Destination:
+ 126              	.LFB1:
+  63:../src/Focus_States/Idle_State.c ****     i32_Final_Destination = i32_Destination;
+ 127              		.loc 1 63 1 is_stmt 1
+ 128              		.cfi_startproc
+ 129              	.LVL18:
+ 130              		.loc 1 64 5
+ 131              		.loc 1 64 27 is_stmt 0
+ 132 0000 97070000 		sw	a0,i32_Final_Destination,a5
+ 132      23A0A700 
+  65:../src/Focus_States/Idle_State.c **** }
+ 133              		.loc 1 65 1
+ 134 0008 67800000 		ret
+ 135              		.cfi_endproc
+ 136              	.LFE1:
+ 138              		.section	.text.i32_Get_Focus_Destination,"ax",@progbits
+ 139              		.align	2
+ 140              		.globl	i32_Get_Focus_Destination
+ 142              	i32_Get_Focus_Destination:
+ 143              	.LFB2:
+  66:../src/Focus_States/Idle_State.c **** 
+  67:../src/Focus_States/Idle_State.c **** int32_t i32_Get_Focus_Destination(void)
+  68:../src/Focus_States/Idle_State.c **** {
+ 144              		.loc 1 68 1 is_stmt 1
+ 145              		.cfi_startproc
+  69:../src/Focus_States/Idle_State.c ****     return i32_Final_Destination;
+ 146              		.loc 1 69 5
+  70:../src/Focus_States/Idle_State.c **** }
+ 147              		.loc 1 70 1 is_stmt 0
+ 148 0000 97070000 		lla	a5,i32_Final_Destination
+ 148      93870700 
+ 149 0008 03A50700 		lw	a0,0(a5)
+ 150 000c 67800000 		ret
+ 151              		.cfi_endproc
+ 152              	.LFE2:
+ 154              		.comm	i32_Final_Destination,4,4
+ 155              		.text
+ 156              	.Letext0:
+ 157              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 158              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 159              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 160              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 161              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 162              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 163              		.file 8 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 164              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+ 165              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 166              		.file 11 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/include/task.h"
+ 167              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/debug_gpio.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Idle_State.c
+<<<<<<< HEAD
+     /tmp/cceAqo9h.s:13     .text.Idle_State:0000000000000000 Idle_State
+     /tmp/cceAqo9h.s:17     .text.Idle_State:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:19     .text.Idle_State:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:20     .text.Idle_State:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:21     .text.Idle_State:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:22     .text.Idle_State:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:24     .text.Idle_State:0000000000000004 .L0 
+     /tmp/cceAqo9h.s:25     .text.Idle_State:0000000000000008 .L0 
+     /tmp/cceAqo9h.s:27     .text.Idle_State:000000000000000c .L0 
+     /tmp/cceAqo9h.s:29     .text.Idle_State:000000000000000c .L0 
+     /tmp/cceAqo9h.s:39     .text.Idle_State:0000000000000028 .L0 
+     /tmp/cceAqo9h.s:40     .text.Idle_State:0000000000000028 .L0 
+     /tmp/cceAqo9h.s:44     .text.Idle_State:0000000000000030 .L0 
+     /tmp/cceAqo9h.s:45     .text.Idle_State:0000000000000034 .L0 
+     /tmp/cceAqo9h.s:46     .text.Idle_State:0000000000000034 .L0 
+     /tmp/cceAqo9h.s:48     .text.Idle_State:0000000000000038 .L0 
+     /tmp/cceAqo9h.s:52     .text.Idle_State:000000000000003c .L0 
+     /tmp/cceAqo9h.s:54     .text.Idle_State:000000000000003c .L0 
+     /tmp/cceAqo9h.s:59     .text.Idle_State:0000000000000048 .L0 
+     /tmp/cceAqo9h.s:65     .text.Idle_State:000000000000004c .L0 
+     /tmp/cceAqo9h.s:68     .text.Idle_State:0000000000000054 .L0 
+     /tmp/cceAqo9h.s:71     .text.Idle_State:000000000000005c .L0 
+     /tmp/cceAqo9h.s:75     .text.Idle_State:0000000000000068 .L0 
+     /tmp/cceAqo9h.s:79     .text.Idle_State:0000000000000074 .L0 
+     /tmp/cceAqo9h.s:80     .text.Idle_State:0000000000000074 .L0 
+     /tmp/cceAqo9h.s:86     .text.Idle_State:0000000000000078 .L0 
+     /tmp/cceAqo9h.s:98     .text.Idle_State:000000000000008c .L0 
+     /tmp/cceAqo9h.s:99     .text.Idle_State:000000000000008c .L0 
+     /tmp/cceAqo9h.s:100    .text.Idle_State:000000000000008c .L0 
+     /tmp/cceAqo9h.s:104    .text.Idle_State:0000000000000090 .L0 
+                            *COM*:0000000000000004 i32_Final_Destination
+     /tmp/cceAqo9h.s:109    .text.Idle_State:0000000000000098 .L0 
+     /tmp/cceAqo9h.s:114    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/cceAqo9h.s:115    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/cceAqo9h.s:116    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/cceAqo9h.s:117    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/cceAqo9h.s:118    .text.Idle_State:00000000000000a4 .L0 
+     /tmp/cceAqo9h.s:125    .text.v_Set_Focus_Destination:0000000000000000 v_Set_Focus_Destination
+     /tmp/cceAqo9h.s:128    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:130    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:131    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:132    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:134    .text.v_Set_Focus_Destination:0000000000000008 .L0 
+     /tmp/cceAqo9h.s:135    .text.v_Set_Focus_Destination:000000000000000c .L0 
+     /tmp/cceAqo9h.s:142    .text.i32_Get_Focus_Destination:0000000000000000 i32_Get_Focus_Destination
+     /tmp/cceAqo9h.s:145    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:146    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:147    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:148    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:151    .text.i32_Get_Focus_Destination:0000000000000010 .L0 
+     /tmp/cceAqo9h.s:121    .text.Idle_State:00000000000000a4 .L0 
+     /tmp/cceAqo9h.s:138    .text.v_Set_Focus_Destination:000000000000000c .L0 
+     /tmp/cceAqo9h.s:155    .text.i32_Get_Focus_Destination:0000000000000010 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:40     .text.Idle_State:0000000000000028 .L0 
+     /tmp/cceAqo9h.s:104    .text.Idle_State:0000000000000090 .L0 
+     /tmp/cceAqo9h.s:109    .text.Idle_State:0000000000000098 .L0 
+     /tmp/cceAqo9h.s:61     .text.Idle_State:000000000000004c .L2
+     /tmp/cceAqo9h.s:51     .text.Idle_State:000000000000003c .L3
+     /tmp/cceAqo9h.s:82     .text.Idle_State:0000000000000078 .L4
+     /tmp/cceAqo9h.s:94     .text.Idle_State:000000000000008c .L5
+     /tmp/cceAqo9h.s:37     .text.Idle_State:0000000000000028 .L8
+     /tmp/cceAqo9h.s:42     .text.Idle_State:0000000000000030 .L1
+     /tmp/cceAqo9h.s:132    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:148    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/cceAqo9h.s:989    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cceAqo9h.s:1780   .debug_str:000000000000023f .LASF100
+     /tmp/cceAqo9h.s:1744   .debug_str:0000000000000111 .LASF101
+     /tmp/cceAqo9h.s:1756   .debug_str:000000000000016c .LASF102
+     /tmp/cceAqo9h.s:1680   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cceAqo9h.s:1696   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cceAqo9h.s:1850   .debug_str:00000000000004cf .LASF4
+     /tmp/cceAqo9h.s:1822   .debug_str:000000000000041c .LASF0
+     /tmp/cceAqo9h.s:1770   .debug_str:000000000000020a .LASF1
+     /tmp/cceAqo9h.s:1732   .debug_str:00000000000000d9 .LASF2
+     /tmp/cceAqo9h.s:1816   .debug_str:00000000000003f0 .LASF3
+     /tmp/cceAqo9h.s:1784   .debug_str:0000000000000317 .LASF5
+     /tmp/cceAqo9h.s:1804   .debug_str:00000000000003a0 .LASF6
+     /tmp/cceAqo9h.s:1760   .debug_str:00000000000001b7 .LASF7
+     /tmp/cceAqo9h.s:1738   .debug_str:00000000000000f6 .LASF8
+     /tmp/cceAqo9h.s:1834   .debug_str:0000000000000469 .LASF9
+     /tmp/cceAqo9h.s:1870   .debug_str:000000000000056d .LASF10
+     /tmp/cceAqo9h.s:1776   .debug_str:000000000000022d .LASF11
+     /tmp/cceAqo9h.s:1734   .debug_str:00000000000000e5 .LASF12
+     /tmp/cceAqo9h.s:1782   .debug_str:0000000000000305 .LASF13
+     /tmp/cceAqo9h.s:1818   .debug_str:00000000000003fc .LASF14
+     /tmp/cceAqo9h.s:1750   .debug_str:0000000000000149 .LASF15
+     /tmp/cceAqo9h.s:1824   .debug_str:0000000000000429 .LASF16
+     /tmp/cceAqo9h.s:1842   .debug_str:000000000000048e .LASF17
+     /tmp/cceAqo9h.s:1820   .debug_str:0000000000000413 .LASF18
+     /tmp/cceAqo9h.s:1856   .debug_str:00000000000004fd .LASF90
+     /tmp/cceAqo9h.s:1840   .debug_str:0000000000000489 .LASF19
+     /tmp/cceAqo9h.s:1752   .debug_str:0000000000000151 .LASF20
+     /tmp/cceAqo9h.s:1908   .debug_str:000000000000069c .LASF21
+     /tmp/cceAqo9h.s:1832   .debug_str:000000000000045d .LASF22
+     /tmp/cceAqo9h.s:1826   .debug_str:0000000000000432 .LASF23
+     /tmp/cceAqo9h.s:1724   .debug_str:00000000000000b2 .LASF24
+     /tmp/cceAqo9h.s:1764   .debug_str:00000000000001d7 .LASF25
+     /tmp/cceAqo9h.s:1778   .debug_str:0000000000000236 .LASF26
+     /tmp/cceAqo9h.s:1740   .debug_str:0000000000000101 .LASF27
+     /tmp/cceAqo9h.s:1894   .debug_str:0000000000000630 .LASF28
+     /tmp/cceAqo9h.s:1758   .debug_str:00000000000001a3 .LASF29
+     /tmp/cceAqo9h.s:1802   .debug_str:0000000000000386 .LASF30
+     /tmp/cceAqo9h.s:1712   .debug_str:0000000000000052 .LASF31
+     /tmp/cceAqo9h.s:1886   .debug_str:00000000000005f9 .LASF32
+     /tmp/cceAqo9h.s:1698   .debug_str:0000000000000000 .LASF33
+     /tmp/cceAqo9h.s:1792   .debug_str:0000000000000343 .LASF34
+     /tmp/cceAqo9h.s:1708   .debug_str:0000000000000036 .LASF35
+     /tmp/cceAqo9h.s:1722   .debug_str:00000000000000a0 .LASF36
+     /tmp/cceAqo9h.s:1742   .debug_str:0000000000000106 .LASF37
+     /tmp/cceAqo9h.s:1774   .debug_str:0000000000000221 .LASF38
+     /tmp/cceAqo9h.s:1852   .debug_str:00000000000004d6 .LASF39
+     /tmp/cceAqo9h.s:1858   .debug_str:000000000000050e .LASF40
+     /tmp/cceAqo9h.s:1854   .debug_str:00000000000004ea .LASF41
+     /tmp/cceAqo9h.s:1716   .debug_str:0000000000000075 .LASF42
+     /tmp/cceAqo9h.s:1766   .debug_str:00000000000001eb .LASF43
+     /tmp/cceAqo9h.s:1874   .debug_str:0000000000000584 .LASF44
+     /tmp/cceAqo9h.s:1868   .debug_str:0000000000000556 .LASF45
+     /tmp/cceAqo9h.s:1862   .debug_str:000000000000052c .LASF46
+     /tmp/cceAqo9h.s:1768   .debug_str:00000000000001f4 .LASF47
+     /tmp/cceAqo9h.s:1812   .debug_str:00000000000003da .LASF48
+     /tmp/cceAqo9h.s:1798   .debug_str:0000000000000368 .LASF49
+     /tmp/cceAqo9h.s:1902   .debug_str:0000000000000675 .LASF50
+     /tmp/cceAqo9h.s:1860   .debug_str:000000000000051e .LASF51
+     /tmp/cceAqo9h.s:1828   .debug_str:0000000000000441 .LASF52
+     /tmp/cceAqo9h.s:1896   .debug_str:0000000000000648 .LASF53
+     /tmp/cceAqo9h.s:1898   .debug_str:0000000000000655 .LASF54
+     /tmp/cceAqo9h.s:1814   .debug_str:00000000000003e7 .LASF55
+     /tmp/cceAqo9h.s:1866   .debug_str:000000000000054a .LASF56
+     /tmp/cceAqo9h.s:1700   .debug_str:000000000000000d .LASF57
+     /tmp/cceAqo9h.s:1790   .debug_str:000000000000033e .LASF58
+     /tmp/cceAqo9h.s:1878   .debug_str:00000000000005ae .LASF59
+     /tmp/cceAqo9h.s:1892   .debug_str:0000000000000629 .LASF60
+     /tmp/cceAqo9h.s:1748   .debug_str:000000000000013d .LASF61
+     /tmp/cceAqo9h.s:1706   .debug_str:0000000000000025 .LASF62
+     /tmp/cceAqo9h.s:1900   .debug_str:0000000000000662 .LASF63
+     /tmp/cceAqo9h.s:1910   .debug_str:00000000000006aa .LASF64
+     /tmp/cceAqo9h.s:1728   .debug_str:00000000000000c9 .LASF65
+     /tmp/cceAqo9h.s:1890   .debug_str:0000000000000618 .LASF66
+     /tmp/cceAqo9h.s:1710   .debug_str:0000000000000046 .LASF67
+     /tmp/cceAqo9h.s:1838   .debug_str:0000000000000482 .LASF68
+     /tmp/cceAqo9h.s:1872   .debug_str:0000000000000577 .LASF69
+     /tmp/cceAqo9h.s:1848   .debug_str:00000000000004c2 .LASF70
+     /tmp/cceAqo9h.s:1788   .debug_str:0000000000000329 .LASF71
+     /tmp/cceAqo9h.s:1810   .debug_str:00000000000003d0 .LASF72
+     /tmp/cceAqo9h.s:1730   .debug_str:00000000000000d1 .LASF73
+     /tmp/cceAqo9h.s:1830   .debug_str:0000000000000450 .LASF74
+     /tmp/cceAqo9h.s:1846   .debug_str:00000000000004ae .LASF75
+     /tmp/cceAqo9h.s:1864   .debug_str:0000000000000542 .LASF76
+     /tmp/cceAqo9h.s:1772   .debug_str:0000000000000218 .LASF77
+     /tmp/cceAqo9h.s:1904   .debug_str:000000000000068a .LASF78
+     /tmp/cceAqo9h.s:1880   .debug_str:00000000000005c6 .LASF79
+     /tmp/cceAqo9h.s:1704   .debug_str:000000000000001a .LASF80
+     /tmp/cceAqo9h.s:1796   .debug_str:000000000000035d .LASF81
+     /tmp/cceAqo9h.s:1720   .debug_str:0000000000000094 .LASF82
+     /tmp/cceAqo9h.s:1800   .debug_str:000000000000037e .LASF83
+     /tmp/cceAqo9h.s:1702   .debug_str:0000000000000014 .LASF84
+     /tmp/cceAqo9h.s:1806   .debug_str:00000000000003ae .LASF85
+     /tmp/cceAqo9h.s:1714   .debug_str:0000000000000067 .LASF86
+     /tmp/cceAqo9h.s:1794   .debug_str:0000000000000351 .LASF87
+     /tmp/cceAqo9h.s:1836   .debug_str:000000000000047c .LASF88
+     /tmp/cceAqo9h.s:1906   .debug_str:0000000000000692 .LASF89
+     /tmp/cceAqo9h.s:1762   .debug_str:00000000000001c1 .LASF91
+     /tmp/cceAqo9h.s:1808   .debug_str:00000000000003b6 .LASF103
+     /tmp/cceAqo9h.s:143    .text.i32_Get_Focus_Destination:0000000000000000 .LFB2
+     /tmp/cceAqo9h.s:152    .text.i32_Get_Focus_Destination:0000000000000010 .LFE2
+     /tmp/cceAqo9h.s:1844   .debug_str:0000000000000496 .LASF104
+     /tmp/cceAqo9h.s:1888   .debug_str:0000000000000608 .LASF92
+     /tmp/cceAqo9h.s:1746   .debug_str:0000000000000132 .LASF105
+     /tmp/cceAqo9h.s:1786   .debug_str:0000000000000321 .LASF93
+     /tmp/cceAqo9h.s:1736   .debug_str:00000000000000f0 .LASF94
+     /tmp/cceAqo9h.s:1718   .debug_str:0000000000000089 .LASF106
+     /tmp/cceAqo9h.s:14     .text.Idle_State:0000000000000000 .LFB0
+     /tmp/cceAqo9h.s:119    .text.Idle_State:00000000000000a4 .LFE0
+     /tmp/cceAqo9h.s:1503   .debug_loc:0000000000000000 .LLST0
+     /tmp/cceAqo9h.s:1561   .debug_loc:0000000000000085 .LLST1
+     /tmp/cceAqo9h.s:1612   .debug_loc:00000000000000fc .LLST2
+     /tmp/cceAqo9h.s:62     .text.Idle_State:000000000000004c .LBB12
+     /tmp/cceAqo9h.s:84     .text.Idle_State:0000000000000078 .LBE12
+     /tmp/cceAqo9h.s:1627   .debug_loc:0000000000000124 .LLST3
+     /tmp/cceAqo9h.s:1641   .debug_loc:0000000000000145 .LLST4
+     /tmp/cceAqo9h.s:63     .text.Idle_State:000000000000004c .LBB13
+     /tmp/cceAqo9h.s:83     .text.Idle_State:0000000000000078 .LBE13
+     /tmp/cceAqo9h.s:66     .text.Idle_State:0000000000000054 .LVL7
+     /tmp/cceAqo9h.s:69     .text.Idle_State:000000000000005c .LVL8
+     /tmp/cceAqo9h.s:73     .text.Idle_State:0000000000000068 .LVL9
+     /tmp/cceAqo9h.s:77     .text.Idle_State:0000000000000074 .LVL10
+     /tmp/cceAqo9h.s:96     .text.Idle_State:000000000000008c .LBB14
+     /tmp/cceAqo9h.s:1655   .debug_loc:0000000000000166 .LLST5
+     /tmp/cceAqo9h.s:57     .text.Idle_State:0000000000000048 .LVL5
+     /tmp/cceAqo9h.s:91     .text.Idle_State:0000000000000088 .LVL14
+     /tmp/cceAqo9h.s:126    .text.v_Set_Focus_Destination:0000000000000000 .LFB1
+     /tmp/cceAqo9h.s:136    .text.v_Set_Focus_Destination:000000000000000c .LFE1
+     /tmp/cceAqo9h.s:1884   .debug_str:00000000000005e6 .LASF95
+     /tmp/cceAqo9h.s:1882   .debug_str:00000000000005cf .LASF96
+     /tmp/cceAqo9h.s:1876   .debug_str:000000000000059d .LASF97
+     /tmp/cceAqo9h.s:1726   .debug_str:00000000000000be .LASF98
+     /tmp/cceAqo9h.s:1754   .debug_str:000000000000015b .LASF99
+     /tmp/cceAqo9h.s:18     .text.Idle_State:0000000000000000 .LVL0
+     /tmp/cceAqo9h.s:36     .text.Idle_State:0000000000000028 .LVL1
+     /tmp/cceAqo9h.s:50     .text.Idle_State:000000000000003c .LVL3
+     /tmp/cceAqo9h.s:55     .text.Idle_State:0000000000000040 .LVL4
+     /tmp/cceAqo9h.s:60     .text.Idle_State:000000000000004c .LVL6
+     /tmp/cceAqo9h.s:81     .text.Idle_State:0000000000000078 .LVL11
+     /tmp/cceAqo9h.s:89     .text.Idle_State:0000000000000080 .LVL13
+     /tmp/cceAqo9h.s:93     .text.Idle_State:000000000000008c .LVL15
+     /tmp/cceAqo9h.s:105    .text.Idle_State:0000000000000098 .LVL16
+     /tmp/cceAqo9h.s:87     .text.Idle_State:000000000000007c .LVL12
+     /tmp/cceAqo9h.s:41     .text.Idle_State:0000000000000030 .LVL2
+     /tmp/cceAqo9h.s:110    .text.Idle_State:00000000000000a0 .LVL17
+     /tmp/cceAqo9h.s:169    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cceAqo9h.s:102    .text.Idle_State:0000000000000090 .LBE14
+     /tmp/cceAqo9h.s:106    .text.Idle_State:0000000000000098 .LBB17
+     /tmp/cceAqo9h.s:112    .text.Idle_State:00000000000000a0 .LBE17
+=======
+     /tmp/ccXy4GMp.s:13     .text.Idle_State:0000000000000000 Idle_State
+     /tmp/ccXy4GMp.s:17     .text.Idle_State:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:19     .text.Idle_State:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:20     .text.Idle_State:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:21     .text.Idle_State:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:22     .text.Idle_State:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:24     .text.Idle_State:0000000000000004 .L0 
+     /tmp/ccXy4GMp.s:25     .text.Idle_State:0000000000000008 .L0 
+     /tmp/ccXy4GMp.s:27     .text.Idle_State:000000000000000c .L0 
+     /tmp/ccXy4GMp.s:29     .text.Idle_State:000000000000000c .L0 
+     /tmp/ccXy4GMp.s:39     .text.Idle_State:0000000000000028 .L0 
+     /tmp/ccXy4GMp.s:40     .text.Idle_State:0000000000000028 .L0 
+     /tmp/ccXy4GMp.s:44     .text.Idle_State:0000000000000030 .L0 
+     /tmp/ccXy4GMp.s:45     .text.Idle_State:0000000000000034 .L0 
+     /tmp/ccXy4GMp.s:46     .text.Idle_State:0000000000000034 .L0 
+     /tmp/ccXy4GMp.s:48     .text.Idle_State:0000000000000038 .L0 
+     /tmp/ccXy4GMp.s:52     .text.Idle_State:000000000000003c .L0 
+     /tmp/ccXy4GMp.s:54     .text.Idle_State:000000000000003c .L0 
+     /tmp/ccXy4GMp.s:59     .text.Idle_State:0000000000000048 .L0 
+     /tmp/ccXy4GMp.s:65     .text.Idle_State:000000000000004c .L0 
+     /tmp/ccXy4GMp.s:68     .text.Idle_State:0000000000000054 .L0 
+     /tmp/ccXy4GMp.s:71     .text.Idle_State:000000000000005c .L0 
+     /tmp/ccXy4GMp.s:75     .text.Idle_State:0000000000000068 .L0 
+     /tmp/ccXy4GMp.s:79     .text.Idle_State:0000000000000074 .L0 
+     /tmp/ccXy4GMp.s:80     .text.Idle_State:0000000000000074 .L0 
+     /tmp/ccXy4GMp.s:86     .text.Idle_State:0000000000000078 .L0 
+     /tmp/ccXy4GMp.s:98     .text.Idle_State:000000000000008c .L0 
+     /tmp/ccXy4GMp.s:99     .text.Idle_State:000000000000008c .L0 
+     /tmp/ccXy4GMp.s:100    .text.Idle_State:000000000000008c .L0 
+     /tmp/ccXy4GMp.s:104    .text.Idle_State:0000000000000090 .L0 
+                            *COM*:0000000000000004 i32_Final_Destination
+     /tmp/ccXy4GMp.s:109    .text.Idle_State:0000000000000098 .L0 
+     /tmp/ccXy4GMp.s:114    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/ccXy4GMp.s:115    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/ccXy4GMp.s:116    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/ccXy4GMp.s:117    .text.Idle_State:00000000000000a0 .L0 
+     /tmp/ccXy4GMp.s:118    .text.Idle_State:00000000000000a4 .L0 
+     /tmp/ccXy4GMp.s:125    .text.v_Set_Focus_Destination:0000000000000000 v_Set_Focus_Destination
+     /tmp/ccXy4GMp.s:128    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:130    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:131    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:132    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:134    .text.v_Set_Focus_Destination:0000000000000008 .L0 
+     /tmp/ccXy4GMp.s:135    .text.v_Set_Focus_Destination:000000000000000c .L0 
+     /tmp/ccXy4GMp.s:142    .text.i32_Get_Focus_Destination:0000000000000000 i32_Get_Focus_Destination
+     /tmp/ccXy4GMp.s:145    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:146    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:147    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:148    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:151    .text.i32_Get_Focus_Destination:0000000000000010 .L0 
+     /tmp/ccXy4GMp.s:121    .text.Idle_State:00000000000000a4 .L0 
+     /tmp/ccXy4GMp.s:138    .text.v_Set_Focus_Destination:000000000000000c .L0 
+     /tmp/ccXy4GMp.s:155    .text.i32_Get_Focus_Destination:0000000000000010 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:40     .text.Idle_State:0000000000000028 .L0 
+     /tmp/ccXy4GMp.s:104    .text.Idle_State:0000000000000090 .L0 
+     /tmp/ccXy4GMp.s:109    .text.Idle_State:0000000000000098 .L0 
+     /tmp/ccXy4GMp.s:61     .text.Idle_State:000000000000004c .L2
+     /tmp/ccXy4GMp.s:51     .text.Idle_State:000000000000003c .L3
+     /tmp/ccXy4GMp.s:82     .text.Idle_State:0000000000000078 .L4
+     /tmp/ccXy4GMp.s:94     .text.Idle_State:000000000000008c .L5
+     /tmp/ccXy4GMp.s:37     .text.Idle_State:0000000000000028 .L8
+     /tmp/ccXy4GMp.s:42     .text.Idle_State:0000000000000030 .L1
+     /tmp/ccXy4GMp.s:132    .text.v_Set_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:148    .text.i32_Get_Focus_Destination:0000000000000000 .L0 
+     /tmp/ccXy4GMp.s:989    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccXy4GMp.s:1780   .debug_str:000000000000023f .LASF100
+     /tmp/ccXy4GMp.s:1744   .debug_str:0000000000000111 .LASF101
+     /tmp/ccXy4GMp.s:1756   .debug_str:000000000000016c .LASF102
+     /tmp/ccXy4GMp.s:1680   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccXy4GMp.s:1696   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccXy4GMp.s:1850   .debug_str:00000000000004cf .LASF4
+     /tmp/ccXy4GMp.s:1822   .debug_str:000000000000041c .LASF0
+     /tmp/ccXy4GMp.s:1770   .debug_str:000000000000020a .LASF1
+     /tmp/ccXy4GMp.s:1732   .debug_str:00000000000000d9 .LASF2
+     /tmp/ccXy4GMp.s:1816   .debug_str:00000000000003f0 .LASF3
+     /tmp/ccXy4GMp.s:1784   .debug_str:0000000000000317 .LASF5
+     /tmp/ccXy4GMp.s:1804   .debug_str:00000000000003a0 .LASF6
+     /tmp/ccXy4GMp.s:1760   .debug_str:00000000000001b7 .LASF7
+     /tmp/ccXy4GMp.s:1738   .debug_str:00000000000000f6 .LASF8
+     /tmp/ccXy4GMp.s:1834   .debug_str:0000000000000469 .LASF9
+     /tmp/ccXy4GMp.s:1870   .debug_str:000000000000056d .LASF10
+     /tmp/ccXy4GMp.s:1776   .debug_str:000000000000022d .LASF11
+     /tmp/ccXy4GMp.s:1734   .debug_str:00000000000000e5 .LASF12
+     /tmp/ccXy4GMp.s:1782   .debug_str:0000000000000305 .LASF13
+     /tmp/ccXy4GMp.s:1818   .debug_str:00000000000003fc .LASF14
+     /tmp/ccXy4GMp.s:1750   .debug_str:0000000000000149 .LASF15
+     /tmp/ccXy4GMp.s:1824   .debug_str:0000000000000429 .LASF16
+     /tmp/ccXy4GMp.s:1842   .debug_str:000000000000048e .LASF17
+     /tmp/ccXy4GMp.s:1820   .debug_str:0000000000000413 .LASF18
+     /tmp/ccXy4GMp.s:1856   .debug_str:00000000000004fd .LASF90
+     /tmp/ccXy4GMp.s:1840   .debug_str:0000000000000489 .LASF19
+     /tmp/ccXy4GMp.s:1752   .debug_str:0000000000000151 .LASF20
+     /tmp/ccXy4GMp.s:1908   .debug_str:000000000000069c .LASF21
+     /tmp/ccXy4GMp.s:1832   .debug_str:000000000000045d .LASF22
+     /tmp/ccXy4GMp.s:1826   .debug_str:0000000000000432 .LASF23
+     /tmp/ccXy4GMp.s:1724   .debug_str:00000000000000b2 .LASF24
+     /tmp/ccXy4GMp.s:1764   .debug_str:00000000000001d7 .LASF25
+     /tmp/ccXy4GMp.s:1778   .debug_str:0000000000000236 .LASF26
+     /tmp/ccXy4GMp.s:1740   .debug_str:0000000000000101 .LASF27
+     /tmp/ccXy4GMp.s:1894   .debug_str:0000000000000630 .LASF28
+     /tmp/ccXy4GMp.s:1758   .debug_str:00000000000001a3 .LASF29
+     /tmp/ccXy4GMp.s:1802   .debug_str:0000000000000386 .LASF30
+     /tmp/ccXy4GMp.s:1712   .debug_str:0000000000000052 .LASF31
+     /tmp/ccXy4GMp.s:1886   .debug_str:00000000000005f9 .LASF32
+     /tmp/ccXy4GMp.s:1698   .debug_str:0000000000000000 .LASF33
+     /tmp/ccXy4GMp.s:1792   .debug_str:0000000000000343 .LASF34
+     /tmp/ccXy4GMp.s:1708   .debug_str:0000000000000036 .LASF35
+     /tmp/ccXy4GMp.s:1722   .debug_str:00000000000000a0 .LASF36
+     /tmp/ccXy4GMp.s:1742   .debug_str:0000000000000106 .LASF37
+     /tmp/ccXy4GMp.s:1774   .debug_str:0000000000000221 .LASF38
+     /tmp/ccXy4GMp.s:1852   .debug_str:00000000000004d6 .LASF39
+     /tmp/ccXy4GMp.s:1858   .debug_str:000000000000050e .LASF40
+     /tmp/ccXy4GMp.s:1854   .debug_str:00000000000004ea .LASF41
+     /tmp/ccXy4GMp.s:1716   .debug_str:0000000000000075 .LASF42
+     /tmp/ccXy4GMp.s:1766   .debug_str:00000000000001eb .LASF43
+     /tmp/ccXy4GMp.s:1874   .debug_str:0000000000000584 .LASF44
+     /tmp/ccXy4GMp.s:1868   .debug_str:0000000000000556 .LASF45
+     /tmp/ccXy4GMp.s:1862   .debug_str:000000000000052c .LASF46
+     /tmp/ccXy4GMp.s:1768   .debug_str:00000000000001f4 .LASF47
+     /tmp/ccXy4GMp.s:1812   .debug_str:00000000000003da .LASF48
+     /tmp/ccXy4GMp.s:1798   .debug_str:0000000000000368 .LASF49
+     /tmp/ccXy4GMp.s:1902   .debug_str:0000000000000675 .LASF50
+     /tmp/ccXy4GMp.s:1860   .debug_str:000000000000051e .LASF51
+     /tmp/ccXy4GMp.s:1828   .debug_str:0000000000000441 .LASF52
+     /tmp/ccXy4GMp.s:1896   .debug_str:0000000000000648 .LASF53
+     /tmp/ccXy4GMp.s:1898   .debug_str:0000000000000655 .LASF54
+     /tmp/ccXy4GMp.s:1814   .debug_str:00000000000003e7 .LASF55
+     /tmp/ccXy4GMp.s:1866   .debug_str:000000000000054a .LASF56
+     /tmp/ccXy4GMp.s:1700   .debug_str:000000000000000d .LASF57
+     /tmp/ccXy4GMp.s:1790   .debug_str:000000000000033e .LASF58
+     /tmp/ccXy4GMp.s:1878   .debug_str:00000000000005ae .LASF59
+     /tmp/ccXy4GMp.s:1892   .debug_str:0000000000000629 .LASF60
+     /tmp/ccXy4GMp.s:1748   .debug_str:000000000000013d .LASF61
+     /tmp/ccXy4GMp.s:1706   .debug_str:0000000000000025 .LASF62
+     /tmp/ccXy4GMp.s:1900   .debug_str:0000000000000662 .LASF63
+     /tmp/ccXy4GMp.s:1910   .debug_str:00000000000006aa .LASF64
+     /tmp/ccXy4GMp.s:1728   .debug_str:00000000000000c9 .LASF65
+     /tmp/ccXy4GMp.s:1890   .debug_str:0000000000000618 .LASF66
+     /tmp/ccXy4GMp.s:1710   .debug_str:0000000000000046 .LASF67
+     /tmp/ccXy4GMp.s:1838   .debug_str:0000000000000482 .LASF68
+     /tmp/ccXy4GMp.s:1872   .debug_str:0000000000000577 .LASF69
+     /tmp/ccXy4GMp.s:1848   .debug_str:00000000000004c2 .LASF70
+     /tmp/ccXy4GMp.s:1788   .debug_str:0000000000000329 .LASF71
+     /tmp/ccXy4GMp.s:1810   .debug_str:00000000000003d0 .LASF72
+     /tmp/ccXy4GMp.s:1730   .debug_str:00000000000000d1 .LASF73
+     /tmp/ccXy4GMp.s:1830   .debug_str:0000000000000450 .LASF74
+     /tmp/ccXy4GMp.s:1846   .debug_str:00000000000004ae .LASF75
+     /tmp/ccXy4GMp.s:1864   .debug_str:0000000000000542 .LASF76
+     /tmp/ccXy4GMp.s:1772   .debug_str:0000000000000218 .LASF77
+     /tmp/ccXy4GMp.s:1904   .debug_str:000000000000068a .LASF78
+     /tmp/ccXy4GMp.s:1880   .debug_str:00000000000005c6 .LASF79
+     /tmp/ccXy4GMp.s:1704   .debug_str:000000000000001a .LASF80
+     /tmp/ccXy4GMp.s:1796   .debug_str:000000000000035d .LASF81
+     /tmp/ccXy4GMp.s:1720   .debug_str:0000000000000094 .LASF82
+     /tmp/ccXy4GMp.s:1800   .debug_str:000000000000037e .LASF83
+     /tmp/ccXy4GMp.s:1702   .debug_str:0000000000000014 .LASF84
+     /tmp/ccXy4GMp.s:1806   .debug_str:00000000000003ae .LASF85
+     /tmp/ccXy4GMp.s:1714   .debug_str:0000000000000067 .LASF86
+     /tmp/ccXy4GMp.s:1794   .debug_str:0000000000000351 .LASF87
+     /tmp/ccXy4GMp.s:1836   .debug_str:000000000000047c .LASF88
+     /tmp/ccXy4GMp.s:1906   .debug_str:0000000000000692 .LASF89
+     /tmp/ccXy4GMp.s:1762   .debug_str:00000000000001c1 .LASF91
+     /tmp/ccXy4GMp.s:1808   .debug_str:00000000000003b6 .LASF103
+     /tmp/ccXy4GMp.s:143    .text.i32_Get_Focus_Destination:0000000000000000 .LFB2
+     /tmp/ccXy4GMp.s:152    .text.i32_Get_Focus_Destination:0000000000000010 .LFE2
+     /tmp/ccXy4GMp.s:1844   .debug_str:0000000000000496 .LASF104
+     /tmp/ccXy4GMp.s:1888   .debug_str:0000000000000608 .LASF92
+     /tmp/ccXy4GMp.s:1746   .debug_str:0000000000000132 .LASF105
+     /tmp/ccXy4GMp.s:1786   .debug_str:0000000000000321 .LASF93
+     /tmp/ccXy4GMp.s:1736   .debug_str:00000000000000f0 .LASF94
+     /tmp/ccXy4GMp.s:1718   .debug_str:0000000000000089 .LASF106
+     /tmp/ccXy4GMp.s:14     .text.Idle_State:0000000000000000 .LFB0
+     /tmp/ccXy4GMp.s:119    .text.Idle_State:00000000000000a4 .LFE0
+     /tmp/ccXy4GMp.s:1503   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccXy4GMp.s:1561   .debug_loc:0000000000000085 .LLST1
+     /tmp/ccXy4GMp.s:1612   .debug_loc:00000000000000fc .LLST2
+     /tmp/ccXy4GMp.s:62     .text.Idle_State:000000000000004c .LBB12
+     /tmp/ccXy4GMp.s:84     .text.Idle_State:0000000000000078 .LBE12
+     /tmp/ccXy4GMp.s:1627   .debug_loc:0000000000000124 .LLST3
+     /tmp/ccXy4GMp.s:1641   .debug_loc:0000000000000145 .LLST4
+     /tmp/ccXy4GMp.s:63     .text.Idle_State:000000000000004c .LBB13
+     /tmp/ccXy4GMp.s:83     .text.Idle_State:0000000000000078 .LBE13
+     /tmp/ccXy4GMp.s:66     .text.Idle_State:0000000000000054 .LVL7
+     /tmp/ccXy4GMp.s:69     .text.Idle_State:000000000000005c .LVL8
+     /tmp/ccXy4GMp.s:73     .text.Idle_State:0000000000000068 .LVL9
+     /tmp/ccXy4GMp.s:77     .text.Idle_State:0000000000000074 .LVL10
+     /tmp/ccXy4GMp.s:96     .text.Idle_State:000000000000008c .LBB14
+     /tmp/ccXy4GMp.s:1655   .debug_loc:0000000000000166 .LLST5
+     /tmp/ccXy4GMp.s:57     .text.Idle_State:0000000000000048 .LVL5
+     /tmp/ccXy4GMp.s:91     .text.Idle_State:0000000000000088 .LVL14
+     /tmp/ccXy4GMp.s:126    .text.v_Set_Focus_Destination:0000000000000000 .LFB1
+     /tmp/ccXy4GMp.s:136    .text.v_Set_Focus_Destination:000000000000000c .LFE1
+     /tmp/ccXy4GMp.s:1884   .debug_str:00000000000005e6 .LASF95
+     /tmp/ccXy4GMp.s:1882   .debug_str:00000000000005cf .LASF96
+     /tmp/ccXy4GMp.s:1876   .debug_str:000000000000059d .LASF97
+     /tmp/ccXy4GMp.s:1726   .debug_str:00000000000000be .LASF98
+     /tmp/ccXy4GMp.s:1754   .debug_str:000000000000015b .LASF99
+     /tmp/ccXy4GMp.s:18     .text.Idle_State:0000000000000000 .LVL0
+     /tmp/ccXy4GMp.s:36     .text.Idle_State:0000000000000028 .LVL1
+     /tmp/ccXy4GMp.s:50     .text.Idle_State:000000000000003c .LVL3
+     /tmp/ccXy4GMp.s:55     .text.Idle_State:0000000000000040 .LVL4
+     /tmp/ccXy4GMp.s:60     .text.Idle_State:000000000000004c .LVL6
+     /tmp/ccXy4GMp.s:81     .text.Idle_State:0000000000000078 .LVL11
+     /tmp/ccXy4GMp.s:89     .text.Idle_State:0000000000000080 .LVL13
+     /tmp/ccXy4GMp.s:93     .text.Idle_State:000000000000008c .LVL15
+     /tmp/ccXy4GMp.s:105    .text.Idle_State:0000000000000098 .LVL16
+     /tmp/ccXy4GMp.s:87     .text.Idle_State:000000000000007c .LVL12
+     /tmp/ccXy4GMp.s:41     .text.Idle_State:0000000000000030 .LVL2
+     /tmp/ccXy4GMp.s:110    .text.Idle_State:00000000000000a0 .LVL17
+     /tmp/ccXy4GMp.s:169    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccXy4GMp.s:102    .text.Idle_State:0000000000000090 .LBE14
+     /tmp/ccXy4GMp.s:106    .text.Idle_State:0000000000000098 .LBB17
+     /tmp/ccXy4GMp.s:112    .text.Idle_State:00000000000000a0 .LBE17
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Enable_Stepper
+v_Stop_Focus_Timer
+v_Arm_Stepper_Watchdog
+vTaskDelay
+v_Set_Debug_GPIO
+Coarse_Focus_State

@@ -1,0 +1,213 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+serial\+\_\+comm.h File Reference}
+\hypertarget{serial__comm_8h}{}\label{serial__comm_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_comm.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/serial\_comm.h}}
+{\ttfamily \+\#include "{}events.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal/\+timer.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+uart16550.\+h"{}}\newline
+Include dependency graph for serial\+\_\+comm.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=346pt]{serial__comm_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{serial__comm_8h_abddf4da2da6cdc61d65f3a4aefc8d628}{v\+\_\+\+Reset\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Buffers}} (void)
+\item 
+void \doxymbox{\hyperlink{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2}{v\+\_\+\+Send\+\_\+\+Serial\+\_\+\+Comm}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Buffer, uint8\+\_\+t u8\+\_\+\+Length)
+\begin{DoxyCompactList}\small\item\em Initiates transmission of a buffer. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac}{v\+\_\+\+Enable\+\_\+\+Serial\+\_\+\+Comm}} (void)
+\item 
+void \doxymbox{\hyperlink{serial__comm_8h_a8f25298ce8f87ad4b70f7bf37ddc588c}{v\+\_\+\+Set\+\_\+\+Serial\+\_\+\+Timer\+\_\+\+Instance}} (Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance)
+\item 
+void \doxymbox{\hyperlink{serial__comm_8h_a0f49441193afd7eda30acfe83460ce47}{Reload\+\_\+\+Comm\+\_\+\+Timer}} (uint16\+\_\+t u16\+\_\+\+Timer\+\_\+\+Reload)
+\begin{DoxyCompactList}\small\item\em The timer is reloaded every time a character is received. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{serial__comm_8h_ac184fd9d173aaa189206d71f20df8206}{v\+\_\+\+Set\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Instance}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance)
+\item 
+void \doxymbox{\hyperlink{serial__comm_8h_a106faa126ae68b80d3dfd70b92893704}{v\+\_\+\+Post\+\_\+\+Serial\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Post an event to the message queue of the serial comm thread This is used from other threads. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{serial__comm_8h_a57e9130a700d7c3ad9ff0a6609d01b13}{v\+\_\+\+Post\+\_\+\+Serial\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Post an event to the serial comm thread\textquotesingle{}s message queue from interrupt. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{serial__comm_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{serial__comm_8h_a0f49441193afd7eda30acfe83460ce47}\index{serial\_comm.h@{serial\_comm.h}!Reload\_Comm\_Timer@{Reload\_Comm\_Timer}}
+\index{Reload\_Comm\_Timer@{Reload\_Comm\_Timer}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{Reload\_Comm\_Timer()}{Reload\_Comm\_Timer()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_a0f49441193afd7eda30acfe83460ce47} 
+void Reload\+\_\+\+Comm\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{u16\+\_\+\+Timer\+\_\+\+Reload}{}\end{DoxyParamCaption})}
+
+
+
+The timer is reloaded every time a character is received. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em u16\+\_\+\+Timer\+\_\+\+Reload} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00192}{192}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_a0f49441193afd7eda30acfe83460ce47_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac}\index{serial\_comm.h@{serial\_comm.h}!v\_Enable\_Serial\_Comm@{v\_Enable\_Serial\_Comm}}
+\index{v\_Enable\_Serial\_Comm@{v\_Enable\_Serial\_Comm}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Serial\_Comm()}{v\_Enable\_Serial\_Comm()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac} 
+void v\+\_\+\+Enable\+\_\+\+Serial\+\_\+\+Comm (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00105}{105}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_adfd6cea0252971a1ea504856c28db6ac_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__comm_8h_a106faa126ae68b80d3dfd70b92893704}\index{serial\_comm.h@{serial\_comm.h}!v\_Post\_Serial\_Event@{v\_Post\_Serial\_Event}}
+\index{v\_Post\_Serial\_Event@{v\_Post\_Serial\_Event}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Serial\_Event()}{v\_Post\_Serial\_Event()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_a106faa126ae68b80d3dfd70b92893704} 
+void v\+\_\+\+Post\+\_\+\+Serial\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Post an event to the message queue of the serial comm thread This is used from other threads. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00223}{223}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+\Hypertarget{serial__comm_8h_a57e9130a700d7c3ad9ff0a6609d01b13}\index{serial\_comm.h@{serial\_comm.h}!v\_Post\_Serial\_Event\_ISR@{v\_Post\_Serial\_Event\_ISR}}
+\index{v\_Post\_Serial\_Event\_ISR@{v\_Post\_Serial\_Event\_ISR}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Serial\_Event\_ISR()}{v\_Post\_Serial\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_a57e9130a700d7c3ad9ff0a6609d01b13} 
+void v\+\_\+\+Post\+\_\+\+Serial\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Post an event to the serial comm thread\textquotesingle{}s message queue from interrupt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00235}{235}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_a57e9130a700d7c3ad9ff0a6609d01b13_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__comm_8h_abddf4da2da6cdc61d65f3a4aefc8d628}\index{serial\_comm.h@{serial\_comm.h}!v\_Reset\_Serial\_Comm\_Buffers@{v\_Reset\_Serial\_Comm\_Buffers}}
+\index{v\_Reset\_Serial\_Comm\_Buffers@{v\_Reset\_Serial\_Comm\_Buffers}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Reset\_Serial\_Comm\_Buffers()}{v\_Reset\_Serial\_Comm\_Buffers()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_abddf4da2da6cdc61d65f3a4aefc8d628} 
+void v\+\_\+\+Reset\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Buffers (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2}\index{serial\_comm.h@{serial\_comm.h}!v\_Send\_Serial\_Comm@{v\_Send\_Serial\_Comm}}
+\index{v\_Send\_Serial\_Comm@{v\_Send\_Serial\_Comm}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Send\_Serial\_Comm()}{v\_Send\_Serial\_Comm()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2} 
+void v\+\_\+\+Send\+\_\+\+Serial\+\_\+\+Comm (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Buffer}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Length}{}\end{DoxyParamCaption})}
+
+
+
+Initiates transmission of a buffer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Buffer} & Character data to be transmitted \\
+\hline
+{\em u8\+\_\+\+Length} & Number of characters to be sent \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00203}{203}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_a5bba251b9d7e2836fffae5aa927d92b2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__comm_8h_ac184fd9d173aaa189206d71f20df8206}\index{serial\_comm.h@{serial\_comm.h}!v\_Set\_Serial\_Comm\_Instance@{v\_Set\_Serial\_Comm\_Instance}}
+\index{v\_Set\_Serial\_Comm\_Instance@{v\_Set\_Serial\_Comm\_Instance}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Serial\_Comm\_Instance()}{v\_Set\_Serial\_Comm\_Instance()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_ac184fd9d173aaa189206d71f20df8206} 
+void v\+\_\+\+Set\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Instance (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00095}{95}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_ac184fd9d173aaa189206d71f20df8206_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{serial__comm_8h_a8f25298ce8f87ad4b70f7bf37ddc588c}\index{serial\_comm.h@{serial\_comm.h}!v\_Set\_Serial\_Timer\_Instance@{v\_Set\_Serial\_Timer\_Instance}}
+\index{v\_Set\_Serial\_Timer\_Instance@{v\_Set\_Serial\_Timer\_Instance}!serial\_comm.h@{serial\_comm.h}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Serial\_Timer\_Instance()}{v\_Set\_Serial\_Timer\_Instance()}}
+{\footnotesize\ttfamily \label{serial__comm_8h_a8f25298ce8f87ad4b70f7bf37ddc588c} 
+void v\+\_\+\+Set\+\_\+\+Serial\+\_\+\+Timer\+\_\+\+Instance (\begin{DoxyParamCaption}\item[{Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00100}{100}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{serial__comm_8h_a8f25298ce8f87ad4b70f7bf37ddc588c_icgraph}
+\end{center}
+\end{figure}

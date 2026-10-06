@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['i32_5fcurrent_5fposition_5fmicrons_0',['i32_Current_Position_microns',['../path__planner_8c.html#ade63193d81cad6031be4309ef3ff7e6c',1,'path_planner.c']]],
+  ['i32_5fcurrent_5fvelocity_1',['i32_Current_Velocity',['../path__planner_8c.html#a242656efb81ec9e780767febd9a43604',1,'path_planner.c']]],
+  ['i32_5fdisplacement_5foffset_2',['i32_Displacement_Offset',['../hal__lvdt_8c.html#a4d3a30e89645fd1febdd5bb8b977f99f',1,'hal_lvdt.c']]],
+  ['i32_5fe_5fm_5f1_3',['i32_E_m_1',['../structPID__Instance__t.html#a0b5e52b1403c54ca42168b21ec366526',1,'PID_Instance_t']]],
+  ['i32_5ferror_4',['i32_Error',['../structPID__Log__Info__t.html#a3823aff4e1bfc79521a08dd2f2a3975f',1,'PID_Log_Info_t']]],
+  ['i32_5ffinal_5fdestination_5',['i32_Final_Destination',['../Focus__State_8c.html#afb2d69b42f0589e0245d5a835bde1994',1,'Focus_State.c']]],
+  ['i32_5ffinal_5fposition_6',['i32_Final_Position',['../constant__path_8c.html#af0e0ad9e0b74d0447b9dc0044b046a71',1,'i32_Final_Position:&#160;constant_path.c'],['../ramp__path_8c.html#af0e0ad9e0b74d0447b9dc0044b046a71',1,'i32_Final_Position:&#160;ramp_path.c'],['../step__path_8c.html#af0e0ad9e0b74d0447b9dc0044b046a71',1,'i32_Final_Position:&#160;step_path.c']]],
+  ['i32_5ffinal_5fposition_5fmicrons_7',['i32_Final_Position_microns',['../path__planner_8c.html#a28e907d26d729f460c390072f19847bb',1,'path_planner.c']]],
+  ['i32_5fhigh_5fgain_5flimit_8',['i32_High_Gain_Limit',['../hal__lvdt_8c.html#a065cd74ffb60734cd840c2d6de92e7c5',1,'hal_lvdt.c']]],
+  ['i32_5fintegral_5fsum_9',['i32_Integral_Sum',['../structPID__Instance__t.html#ae24338261f4221816167cd1497b02828',1,'PID_Instance_t::i32_Integral_Sum'],['../structPID__Log__Info__t.html#ae24338261f4221816167cd1497b02828',1,'PID_Log_Info_t::i32_Integral_Sum']]],
+  ['i32_5flow_5fgain_5flimit_10',['i32_Low_Gain_Limit',['../hal__lvdt_8c.html#aa5b6f57d59622b1bb33c27e470930bac',1,'hal_lvdt.c']]],
+  ['i32_5foriginal_5fdirection_11',['i32_Original_Direction',['../Zero__Fine__State_8c.html#afca152bbae48c0f441f5f2c9c9069833',1,'Zero_Fine_State.c']]],
+  ['i32_5foutput_12',['i32_Output',['../structPID__Log__Info__t.html#a5ea1e38a77161bd42bbf4ff79653f92e',1,'PID_Log_Info_t']]],
+  ['i32_5fposition_13',['i32_Position',['../structEvent__Msg__Position__t.html#a709cfa04a0cc164d52bb9544cdfbf23a',1,'Event_Msg_Position_t::i32_Position'],['../structPID__Log__Info__t.html#a709cfa04a0cc164d52bb9544cdfbf23a',1,'PID_Log_Info_t::i32_Position']]],
+  ['i32_5fposition_5fmicrons_14',['i32_Position_Microns',['../structStatus__t.html#aa96dbcbbb1ae85c2102c93810ad08d8f',1,'Status_t']]],
+  ['i32_5fsetpoint_15',['i32_Setpoint',['../structPID__Log__Info__t.html#a07775d861e75cb69342112be9d374819',1,'PID_Log_Info_t']]],
+  ['i32_5fstart_5fposition_16',['i32_Start_Position',['../ramp__path_8c.html#ac7ba23978d7448c628bbbc65cf503fce',1,'i32_Start_Position:&#160;ramp_path.c'],['../step__path_8c.html#ac7ba23978d7448c628bbbc65cf503fce',1,'i32_Start_Position:&#160;step_path.c']]],
+  ['i32_5fstart_5fposition_5fmicrons_17',['i32_Start_Position_microns',['../path__planner_8c.html#af39bd26e48e868ab027b115ec1b91714',1,'path_planner.c']]],
+  ['i32_5fvelocity_18',['i32_Velocity',['../structStatus__t.html#aae9f9267f55c235645d021821560ba50',1,'Status_t']]],
+  ['initialized_19',['initialized',['../camera__task_8c.html#a41bd82d597649cdf060877fea69b23a2',1,'initialized:&#160;main.c'],['../focus_8c.html#a41bd82d597649cdf060877fea69b23a2',1,'initialized:&#160;main.c'],['../serial__comm_8c.html#a41bd82d597649cdf060877fea69b23a2',1,'initialized:&#160;main.c'],['../main_8c.html#a41bd82d597649cdf060877fea69b23a2',1,'initialized:&#160;main.c'],['../system_8c.html#a41bd82d597649cdf060877fea69b23a2',1,'initialized:&#160;main.c']]],
+  ['instance_20',['instance',['../hal__lvdt_8c.html#a61caf4ed81df7167ee131a3aada5df99',1,'hal_lvdt.c']]],
+  ['integral_5fdeadband_21',['integral_deadband',['../structPID__Instance__t.html#a7240db484ff671a092846796b87b5d85',1,'PID_Instance_t::integral_deadband'],['../structPID__Init__t.html#a7240db484ff671a092846796b87b5d85',1,'PID_Init_t::integral_deadband']]],
+  ['interface_5fcontrol_5freg_22',['interface_control_reg',['../structeth__core__regs__t.html#abbb935a36764080b11cfa85c12571419',1,'eth_core_regs_t']]],
+  ['irq_5fen_23',['irq_en',['../structOPSRV__Type.html#a8530bbb7de119ffe192ac9952a1332cd',1,'OPSRV_Type']]],
+  ['irq_5fpend_24',['irq_pend',['../structOPSRV__Type.html#ab42382486eb66a0b063c9b879bc565b9',1,'OPSRV_Type']]]
+];

@@ -1,0 +1,13 @@
+# Exporting core dma_read_ctrl_apb_reg_ddr4_16gb to TCL
+# Exporting Create HDL core command for module dma_read_ctrl_apb_reg_ddr4_16gb
+create_hdl_core -file "[file normalize [file join [file dirname [info script]] ./../src/dma_read_ctrl_apb_reg_ddr4_16gb.sv]]" -module {dma_read_ctrl_apb_reg_ddr4_16gb} -library {work} -package {}
+# Exporting BIF information of  HDL core command for module dma_read_ctrl_apb_reg_ddr4_16gb
+hdl_core_add_bif -hdl_core_name {dma_read_ctrl_apb_reg_ddr4_16gb} -bif_definition {APB:AMBA:AMBA2:slave} -bif_name {s_apb} -signal_map {\
+"PADDR:paddr" \
+"PENABLE:penable" \
+"PWRITE:pwrite" \
+"PRDATA:prdata" \
+"PWDATA:pwdata" \
+"PREADY:pready" \
+"PSLVERR:pslverr" \
+"PSELx:psel" }

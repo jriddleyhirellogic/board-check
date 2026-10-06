@@ -1,0 +1,134 @@
+\doxysection{src/\+system.c File Reference}
+\hypertarget{system_8c}{}\label{system_8c}\index{src/system.c@{src/system.c}}
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}queue.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+task.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}pid.\+h"{}}\newline
+Include dependency graph for system.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{system_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{system_8c_a9a9175987165a91248fcc2d4284f0a3f}{v\+\_\+\+System\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\item 
+void \doxymbox{\hyperlink{system_8c_a94661f9573c10f09b10a904516eda998}{v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{system_8c_aa9a368c64cc0c441b038a68df63375a4}{v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} \doxymbox{\hyperlink{system_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}}
+\item 
+static uint32\+\_\+t \doxymbox{\hyperlink{system_8c_a270e64ab18e3bf567338cddb001db38b}{u32\+\_\+\+Counter}}
+\item 
+static \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} \doxymbox{\hyperlink{system_8c_a3c6f61cbf2913714d99f0b192f9c9c23}{System\+\_\+\+Queue}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{system_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{system_8c_a94661f9573c10f09b10a904516eda998}\index{system.c@{system.c}!v\_Post\_System\_Event@{v\_Post\_System\_Event}}
+\index{v\_Post\_System\_Event@{v\_Post\_System\_Event}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_System\_Event()}{v\_Post\_System\_Event()}}
+{\footnotesize\ttfamily \label{system_8c_a94661f9573c10f09b10a904516eda998} 
+void v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00085}{85}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{system_8c_a94661f9573c10f09b10a904516eda998_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{system_8c_aa9a368c64cc0c441b038a68df63375a4}\index{system.c@{system.c}!v\_Post\_System\_Event\_ISR@{v\_Post\_System\_Event\_ISR}}
+\index{v\_Post\_System\_Event\_ISR@{v\_Post\_System\_Event\_ISR}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_System\_Event\_ISR()}{v\_Post\_System\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{system_8c_aa9a368c64cc0c441b038a68df63375a4} 
+void v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00091}{91}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+\Hypertarget{system_8c_a9a9175987165a91248fcc2d4284f0a3f}\index{system.c@{system.c}!v\_System\_Task@{v\_System\_Task}}
+\index{v\_System\_Task@{v\_System\_Task}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{v\_System\_Task()}{v\_System\_Task()}}
+{\footnotesize\ttfamily \label{system_8c_a9a9175987165a91248fcc2d4284f0a3f} 
+void v\+\_\+\+System\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00034}{34}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{system_8c_a9a9175987165a91248fcc2d4284f0a3f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{system_8c_a9a9175987165a91248fcc2d4284f0a3f_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{system_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{system_8c_a41bd82d597649cdf060877fea69b23a2}\index{system.c@{system.c}!initialized@{initialized}}
+\index{initialized@{initialized}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{initialized}{initialized}}
+{\footnotesize\ttfamily \label{system_8c_a41bd82d597649cdf060877fea69b23a2} 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} initialized\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{main_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{main_8c_source}{main.\+c}}.
+
+\Hypertarget{system_8c_a3c6f61cbf2913714d99f0b192f9c9c23}\index{system.c@{system.c}!System\_Queue@{System\_Queue}}
+\index{System\_Queue@{System\_Queue}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{System\_Queue}{System\_Queue}}
+{\footnotesize\ttfamily \label{system_8c_a3c6f61cbf2913714d99f0b192f9c9c23} 
+\doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{Queue\+Handle\+\_\+t}} System\+\_\+\+Queue\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00029}{29}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+\Hypertarget{system_8c_a270e64ab18e3bf567338cddb001db38b}\index{system.c@{system.c}!u32\_Counter@{u32\_Counter}}
+\index{u32\_Counter@{u32\_Counter}!system.c@{system.c}}
+\doxysubsubsection{\texorpdfstring{u32\_Counter}{u32\_Counter}}
+{\footnotesize\ttfamily \label{system_8c_a270e64ab18e3bf567338cddb001db38b} 
+uint32\+\_\+t u32\+\_\+\+Counter\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00027}{27}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+

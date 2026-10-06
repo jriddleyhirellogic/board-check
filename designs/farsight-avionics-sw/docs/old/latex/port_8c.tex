@@ -1,0 +1,108 @@
+\doxysection{src/\+\+Free\+RTOS/\+port.c File Reference}
+\hypertarget{port_8c}{}\label{port_8c}\index{src/FreeRTOS/port.c@{src/FreeRTOS/port.c}}
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}portmacro.\+h"{}}\newline
+{\ttfamily \+\#include "{}string.\+h"{}}\newline
+Include dependency graph for port.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{port_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{port_8c_a254a1ddd7499c6ec36b38e2fc3486b80}{port\+TASK\+\_\+\+RETURN\+\_\+\+ADDRESS}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{port_8c_a675a9ea33bf706283cbc295bfff06335}{port\+CHECK\+\_\+\+ISR\+\_\+\+STACK}}()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{port_8c_a4649001ea4d29b80759e6eca4bba58eb}{v\+Port\+Setup\+Timer\+Interrupt}} (void)
+\item 
+void \doxymbox{\hyperlink{port_8c_af76f3c0b44c5b5c06fc046a4ee1a6423}{v\+Port\+End\+Scheduler}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const uint32\+\_\+t \doxymbox{\hyperlink{port_8c_a79855bf4f17a0196e1168d58bf49f525}{\+\_\+\+\_\+freertos\+\_\+irq\+\_\+stack\+\_\+top}} \+[$\,$]\+
+\item 
+const \doxymbox{\hyperlink{portmacro_8h_a84e9a8ba132feed0b2401c1f4e2ac63c}{Stack\+Type\+\_\+t}} \doxymbox{\hyperlink{port_8c_a9e56109acb5aa444fc39ac7f8e9b6719}{x\+ISRStack\+Top}} = ( \doxymbox{\hyperlink{portmacro_8h_a84e9a8ba132feed0b2401c1f4e2ac63c}{Stack\+Type\+\_\+t}} ) \doxymbox{\hyperlink{port_8c_a79855bf4f17a0196e1168d58bf49f525}{\+\_\+\+\_\+freertos\+\_\+irq\+\_\+stack\+\_\+top}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{port_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{port_8c_a675a9ea33bf706283cbc295bfff06335}\index{port.c@{port.c}!portCHECK\_ISR\_STACK@{portCHECK\_ISR\_STACK}}
+\index{portCHECK\_ISR\_STACK@{portCHECK\_ISR\_STACK}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{portCHECK\_ISR\_STACK}{portCHECK\_ISR\_STACK}}
+{\footnotesize\ttfamily \label{port_8c_a675a9ea33bf706283cbc295bfff06335} 
+\+\#define port\+CHECK\+\_\+\+ISR\+\_\+\+STACK(\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{port_8c_a254a1ddd7499c6ec36b38e2fc3486b80}\index{port.c@{port.c}!portTASK\_RETURN\_ADDRESS@{portTASK\_RETURN\_ADDRESS}}
+\index{portTASK\_RETURN\_ADDRESS@{portTASK\_RETURN\_ADDRESS}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{portTASK\_RETURN\_ADDRESS}{portTASK\_RETURN\_ADDRESS}}
+{\footnotesize\ttfamily \label{port_8c_a254a1ddd7499c6ec36b38e2fc3486b80} 
+\+\#define port\+TASK\+\_\+\+RETURN\+\_\+\+ADDRESS~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{port_8c_source_l00057}{57}} of file \doxymbox{\hyperlink{port_8c_source}{port.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{port_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{port_8c_af76f3c0b44c5b5c06fc046a4ee1a6423}\index{port.c@{port.c}!vPortEndScheduler@{vPortEndScheduler}}
+\index{vPortEndScheduler@{vPortEndScheduler}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{vPortEndScheduler()}{vPortEndScheduler()}}
+{\footnotesize\ttfamily \label{port_8c_af76f3c0b44c5b5c06fc046a4ee1a6423} 
+void v\+Port\+End\+Scheduler (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{port_8c_source_l00208}{208}} of file \doxymbox{\hyperlink{port_8c_source}{port.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=334pt]{port_8c_af76f3c0b44c5b5c06fc046a4ee1a6423_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{port_8c_a4649001ea4d29b80759e6eca4bba58eb}\index{port.c@{port.c}!vPortSetupTimerInterrupt@{vPortSetupTimerInterrupt}}
+\index{vPortSetupTimerInterrupt@{vPortSetupTimerInterrupt}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{vPortSetupTimerInterrupt()}{vPortSetupTimerInterrupt()}}
+{\footnotesize\ttfamily \label{port_8c_a4649001ea4d29b80759e6eca4bba58eb} 
+void v\+Port\+Setup\+Timer\+Interrupt (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{port_8c_source_l00085}{85}} of file \doxymbox{\hyperlink{port_8c_source}{port.\+c}}.
+
+
+
+\label{doc-var-members}
+\Hypertarget{port_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{port_8c_a79855bf4f17a0196e1168d58bf49f525}\index{port.c@{port.c}!\_\_freertos\_irq\_stack\_top@{\_\_freertos\_irq\_stack\_top}}
+\index{\_\_freertos\_irq\_stack\_top@{\_\_freertos\_irq\_stack\_top}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{\_\_freertos\_irq\_stack\_top}{\_\_freertos\_irq\_stack\_top}}
+{\footnotesize\ttfamily \label{port_8c_a79855bf4f17a0196e1168d58bf49f525} 
+const uint32\+\_\+t \+\_\+\+\_\+freertos\+\_\+irq\+\_\+stack\+\_\+top\+[$\,$]\+\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{port_8c_a9e56109acb5aa444fc39ac7f8e9b6719}\index{port.c@{port.c}!xISRStackTop@{xISRStackTop}}
+\index{xISRStackTop@{xISRStackTop}!port.c@{port.c}}
+\doxysubsubsection{\texorpdfstring{xISRStackTop}{xISRStackTop}}
+{\footnotesize\ttfamily \label{port_8c_a9e56109acb5aa444fc39ac7f8e9b6719} 
+const \doxymbox{\hyperlink{portmacro_8h_a84e9a8ba132feed0b2401c1f4e2ac63c}{Stack\+Type\+\_\+t}} x\+ISRStack\+Top = ( \doxymbox{\hyperlink{portmacro_8h_a84e9a8ba132feed0b2401c1f4e2ac63c}{Stack\+Type\+\_\+t}} ) \doxymbox{\hyperlink{port_8c_a79855bf4f17a0196e1168d58bf49f525}{\+\_\+\+\_\+freertos\+\_\+irq\+\_\+stack\+\_\+top}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{port_8c_source_l00077}{77}} of file \doxymbox{\hyperlink{port_8c_source}{port.\+c}}.
+

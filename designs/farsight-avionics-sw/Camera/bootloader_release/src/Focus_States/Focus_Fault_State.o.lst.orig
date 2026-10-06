@@ -1,0 +1,440 @@
+   1              		.file	"Focus_Fault_State.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Focus_Fault_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Focus_Fault_State
+  13              	Focus_Fault_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/Focus_States/Focus_Fault_State.c"
+   1:../src/Focus_States/Focus_Fault_State.c **** /*
+   2:../src/Focus_States/Focus_Fault_State.c ****  * Focus_Fault_State.c
+   3:../src/Focus_States/Focus_Fault_State.c ****  *
+   4:../src/Focus_States/Focus_Fault_State.c ****  *  Created on: Jan 15, 2026
+   5:../src/Focus_States/Focus_Fault_State.c ****  *      Author: iboard
+   6:../src/Focus_States/Focus_Fault_State.c ****  */
+   7:../src/Focus_States/Focus_Fault_State.c **** #include <focus.h>
+   8:../src/Focus_States/Focus_Fault_State.c **** #include <focus_states.h>
+   9:../src/Focus_States/Focus_Fault_State.c **** #include "hal_stepper.h"
+  10:../src/Focus_States/Focus_Fault_State.c **** #include "states.h"
+  11:../src/Focus_States/Focus_Fault_State.c **** #include "debug_gpio.h"
+  12:../src/Focus_States/Focus_Fault_State.c **** #include "misc.h"
+  13:../src/Focus_States/Focus_Fault_State.c **** 
+  14:../src/Focus_States/Focus_Fault_State.c **** // Need to reset in order to get out of this state.
+  15:../src/Focus_States/Focus_Fault_State.c **** State_t Focus_Fault_State( Context_t *context, Event_t *event )
+  16:../src/Focus_States/Focus_Fault_State.c **** {
+  16              		.loc 1 16 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  17:../src/Focus_States/Focus_Fault_State.c ****     State_t next_state = (State_t)Focus_Fault_State;
+  19              		.loc 1 17 5
+  18:../src/Focus_States/Focus_Fault_State.c **** 
+  19:../src/Focus_States/Focus_Fault_State.c ****     switch( event->no_data.sig )
+  20              		.loc 1 19 5
+  21 0000 83A70500 		lw	a5,0(a1)
+  22 0004 639E0702 		bne	a5,zero,.L4
+  23              	.LVL1:
+  24              	.LBB4:
+  25              	.LBB5:
+  20:../src/Focus_States/Focus_Fault_State.c ****     {
+  21:../src/Focus_States/Focus_Fault_State.c ****     case ENTRANCE:
+  22:../src/Focus_States/Focus_Fault_State.c ****         v_Set_Stepper_out( 0 );
+  26              		.loc 1 22 9
+  27              	.LBE5:
+  28              	.LBE4:
+  16:../src/Focus_States/Focus_Fault_State.c ****     State_t next_state = (State_t)Focus_Fault_State;
+  29              		.loc 1 16 1 is_stmt 0
+  30 0008 130101FF 		addi	sp,sp,-16
+  31              		.cfi_def_cfa_offset 16
+  32              	.LBB8:
+  33              	.LBB6:
+  34              		.loc 1 22 9
+  35 000c 13050000 		li	a0,0
+  36              	.LVL2:
+  37              	.LBE6:
+  38              	.LBE8:
+  16:../src/Focus_States/Focus_Fault_State.c ****     State_t next_state = (State_t)Focus_Fault_State;
+  39              		.loc 1 16 1
+  40 0010 23261100 		sw	ra,12(sp)
+  41              		.cfi_offset 1, -4
+  42              	.LBB9:
+  43              	.LBB7:
+  44              		.loc 1 22 9
+  45 0014 97000000 		call	v_Set_Stepper_out
+  45      E7800000 
+  46              	.LVL3:
+  23:../src/Focus_States/Focus_Fault_State.c ****         v_Stop_Focus_Timer();
+  47              		.loc 1 23 9 is_stmt 1
+  48 001c 97000000 		call	v_Stop_Focus_Timer
+  48      E7800000 
+  49              	.LVL4:
+  24:../src/Focus_States/Focus_Fault_State.c ****         v_Stop_Focus_Fault_Timer();
+  50              		.loc 1 24 9
+  51 0024 97000000 		call	v_Stop_Focus_Fault_Timer
+  51      E7800000 
+  52              	.LVL5:
+  25:../src/Focus_States/Focus_Fault_State.c ****         break;
+  53              		.loc 1 25 9
+  54              	.LBE7:
+  55              	.LBE9:
+  26:../src/Focus_States/Focus_Fault_State.c **** 
+  27:../src/Focus_States/Focus_Fault_State.c ****     case EXIT:
+  28:../src/Focus_States/Focus_Fault_State.c ****         break;
+  29:../src/Focus_States/Focus_Fault_State.c **** 
+  30:../src/Focus_States/Focus_Fault_State.c ****     default:
+  31:../src/Focus_States/Focus_Fault_State.c ****         break;
+  32:../src/Focus_States/Focus_Fault_State.c ****     }
+  33:../src/Focus_States/Focus_Fault_State.c **** 
+  34:../src/Focus_States/Focus_Fault_State.c ****     return next_state;
+  56              		.loc 1 34 5
+  35:../src/Focus_States/Focus_Fault_State.c **** 
+  36:../src/Focus_States/Focus_Fault_State.c **** }
+  57              		.loc 1 36 1 is_stmt 0
+  58 002c 8320C100 		lw	ra,12(sp)
+  59              		.cfi_restore 1
+  60 0030 17050000 		lla	a0,Focus_Fault_State
+  60      13050500 
+  61 0038 13010101 		addi	sp,sp,16
+  62              		.cfi_def_cfa_offset 0
+  63 003c 67800000 		jr	ra
+  64              	.LVL6:
+  65              	.L4:
+  34:../src/Focus_States/Focus_Fault_State.c **** 
+  66              		.loc 1 34 5 is_stmt 1
+  67              		.loc 1 36 1 is_stmt 0
+  68 0040 17050000 		lla	a0,Focus_Fault_State
+  68      13050500 
+  69              	.LVL7:
+  70 0048 67800000 		ret
+  71              		.cfi_endproc
+  72              	.LFE0:
+  74              		.text
+  75              	.Letext0:
+  76              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+  77              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+  78              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+  79              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+  80              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+  81              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+  82              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+  83              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/focus.h"
+  84              		.file 10 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Focus_Fault_State.c
+<<<<<<< HEAD
+     /tmp/ccGDMie2.s:13     .text.Focus_Fault_State:0000000000000000 Focus_Fault_State
+     /tmp/ccGDMie2.s:17     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccGDMie2.s:19     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccGDMie2.s:20     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccGDMie2.s:21     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccGDMie2.s:29     .text.Focus_Fault_State:0000000000000008 .L0 
+     /tmp/ccGDMie2.s:30     .text.Focus_Fault_State:0000000000000008 .L0 
+     /tmp/ccGDMie2.s:31     .text.Focus_Fault_State:000000000000000c .L0 
+     /tmp/ccGDMie2.s:35     .text.Focus_Fault_State:000000000000000c .L0 
+     /tmp/ccGDMie2.s:40     .text.Focus_Fault_State:0000000000000010 .L0 
+     /tmp/ccGDMie2.s:41     .text.Focus_Fault_State:0000000000000014 .L0 
+     /tmp/ccGDMie2.s:45     .text.Focus_Fault_State:0000000000000014 .L0 
+     /tmp/ccGDMie2.s:48     .text.Focus_Fault_State:000000000000001c .L0 
+     /tmp/ccGDMie2.s:51     .text.Focus_Fault_State:0000000000000024 .L0 
+     /tmp/ccGDMie2.s:56     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccGDMie2.s:57     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccGDMie2.s:58     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccGDMie2.s:59     .text.Focus_Fault_State:0000000000000030 .L0 
+     /tmp/ccGDMie2.s:62     .text.Focus_Fault_State:000000000000003c .L0 
+     /tmp/ccGDMie2.s:67     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccGDMie2.s:68     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccGDMie2.s:71     .text.Focus_Fault_State:000000000000004c .L0 
+     /tmp/ccGDMie2.s:74     .text.Focus_Fault_State:000000000000004c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccGDMie2.s:60     .text.Focus_Fault_State:0000000000000030 .L0 
+     /tmp/ccGDMie2.s:68     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccGDMie2.s:65     .text.Focus_Fault_State:0000000000000040 .L4
+     /tmp/ccGDMie2.s:803    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccGDMie2.s:1366   .debug_str:0000000000000221 .LASF95
+     /tmp/ccGDMie2.s:1324   .debug_str:00000000000000e0 .LASF96
+     /tmp/ccGDMie2.s:1346   .debug_str:000000000000016e .LASF97
+     /tmp/ccGDMie2.s:1274   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccGDMie2.s:1288   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccGDMie2.s:1434   .debug_str:000000000000048b .LASF4
+     /tmp/ccGDMie2.s:1408   .debug_str:00000000000003f0 .LASF0
+     /tmp/ccGDMie2.s:1356   .debug_str:00000000000001ec .LASF1
+     /tmp/ccGDMie2.s:1290   .debug_str:0000000000000000 .LASF2
+     /tmp/ccGDMie2.s:1402   .debug_str:00000000000003c4 .LASF3
+     /tmp/ccGDMie2.s:1370   .debug_str:00000000000002f9 .LASF5
+     /tmp/ccGDMie2.s:1390   .debug_str:0000000000000382 .LASF6
+     /tmp/ccGDMie2.s:1334   .debug_str:0000000000000129 .LASF7
+     /tmp/ccGDMie2.s:1330   .debug_str:0000000000000119 .LASF8
+     /tmp/ccGDMie2.s:1420   .debug_str:000000000000043d .LASF9
+     /tmp/ccGDMie2.s:1456   .debug_str:0000000000000542 .LASF10
+     /tmp/ccGDMie2.s:1362   .debug_str:000000000000020f .LASF11
+     /tmp/ccGDMie2.s:1326   .debug_str:0000000000000108 .LASF12
+     /tmp/ccGDMie2.s:1368   .debug_str:00000000000002e7 .LASF13
+     /tmp/ccGDMie2.s:1404   .debug_str:00000000000003d0 .LASF14
+     /tmp/ccGDMie2.s:1338   .debug_str:000000000000013f .LASF15
+     /tmp/ccGDMie2.s:1410   .debug_str:00000000000003fd .LASF16
+     /tmp/ccGDMie2.s:1428   .debug_str:0000000000000462 .LASF17
+     /tmp/ccGDMie2.s:1406   .debug_str:00000000000003e7 .LASF18
+     /tmp/ccGDMie2.s:1440   .debug_str:00000000000004b9 .LASF98
+     /tmp/ccGDMie2.s:1426   .debug_str:000000000000045d .LASF19
+     /tmp/ccGDMie2.s:1342   .debug_str:0000000000000159 .LASF20
+     /tmp/ccGDMie2.s:1488   .debug_str:0000000000000639 .LASF21
+     /tmp/ccGDMie2.s:1418   .debug_str:0000000000000431 .LASF22
+     /tmp/ccGDMie2.s:1412   .debug_str:0000000000000406 .LASF23
+     /tmp/ccGDMie2.s:1316   .debug_str:00000000000000b2 .LASF24
+     /tmp/ccGDMie2.s:1350   .debug_str:00000000000001b9 .LASF25
+     /tmp/ccGDMie2.s:1364   .debug_str:0000000000000218 .LASF26
+     /tmp/ccGDMie2.s:1332   .debug_str:0000000000000124 .LASF27
+     /tmp/ccGDMie2.s:1474   .debug_str:00000000000005cd .LASF28
+     /tmp/ccGDMie2.s:1348   .debug_str:00000000000001a5 .LASF29
+     /tmp/ccGDMie2.s:1388   .debug_str:0000000000000368 .LASF30
+     /tmp/ccGDMie2.s:1304   .debug_str:0000000000000052 .LASF31
+     /tmp/ccGDMie2.s:1468   .debug_str:00000000000005a6 .LASF32
+     /tmp/ccGDMie2.s:1292   .debug_str:000000000000000c .LASF33
+     /tmp/ccGDMie2.s:1378   .debug_str:0000000000000325 .LASF34
+     /tmp/ccGDMie2.s:1302   .debug_str:0000000000000042 .LASF35
+     /tmp/ccGDMie2.s:1314   .debug_str:00000000000000a0 .LASF36
+     /tmp/ccGDMie2.s:1344   .debug_str:0000000000000163 .LASF37
+     /tmp/ccGDMie2.s:1360   .debug_str:0000000000000203 .LASF38
+     /tmp/ccGDMie2.s:1436   .debug_str:0000000000000492 .LASF39
+     /tmp/ccGDMie2.s:1442   .debug_str:00000000000004ca .LASF40
+     /tmp/ccGDMie2.s:1438   .debug_str:00000000000004a6 .LASF41
+     /tmp/ccGDMie2.s:1308   .debug_str:0000000000000075 .LASF42
+     /tmp/ccGDMie2.s:1352   .debug_str:00000000000001cd .LASF43
+     /tmp/ccGDMie2.s:1460   .debug_str:0000000000000559 .LASF44
+     /tmp/ccGDMie2.s:1454   .debug_str:000000000000052b .LASF45
+     /tmp/ccGDMie2.s:1448   .debug_str:0000000000000501 .LASF46
+     /tmp/ccGDMie2.s:1354   .debug_str:00000000000001d6 .LASF47
+     /tmp/ccGDMie2.s:1398   .debug_str:00000000000003ae .LASF48
+     /tmp/ccGDMie2.s:1384   .debug_str:000000000000034a .LASF49
+     /tmp/ccGDMie2.s:1482   .debug_str:0000000000000612 .LASF50
+     /tmp/ccGDMie2.s:1444   .debug_str:00000000000004da .LASF51
+     /tmp/ccGDMie2.s:1414   .debug_str:0000000000000415 .LASF52
+     /tmp/ccGDMie2.s:1476   .debug_str:00000000000005e5 .LASF53
+     /tmp/ccGDMie2.s:1478   .debug_str:00000000000005f2 .LASF54
+     /tmp/ccGDMie2.s:1400   .debug_str:00000000000003bb .LASF55
+     /tmp/ccGDMie2.s:1452   .debug_str:000000000000051f .LASF56
+     /tmp/ccGDMie2.s:1294   .debug_str:0000000000000019 .LASF57
+     /tmp/ccGDMie2.s:1376   .debug_str:0000000000000320 .LASF58
+     /tmp/ccGDMie2.s:1462   .debug_str:0000000000000572 .LASF59
+     /tmp/ccGDMie2.s:1472   .debug_str:00000000000005c6 .LASF60
+     /tmp/ccGDMie2.s:1336   .debug_str:0000000000000133 .LASF61
+     /tmp/ccGDMie2.s:1300   .debug_str:0000000000000031 .LASF62
+     /tmp/ccGDMie2.s:1480   .debug_str:00000000000005ff .LASF63
+     /tmp/ccGDMie2.s:1490   .debug_str:0000000000000647 .LASF64
+     /tmp/ccGDMie2.s:1318   .debug_str:00000000000000be .LASF65
+     /tmp/ccGDMie2.s:1470   .debug_str:00000000000005b5 .LASF66
+     /tmp/ccGDMie2.s:1394   .debug_str:0000000000000398 .LASF67
+     /tmp/ccGDMie2.s:1424   .debug_str:0000000000000456 .LASF68
+     /tmp/ccGDMie2.s:1458   .debug_str:000000000000054c .LASF69
+     /tmp/ccGDMie2.s:1432   .debug_str:000000000000047e .LASF70
+     /tmp/ccGDMie2.s:1374   .debug_str:000000000000030b .LASF71
+     /tmp/ccGDMie2.s:1396   .debug_str:00000000000003a4 .LASF72
+     /tmp/ccGDMie2.s:1320   .debug_str:00000000000000c6 .LASF73
+     /tmp/ccGDMie2.s:1416   .debug_str:0000000000000424 .LASF74
+     /tmp/ccGDMie2.s:1430   .debug_str:000000000000046a .LASF75
+     /tmp/ccGDMie2.s:1450   .debug_str:0000000000000517 .LASF76
+     /tmp/ccGDMie2.s:1358   .debug_str:00000000000001fa .LASF77
+     /tmp/ccGDMie2.s:1484   .debug_str:0000000000000627 .LASF78
+     /tmp/ccGDMie2.s:1464   .debug_str:000000000000058a .LASF79
+     /tmp/ccGDMie2.s:1298   .debug_str:0000000000000026 .LASF80
+     /tmp/ccGDMie2.s:1382   .debug_str:000000000000033f .LASF81
+     /tmp/ccGDMie2.s:1312   .debug_str:0000000000000094 .LASF82
+     /tmp/ccGDMie2.s:1386   .debug_str:0000000000000360 .LASF83
+     /tmp/ccGDMie2.s:1296   .debug_str:0000000000000020 .LASF84
+     /tmp/ccGDMie2.s:1392   .debug_str:0000000000000390 .LASF85
+     /tmp/ccGDMie2.s:1306   .debug_str:0000000000000067 .LASF86
+     /tmp/ccGDMie2.s:1380   .debug_str:0000000000000333 .LASF87
+     /tmp/ccGDMie2.s:1422   .debug_str:0000000000000450 .LASF88
+     /tmp/ccGDMie2.s:1486   .debug_str:000000000000062f .LASF89
+     /tmp/ccGDMie2.s:1322   .debug_str:00000000000000ce .LASF99
+     /tmp/ccGDMie2.s:1372   .debug_str:0000000000000303 .LASF90
+     /tmp/ccGDMie2.s:1328   .debug_str:0000000000000113 .LASF91
+     /tmp/ccGDMie2.s:1310   .debug_str:0000000000000089 .LASF100
+     /tmp/ccGDMie2.s:14     .text.Focus_Fault_State:0000000000000000 .LFB0
+     /tmp/ccGDMie2.s:72     .text.Focus_Fault_State:000000000000004c .LFE0
+     /tmp/ccGDMie2.s:1190   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccGDMie2.s:1215   .debug_loc:000000000000003a .LLST1
+     /tmp/ccGDMie2.s:24     .text.Focus_Fault_State:0000000000000008 .LBB4
+     /tmp/ccGDMie2.s:1233   .debug_loc:0000000000000066 .LLST2
+     /tmp/ccGDMie2.s:1247   .debug_loc:0000000000000087 .LLST3
+     /tmp/ccGDMie2.s:46     .text.Focus_Fault_State:000000000000001c .LVL3
+     /tmp/ccGDMie2.s:49     .text.Focus_Fault_State:0000000000000024 .LVL4
+     /tmp/ccGDMie2.s:52     .text.Focus_Fault_State:000000000000002c .LVL5
+     /tmp/ccGDMie2.s:1340   .debug_str:0000000000000147 .LASF92
+     /tmp/ccGDMie2.s:1466   .debug_str:0000000000000593 .LASF93
+     /tmp/ccGDMie2.s:1446   .debug_str:00000000000004e8 .LASF94
+     /tmp/ccGDMie2.s:18     .text.Focus_Fault_State:0000000000000000 .LVL0
+     /tmp/ccGDMie2.s:36     .text.Focus_Fault_State:0000000000000010 .LVL2
+     /tmp/ccGDMie2.s:64     .text.Focus_Fault_State:0000000000000040 .LVL6
+     /tmp/ccGDMie2.s:69     .text.Focus_Fault_State:0000000000000048 .LVL7
+     /tmp/ccGDMie2.s:23     .text.Focus_Fault_State:0000000000000008 .LVL1
+     /tmp/ccGDMie2.s:86     .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccGDMie2.s:28     .text.Focus_Fault_State:0000000000000008 .LBE4
+     /tmp/ccGDMie2.s:32     .text.Focus_Fault_State:000000000000000c .LBB8
+     /tmp/ccGDMie2.s:38     .text.Focus_Fault_State:0000000000000010 .LBE8
+     /tmp/ccGDMie2.s:42     .text.Focus_Fault_State:0000000000000014 .LBB9
+     /tmp/ccGDMie2.s:55     .text.Focus_Fault_State:000000000000002c .LBE9
+=======
+     /tmp/ccP5fDJ7.s:13     .text.Focus_Fault_State:0000000000000000 Focus_Fault_State
+     /tmp/ccP5fDJ7.s:17     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccP5fDJ7.s:19     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccP5fDJ7.s:20     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccP5fDJ7.s:21     .text.Focus_Fault_State:0000000000000000 .L0 
+     /tmp/ccP5fDJ7.s:29     .text.Focus_Fault_State:0000000000000008 .L0 
+     /tmp/ccP5fDJ7.s:30     .text.Focus_Fault_State:0000000000000008 .L0 
+     /tmp/ccP5fDJ7.s:31     .text.Focus_Fault_State:000000000000000c .L0 
+     /tmp/ccP5fDJ7.s:35     .text.Focus_Fault_State:000000000000000c .L0 
+     /tmp/ccP5fDJ7.s:40     .text.Focus_Fault_State:0000000000000010 .L0 
+     /tmp/ccP5fDJ7.s:41     .text.Focus_Fault_State:0000000000000014 .L0 
+     /tmp/ccP5fDJ7.s:45     .text.Focus_Fault_State:0000000000000014 .L0 
+     /tmp/ccP5fDJ7.s:48     .text.Focus_Fault_State:000000000000001c .L0 
+     /tmp/ccP5fDJ7.s:51     .text.Focus_Fault_State:0000000000000024 .L0 
+     /tmp/ccP5fDJ7.s:56     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccP5fDJ7.s:57     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccP5fDJ7.s:58     .text.Focus_Fault_State:000000000000002c .L0 
+     /tmp/ccP5fDJ7.s:59     .text.Focus_Fault_State:0000000000000030 .L0 
+     /tmp/ccP5fDJ7.s:62     .text.Focus_Fault_State:000000000000003c .L0 
+     /tmp/ccP5fDJ7.s:67     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccP5fDJ7.s:68     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccP5fDJ7.s:71     .text.Focus_Fault_State:000000000000004c .L0 
+     /tmp/ccP5fDJ7.s:74     .text.Focus_Fault_State:000000000000004c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccP5fDJ7.s:60     .text.Focus_Fault_State:0000000000000030 .L0 
+     /tmp/ccP5fDJ7.s:68     .text.Focus_Fault_State:0000000000000040 .L0 
+     /tmp/ccP5fDJ7.s:65     .text.Focus_Fault_State:0000000000000040 .L4
+     /tmp/ccP5fDJ7.s:803    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccP5fDJ7.s:1366   .debug_str:0000000000000221 .LASF95
+     /tmp/ccP5fDJ7.s:1324   .debug_str:00000000000000e0 .LASF96
+     /tmp/ccP5fDJ7.s:1346   .debug_str:000000000000016e .LASF97
+     /tmp/ccP5fDJ7.s:1274   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccP5fDJ7.s:1288   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccP5fDJ7.s:1434   .debug_str:000000000000048b .LASF4
+     /tmp/ccP5fDJ7.s:1408   .debug_str:00000000000003f0 .LASF0
+     /tmp/ccP5fDJ7.s:1356   .debug_str:00000000000001ec .LASF1
+     /tmp/ccP5fDJ7.s:1290   .debug_str:0000000000000000 .LASF2
+     /tmp/ccP5fDJ7.s:1402   .debug_str:00000000000003c4 .LASF3
+     /tmp/ccP5fDJ7.s:1370   .debug_str:00000000000002f9 .LASF5
+     /tmp/ccP5fDJ7.s:1390   .debug_str:0000000000000382 .LASF6
+     /tmp/ccP5fDJ7.s:1334   .debug_str:0000000000000129 .LASF7
+     /tmp/ccP5fDJ7.s:1330   .debug_str:0000000000000119 .LASF8
+     /tmp/ccP5fDJ7.s:1420   .debug_str:000000000000043d .LASF9
+     /tmp/ccP5fDJ7.s:1456   .debug_str:0000000000000542 .LASF10
+     /tmp/ccP5fDJ7.s:1362   .debug_str:000000000000020f .LASF11
+     /tmp/ccP5fDJ7.s:1326   .debug_str:0000000000000108 .LASF12
+     /tmp/ccP5fDJ7.s:1368   .debug_str:00000000000002e7 .LASF13
+     /tmp/ccP5fDJ7.s:1404   .debug_str:00000000000003d0 .LASF14
+     /tmp/ccP5fDJ7.s:1338   .debug_str:000000000000013f .LASF15
+     /tmp/ccP5fDJ7.s:1410   .debug_str:00000000000003fd .LASF16
+     /tmp/ccP5fDJ7.s:1428   .debug_str:0000000000000462 .LASF17
+     /tmp/ccP5fDJ7.s:1406   .debug_str:00000000000003e7 .LASF18
+     /tmp/ccP5fDJ7.s:1440   .debug_str:00000000000004b9 .LASF98
+     /tmp/ccP5fDJ7.s:1426   .debug_str:000000000000045d .LASF19
+     /tmp/ccP5fDJ7.s:1342   .debug_str:0000000000000159 .LASF20
+     /tmp/ccP5fDJ7.s:1488   .debug_str:0000000000000639 .LASF21
+     /tmp/ccP5fDJ7.s:1418   .debug_str:0000000000000431 .LASF22
+     /tmp/ccP5fDJ7.s:1412   .debug_str:0000000000000406 .LASF23
+     /tmp/ccP5fDJ7.s:1316   .debug_str:00000000000000b2 .LASF24
+     /tmp/ccP5fDJ7.s:1350   .debug_str:00000000000001b9 .LASF25
+     /tmp/ccP5fDJ7.s:1364   .debug_str:0000000000000218 .LASF26
+     /tmp/ccP5fDJ7.s:1332   .debug_str:0000000000000124 .LASF27
+     /tmp/ccP5fDJ7.s:1474   .debug_str:00000000000005cd .LASF28
+     /tmp/ccP5fDJ7.s:1348   .debug_str:00000000000001a5 .LASF29
+     /tmp/ccP5fDJ7.s:1388   .debug_str:0000000000000368 .LASF30
+     /tmp/ccP5fDJ7.s:1304   .debug_str:0000000000000052 .LASF31
+     /tmp/ccP5fDJ7.s:1468   .debug_str:00000000000005a6 .LASF32
+     /tmp/ccP5fDJ7.s:1292   .debug_str:000000000000000c .LASF33
+     /tmp/ccP5fDJ7.s:1378   .debug_str:0000000000000325 .LASF34
+     /tmp/ccP5fDJ7.s:1302   .debug_str:0000000000000042 .LASF35
+     /tmp/ccP5fDJ7.s:1314   .debug_str:00000000000000a0 .LASF36
+     /tmp/ccP5fDJ7.s:1344   .debug_str:0000000000000163 .LASF37
+     /tmp/ccP5fDJ7.s:1360   .debug_str:0000000000000203 .LASF38
+     /tmp/ccP5fDJ7.s:1436   .debug_str:0000000000000492 .LASF39
+     /tmp/ccP5fDJ7.s:1442   .debug_str:00000000000004ca .LASF40
+     /tmp/ccP5fDJ7.s:1438   .debug_str:00000000000004a6 .LASF41
+     /tmp/ccP5fDJ7.s:1308   .debug_str:0000000000000075 .LASF42
+     /tmp/ccP5fDJ7.s:1352   .debug_str:00000000000001cd .LASF43
+     /tmp/ccP5fDJ7.s:1460   .debug_str:0000000000000559 .LASF44
+     /tmp/ccP5fDJ7.s:1454   .debug_str:000000000000052b .LASF45
+     /tmp/ccP5fDJ7.s:1448   .debug_str:0000000000000501 .LASF46
+     /tmp/ccP5fDJ7.s:1354   .debug_str:00000000000001d6 .LASF47
+     /tmp/ccP5fDJ7.s:1398   .debug_str:00000000000003ae .LASF48
+     /tmp/ccP5fDJ7.s:1384   .debug_str:000000000000034a .LASF49
+     /tmp/ccP5fDJ7.s:1482   .debug_str:0000000000000612 .LASF50
+     /tmp/ccP5fDJ7.s:1444   .debug_str:00000000000004da .LASF51
+     /tmp/ccP5fDJ7.s:1414   .debug_str:0000000000000415 .LASF52
+     /tmp/ccP5fDJ7.s:1476   .debug_str:00000000000005e5 .LASF53
+     /tmp/ccP5fDJ7.s:1478   .debug_str:00000000000005f2 .LASF54
+     /tmp/ccP5fDJ7.s:1400   .debug_str:00000000000003bb .LASF55
+     /tmp/ccP5fDJ7.s:1452   .debug_str:000000000000051f .LASF56
+     /tmp/ccP5fDJ7.s:1294   .debug_str:0000000000000019 .LASF57
+     /tmp/ccP5fDJ7.s:1376   .debug_str:0000000000000320 .LASF58
+     /tmp/ccP5fDJ7.s:1462   .debug_str:0000000000000572 .LASF59
+     /tmp/ccP5fDJ7.s:1472   .debug_str:00000000000005c6 .LASF60
+     /tmp/ccP5fDJ7.s:1336   .debug_str:0000000000000133 .LASF61
+     /tmp/ccP5fDJ7.s:1300   .debug_str:0000000000000031 .LASF62
+     /tmp/ccP5fDJ7.s:1480   .debug_str:00000000000005ff .LASF63
+     /tmp/ccP5fDJ7.s:1490   .debug_str:0000000000000647 .LASF64
+     /tmp/ccP5fDJ7.s:1318   .debug_str:00000000000000be .LASF65
+     /tmp/ccP5fDJ7.s:1470   .debug_str:00000000000005b5 .LASF66
+     /tmp/ccP5fDJ7.s:1394   .debug_str:0000000000000398 .LASF67
+     /tmp/ccP5fDJ7.s:1424   .debug_str:0000000000000456 .LASF68
+     /tmp/ccP5fDJ7.s:1458   .debug_str:000000000000054c .LASF69
+     /tmp/ccP5fDJ7.s:1432   .debug_str:000000000000047e .LASF70
+     /tmp/ccP5fDJ7.s:1374   .debug_str:000000000000030b .LASF71
+     /tmp/ccP5fDJ7.s:1396   .debug_str:00000000000003a4 .LASF72
+     /tmp/ccP5fDJ7.s:1320   .debug_str:00000000000000c6 .LASF73
+     /tmp/ccP5fDJ7.s:1416   .debug_str:0000000000000424 .LASF74
+     /tmp/ccP5fDJ7.s:1430   .debug_str:000000000000046a .LASF75
+     /tmp/ccP5fDJ7.s:1450   .debug_str:0000000000000517 .LASF76
+     /tmp/ccP5fDJ7.s:1358   .debug_str:00000000000001fa .LASF77
+     /tmp/ccP5fDJ7.s:1484   .debug_str:0000000000000627 .LASF78
+     /tmp/ccP5fDJ7.s:1464   .debug_str:000000000000058a .LASF79
+     /tmp/ccP5fDJ7.s:1298   .debug_str:0000000000000026 .LASF80
+     /tmp/ccP5fDJ7.s:1382   .debug_str:000000000000033f .LASF81
+     /tmp/ccP5fDJ7.s:1312   .debug_str:0000000000000094 .LASF82
+     /tmp/ccP5fDJ7.s:1386   .debug_str:0000000000000360 .LASF83
+     /tmp/ccP5fDJ7.s:1296   .debug_str:0000000000000020 .LASF84
+     /tmp/ccP5fDJ7.s:1392   .debug_str:0000000000000390 .LASF85
+     /tmp/ccP5fDJ7.s:1306   .debug_str:0000000000000067 .LASF86
+     /tmp/ccP5fDJ7.s:1380   .debug_str:0000000000000333 .LASF87
+     /tmp/ccP5fDJ7.s:1422   .debug_str:0000000000000450 .LASF88
+     /tmp/ccP5fDJ7.s:1486   .debug_str:000000000000062f .LASF89
+     /tmp/ccP5fDJ7.s:1322   .debug_str:00000000000000ce .LASF99
+     /tmp/ccP5fDJ7.s:1372   .debug_str:0000000000000303 .LASF90
+     /tmp/ccP5fDJ7.s:1328   .debug_str:0000000000000113 .LASF91
+     /tmp/ccP5fDJ7.s:1310   .debug_str:0000000000000089 .LASF100
+     /tmp/ccP5fDJ7.s:14     .text.Focus_Fault_State:0000000000000000 .LFB0
+     /tmp/ccP5fDJ7.s:72     .text.Focus_Fault_State:000000000000004c .LFE0
+     /tmp/ccP5fDJ7.s:1190   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccP5fDJ7.s:1215   .debug_loc:000000000000003a .LLST1
+     /tmp/ccP5fDJ7.s:24     .text.Focus_Fault_State:0000000000000008 .LBB4
+     /tmp/ccP5fDJ7.s:1233   .debug_loc:0000000000000066 .LLST2
+     /tmp/ccP5fDJ7.s:1247   .debug_loc:0000000000000087 .LLST3
+     /tmp/ccP5fDJ7.s:46     .text.Focus_Fault_State:000000000000001c .LVL3
+     /tmp/ccP5fDJ7.s:49     .text.Focus_Fault_State:0000000000000024 .LVL4
+     /tmp/ccP5fDJ7.s:52     .text.Focus_Fault_State:000000000000002c .LVL5
+     /tmp/ccP5fDJ7.s:1340   .debug_str:0000000000000147 .LASF92
+     /tmp/ccP5fDJ7.s:1466   .debug_str:0000000000000593 .LASF93
+     /tmp/ccP5fDJ7.s:1446   .debug_str:00000000000004e8 .LASF94
+     /tmp/ccP5fDJ7.s:18     .text.Focus_Fault_State:0000000000000000 .LVL0
+     /tmp/ccP5fDJ7.s:36     .text.Focus_Fault_State:0000000000000010 .LVL2
+     /tmp/ccP5fDJ7.s:64     .text.Focus_Fault_State:0000000000000040 .LVL6
+     /tmp/ccP5fDJ7.s:69     .text.Focus_Fault_State:0000000000000048 .LVL7
+     /tmp/ccP5fDJ7.s:23     .text.Focus_Fault_State:0000000000000008 .LVL1
+     /tmp/ccP5fDJ7.s:86     .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccP5fDJ7.s:28     .text.Focus_Fault_State:0000000000000008 .LBE4
+     /tmp/ccP5fDJ7.s:32     .text.Focus_Fault_State:000000000000000c .LBB8
+     /tmp/ccP5fDJ7.s:38     .text.Focus_Fault_State:0000000000000010 .LBE8
+     /tmp/ccP5fDJ7.s:42     .text.Focus_Fault_State:0000000000000014 .LBB9
+     /tmp/ccP5fDJ7.s:55     .text.Focus_Fault_State:000000000000002c .LBE9
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Set_Stepper_out
+v_Stop_Focus_Timer
+v_Stop_Focus_Fault_Timer

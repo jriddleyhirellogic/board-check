@@ -1,0 +1,46 @@
+\doxysection{Semaphore\+Data Struct Reference}
+\hypertarget{structSemaphoreData}{}\label{structSemaphoreData}\index{SemaphoreData@{SemaphoreData}}
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{Task\+Handle\+\_\+t}} \doxymbox{\hyperlink{structSemaphoreData_ae535b4032692c6784d5795abf2886f3e}{x\+Mutex\+Holder}}
+\item 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} \doxymbox{\hyperlink{structSemaphoreData_ae3c791284df4f19b849e56f972b13db4}{ux\+Recursive\+Call\+Count}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00074}{74}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structSemaphoreData_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structSemaphoreData_ae3c791284df4f19b849e56f972b13db4}\index{SemaphoreData@{SemaphoreData}!uxRecursiveCallCount@{uxRecursiveCallCount}}
+\index{uxRecursiveCallCount@{uxRecursiveCallCount}!SemaphoreData@{SemaphoreData}}
+\doxysubsubsection{\texorpdfstring{uxRecursiveCallCount}{uxRecursiveCallCount}}
+{\footnotesize\ttfamily \label{structSemaphoreData_ae3c791284df4f19b849e56f972b13db4} 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} ux\+Recursive\+Call\+Count}
+
+Maintains a count of the number of times a recursive mutex has been recursively \textquotesingle{}taken\textquotesingle{} when the structure is used as a mutex. 
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00077}{77}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+\Hypertarget{structSemaphoreData_ae535b4032692c6784d5795abf2886f3e}\index{SemaphoreData@{SemaphoreData}!xMutexHolder@{xMutexHolder}}
+\index{xMutexHolder@{xMutexHolder}!SemaphoreData@{SemaphoreData}}
+\doxysubsubsection{\texorpdfstring{xMutexHolder}{xMutexHolder}}
+{\footnotesize\ttfamily \label{structSemaphoreData_ae535b4032692c6784d5795abf2886f3e} 
+\doxymbox{\hyperlink{task_8h_a25b35e6e19ecf894173e7ff95edb96ef}{Task\+Handle\+\_\+t}} x\+Mutex\+Holder}
+
+The handle of the task that holds the mutex. 
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00076}{76}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+\+Free\+RTOS/\+\doxymbox{\hyperlink{queue_8c}{queue.\+c}}\end{DoxyCompactItemize}

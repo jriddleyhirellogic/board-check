@@ -1,0 +1,1646 @@
+   1              		.file	"hw_init.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Hw_Init,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Hw_Init
+  13              	v_Hw_Init:
+  14              	.LFB1:
+  15              		.file 1 "../src/hw_init.c"
+   1:../src/hw_init.c **** /*
+   2:../src/hw_init.c ****  * hw_init.c
+   3:../src/hw_init.c ****  *
+   4:../src/hw_init.c ****  *  Created on: Oct 3, 2025
+   5:../src/hw_init.c ****  *      Author: iboard
+   6:../src/hw_init.c ****  */
+   7:../src/hw_init.c **** #include <stdint.h>
+   8:../src/hw_init.c **** #include <string.h>
+   9:../src/hw_init.c **** 
+  10:../src/hw_init.c **** #include "FreeRTOSConfig.h"
+  11:../src/hw_init.c **** #include "FreeRTOS.h"
+  12:../src/hw_init.c **** #include "task.h"
+  13:../src/hw_init.c **** #include "event_groups.h"
+  14:../src/hw_init.c **** #include "mem_map.h"
+  15:../src/hw_init.c **** 
+  16:../src/hw_init.c **** #include "config.h"
+  17:../src/hw_init.c **** 
+  18:../src/hw_init.c **** #include "hal_uart16550.h"
+  19:../src/hw_init.c **** #include "serial_comm.h"
+  20:../src/hw_init.c **** #include "debug_gpio.h"
+  21:../src/hw_init.c **** #include "core_gpio.h"
+  22:../src/hw_init.c **** #include "gpio_pin_def.h"
+  23:../src/hw_init.c **** #include "debug_switches.h"
+  24:../src/hw_init.c **** #include "pwm.h"
+  25:../src/hw_init.c **** #include "hal_stepper.h"
+  26:../src/hw_init.c **** #include "lvdt.h"
+  27:../src/hw_init.c **** #include "timer.h"
+  28:../src/hw_init.c **** #include "misc.h"
+  29:../src/hw_init.c **** #include "register.h"
+  30:../src/hw_init.c **** #include "crc.h"
+  31:../src/hw_init.c **** #include "debug_mux.h"
+  32:../src/hw_init.c **** #include "debug_switches.h"
+  33:../src/hw_init.c **** #include "flash.h"
+  34:../src/hw_init.c **** #include "pps.h"
+  35:../src/hw_init.c **** 
+  36:../src/hw_init.c **** // For now only stepper 1 is being used. Later, there will be a provision to switch over to the oth
+  37:../src/hw_init.c **** static UART_16550_Instance_t Serial_Comm_UART;
+  38:../src/hw_init.c **** static Stepper_Instance_t Primary_Stepper, Secondary_Stepper;
+  39:../src/hw_init.c **** static Timer_Instance_t Serial_Timer_Instance;
+  40:../src/hw_init.c **** 
+  41:../src/hw_init.c **** static gpio_instance_t Power_GPIOs;
+  42:../src/hw_init.c **** static gpio_instance_t Power_Status;
+  43:../src/hw_init.c **** 
+  44:../src/hw_init.c **** /**
+  45:../src/hw_init.c ****  * @fn void v_Hw_Init(void)
+  46:../src/hw_init.c ****  * @brief Low level hardware initialization.
+  47:../src/hw_init.c ****  * This is called before the scheduler is started.
+  48:../src/hw_init.c ****  *
+  49:../src/hw_init.c ****  */
+  50:../src/hw_init.c **** 
+  51:../src/hw_init.c **** // Note: the scheduler and interrupts are not running when this is called so task delays cannot be 
+  52:../src/hw_init.c **** void v_Hw_Init(void)
+  53:../src/hw_init.c **** {
+  16              		.loc 1 53 1
+  17              		.cfi_startproc
+  54:../src/hw_init.c ****     uint32_t u32_CRC;
+  18              		.loc 1 54 5
+  55:../src/hw_init.c ****     uint8_t u8_Status;
+  19              		.loc 1 55 5
+  56:../src/hw_init.c ****     uint32_t u32_ID;
+  20              		.loc 1 56 5
+  57:../src/hw_init.c ****     uint8_t u8_Test;
+  21              		.loc 1 57 5
+  58:../src/hw_init.c ****     uint8_t u8_N;
+  22              		.loc 1 58 5
+  59:../src/hw_init.c ****     uint8_t b_Program = 1;
+  23              		.loc 1 59 5
+  24              	.LVL0:
+  60:../src/hw_init.c **** 
+  61:../src/hw_init.c ****     v_Init_Debug_Mux();
+  25              		.loc 1 61 5
+  53:../src/hw_init.c ****     uint32_t u32_CRC;
+  26              		.loc 1 53 1 is_stmt 0
+  27 0000 130101FA 		addi	sp,sp,-96
+  28              		.cfi_def_cfa_offset 96
+  29 0004 232E1104 		sw	ra,92(sp)
+  30 0008 232C8104 		sw	s0,88(sp)
+  31 000c 232A9104 		sw	s1,84(sp)
+  32 0010 23282105 		sw	s2,80(sp)
+  33              		.cfi_offset 1, -4
+  34              		.cfi_offset 8, -8
+  35              		.cfi_offset 9, -12
+  36              		.cfi_offset 18, -16
+  37              		.loc 1 61 5
+  38 0014 97000000 		call	v_Init_Debug_Mux
+  38      E7800000 
+  39              	.LVL1:
+  62:../src/hw_init.c **** //    v_Set_Debug_Mux( STEPPER_DEBUG  );
+  63:../src/hw_init.c **** //    v_Set_Debug_Mux( DEFAULT_DEBUG  );
+  64:../src/hw_init.c ****     v_Set_Debug_Mux( QSPI_DEBUG  );
+  40              		.loc 1 64 5 is_stmt 1
+  41 001c 13054000 		li	a0,4
+  42 0020 97000000 		call	v_Set_Debug_Mux
+  42      E7800000 
+  43              	.LVL2:
+  65:../src/hw_init.c **** //    v_Set_Debug_Mux( TLM_DEBUG   );
+  66:../src/hw_init.c ****     v_Init_Debug_Switches();
+  44              		.loc 1 66 5
+  67:../src/hw_init.c **** 
+  68:../src/hw_init.c ****     // Done before any of the hardware init as some will use register settings
+  69:../src/hw_init.c ****     v_Init_Registers();
+  70:../src/hw_init.c **** 
+  71:../src/hw_init.c ****     v_Init_Flash();
+  72:../src/hw_init.c ****     v_Flash_Reset();
+  73:../src/hw_init.c ****     v_Global_Flash_Unlock();
+  74:../src/hw_init.c **** 
+  75:../src/hw_init.c ****     // Power up necessary LDOs
+  76:../src/hw_init.c ****     GPIO_init( &Power_GPIOs , GPO_HK_PWR_BASE_ADDR, GPIO_APB_32_BITS_BUS);
+  45              		.loc 1 76 5 is_stmt 0
+  46 0028 17040000 		lla	s0,.LANCHOR0
+  46      13040400 
+  66:../src/hw_init.c **** 
+  47              		.loc 1 66 5
+  48 0030 97000000 		call	v_Init_Debug_Switches
+  48      E7800000 
+  49              	.LVL3:
+  69:../src/hw_init.c **** 
+  50              		.loc 1 69 5 is_stmt 1
+  51 0038 97000000 		call	v_Init_Registers
+  51      E7800000 
+  52              	.LVL4:
+  71:../src/hw_init.c ****     v_Flash_Reset();
+  53              		.loc 1 71 5
+  54 0040 97000000 		call	v_Init_Flash
+  54      E7800000 
+  55              	.LVL5:
+  72:../src/hw_init.c ****     v_Global_Flash_Unlock();
+  56              		.loc 1 72 5
+  57 0048 97000000 		call	v_Flash_Reset
+  57      E7800000 
+  58              	.LVL6:
+  73:../src/hw_init.c **** 
+  59              		.loc 1 73 5
+  60 0050 97000000 		call	v_Global_Flash_Unlock
+  60      E7800000 
+  61              	.LVL7:
+  62              		.loc 1 76 5
+  63 0058 13050400 		mv	a0,s0
+  64 005c 13062000 		li	a2,2
+  65 0060 B7150170 		li	a1,1879117824
+  66 0064 97000000 		call	GPIO_init
+  66      E7800000 
+  67              	.LVL8:
+  77:../src/hw_init.c ****     GPIO_init( &Power_Status , GPI_HK_STATUS_BASE_ADDR, GPIO_APB_32_BITS_BUS);
+  68              		.loc 1 77 5
+  69 006c 13062000 		li	a2,2
+  70 0070 B7050170 		li	a1,1879113728
+  71 0074 17050000 		lla	a0,.LANCHOR1
+  71      13050500 
+  72 007c 97000000 		call	GPIO_init
+  72      E7800000 
+  73              	.LVL9:
+  78:../src/hw_init.c **** 
+  79:../src/hw_init.c ****     //GPIO_set_output( &Power_GPIOs, STEPPER_SEC_PWR_EN, 1);
+  80:../src/hw_init.c ****     GPIO_set_output( &Power_GPIOs, LVDT_PWR_EN, 1);
+  74              		.loc 1 80 5
+  75 0084 13061000 		li	a2,1
+  76 0088 93055000 		li	a1,5
+  77 008c 13050400 		mv	a0,s0
+  78 0090 97000000 		call	GPIO_set_output
+  78      E7800000 
+  79              	.LVL10:
+  81:../src/hw_init.c **** 
+  82:../src/hw_init.c ****     // Serial Comm UART
+  83:../src/hw_init.c ****     Serial_Comm_UART.u32_Base_Address = TMTC_UART_BASE_ADDR;
+  80              		.loc 1 83 5
+  81              		.loc 1 83 39 is_stmt 0
+  82 0098 17040000 		lla	s0,.LANCHOR2
+  82      13040400 
+  83 00a0 B7070070 		li	a5,1879048192
+  84:../src/hw_init.c ****     Serial_Comm_UART.u8_Status = 0;
+  85:../src/hw_init.c ****     v_Init_UART( &Serial_Comm_UART );
+  84              		.loc 1 85 5
+  85 00a4 13050400 		mv	a0,s0
+  83:../src/hw_init.c ****     Serial_Comm_UART.u8_Status = 0;
+  86              		.loc 1 83 39
+  87 00a8 2320F400 		sw	a5,0(s0)
+  84:../src/hw_init.c ****     Serial_Comm_UART.u8_Status = 0;
+  88              		.loc 1 84 5 is_stmt 1
+  84:../src/hw_init.c ****     Serial_Comm_UART.u8_Status = 0;
+  89              		.loc 1 84 32 is_stmt 0
+  90 00ac 23020400 		sb	zero,4(s0)
+  91              		.loc 1 85 5 is_stmt 1
+  92 00b0 97000000 		call	v_Init_UART
+  92      E7800000 
+  93              	.LVL11:
+  86:../src/hw_init.c **** 
+  87:../src/hw_init.c ****     // Serial comm timer
+  88:../src/hw_init.c ****     Timer_Init_t Timer_Init =
+  94              		.loc 1 88 5
+  89:../src/hw_init.c ****     {
+  90:../src/hw_init.c ****         .u32_Base_Address = SERIAL_COMM_TIMER_BASE,
+  91:../src/hw_init.c ****          .u8_Prescale = TIMER_PRESCALE_FACTOR_2,
+  92:../src/hw_init.c ****          .u8_Mode = TIMER_MODE_ONE_SHOT
+  93:../src/hw_init.c ****     };
+  94:../src/hw_init.c ****     v_Init_Timer( &Serial_Timer_Instance,  &Timer_Init );
+  95              		.loc 1 94 5 is_stmt 0
+  96 00b8 97040000 		lla	s1,.LANCHOR3
+  96      93840400 
+  88:../src/hw_init.c ****     {
+  97              		.loc 1 88 18
+  98 00c0 B7670170 		li	a5,1879138304
+  99              		.loc 1 94 5
+ 100 00c4 93050100 		mv	a1,sp
+  88:../src/hw_init.c ****     {
+ 101              		.loc 1 88 18
+ 102 00c8 2320F100 		sw	a5,0(sp)
+ 103              		.loc 1 94 5
+ 104 00cc 13850400 		mv	a0,s1
+  88:../src/hw_init.c ****     {
+ 105              		.loc 1 88 18
+ 106 00d0 93070040 		li	a5,1024
+ 107 00d4 2312F100 		sh	a5,4(sp)
+ 108              		.loc 1 94 5 is_stmt 1
+ 109 00d8 97000000 		call	v_Init_Timer
+ 109      E7800000 
+ 110              	.LVL12:
+  95:../src/hw_init.c **** 
+  96:../src/hw_init.c ****     v_Set_Serial_Comm_Instance( &Serial_Comm_UART );
+ 111              		.loc 1 96 5
+ 112 00e0 13050400 		mv	a0,s0
+ 113 00e4 97000000 		call	v_Set_Serial_Comm_Instance
+ 113      E7800000 
+ 114              	.LVL13:
+  97:../src/hw_init.c ****     v_Set_Serial_Timer_Instance( &Serial_Timer_Instance );
+ 115              		.loc 1 97 5
+ 116 00ec 13850400 		mv	a0,s1
+ 117 00f0 97000000 		call	v_Set_Serial_Timer_Instance
+ 117      E7800000 
+ 118              	.LVL14:
+  98:../src/hw_init.c **** 
+  99:../src/hw_init.c ****     /* Initializing primary stepper interface */
+ 100:../src/hw_init.c ****     // Stepper Control Block
+ 101:../src/hw_init.c ****     /*
+ 102:../src/hw_init.c ****      * Initial setup for stepper
+ 103:../src/hw_init.c ****      * M0: 1
+ 104:../src/hw_init.c ****      * M1: Hi-Z
+ 105:../src/hw_init.c ****      * Decay0: 0
+ 106:../src/hw_init.c ****      * Decay1: 1
+ 107:../src/hw_init.c ****      * TOFF: 1 or Hi-Z
+ 108:../src/hw_init.c ****      * nSleep: 1
+ 109:../src/hw_init.c ****      * Enable : 0 or 1 depending on mode
+ 110:../src/hw_init.c ****      * Vref : 304 mV
+ 111:../src/hw_init.c ****      */
+ 112:../src/hw_init.c ****     PWM_Init_t Pri_PWM_Init =
+ 119              		.loc 1 112 5
+ 120              		.loc 1 112 16 is_stmt 0
+ 121 00f8 B7170370 		li	a5,1879248896
+ 122 00fc 2324F100 		sw	a5,8(sp)
+ 113:../src/hw_init.c ****     {
+ 114:../src/hw_init.c ****        .u32_Base_Address = PRI_STP_VREF_BASE_ADDR,
+ 115:../src/hw_init.c ****        .u16_Prescale = 1,
+ 116:../src/hw_init.c ****        .u16_Period = (1 << 16)-1, // 16 bit
+ 117:../src/hw_init.c ****        .u16_Negedge = 0
+ 118:../src/hw_init.c ****     };
+ 119:../src/hw_init.c **** 
+ 120:../src/hw_init.c ****     uint32_t u32_Stepper_Control_Base;
+ 121:../src/hw_init.c ****     uint32_t u32_Stepper_Out_Base;
+ 122:../src/hw_init.c ****     uint32_t u32_Stepper_Overflow_Base;
+ 123:../src/hw_init.c ****     uint32_t u32_Overflow_Value;
+ 124:../src/hw_init.c ****     PWM_Init_t *Pwm_Init;
+ 125:../src/hw_init.c ****     uint8_t u8_Power_Enable;
+ 126:../src/hw_init.c **** 
+ 127:../src/hw_init.c ****     Stepper_Init_t Pri_Stepper_Init =
+ 123              		.loc 1 127 20
+ 124 0100 B7070370 		li	a5,1879244800
+ 125 0104 2320F102 		sw	a5,32(sp)
+ 126 0108 B7270370 		li	a5,1879252992
+ 127 010c 2322F102 		sw	a5,36(sp)
+ 128 0110 B7E70370 		li	a5,1879302144
+ 128:../src/hw_init.c ****     {
+ 129:../src/hw_init.c ****         .u32_Stepper_Control_Base = PRI_STP_CTRL_BASE_ADDR,
+ 130:../src/hw_init.c ****         .u32_Stepper_Out_Base = PRI_STP_OUT_BASE_ADDR,
+ 131:../src/hw_init.c ****         .Pwm_Init = &Pri_PWM_Init,
+ 132:../src/hw_init.c ****         .u8_Power_Enable = STEPPER_PRI_PWR_EN,
+ 133:../src/hw_init.c ****         .u32_Stepper_Overflow_Base = PRI_STP_APB_STEPPER_OVERFLOW,
+ 134:../src/hw_init.c ****         .u32_Overflow_Value = 4882813
+ 135:../src/hw_init.c ****     };
+ 136:../src/hw_init.c **** 
+ 137:../src/hw_init.c ****     v_Init_Stepper( &Primary_Stepper, &Pri_Stepper_Init );
+ 129              		.loc 1 137 5
+ 130 0114 17090000 		lla	s2,.LANCHOR4
+ 130      13090900 
+ 127:../src/hw_init.c ****     {
+ 131              		.loc 1 127 20
+ 132 011c 2324F102 		sw	a5,40(sp)
+ 112:../src/hw_init.c ****     {
+ 133              		.loc 1 112 16
+ 134 0120 B704FFFF 		li	s1,-65536
+ 127:../src/hw_init.c ****     {
+ 135              		.loc 1 127 20
+ 136 0124 93078100 		addi	a5,sp,8
+ 137 0128 37844A00 		li	s0,4882432
+ 138              		.loc 1 137 5
+ 139 012c 93050102 		addi	a1,sp,32
+ 112:../src/hw_init.c ****     {
+ 140              		.loc 1 112 16
+ 141 0130 93841400 		addi	s1,s1,1
+ 127:../src/hw_init.c ****     {
+ 142              		.loc 1 127 20
+ 143 0134 1304D417 		addi	s0,s0,381
+ 144 0138 2328F102 		sw	a5,48(sp)
+ 145              		.loc 1 137 5
+ 146 013c 13050900 		mv	a0,s2
+ 127:../src/hw_init.c ****     {
+ 147              		.loc 1 127 20
+ 148 0140 93073000 		li	a5,3
+ 149 0144 230AF102 		sb	a5,52(sp)
+ 112:../src/hw_init.c ****     {
+ 150              		.loc 1 112 16
+ 151 0148 23269100 		sw	s1,12(sp)
+ 120:../src/hw_init.c ****     uint32_t u32_Stepper_Out_Base;
+ 152              		.loc 1 120 5 is_stmt 1
+ 121:../src/hw_init.c ****     uint32_t u32_Stepper_Overflow_Base;
+ 153              		.loc 1 121 5
+ 122:../src/hw_init.c ****     uint32_t u32_Overflow_Value;
+ 154              		.loc 1 122 5
+ 123:../src/hw_init.c ****     PWM_Init_t *Pwm_Init;
+ 155              		.loc 1 123 5
+ 124:../src/hw_init.c ****     uint8_t u8_Power_Enable;
+ 156              		.loc 1 124 5
+ 125:../src/hw_init.c **** 
+ 157              		.loc 1 125 5
+ 127:../src/hw_init.c ****     {
+ 158              		.loc 1 127 5
+ 159              		.loc 1 137 5
+ 127:../src/hw_init.c ****     {
+ 160              		.loc 1 127 20 is_stmt 0
+ 161 014c 23268102 		sw	s0,44(sp)
+ 112:../src/hw_init.c ****     {
+ 162              		.loc 1 112 16
+ 163 0150 23280100 		sw	zero,16(sp)
+ 164              		.loc 1 137 5
+ 165 0154 97000000 		call	v_Init_Stepper
+ 165      E7800000 
+ 166              	.LVL15:
+ 138:../src/hw_init.c **** 
+ 139:../src/hw_init.c ****     v_Set_Stepper_Instance( &Primary_Stepper );
+ 167              		.loc 1 139 5 is_stmt 1
+ 168 015c 13050900 		mv	a0,s2
+ 169 0160 97000000 		call	v_Set_Stepper_Instance
+ 169      E7800000 
+ 170              	.LVL16:
+ 140:../src/hw_init.c ****     v_Set_Stepper_Control_Output( STEPPER_CONTROL_DEFAULTS  );
+ 171              		.loc 1 140 5
+ 172 0168 13050007 		li	a0,112
+ 173 016c 97000000 		call	v_Set_Stepper_Control_Output
+ 173      E7800000 
+ 174              	.LVL17:
+ 141:../src/hw_init.c ****     v_Set_Microstep_Mode( STEP_256 );
+ 175              		.loc 1 141 5
+ 176 0174 13058000 		li	a0,8
+ 177 0178 97000000 		call	v_Set_Microstep_Mode
+ 177      E7800000 
+ 178              	.LVL18:
+ 142:../src/hw_init.c ****     //v_Set_Microstep_Mode( FULL_STEP_FULL_CURRENT );
+ 143:../src/hw_init.c ****     v_Set_Decay_Mode( SMART_DYNAMIC_DECAY_MODE );
+ 179              		.loc 1 143 5
+ 180 0180 13050000 		li	a0,0
+ 181 0184 97000000 		call	v_Set_Decay_Mode
+ 181      E7800000 
+ 182              	.LVL19:
+ 144:../src/hw_init.c **** 
+ 145:../src/hw_init.c ****     /* Initializing secondary stepper interface */
+ 146:../src/hw_init.c ****     // Initialization is the same as the primary, just different addresses
+ 147:../src/hw_init.c ****     PWM_Init_t Sec_PWM_Init =
+ 183              		.loc 1 147 5
+ 184              		.loc 1 147 16 is_stmt 0
+ 185 018c B7470370 		li	a5,1879261184
+ 186 0190 232AF100 		sw	a5,20(sp)
+ 148:../src/hw_init.c ****     {
+ 149:../src/hw_init.c ****        .u32_Base_Address = SEC_STP_VREF_BASE_ADDR,
+ 150:../src/hw_init.c ****        .u16_Prescale = 1,
+ 151:../src/hw_init.c ****        .u16_Period = (1 << 16)-1, // 16 bit
+ 152:../src/hw_init.c ****        .u16_Negedge = 0
+ 153:../src/hw_init.c ****     };
+ 154:../src/hw_init.c **** 
+ 155:../src/hw_init.c ****     Stepper_Init_t Sec_Stepper_Init =
+ 187              		.loc 1 155 20
+ 188 0194 B7370370 		li	a5,1879257088
+ 189 0198 232CF102 		sw	a5,56(sp)
+ 190 019c B7570370 		li	a5,1879265280
+ 191 01a0 232EF102 		sw	a5,60(sp)
+ 192 01a4 B7F70370 		li	a5,1879306240
+ 193 01a8 2320F104 		sw	a5,64(sp)
+ 194 01ac 23228104 		sw	s0,68(sp)
+ 195 01b0 93074101 		addi	a5,sp,20
+ 156:../src/hw_init.c ****     {
+ 157:../src/hw_init.c ****         .u32_Stepper_Control_Base = SEC_STP_CTRL_BASE_ADDR,
+ 158:../src/hw_init.c ****         .u32_Stepper_Out_Base = SEC_STP_OUT_BASE_ADDR,
+ 159:../src/hw_init.c ****         .Pwm_Init = &Sec_PWM_Init,
+ 160:../src/hw_init.c ****         .u8_Power_Enable = STEPPER_SEC_PWR_EN,
+ 161:../src/hw_init.c ****         .u32_Stepper_Overflow_Base = SEC_STP_APB_STEPPER_OVERFLOW,
+ 162:../src/hw_init.c ****         .u32_Overflow_Value = 4882813
+ 163:../src/hw_init.c ****     };
+ 164:../src/hw_init.c **** 
+ 165:../src/hw_init.c **** 
+ 166:../src/hw_init.c ****     v_Init_Stepper( &Secondary_Stepper, &Sec_Stepper_Init );
+ 196              		.loc 1 166 5
+ 197 01b4 17040000 		lla	s0,.LANCHOR5
+ 197      13040400 
+ 198 01bc 93058103 		addi	a1,sp,56
+ 155:../src/hw_init.c ****     {
+ 199              		.loc 1 155 20
+ 200 01c0 2324F104 		sw	a5,72(sp)
+ 201              		.loc 1 166 5
+ 202 01c4 13050400 		mv	a0,s0
+ 155:../src/hw_init.c ****     {
+ 203              		.loc 1 155 20
+ 204 01c8 93074000 		li	a5,4
+ 205 01cc 2306F104 		sb	a5,76(sp)
+ 147:../src/hw_init.c ****     {
+ 206              		.loc 1 147 16
+ 207 01d0 232C9100 		sw	s1,24(sp)
+ 155:../src/hw_init.c ****     {
+ 208              		.loc 1 155 5 is_stmt 1
+ 209              		.loc 1 166 5
+ 147:../src/hw_init.c ****     {
+ 210              		.loc 1 147 16 is_stmt 0
+ 211 01d4 232E0100 		sw	zero,28(sp)
+ 212              		.loc 1 166 5
+ 213 01d8 97000000 		call	v_Init_Stepper
+ 213      E7800000 
+ 214              	.LVL20:
+ 167:../src/hw_init.c ****     v_Set_Stepper_Instance( &Secondary_Stepper );
+ 215              		.loc 1 167 5 is_stmt 1
+ 216 01e0 13050400 		mv	a0,s0
+ 217 01e4 97000000 		call	v_Set_Stepper_Instance
+ 217      E7800000 
+ 218              	.LVL21:
+ 168:../src/hw_init.c ****     v_Set_Stepper_Control_Output( STEPPER_CONTROL_DEFAULTS  );
+ 219              		.loc 1 168 5
+ 220 01ec 13050007 		li	a0,112
+ 221 01f0 97000000 		call	v_Set_Stepper_Control_Output
+ 221      E7800000 
+ 222              	.LVL22:
+ 169:../src/hw_init.c ****     v_Set_Microstep_Mode( STEP_256 );
+ 223              		.loc 1 169 5
+ 224 01f8 13058000 		li	a0,8
+ 225 01fc 97000000 		call	v_Set_Microstep_Mode
+ 225      E7800000 
+ 226              	.LVL23:
+ 170:../src/hw_init.c ****     //v_Set_Microstep_Mode( FULL_STEP_FULL_CURRENT );
+ 171:../src/hw_init.c ****     v_Set_Decay_Mode( SMART_DYNAMIC_DECAY_MODE );
+ 227              		.loc 1 171 5
+ 228 0204 13050000 		li	a0,0
+ 229 0208 97000000 		call	v_Set_Decay_Mode
+ 229      E7800000 
+ 230              	.LVL24:
+ 172:../src/hw_init.c **** 
+ 173:../src/hw_init.c ****     //v_Set_Stepper_Instance( &Secondary_Stepper );
+ 174:../src/hw_init.c ****     v_Set_Stepper_Instance( &Primary_Stepper );
+ 231              		.loc 1 174 5
+ 232 0210 13050900 		mv	a0,s2
+ 233 0214 97000000 		call	v_Set_Stepper_Instance
+ 233      E7800000 
+ 234              	.LVL25:
+ 175:../src/hw_init.c **** 
+ 176:../src/hw_init.c **** 
+ 177:../src/hw_init.c **** #ifdef STEPPER_3p3V
+ 178:../src/hw_init.c ****     v_Stepper_Set_Vref( 304 );        // For use with the 3.3V stepper
+ 179:../src/hw_init.c **** #else
+ 180:../src/hw_init.c ****     v_Stepper_Set_I_Max_mA( 300 );//150 );    // For use with 12V stepper
+ 235              		.loc 1 180 5
+ 236 021c 1305C012 		li	a0,300
+ 237 0220 97000000 		call	v_Stepper_Set_I_Max_mA
+ 237      E7800000 
+ 238              	.LVL26:
+ 181:../src/hw_init.c **** #endif
+ 182:../src/hw_init.c **** 
+ 183:../src/hw_init.c **** 
+ 184:../src/hw_init.c ****     v_Set_Stepper_out(  0 );
+ 239              		.loc 1 184 5
+ 240 0228 13050000 		li	a0,0
+ 241 022c 97000000 		call	v_Set_Stepper_out
+ 241      E7800000 
+ 242              	.LVL27:
+ 185:../src/hw_init.c ****     //v_Enable_Stepper(  1 );
+ 186:../src/hw_init.c **** 
+ 187:../src/hw_init.c ****     // LVDT
+ 188:../src/hw_init.c ****     v_Init_LVDT();
+ 243              		.loc 1 188 5
+ 244 0234 97000000 		call	v_Init_LVDT
+ 244      E7800000 
+ 245              	.LVL28:
+ 189:../src/hw_init.c ****     v_Set_LVDT_Gain( LVDT_GAIN_1 );
+ 246              		.loc 1 189 5
+ 247 023c 13050000 		li	a0,0
+ 248 0240 97000000 		call	v_Set_LVDT_Gain
+ 248      E7800000 
+ 249              	.LVL29:
+ 190:../src/hw_init.c **** 
+ 191:../src/hw_init.c ****     // Various Debug GPIOs
+ 192:../src/hw_init.c ****     v_Init_Debug_GPIO();
+ 250              		.loc 1 192 5
+ 251 0248 97000000 		call	v_Init_Debug_GPIO
+ 251      E7800000 
+ 252              	.LVL30:
+ 193:../src/hw_init.c **** 
+ 194:../src/hw_init.c ****     v_PPS_Enable_Local_PPS_Source(1);
+ 253              		.loc 1 194 5
+ 254 0250 13051000 		li	a0,1
+ 255 0254 97000000 		call	v_PPS_Enable_Local_PPS_Source
+ 255      E7800000 
+ 256              	.LVL31:
+ 195:../src/hw_init.c **** 
+ 196:../src/hw_init.c **** }
+ 257              		.loc 1 196 1 is_stmt 0
+ 258 025c 8320C105 		lw	ra,92(sp)
+ 259              		.cfi_restore 1
+ 260 0260 03248105 		lw	s0,88(sp)
+ 261              		.cfi_restore 8
+ 262 0264 83244105 		lw	s1,84(sp)
+ 263              		.cfi_restore 9
+ 264 0268 03290105 		lw	s2,80(sp)
+ 265              		.cfi_restore 18
+ 266 026c 13010106 		addi	sp,sp,96
+ 267              		.cfi_def_cfa_offset 0
+ 268 0270 67800000 		jr	ra
+ 269              		.cfi_endproc
+ 270              	.LFE1:
+ 272              		.section	.text.u32_Get_Power_Enables,"ax",@progbits
+ 273              		.align	2
+ 274              		.globl	u32_Get_Power_Enables
+ 276              	u32_Get_Power_Enables:
+ 277              	.LFB2:
+ 197:../src/hw_init.c **** 
+ 198:../src/hw_init.c **** uint32_t u32_Get_Power_Enables(void)
+ 199:../src/hw_init.c **** {
+ 278              		.loc 1 199 1 is_stmt 1
+ 279              		.cfi_startproc
+ 200:../src/hw_init.c ****     uint32_t u32_Status = GPIO_get_outputs( &Power_GPIOs );
+ 280              		.loc 1 200 5
+ 281              		.loc 1 200 27 is_stmt 0
+ 282 0000 17050000 		lla	a0,.LANCHOR0
+ 282      13050500 
+ 283 0008 17030000 		tail	GPIO_get_outputs
+ 283      67000300 
+ 284              	.LVL32:
+ 285              		.cfi_endproc
+ 286              	.LFE2:
+ 288              		.section	.text.u32_Get_Power_Status,"ax",@progbits
+ 289              		.align	2
+ 290              		.globl	u32_Get_Power_Status
+ 292              	u32_Get_Power_Status:
+ 293              	.LFB3:
+ 201:../src/hw_init.c ****     return u32_Status;
+ 202:../src/hw_init.c **** }
+ 203:../src/hw_init.c **** 
+ 204:../src/hw_init.c **** uint32_t u32_Get_Power_Status(void)
+ 205:../src/hw_init.c **** {
+ 294              		.loc 1 205 1 is_stmt 1
+ 295              		.cfi_startproc
+ 206:../src/hw_init.c ****     uint32_t u32_Status = GPIO_get_inputs( &Power_Status );
+ 296              		.loc 1 206 5
+ 297              		.loc 1 206 27 is_stmt 0
+ 298 0000 17050000 		lla	a0,.LANCHOR1
+ 298      13050500 
+ 299 0008 17030000 		tail	GPIO_get_inputs
+ 299      67000300 
+ 300              	.LVL33:
+ 301              		.cfi_endproc
+ 302              	.LFE3:
+ 304              		.section	.text.v_Set_Stepper_Vel,"ax",@progbits
+ 305              		.align	2
+ 306              		.globl	v_Set_Stepper_Vel
+ 308              	v_Set_Stepper_Vel:
+ 309              	.LFB4:
+ 207:../src/hw_init.c ****     return u32_Status;
+ 208:../src/hw_init.c **** }
+ 209:../src/hw_init.c **** 
+ 210:../src/hw_init.c **** void v_Set_Stepper_Vel(uint32_t u32_Vel)
+ 211:../src/hw_init.c **** {
+ 310              		.loc 1 211 1 is_stmt 1
+ 311              		.cfi_startproc
+ 312              	.LVL34:
+ 212:../src/hw_init.c ****     v_Set_Stepper_out( u32_Vel );
+ 313              		.loc 1 212 5
+ 314 0000 17030000 		tail	v_Set_Stepper_out
+ 314      67000300 
+ 315              	.LVL35:
+ 316              		.cfi_endproc
+ 317              	.LFE4:
+ 319              		.section	.bss.Primary_Stepper,"aw",@nobits
+ 320              		.align	2
+ 321              		.set	.LANCHOR4,. + 0
+ 324              	Primary_Stepper:
+ 325 0000 00000000 		.zero	32
+ 325      00000000 
+ 325      00000000 
+ 325      00000000 
+ 325      00000000 
+ 326              		.section	.bss.Secondary_Stepper,"aw",@nobits
+ 327              		.align	2
+ 328              		.set	.LANCHOR5,. + 0
+ 331              	Secondary_Stepper:
+ 332 0000 00000000 		.zero	32
+ 332      00000000 
+ 332      00000000 
+ 332      00000000 
+ 332      00000000 
+ 333              		.section	.sbss.Power_GPIOs,"aw",@nobits
+ 334              		.align	2
+ 335              		.set	.LANCHOR0,. + 0
+ 338              	Power_GPIOs:
+ 339 0000 00000000 		.zero	8
+ 339      00000000 
+ 340              		.section	.sbss.Power_Status,"aw",@nobits
+ 341              		.align	2
+ 342              		.set	.LANCHOR1,. + 0
+ 345              	Power_Status:
+ 346 0000 00000000 		.zero	8
+ 346      00000000 
+ 347              		.section	.sbss.Serial_Comm_UART,"aw",@nobits
+ 348              		.align	2
+ 349              		.set	.LANCHOR2,. + 0
+ 352              	Serial_Comm_UART:
+ 353 0000 00000000 		.zero	8
+ 353      00000000 
+ 354              		.section	.sbss.Serial_Timer_Instance,"aw",@nobits
+ 355              		.align	2
+ 356              		.set	.LANCHOR3,. + 0
+ 359              	Serial_Timer_Instance:
+ 360 0000 00000000 		.zero	4
+ 361              		.text
+ 362              	.Letext0:
+ 363              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 364              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 365              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 366              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 367              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 368              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 369              		.file 8 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+ 370              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/hal_uart16550.h"
+ 371              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/timer.h"
+ 372              		.file 11 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 373              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/core_gpio.h"
+ 374              		.file 13 "/home/iboard/farsight/avtemp/Camera/include/pwm.h"
+ 375              		.file 14 "/home/iboard/farsight/avtemp/Camera/include/hal_stepper.h"
+ 376              		.file 15 "/home/iboard/farsight/avtemp/Camera/include/lvdt.h"
+ 377              		.file 16 "/home/iboard/farsight/avtemp/Camera/include/debug_mux.h"
+ 378              		.file 17 "/home/iboard/farsight/avtemp/Camera/include/debug_switches.h"
+ 379              		.file 18 "/home/iboard/farsight/avtemp/Camera/include/register.h"
+ 380              		.file 19 "/home/iboard/farsight/avtemp/Camera/include/flash.h"
+ 381              		.file 20 "/home/iboard/farsight/avtemp/Camera/include/serial_comm.h"
+ 382              		.file 21 "/home/iboard/farsight/avtemp/Camera/include/debug_gpio.h"
+ 383              		.file 22 "/home/iboard/farsight/avtemp/Camera/include/pps.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hw_init.c
+<<<<<<< HEAD
+     /tmp/ccJOWneG.s:13     .text.v_Hw_Init:0000000000000000 v_Hw_Init
+     /tmp/ccJOWneG.s:17     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:18     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:19     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:20     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:21     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:22     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:23     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:25     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:26     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:27     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:28     .text.v_Hw_Init:0000000000000004 .L0 
+     /tmp/ccJOWneG.s:33     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccJOWneG.s:34     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccJOWneG.s:35     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccJOWneG.s:36     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccJOWneG.s:38     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccJOWneG.s:41     .text.v_Hw_Init:000000000000001c .L0 
+     /tmp/ccJOWneG.s:45     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccJOWneG.s:46     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccJOWneG.s:48     .text.v_Hw_Init:0000000000000030 .L0 
+     /tmp/ccJOWneG.s:51     .text.v_Hw_Init:0000000000000038 .L0 
+     /tmp/ccJOWneG.s:54     .text.v_Hw_Init:0000000000000040 .L0 
+     /tmp/ccJOWneG.s:57     .text.v_Hw_Init:0000000000000048 .L0 
+     /tmp/ccJOWneG.s:60     .text.v_Hw_Init:0000000000000050 .L0 
+     /tmp/ccJOWneG.s:63     .text.v_Hw_Init:0000000000000058 .L0 
+     /tmp/ccJOWneG.s:69     .text.v_Hw_Init:000000000000006c .L0 
+     /tmp/ccJOWneG.s:75     .text.v_Hw_Init:0000000000000084 .L0 
+     /tmp/ccJOWneG.s:81     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccJOWneG.s:82     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccJOWneG.s:85     .text.v_Hw_Init:00000000000000a4 .L0 
+     /tmp/ccJOWneG.s:87     .text.v_Hw_Init:00000000000000a8 .L0 
+     /tmp/ccJOWneG.s:89     .text.v_Hw_Init:00000000000000ac .L0 
+     /tmp/ccJOWneG.s:90     .text.v_Hw_Init:00000000000000ac .L0 
+     /tmp/ccJOWneG.s:92     .text.v_Hw_Init:00000000000000b0 .L0 
+     /tmp/ccJOWneG.s:95     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccJOWneG.s:96     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccJOWneG.s:98     .text.v_Hw_Init:00000000000000c0 .L0 
+     /tmp/ccJOWneG.s:100    .text.v_Hw_Init:00000000000000c4 .L0 
+     /tmp/ccJOWneG.s:102    .text.v_Hw_Init:00000000000000c8 .L0 
+     /tmp/ccJOWneG.s:104    .text.v_Hw_Init:00000000000000cc .L0 
+     /tmp/ccJOWneG.s:106    .text.v_Hw_Init:00000000000000d0 .L0 
+     /tmp/ccJOWneG.s:109    .text.v_Hw_Init:00000000000000d8 .L0 
+     /tmp/ccJOWneG.s:112    .text.v_Hw_Init:00000000000000e0 .L0 
+     /tmp/ccJOWneG.s:116    .text.v_Hw_Init:00000000000000ec .L0 
+     /tmp/ccJOWneG.s:120    .text.v_Hw_Init:00000000000000f8 .L0 
+     /tmp/ccJOWneG.s:121    .text.v_Hw_Init:00000000000000f8 .L0 
+     /tmp/ccJOWneG.s:124    .text.v_Hw_Init:0000000000000100 .L0 
+     /tmp/ccJOWneG.s:130    .text.v_Hw_Init:0000000000000114 .L0 
+     /tmp/ccJOWneG.s:132    .text.v_Hw_Init:000000000000011c .L0 
+     /tmp/ccJOWneG.s:134    .text.v_Hw_Init:0000000000000120 .L0 
+     /tmp/ccJOWneG.s:136    .text.v_Hw_Init:0000000000000124 .L0 
+     /tmp/ccJOWneG.s:139    .text.v_Hw_Init:000000000000012c .L0 
+     /tmp/ccJOWneG.s:141    .text.v_Hw_Init:0000000000000130 .L0 
+     /tmp/ccJOWneG.s:143    .text.v_Hw_Init:0000000000000134 .L0 
+     /tmp/ccJOWneG.s:146    .text.v_Hw_Init:000000000000013c .L0 
+     /tmp/ccJOWneG.s:148    .text.v_Hw_Init:0000000000000140 .L0 
+     /tmp/ccJOWneG.s:151    .text.v_Hw_Init:0000000000000148 .L0 
+     /tmp/ccJOWneG.s:153    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:154    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:155    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:156    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:157    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:158    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:159    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:160    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:161    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccJOWneG.s:163    .text.v_Hw_Init:0000000000000150 .L0 
+     /tmp/ccJOWneG.s:165    .text.v_Hw_Init:0000000000000154 .L0 
+     /tmp/ccJOWneG.s:168    .text.v_Hw_Init:000000000000015c .L0 
+     /tmp/ccJOWneG.s:172    .text.v_Hw_Init:0000000000000168 .L0 
+     /tmp/ccJOWneG.s:176    .text.v_Hw_Init:0000000000000174 .L0 
+     /tmp/ccJOWneG.s:180    .text.v_Hw_Init:0000000000000180 .L0 
+     /tmp/ccJOWneG.s:184    .text.v_Hw_Init:000000000000018c .L0 
+     /tmp/ccJOWneG.s:185    .text.v_Hw_Init:000000000000018c .L0 
+     /tmp/ccJOWneG.s:188    .text.v_Hw_Init:0000000000000194 .L0 
+     /tmp/ccJOWneG.s:197    .text.v_Hw_Init:00000000000001b4 .L0 
+     /tmp/ccJOWneG.s:200    .text.v_Hw_Init:00000000000001c0 .L0 
+     /tmp/ccJOWneG.s:202    .text.v_Hw_Init:00000000000001c4 .L0 
+     /tmp/ccJOWneG.s:204    .text.v_Hw_Init:00000000000001c8 .L0 
+     /tmp/ccJOWneG.s:207    .text.v_Hw_Init:00000000000001d0 .L0 
+     /tmp/ccJOWneG.s:209    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccJOWneG.s:210    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccJOWneG.s:211    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccJOWneG.s:213    .text.v_Hw_Init:00000000000001d8 .L0 
+     /tmp/ccJOWneG.s:216    .text.v_Hw_Init:00000000000001e0 .L0 
+     /tmp/ccJOWneG.s:220    .text.v_Hw_Init:00000000000001ec .L0 
+     /tmp/ccJOWneG.s:224    .text.v_Hw_Init:00000000000001f8 .L0 
+     /tmp/ccJOWneG.s:228    .text.v_Hw_Init:0000000000000204 .L0 
+     /tmp/ccJOWneG.s:232    .text.v_Hw_Init:0000000000000210 .L0 
+     /tmp/ccJOWneG.s:236    .text.v_Hw_Init:000000000000021c .L0 
+     /tmp/ccJOWneG.s:240    .text.v_Hw_Init:0000000000000228 .L0 
+     /tmp/ccJOWneG.s:244    .text.v_Hw_Init:0000000000000234 .L0 
+     /tmp/ccJOWneG.s:247    .text.v_Hw_Init:000000000000023c .L0 
+     /tmp/ccJOWneG.s:251    .text.v_Hw_Init:0000000000000248 .L0 
+     /tmp/ccJOWneG.s:254    .text.v_Hw_Init:0000000000000250 .L0 
+     /tmp/ccJOWneG.s:258    .text.v_Hw_Init:000000000000025c .L0 
+     /tmp/ccJOWneG.s:259    .text.v_Hw_Init:0000000000000260 .L0 
+     /tmp/ccJOWneG.s:261    .text.v_Hw_Init:0000000000000264 .L0 
+     /tmp/ccJOWneG.s:263    .text.v_Hw_Init:0000000000000268 .L0 
+     /tmp/ccJOWneG.s:265    .text.v_Hw_Init:000000000000026c .L0 
+     /tmp/ccJOWneG.s:267    .text.v_Hw_Init:0000000000000270 .L0 
+     /tmp/ccJOWneG.s:269    .text.v_Hw_Init:0000000000000274 .L0 
+     /tmp/ccJOWneG.s:276    .text.u32_Get_Power_Enables:0000000000000000 u32_Get_Power_Enables
+     /tmp/ccJOWneG.s:279    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:280    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:281    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:282    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:285    .text.u32_Get_Power_Enables:0000000000000010 .L0 
+     /tmp/ccJOWneG.s:292    .text.u32_Get_Power_Status:0000000000000000 u32_Get_Power_Status
+     /tmp/ccJOWneG.s:295    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:296    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:297    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:298    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:301    .text.u32_Get_Power_Status:0000000000000010 .L0 
+     /tmp/ccJOWneG.s:308    .text.v_Set_Stepper_Vel:0000000000000000 v_Set_Stepper_Vel
+     /tmp/ccJOWneG.s:311    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:313    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:314    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:316    .text.v_Set_Stepper_Vel:0000000000000008 .L0 
+     /tmp/ccJOWneG.s:321    .bss.Primary_Stepper:0000000000000000 .LANCHOR4
+     /tmp/ccJOWneG.s:324    .bss.Primary_Stepper:0000000000000000 Primary_Stepper
+     /tmp/ccJOWneG.s:328    .bss.Secondary_Stepper:0000000000000000 .LANCHOR5
+     /tmp/ccJOWneG.s:331    .bss.Secondary_Stepper:0000000000000000 Secondary_Stepper
+     /tmp/ccJOWneG.s:335    .sbss.Power_GPIOs:0000000000000000 .LANCHOR0
+     /tmp/ccJOWneG.s:338    .sbss.Power_GPIOs:0000000000000000 Power_GPIOs
+     /tmp/ccJOWneG.s:342    .sbss.Power_Status:0000000000000000 .LANCHOR1
+     /tmp/ccJOWneG.s:345    .sbss.Power_Status:0000000000000000 Power_Status
+     /tmp/ccJOWneG.s:349    .sbss.Serial_Comm_UART:0000000000000000 .LANCHOR2
+     /tmp/ccJOWneG.s:352    .sbss.Serial_Comm_UART:0000000000000000 Serial_Comm_UART
+     /tmp/ccJOWneG.s:356    .sbss.Serial_Timer_Instance:0000000000000000 .LANCHOR3
+     /tmp/ccJOWneG.s:359    .sbss.Serial_Timer_Instance:0000000000000000 Serial_Timer_Instance
+     /tmp/ccJOWneG.s:272    .text.v_Hw_Init:0000000000000274 .L0 
+     /tmp/ccJOWneG.s:288    .text.u32_Get_Power_Enables:0000000000000010 .L0 
+     /tmp/ccJOWneG.s:304    .text.u32_Get_Power_Status:0000000000000010 .L0 
+     /tmp/ccJOWneG.s:319    .text.v_Set_Stepper_Vel:0000000000000008 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:46     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccJOWneG.s:71     .text.v_Hw_Init:0000000000000074 .L0 
+     /tmp/ccJOWneG.s:82     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccJOWneG.s:96     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccJOWneG.s:130    .text.v_Hw_Init:0000000000000114 .L0 
+     /tmp/ccJOWneG.s:197    .text.v_Hw_Init:00000000000001b4 .L0 
+     /tmp/ccJOWneG.s:282    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:298    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccJOWneG.s:2923   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccJOWneG.s:4162   .debug_str:0000000000000c29 .LASF279
+     /tmp/ccJOWneG.s:4042   .debug_str:000000000000095b .LASF280
+     /tmp/ccJOWneG.s:4096   .debug_str:0000000000000a82 .LASF281
+     /tmp/ccJOWneG.s:3654   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccJOWneG.s:3666   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccJOWneG.s:4186   .debug_str:0000000000000d5d .LASF0
+     /tmp/ccJOWneG.s:4100   .debug_str:0000000000000ac1 .LASF3
+     /tmp/ccJOWneG.s:4146   .debug_str:0000000000000bcd .LASF1
+     /tmp/ccJOWneG.s:4046   .debug_str:0000000000000973 .LASF2
+     /tmp/ccJOWneG.s:3804   .debug_str:0000000000000391 .LASF4
+     /tmp/ccJOWneG.s:4192   .debug_str:0000000000000d81 .LASF5
+     /tmp/ccJOWneG.s:4050   .debug_str:0000000000000985 .LASF6
+     /tmp/ccJOWneG.s:4148   .debug_str:0000000000000bdb .LASF7
+     /tmp/ccJOWneG.s:4126   .debug_str:0000000000000b3e .LASF8
+     /tmp/ccJOWneG.s:3936   .debug_str:00000000000006a3 .LASF9
+     /tmp/ccJOWneG.s:3792   .debug_str:0000000000000342 .LASF10
+     /tmp/ccJOWneG.s:3704   .debug_str:000000000000012e .LASF11
+     /tmp/ccJOWneG.s:3910   .debug_str:00000000000005e8 .LASF12
+     /tmp/ccJOWneG.s:4006   .debug_str:0000000000000892 .LASF13
+     /tmp/ccJOWneG.s:3766   .debug_str:00000000000002b0 .LASF14
+     /tmp/ccJOWneG.s:3822   .debug_str:00000000000003fd .LASF15
+     /tmp/ccJOWneG.s:4002   .debug_str:000000000000087e .LASF16
+     /tmp/ccJOWneG.s:4130   .debug_str:0000000000000b57 .LASF17
+     /tmp/ccJOWneG.s:4202   .debug_str:0000000000000dc5 .LASF18
+     /tmp/ccJOWneG.s:3744   .debug_str:000000000000022e .LASF19
+     /tmp/ccJOWneG.s:4184   .debug_str:0000000000000d54 .LASF20
+     /tmp/ccJOWneG.s:3906   .debug_str:00000000000005dc .LASF21
+     /tmp/ccJOWneG.s:4082   .debug_str:0000000000000a16 .LASF22
+     /tmp/ccJOWneG.s:3770   .debug_str:00000000000002c3 .LASF23
+     /tmp/ccJOWneG.s:3876   .debug_str:0000000000000527 .LASF24
+     /tmp/ccJOWneG.s:3974   .debug_str:00000000000007b7 .LASF25
+     /tmp/ccJOWneG.s:3946   .debug_str:00000000000006e2 .LASF26
+     /tmp/ccJOWneG.s:4004   .debug_str:000000000000088a .LASF27
+     /tmp/ccJOWneG.s:4138   .debug_str:0000000000000b94 .LASF125
+     /tmp/ccJOWneG.s:3904   .debug_str:00000000000005d3 .LASF28
+     /tmp/ccJOWneG.s:3756   .debug_str:0000000000000279 .LASF33
+     /tmp/ccJOWneG.s:3838   .debug_str:000000000000045d .LASF29
+     /tmp/ccJOWneG.s:4108   .debug_str:0000000000000ae4 .LASF30
+     /tmp/ccJOWneG.s:4056   .debug_str:00000000000009ac .LASF31
+     /tmp/ccJOWneG.s:3798   .debug_str:000000000000036e .LASF32
+     /tmp/ccJOWneG.s:4120   .debug_str:0000000000000b22 .LASF34
+     /tmp/ccJOWneG.s:3826   .debug_str:000000000000041e .LASF35
+     /tmp/ccJOWneG.s:3776   .debug_str:00000000000002e2 .LASF36
+     /tmp/ccJOWneG.s:3768   .debug_str:00000000000002b9 .LASF37
+     /tmp/ccJOWneG.s:3892   .debug_str:0000000000000581 .LASF38
+     /tmp/ccJOWneG.s:3998   .debug_str:0000000000000867 .LASF39
+     /tmp/ccJOWneG.s:4086   .debug_str:0000000000000a30 .LASF40
+     /tmp/ccJOWneG.s:3758   .debug_str:0000000000000281 .LASF41
+     /tmp/ccJOWneG.s:3828   .debug_str:0000000000000427 .LASF42
+     /tmp/ccJOWneG.s:3982   .debug_str:00000000000007ef .LASF43
+     /tmp/ccJOWneG.s:3678   .debug_str:000000000000004c .LASF44
+     /tmp/ccJOWneG.s:3976   .debug_str:00000000000007c2 .LASF45
+     /tmp/ccJOWneG.s:4134   .debug_str:0000000000000b6e .LASF46
+     /tmp/ccJOWneG.s:4196   .debug_str:0000000000000dad .LASF47
+     /tmp/ccJOWneG.s:4212   .debug_str:0000000000000e00 .LASF48
+     /tmp/ccJOWneG.s:4036   .debug_str:0000000000000930 .LASF49
+     /tmp/ccJOWneG.s:3834   .debug_str:000000000000043d .LASF50
+     /tmp/ccJOWneG.s:3748   .debug_str:0000000000000244 .LASF51
+     /tmp/ccJOWneG.s:4164   .debug_str:0000000000000cef .LASF52
+     /tmp/ccJOWneG.s:3938   .debug_str:00000000000006b1 .LASF53
+     /tmp/ccJOWneG.s:4198   .debug_str:0000000000000db6 .LASF54
+     /tmp/ccJOWneG.s:3796   .debug_str:0000000000000366 .LASF55
+     /tmp/ccJOWneG.s:3712   .debug_str:0000000000000169 .LASF56
+     /tmp/ccJOWneG.s:3954   .debug_str:000000000000071a .LASF57
+     /tmp/ccJOWneG.s:3710   .debug_str:0000000000000160 .LASF58
+     /tmp/ccJOWneG.s:3752   .debug_str:0000000000000260 .LASF59
+     /tmp/ccJOWneG.s:3734   .debug_str:00000000000001ff .LASF60
+     /tmp/ccJOWneG.s:4014   .debug_str:00000000000008d9 .LASF61
+     /tmp/ccJOWneG.s:4222   .debug_str:0000000000000e2f .LASF62
+     /tmp/ccJOWneG.s:3916   .debug_str:000000000000061b .LASF63
+     /tmp/ccJOWneG.s:4230   .debug_str:0000000000000e58 .LASF64
+     /tmp/ccJOWneG.s:4204   .debug_str:0000000000000dcc .LASF65
+     /tmp/ccJOWneG.s:4116   .debug_str:0000000000000b11 .LASF66
+     /tmp/ccJOWneG.s:3808   .debug_str:00000000000003a3 .LASF67
+     /tmp/ccJOWneG.s:4080   .debug_str:0000000000000a10 .LASF68
+     /tmp/ccJOWneG.s:4122   .debug_str:0000000000000b27 .LASF69
+     /tmp/ccJOWneG.s:3730   .debug_str:00000000000001e4 .LASF70
+     /tmp/ccJOWneG.s:4210   .debug_str:0000000000000df8 .LASF71
+     /tmp/ccJOWneG.s:4190   .debug_str:0000000000000d7a .LASF72
+     /tmp/ccJOWneG.s:3720   .debug_str:00000000000001ac .LASF73
+     /tmp/ccJOWneG.s:3932   .debug_str:000000000000068d .LASF74
+     /tmp/ccJOWneG.s:3740   .debug_str:000000000000021d .LASF75
+     /tmp/ccJOWneG.s:4226   .debug_str:0000000000000e47 .LASF76
+     /tmp/ccJOWneG.s:3832   .debug_str:0000000000000438 .LASF77
+     /tmp/ccJOWneG.s:3812   .debug_str:00000000000003b2 .LASF78
+     /tmp/ccJOWneG.s:4208   .debug_str:0000000000000ddf .LASF79
+     /tmp/ccJOWneG.s:4180   .debug_str:0000000000000d40 .LASF80
+     /tmp/ccJOWneG.s:3922   .debug_str:000000000000064e .LASF81
+     /tmp/ccJOWneG.s:3970   .debug_str:0000000000000796 .LASF82
+     /tmp/ccJOWneG.s:3762   .debug_str:000000000000029e .LASF83
+     /tmp/ccJOWneG.s:3790   .debug_str:0000000000000338 .LASF84
+     /tmp/ccJOWneG.s:3878   .debug_str:000000000000052f .LASF85
+     /tmp/ccJOWneG.s:3940   .debug_str:00000000000006b7 .LASF86
+     /tmp/ccJOWneG.s:4106   .debug_str:0000000000000adc .LASF87
+     /tmp/ccJOWneG.s:4144   .debug_str:0000000000000bc5 .LASF88
+     /tmp/ccJOWneG.s:4102   .debug_str:0000000000000acb .LASF89
+     /tmp/ccJOWneG.s:3898   .debug_str:00000000000005a4 .LASF90
+     /tmp/ccJOWneG.s:3894   .debug_str:000000000000058b .LASF91
+     /tmp/ccJOWneG.s:4174   .debug_str:0000000000000d1d .LASF92
+     /tmp/ccJOWneG.s:4054   .debug_str:00000000000009a7 .LASF93
+     /tmp/ccJOWneG.s:3888   .debug_str:000000000000056c .LASF94
+     /tmp/ccJOWneG.s:3806   .debug_str:000000000000039c .LASF95
+     /tmp/ccJOWneG.s:4168   .debug_str:0000000000000d05 .LASF96
+     /tmp/ccJOWneG.s:4128   .debug_str:0000000000000b50 .LASF97
+     /tmp/ccJOWneG.s:3908   .debug_str:00000000000005e2 .LASF98
+     /tmp/ccJOWneG.s:3784   .debug_str:000000000000030e .LASF99
+     /tmp/ccJOWneG.s:4216   .debug_str:0000000000000e13 .LASF100
+     /tmp/ccJOWneG.s:3944   .debug_str:00000000000006dc .LASF101
+     /tmp/ccJOWneG.s:4156   .debug_str:0000000000000c11 .LASF102
+     /tmp/ccJOWneG.s:4206   .debug_str:0000000000000dd2 .LASF103
+     /tmp/ccJOWneG.s:4176   .debug_str:0000000000000d25 .LASF104
+     /tmp/ccJOWneG.s:3794   .debug_str:0000000000000359 .LASF105
+     /tmp/ccJOWneG.s:4094   .debug_str:0000000000000a73 .LASF106
+     /tmp/ccJOWneG.s:3934   .debug_str:0000000000000694 .LASF107
+     /tmp/ccJOWneG.s:4218   .debug_str:0000000000000e19 .LASF108
+     /tmp/ccJOWneG.s:3694   .debug_str:00000000000000d5 .LASF109
+     /tmp/ccJOWneG.s:3882   .debug_str:0000000000000545 .LASF110
+     /tmp/ccJOWneG.s:4178   .debug_str:0000000000000d32 .LASF111
+     /tmp/ccJOWneG.s:3686   .debug_str:000000000000008d .LASF112
+     /tmp/ccJOWneG.s:4110   .debug_str:0000000000000aec .LASF113
+     /tmp/ccJOWneG.s:3702   .debug_str:0000000000000122 .LASF114
+     /tmp/ccJOWneG.s:4152   .debug_str:0000000000000bf6 .LASF115
+     /tmp/ccJOWneG.s:3736   .debug_str:0000000000000205 .LASF116
+     /tmp/ccJOWneG.s:3896   .debug_str:0000000000000595 .LASF117
+     /tmp/ccJOWneG.s:3840   .debug_str:0000000000000463 .LASF118
+     /tmp/ccJOWneG.s:3950   .debug_str:00000000000006f6 .LASF119
+     /tmp/ccJOWneG.s:3880   .debug_str:0000000000000534 .LASF120
+     /tmp/ccJOWneG.s:3984   .debug_str:00000000000007fa .LASF121
+     /tmp/ccJOWneG.s:3780   .debug_str:00000000000002f7 .LASF122
+     /tmp/ccJOWneG.s:4228   .debug_str:0000000000000e4f .LASF123
+     /tmp/ccJOWneG.s:4098   .debug_str:0000000000000ab9 .LASF124
+     /tmp/ccJOWneG.s:4220   .debug_str:0000000000000e24 .LASF126
+     /tmp/ccJOWneG.s:3778   .debug_str:00000000000002eb .LASF127
+     /tmp/ccJOWneG.s:4084   .debug_str:0000000000000a1d .LASF128
+     /tmp/ccJOWneG.s:3672   .debug_str:000000000000001a .LASF129
+     /tmp/ccJOWneG.s:3786   .debug_str:0000000000000316 .LASF130
+     /tmp/ccJOWneG.s:3962   .debug_str:0000000000000754 .LASF131
+     /tmp/ccJOWneG.s:3978   .debug_str:00000000000007ca .LASF132
+     /tmp/ccJOWneG.s:3696   .debug_str:00000000000000da .LASF133
+     /tmp/ccJOWneG.s:3698   .debug_str:00000000000000f2 .LASF134
+     /tmp/ccJOWneG.s:3700   .debug_str:000000000000010a .LASF135
+     /tmp/ccJOWneG.s:4052   .debug_str:000000000000098e .LASF136
+     /tmp/ccJOWneG.s:4040   .debug_str:0000000000000942 .LASF137
+     /tmp/ccJOWneG.s:3674   .debug_str:000000000000002b .LASF138
+     /tmp/ccJOWneG.s:4136   .debug_str:0000000000000b7a .LASF139
+     /tmp/ccJOWneG.s:3902   .debug_str:00000000000005b9 .LASF140
+     /tmp/ccJOWneG.s:3824   .debug_str:0000000000000404 .LASF141
+     /tmp/ccJOWneG.s:3836   .debug_str:0000000000000442 .LASF142
+     /tmp/ccJOWneG.s:3930   .debug_str:000000000000067c .LASF143
+     /tmp/ccJOWneG.s:3986   .debug_str:0000000000000803 .LASF144
+     /tmp/ccJOWneG.s:3992   .debug_str:0000000000000841 .LASF145
+     /tmp/ccJOWneG.s:3886   .debug_str:000000000000055f .LASF146
+     /tmp/ccJOWneG.s:4044   .debug_str:000000000000096c .LASF147
+     /tmp/ccJOWneG.s:3868   .debug_str:00000000000004e8 .LASF180
+     /tmp/ccJOWneG.s:3842   .debug_str:0000000000000474 .LASF148
+     /tmp/ccJOWneG.s:3844   .debug_str:000000000000047b .LASF149
+     /tmp/ccJOWneG.s:3846   .debug_str:0000000000000482 .LASF150
+     /tmp/ccJOWneG.s:3848   .debug_str:0000000000000489 .LASF151
+     /tmp/ccJOWneG.s:3850   .debug_str:0000000000000490 .LASF152
+     /tmp/ccJOWneG.s:3852   .debug_str:0000000000000497 .LASF153
+     /tmp/ccJOWneG.s:3854   .debug_str:000000000000049e .LASF154
+     /tmp/ccJOWneG.s:3856   .debug_str:00000000000004a5 .LASF155
+     /tmp/ccJOWneG.s:3858   .debug_str:00000000000004ac .LASF156
+     /tmp/ccJOWneG.s:3860   .debug_str:00000000000004b3 .LASF157
+     /tmp/ccJOWneG.s:4016   .debug_str:00000000000008e0 .LASF158
+     /tmp/ccJOWneG.s:4018   .debug_str:00000000000008e8 .LASF159
+     /tmp/ccJOWneG.s:4020   .debug_str:00000000000008f0 .LASF160
+     /tmp/ccJOWneG.s:4022   .debug_str:00000000000008f8 .LASF161
+     /tmp/ccJOWneG.s:4024   .debug_str:0000000000000900 .LASF162
+     /tmp/ccJOWneG.s:4026   .debug_str:0000000000000908 .LASF163
+     /tmp/ccJOWneG.s:4028   .debug_str:0000000000000910 .LASF164
+     /tmp/ccJOWneG.s:4030   .debug_str:0000000000000918 .LASF165
+     /tmp/ccJOWneG.s:4032   .debug_str:0000000000000920 .LASF166
+     /tmp/ccJOWneG.s:4034   .debug_str:0000000000000928 .LASF167
+     /tmp/ccJOWneG.s:4062   .debug_str:00000000000009c8 .LASF168
+     /tmp/ccJOWneG.s:4064   .debug_str:00000000000009d0 .LASF169
+     /tmp/ccJOWneG.s:4066   .debug_str:00000000000009d8 .LASF170
+     /tmp/ccJOWneG.s:4068   .debug_str:00000000000009e0 .LASF171
+     /tmp/ccJOWneG.s:4070   .debug_str:00000000000009e8 .LASF172
+     /tmp/ccJOWneG.s:4072   .debug_str:00000000000009f0 .LASF173
+     /tmp/ccJOWneG.s:4074   .debug_str:00000000000009f8 .LASF174
+     /tmp/ccJOWneG.s:4076   .debug_str:0000000000000a00 .LASF175
+     /tmp/ccJOWneG.s:4078   .debug_str:0000000000000a08 .LASF176
+     /tmp/ccJOWneG.s:4170   .debug_str:0000000000000d0b .LASF177
+     /tmp/ccJOWneG.s:4118   .debug_str:0000000000000b1a .LASF178
+     /tmp/ccJOWneG.s:3668   .debug_str:0000000000000000 .LASF179
+     /tmp/ccJOWneG.s:3816   .debug_str:00000000000003c4 .LASF181
+     /tmp/ccJOWneG.s:3968   .debug_str:0000000000000782 .LASF182
+     /tmp/ccJOWneG.s:3688   .debug_str:000000000000009b .LASF183
+     /tmp/ccJOWneG.s:3708   .debug_str:000000000000014b .LASF184
+     /tmp/ccJOWneG.s:4090   .debug_str:0000000000000a42 .LASF185
+     /tmp/ccJOWneG.s:3788   .debug_str:0000000000000327 .LASF186
+     /tmp/ccJOWneG.s:3802   .debug_str:000000000000037f .LASF187
+     /tmp/ccJOWneG.s:4172   .debug_str:0000000000000d13 .LASF188
+     /tmp/ccJOWneG.s:4154   .debug_str:0000000000000c03 .LASF189
+     /tmp/ccJOWneG.s:3706   .debug_str:000000000000013b .LASF190
+     /tmp/ccJOWneG.s:4114   .debug_str:0000000000000b02 .LASF191
+     /tmp/ccJOWneG.s:3864   .debug_str:00000000000004ce .LASF192
+     /tmp/ccJOWneG.s:4012   .debug_str:00000000000008ce .LASF193
+     /tmp/ccJOWneG.s:4112   .debug_str:0000000000000af6 .LASF194
+     /tmp/ccJOWneG.s:4104   .debug_str:0000000000000ad0 .LASF195
+     /tmp/ccJOWneG.s:4214   .debug_str:0000000000000e08 .LASF196
+     /tmp/ccJOWneG.s:3820   .debug_str:00000000000003ec .LASF197
+     /tmp/ccJOWneG.s:3948   .debug_str:00000000000006ea .LASF198
+     /tmp/ccJOWneG.s:4188   .debug_str:0000000000000d69 .LASF199
+     /tmp/ccJOWneG.s:3952   .debug_str:0000000000000705 .LASF200
+     /tmp/ccJOWneG.s:3874   .debug_str:0000000000000514 .LASF201
+     /tmp/ccJOWneG.s:3872   .debug_str:00000000000004fb .LASF202
+     /tmp/ccJOWneG.s:4232   .debug_str:0000000000000e5e .LASF203
+     /tmp/ccJOWneG.s:3692   .debug_str:00000000000000bb .LASF204
+     /tmp/ccJOWneG.s:3760   .debug_str:000000000000028b .LASF205
+     /tmp/ccJOWneG.s:3742   .debug_str:0000000000000225 .LASF206
+     /tmp/ccJOWneG.s:4150   .debug_str:0000000000000be6 .LASF207
+     /tmp/ccJOWneG.s:4166   .debug_str:0000000000000cf6 .LASF208
+     /tmp/ccJOWneG.s:4010   .debug_str:00000000000008b7 .LASF209
+     /tmp/ccJOWneG.s:3750   .debug_str:0000000000000249 .LASF210
+     /tmp/ccJOWneG.s:3810   .debug_str:00000000000003ab .LASF211
+     /tmp/ccJOWneG.s:3870   .debug_str:00000000000004f4 .LASF212
+     /tmp/ccJOWneG.s:3814   .debug_str:00000000000003bd .LASF213
+     /tmp/ccJOWneG.s:4088   .debug_str:0000000000000a3a .LASF214
+     /tmp/ccJOWneG.s:4158   .debug_str:0000000000000c16 .LASF215
+     /tmp/ccJOWneG.s:4200   .debug_str:0000000000000dbc .LASF216
+     /tmp/ccJOWneG.s:3966   .debug_str:0000000000000779 .LASF217
+     /tmp/ccJOWneG.s:4194   .debug_str:0000000000000d94 .LASF218
+     /tmp/ccJOWneG.s:3714   .debug_str:0000000000000170 .LASF219
+     /tmp/ccJOWneG.s:3964   .debug_str:000000000000075e .LASF220
+     /tmp/ccJOWneG.s:3862   .debug_str:00000000000004ba .LASF221
+     /tmp/ccJOWneG.s:3942   .debug_str:00000000000006c1 .LASF222
+     /tmp/ccJOWneG.s:3890   .debug_str:0000000000000571 .LASF223
+     /tmp/ccJOWneG.s:3772   .debug_str:00000000000002cb .LASF224
+     /tmp/ccJOWneG.s:3800   .debug_str:0000000000000373 .LASF225
+     /tmp/ccJOWneG.s:4142   .debug_str:0000000000000bb9 .LASF226
+     /tmp/ccJOWneG.s:3928   .debug_str:000000000000066e .LASF227
+     /tmp/ccJOWneG.s:3682   .debug_str:0000000000000071 .LASF228
+     /tmp/ccJOWneG.s:3746   .debug_str:0000000000000236 .LASF229
+     /tmp/ccJOWneG.s:3690   .debug_str:00000000000000b0 .LASF230
+     /tmp/ccJOWneG.s:4060   .debug_str:00000000000009be .LASF231
+     /tmp/ccJOWneG.s:3726   .debug_str:00000000000001cb .LASF232
+     /tmp/ccJOWneG.s:4132   .debug_str:0000000000000b5e .LASF233
+     /tmp/ccJOWneG.s:3718   .debug_str:000000000000019a .LASF234
+     /tmp/ccJOWneG.s:3918   .debug_str:0000000000000622 .LASF235
+     /tmp/ccJOWneG.s:4182   .debug_str:0000000000000d48 .LASF236
+     /tmp/ccJOWneG.s:3722   .debug_str:00000000000001b3 .LASF237
+     /tmp/ccJOWneG.s:3670   .debug_str:0000000000000008 .LASF241
+     /tmp/ccJOWneG.s:309    .text.v_Set_Stepper_Vel:0000000000000000 .LFB4
+     /tmp/ccJOWneG.s:317    .text.v_Set_Stepper_Vel:0000000000000008 .LFE4
+     /tmp/ccJOWneG.s:3728   .debug_str:00000000000001dc .LASF282
+     /tmp/ccJOWneG.s:3621   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccJOWneG.s:315    .text.v_Set_Stepper_Vel:0000000000000008 .LVL35
+     /tmp/ccJOWneG.s:3990   .debug_str:000000000000082c .LASF238
+     /tmp/ccJOWneG.s:293    .text.u32_Get_Power_Status:0000000000000000 .LFB3
+     /tmp/ccJOWneG.s:302    .text.u32_Get_Power_Status:0000000000000010 .LFE3
+     /tmp/ccJOWneG.s:3724   .debug_str:00000000000001c0 .LASF240
+     /tmp/ccJOWneG.s:300    .text.u32_Get_Power_Status:0000000000000010 .LVL33
+     /tmp/ccJOWneG.s:3960   .debug_str:000000000000073e .LASF239
+     /tmp/ccJOWneG.s:277    .text.u32_Get_Power_Enables:0000000000000000 .LFB2
+     /tmp/ccJOWneG.s:286    .text.u32_Get_Power_Enables:0000000000000010 .LFE2
+     /tmp/ccJOWneG.s:284    .text.u32_Get_Power_Enables:0000000000000010 .LVL32
+     /tmp/ccJOWneG.s:3764   .debug_str:00000000000002a6 .LASF242
+     /tmp/ccJOWneG.s:14     .text.v_Hw_Init:0000000000000000 .LFB1
+     /tmp/ccJOWneG.s:270    .text.v_Hw_Init:0000000000000274 .LFE1
+     /tmp/ccJOWneG.s:3676   .debug_str:0000000000000044 .LASF243
+     /tmp/ccJOWneG.s:3830   .debug_str:0000000000000431 .LASF244
+     /tmp/ccJOWneG.s:4048   .debug_str:000000000000097d .LASF245
+     /tmp/ccJOWneG.s:3926   .debug_str:0000000000000669 .LASF246
+     /tmp/ccJOWneG.s:4038   .debug_str:0000000000000938 .LASF247
+     /tmp/ccJOWneG.s:4160   .debug_str:0000000000000c1e .LASF248
+     /tmp/ccJOWneG.s:3958   .debug_str:0000000000000731 .LASF249
+     /tmp/ccJOWneG.s:3754   .debug_str:0000000000000268 .LASF250
+     /tmp/ccJOWneG.s:3884   .debug_str:0000000000000552 .LASF251
+     /tmp/ccJOWneG.s:3774   .debug_str:00000000000002d1 .LASF252
+     /tmp/ccJOWneG.s:39     .text.v_Hw_Init:000000000000001c .LVL1
+     /tmp/ccJOWneG.s:43     .text.v_Hw_Init:0000000000000028 .LVL2
+     /tmp/ccJOWneG.s:49     .text.v_Hw_Init:0000000000000038 .LVL3
+     /tmp/ccJOWneG.s:52     .text.v_Hw_Init:0000000000000040 .LVL4
+     /tmp/ccJOWneG.s:55     .text.v_Hw_Init:0000000000000048 .LVL5
+     /tmp/ccJOWneG.s:58     .text.v_Hw_Init:0000000000000050 .LVL6
+     /tmp/ccJOWneG.s:61     .text.v_Hw_Init:0000000000000058 .LVL7
+     /tmp/ccJOWneG.s:67     .text.v_Hw_Init:000000000000006c .LVL8
+     /tmp/ccJOWneG.s:73     .text.v_Hw_Init:0000000000000084 .LVL9
+     /tmp/ccJOWneG.s:79     .text.v_Hw_Init:0000000000000098 .LVL10
+     /tmp/ccJOWneG.s:93     .text.v_Hw_Init:00000000000000b8 .LVL11
+     /tmp/ccJOWneG.s:110    .text.v_Hw_Init:00000000000000e0 .LVL12
+     /tmp/ccJOWneG.s:114    .text.v_Hw_Init:00000000000000ec .LVL13
+     /tmp/ccJOWneG.s:118    .text.v_Hw_Init:00000000000000f8 .LVL14
+     /tmp/ccJOWneG.s:166    .text.v_Hw_Init:000000000000015c .LVL15
+     /tmp/ccJOWneG.s:170    .text.v_Hw_Init:0000000000000168 .LVL16
+     /tmp/ccJOWneG.s:174    .text.v_Hw_Init:0000000000000174 .LVL17
+     /tmp/ccJOWneG.s:178    .text.v_Hw_Init:0000000000000180 .LVL18
+     /tmp/ccJOWneG.s:182    .text.v_Hw_Init:000000000000018c .LVL19
+     /tmp/ccJOWneG.s:214    .text.v_Hw_Init:00000000000001e0 .LVL20
+     /tmp/ccJOWneG.s:218    .text.v_Hw_Init:00000000000001ec .LVL21
+     /tmp/ccJOWneG.s:222    .text.v_Hw_Init:00000000000001f8 .LVL22
+     /tmp/ccJOWneG.s:226    .text.v_Hw_Init:0000000000000204 .LVL23
+     /tmp/ccJOWneG.s:230    .text.v_Hw_Init:0000000000000210 .LVL24
+     /tmp/ccJOWneG.s:234    .text.v_Hw_Init:000000000000021c .LVL25
+     /tmp/ccJOWneG.s:238    .text.v_Hw_Init:0000000000000228 .LVL26
+     /tmp/ccJOWneG.s:242    .text.v_Hw_Init:0000000000000234 .LVL27
+     /tmp/ccJOWneG.s:245    .text.v_Hw_Init:000000000000023c .LVL28
+     /tmp/ccJOWneG.s:249    .text.v_Hw_Init:0000000000000248 .LVL29
+     /tmp/ccJOWneG.s:252    .text.v_Hw_Init:0000000000000250 .LVL30
+     /tmp/ccJOWneG.s:256    .text.v_Hw_Init:000000000000025c .LVL31
+     /tmp/ccJOWneG.s:4224   .debug_str:0000000000000e35 .LASF253
+     /tmp/ccJOWneG.s:3716   .debug_str:000000000000018a .LASF254
+     /tmp/ccJOWneG.s:3684   .debug_str:000000000000007c .LASF255
+     /tmp/ccJOWneG.s:4124   .debug_str:0000000000000b2d .LASF256
+     /tmp/ccJOWneG.s:3782   .debug_str:00000000000002fe .LASF257
+     /tmp/ccJOWneG.s:3920   .debug_str:0000000000000638 .LASF258
+     /tmp/ccJOWneG.s:3956   .debug_str:0000000000000720 .LASF259
+     /tmp/ccJOWneG.s:3866   .debug_str:00000000000004db .LASF260
+     /tmp/ccJOWneG.s:4000   .debug_str:0000000000000870 .LASF261
+     /tmp/ccJOWneG.s:4092   .debug_str:0000000000000a5d .LASF262
+     /tmp/ccJOWneG.s:3738   .debug_str:0000000000000213 .LASF263
+     /tmp/ccJOWneG.s:3924   .debug_str:0000000000000659 .LASF264
+     /tmp/ccJOWneG.s:4058   .debug_str:00000000000009b2 .LASF265
+     /tmp/ccJOWneG.s:3994   .debug_str:0000000000000849 .LASF266
+     /tmp/ccJOWneG.s:3912   .debug_str:00000000000005f0 .LASF267
+     /tmp/ccJOWneG.s:4008   .debug_str:000000000000089b .LASF268
+     /tmp/ccJOWneG.s:3980   .debug_str:00000000000007e0 .LASF269
+     /tmp/ccJOWneG.s:3972   .debug_str:00000000000007a0 .LASF270
+     /tmp/ccJOWneG.s:3988   .debug_str:000000000000080f .LASF271
+     /tmp/ccJOWneG.s:3818   .debug_str:00000000000003d7 .LASF272
+     /tmp/ccJOWneG.s:3996   .debug_str:0000000000000856 .LASF273
+     /tmp/ccJOWneG.s:3680   .debug_str:000000000000005a .LASF274
+     /tmp/ccJOWneG.s:3900   .debug_str:00000000000005ad .LASF275
+     /tmp/ccJOWneG.s:3914   .debug_str:000000000000060b .LASF276
+     /tmp/ccJOWneG.s:3732   .debug_str:00000000000001ed .LASF277
+     /tmp/ccJOWneG.s:4140   .debug_str:0000000000000b9b .LASF278
+     /tmp/ccJOWneG.s:312    .text.v_Set_Stepper_Vel:0000000000000000 .LVL34
+     /tmp/ccJOWneG.s:385    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccHzDirL.s:13     .text.v_Hw_Init:0000000000000000 v_Hw_Init
+     /tmp/ccHzDirL.s:17     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:18     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:19     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:20     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:21     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:22     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:23     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:25     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:26     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:27     .text.v_Hw_Init:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:28     .text.v_Hw_Init:0000000000000004 .L0 
+     /tmp/ccHzDirL.s:33     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccHzDirL.s:34     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccHzDirL.s:35     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccHzDirL.s:36     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccHzDirL.s:38     .text.v_Hw_Init:0000000000000014 .L0 
+     /tmp/ccHzDirL.s:41     .text.v_Hw_Init:000000000000001c .L0 
+     /tmp/ccHzDirL.s:45     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccHzDirL.s:46     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccHzDirL.s:48     .text.v_Hw_Init:0000000000000030 .L0 
+     /tmp/ccHzDirL.s:51     .text.v_Hw_Init:0000000000000038 .L0 
+     /tmp/ccHzDirL.s:54     .text.v_Hw_Init:0000000000000040 .L0 
+     /tmp/ccHzDirL.s:57     .text.v_Hw_Init:0000000000000048 .L0 
+     /tmp/ccHzDirL.s:60     .text.v_Hw_Init:0000000000000050 .L0 
+     /tmp/ccHzDirL.s:63     .text.v_Hw_Init:0000000000000058 .L0 
+     /tmp/ccHzDirL.s:69     .text.v_Hw_Init:000000000000006c .L0 
+     /tmp/ccHzDirL.s:75     .text.v_Hw_Init:0000000000000084 .L0 
+     /tmp/ccHzDirL.s:81     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccHzDirL.s:82     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccHzDirL.s:85     .text.v_Hw_Init:00000000000000a4 .L0 
+     /tmp/ccHzDirL.s:87     .text.v_Hw_Init:00000000000000a8 .L0 
+     /tmp/ccHzDirL.s:89     .text.v_Hw_Init:00000000000000ac .L0 
+     /tmp/ccHzDirL.s:90     .text.v_Hw_Init:00000000000000ac .L0 
+     /tmp/ccHzDirL.s:92     .text.v_Hw_Init:00000000000000b0 .L0 
+     /tmp/ccHzDirL.s:95     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccHzDirL.s:96     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccHzDirL.s:98     .text.v_Hw_Init:00000000000000c0 .L0 
+     /tmp/ccHzDirL.s:100    .text.v_Hw_Init:00000000000000c4 .L0 
+     /tmp/ccHzDirL.s:102    .text.v_Hw_Init:00000000000000c8 .L0 
+     /tmp/ccHzDirL.s:104    .text.v_Hw_Init:00000000000000cc .L0 
+     /tmp/ccHzDirL.s:106    .text.v_Hw_Init:00000000000000d0 .L0 
+     /tmp/ccHzDirL.s:109    .text.v_Hw_Init:00000000000000d8 .L0 
+     /tmp/ccHzDirL.s:112    .text.v_Hw_Init:00000000000000e0 .L0 
+     /tmp/ccHzDirL.s:116    .text.v_Hw_Init:00000000000000ec .L0 
+     /tmp/ccHzDirL.s:120    .text.v_Hw_Init:00000000000000f8 .L0 
+     /tmp/ccHzDirL.s:121    .text.v_Hw_Init:00000000000000f8 .L0 
+     /tmp/ccHzDirL.s:124    .text.v_Hw_Init:0000000000000100 .L0 
+     /tmp/ccHzDirL.s:130    .text.v_Hw_Init:0000000000000114 .L0 
+     /tmp/ccHzDirL.s:132    .text.v_Hw_Init:000000000000011c .L0 
+     /tmp/ccHzDirL.s:134    .text.v_Hw_Init:0000000000000120 .L0 
+     /tmp/ccHzDirL.s:136    .text.v_Hw_Init:0000000000000124 .L0 
+     /tmp/ccHzDirL.s:139    .text.v_Hw_Init:000000000000012c .L0 
+     /tmp/ccHzDirL.s:141    .text.v_Hw_Init:0000000000000130 .L0 
+     /tmp/ccHzDirL.s:143    .text.v_Hw_Init:0000000000000134 .L0 
+     /tmp/ccHzDirL.s:146    .text.v_Hw_Init:000000000000013c .L0 
+     /tmp/ccHzDirL.s:148    .text.v_Hw_Init:0000000000000140 .L0 
+     /tmp/ccHzDirL.s:151    .text.v_Hw_Init:0000000000000148 .L0 
+     /tmp/ccHzDirL.s:153    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:154    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:155    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:156    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:157    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:158    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:159    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:160    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:161    .text.v_Hw_Init:000000000000014c .L0 
+     /tmp/ccHzDirL.s:163    .text.v_Hw_Init:0000000000000150 .L0 
+     /tmp/ccHzDirL.s:165    .text.v_Hw_Init:0000000000000154 .L0 
+     /tmp/ccHzDirL.s:168    .text.v_Hw_Init:000000000000015c .L0 
+     /tmp/ccHzDirL.s:172    .text.v_Hw_Init:0000000000000168 .L0 
+     /tmp/ccHzDirL.s:176    .text.v_Hw_Init:0000000000000174 .L0 
+     /tmp/ccHzDirL.s:180    .text.v_Hw_Init:0000000000000180 .L0 
+     /tmp/ccHzDirL.s:184    .text.v_Hw_Init:000000000000018c .L0 
+     /tmp/ccHzDirL.s:185    .text.v_Hw_Init:000000000000018c .L0 
+     /tmp/ccHzDirL.s:188    .text.v_Hw_Init:0000000000000194 .L0 
+     /tmp/ccHzDirL.s:197    .text.v_Hw_Init:00000000000001b4 .L0 
+     /tmp/ccHzDirL.s:200    .text.v_Hw_Init:00000000000001c0 .L0 
+     /tmp/ccHzDirL.s:202    .text.v_Hw_Init:00000000000001c4 .L0 
+     /tmp/ccHzDirL.s:204    .text.v_Hw_Init:00000000000001c8 .L0 
+     /tmp/ccHzDirL.s:207    .text.v_Hw_Init:00000000000001d0 .L0 
+     /tmp/ccHzDirL.s:209    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccHzDirL.s:210    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccHzDirL.s:211    .text.v_Hw_Init:00000000000001d4 .L0 
+     /tmp/ccHzDirL.s:213    .text.v_Hw_Init:00000000000001d8 .L0 
+     /tmp/ccHzDirL.s:216    .text.v_Hw_Init:00000000000001e0 .L0 
+     /tmp/ccHzDirL.s:220    .text.v_Hw_Init:00000000000001ec .L0 
+     /tmp/ccHzDirL.s:224    .text.v_Hw_Init:00000000000001f8 .L0 
+     /tmp/ccHzDirL.s:228    .text.v_Hw_Init:0000000000000204 .L0 
+     /tmp/ccHzDirL.s:232    .text.v_Hw_Init:0000000000000210 .L0 
+     /tmp/ccHzDirL.s:236    .text.v_Hw_Init:000000000000021c .L0 
+     /tmp/ccHzDirL.s:240    .text.v_Hw_Init:0000000000000228 .L0 
+     /tmp/ccHzDirL.s:244    .text.v_Hw_Init:0000000000000234 .L0 
+     /tmp/ccHzDirL.s:247    .text.v_Hw_Init:000000000000023c .L0 
+     /tmp/ccHzDirL.s:251    .text.v_Hw_Init:0000000000000248 .L0 
+     /tmp/ccHzDirL.s:254    .text.v_Hw_Init:0000000000000250 .L0 
+     /tmp/ccHzDirL.s:258    .text.v_Hw_Init:000000000000025c .L0 
+     /tmp/ccHzDirL.s:259    .text.v_Hw_Init:0000000000000260 .L0 
+     /tmp/ccHzDirL.s:261    .text.v_Hw_Init:0000000000000264 .L0 
+     /tmp/ccHzDirL.s:263    .text.v_Hw_Init:0000000000000268 .L0 
+     /tmp/ccHzDirL.s:265    .text.v_Hw_Init:000000000000026c .L0 
+     /tmp/ccHzDirL.s:267    .text.v_Hw_Init:0000000000000270 .L0 
+     /tmp/ccHzDirL.s:269    .text.v_Hw_Init:0000000000000274 .L0 
+     /tmp/ccHzDirL.s:276    .text.u32_Get_Power_Enables:0000000000000000 u32_Get_Power_Enables
+     /tmp/ccHzDirL.s:279    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:280    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:281    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:282    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:285    .text.u32_Get_Power_Enables:0000000000000010 .L0 
+     /tmp/ccHzDirL.s:292    .text.u32_Get_Power_Status:0000000000000000 u32_Get_Power_Status
+     /tmp/ccHzDirL.s:295    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:296    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:297    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:298    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:301    .text.u32_Get_Power_Status:0000000000000010 .L0 
+     /tmp/ccHzDirL.s:308    .text.v_Set_Stepper_Vel:0000000000000000 v_Set_Stepper_Vel
+     /tmp/ccHzDirL.s:311    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:313    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:314    .text.v_Set_Stepper_Vel:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:316    .text.v_Set_Stepper_Vel:0000000000000008 .L0 
+     /tmp/ccHzDirL.s:321    .bss.Primary_Stepper:0000000000000000 .LANCHOR4
+     /tmp/ccHzDirL.s:324    .bss.Primary_Stepper:0000000000000000 Primary_Stepper
+     /tmp/ccHzDirL.s:328    .bss.Secondary_Stepper:0000000000000000 .LANCHOR5
+     /tmp/ccHzDirL.s:331    .bss.Secondary_Stepper:0000000000000000 Secondary_Stepper
+     /tmp/ccHzDirL.s:335    .sbss.Power_GPIOs:0000000000000000 .LANCHOR0
+     /tmp/ccHzDirL.s:338    .sbss.Power_GPIOs:0000000000000000 Power_GPIOs
+     /tmp/ccHzDirL.s:342    .sbss.Power_Status:0000000000000000 .LANCHOR1
+     /tmp/ccHzDirL.s:345    .sbss.Power_Status:0000000000000000 Power_Status
+     /tmp/ccHzDirL.s:349    .sbss.Serial_Comm_UART:0000000000000000 .LANCHOR2
+     /tmp/ccHzDirL.s:352    .sbss.Serial_Comm_UART:0000000000000000 Serial_Comm_UART
+     /tmp/ccHzDirL.s:356    .sbss.Serial_Timer_Instance:0000000000000000 .LANCHOR3
+     /tmp/ccHzDirL.s:359    .sbss.Serial_Timer_Instance:0000000000000000 Serial_Timer_Instance
+     /tmp/ccHzDirL.s:272    .text.v_Hw_Init:0000000000000274 .L0 
+     /tmp/ccHzDirL.s:288    .text.u32_Get_Power_Enables:0000000000000010 .L0 
+     /tmp/ccHzDirL.s:304    .text.u32_Get_Power_Status:0000000000000010 .L0 
+     /tmp/ccHzDirL.s:319    .text.v_Set_Stepper_Vel:0000000000000008 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:46     .text.v_Hw_Init:0000000000000028 .L0 
+     /tmp/ccHzDirL.s:71     .text.v_Hw_Init:0000000000000074 .L0 
+     /tmp/ccHzDirL.s:82     .text.v_Hw_Init:0000000000000098 .L0 
+     /tmp/ccHzDirL.s:96     .text.v_Hw_Init:00000000000000b8 .L0 
+     /tmp/ccHzDirL.s:130    .text.v_Hw_Init:0000000000000114 .L0 
+     /tmp/ccHzDirL.s:197    .text.v_Hw_Init:00000000000001b4 .L0 
+     /tmp/ccHzDirL.s:282    .text.u32_Get_Power_Enables:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:298    .text.u32_Get_Power_Status:0000000000000000 .L0 
+     /tmp/ccHzDirL.s:2923   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccHzDirL.s:4162   .debug_str:0000000000000c29 .LASF279
+     /tmp/ccHzDirL.s:4042   .debug_str:000000000000095b .LASF280
+     /tmp/ccHzDirL.s:4096   .debug_str:0000000000000a82 .LASF281
+     /tmp/ccHzDirL.s:3654   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccHzDirL.s:3666   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccHzDirL.s:4186   .debug_str:0000000000000d5d .LASF0
+     /tmp/ccHzDirL.s:4100   .debug_str:0000000000000ac1 .LASF3
+     /tmp/ccHzDirL.s:4146   .debug_str:0000000000000bcd .LASF1
+     /tmp/ccHzDirL.s:4046   .debug_str:0000000000000973 .LASF2
+     /tmp/ccHzDirL.s:3804   .debug_str:0000000000000391 .LASF4
+     /tmp/ccHzDirL.s:4192   .debug_str:0000000000000d81 .LASF5
+     /tmp/ccHzDirL.s:4050   .debug_str:0000000000000985 .LASF6
+     /tmp/ccHzDirL.s:4148   .debug_str:0000000000000bdb .LASF7
+     /tmp/ccHzDirL.s:4126   .debug_str:0000000000000b3e .LASF8
+     /tmp/ccHzDirL.s:3936   .debug_str:00000000000006a3 .LASF9
+     /tmp/ccHzDirL.s:3792   .debug_str:0000000000000342 .LASF10
+     /tmp/ccHzDirL.s:3704   .debug_str:000000000000012e .LASF11
+     /tmp/ccHzDirL.s:3910   .debug_str:00000000000005e8 .LASF12
+     /tmp/ccHzDirL.s:4006   .debug_str:0000000000000892 .LASF13
+     /tmp/ccHzDirL.s:3766   .debug_str:00000000000002b0 .LASF14
+     /tmp/ccHzDirL.s:3822   .debug_str:00000000000003fd .LASF15
+     /tmp/ccHzDirL.s:4002   .debug_str:000000000000087e .LASF16
+     /tmp/ccHzDirL.s:4130   .debug_str:0000000000000b57 .LASF17
+     /tmp/ccHzDirL.s:4202   .debug_str:0000000000000dc5 .LASF18
+     /tmp/ccHzDirL.s:3744   .debug_str:000000000000022e .LASF19
+     /tmp/ccHzDirL.s:4184   .debug_str:0000000000000d54 .LASF20
+     /tmp/ccHzDirL.s:3906   .debug_str:00000000000005dc .LASF21
+     /tmp/ccHzDirL.s:4082   .debug_str:0000000000000a16 .LASF22
+     /tmp/ccHzDirL.s:3770   .debug_str:00000000000002c3 .LASF23
+     /tmp/ccHzDirL.s:3876   .debug_str:0000000000000527 .LASF24
+     /tmp/ccHzDirL.s:3974   .debug_str:00000000000007b7 .LASF25
+     /tmp/ccHzDirL.s:3946   .debug_str:00000000000006e2 .LASF26
+     /tmp/ccHzDirL.s:4004   .debug_str:000000000000088a .LASF27
+     /tmp/ccHzDirL.s:4138   .debug_str:0000000000000b94 .LASF125
+     /tmp/ccHzDirL.s:3904   .debug_str:00000000000005d3 .LASF28
+     /tmp/ccHzDirL.s:3756   .debug_str:0000000000000279 .LASF33
+     /tmp/ccHzDirL.s:3838   .debug_str:000000000000045d .LASF29
+     /tmp/ccHzDirL.s:4108   .debug_str:0000000000000ae4 .LASF30
+     /tmp/ccHzDirL.s:4056   .debug_str:00000000000009ac .LASF31
+     /tmp/ccHzDirL.s:3798   .debug_str:000000000000036e .LASF32
+     /tmp/ccHzDirL.s:4120   .debug_str:0000000000000b22 .LASF34
+     /tmp/ccHzDirL.s:3826   .debug_str:000000000000041e .LASF35
+     /tmp/ccHzDirL.s:3776   .debug_str:00000000000002e2 .LASF36
+     /tmp/ccHzDirL.s:3768   .debug_str:00000000000002b9 .LASF37
+     /tmp/ccHzDirL.s:3892   .debug_str:0000000000000581 .LASF38
+     /tmp/ccHzDirL.s:3998   .debug_str:0000000000000867 .LASF39
+     /tmp/ccHzDirL.s:4086   .debug_str:0000000000000a30 .LASF40
+     /tmp/ccHzDirL.s:3758   .debug_str:0000000000000281 .LASF41
+     /tmp/ccHzDirL.s:3828   .debug_str:0000000000000427 .LASF42
+     /tmp/ccHzDirL.s:3982   .debug_str:00000000000007ef .LASF43
+     /tmp/ccHzDirL.s:3678   .debug_str:000000000000004c .LASF44
+     /tmp/ccHzDirL.s:3976   .debug_str:00000000000007c2 .LASF45
+     /tmp/ccHzDirL.s:4134   .debug_str:0000000000000b6e .LASF46
+     /tmp/ccHzDirL.s:4196   .debug_str:0000000000000dad .LASF47
+     /tmp/ccHzDirL.s:4212   .debug_str:0000000000000e00 .LASF48
+     /tmp/ccHzDirL.s:4036   .debug_str:0000000000000930 .LASF49
+     /tmp/ccHzDirL.s:3834   .debug_str:000000000000043d .LASF50
+     /tmp/ccHzDirL.s:3748   .debug_str:0000000000000244 .LASF51
+     /tmp/ccHzDirL.s:4164   .debug_str:0000000000000cef .LASF52
+     /tmp/ccHzDirL.s:3938   .debug_str:00000000000006b1 .LASF53
+     /tmp/ccHzDirL.s:4198   .debug_str:0000000000000db6 .LASF54
+     /tmp/ccHzDirL.s:3796   .debug_str:0000000000000366 .LASF55
+     /tmp/ccHzDirL.s:3712   .debug_str:0000000000000169 .LASF56
+     /tmp/ccHzDirL.s:3954   .debug_str:000000000000071a .LASF57
+     /tmp/ccHzDirL.s:3710   .debug_str:0000000000000160 .LASF58
+     /tmp/ccHzDirL.s:3752   .debug_str:0000000000000260 .LASF59
+     /tmp/ccHzDirL.s:3734   .debug_str:00000000000001ff .LASF60
+     /tmp/ccHzDirL.s:4014   .debug_str:00000000000008d9 .LASF61
+     /tmp/ccHzDirL.s:4222   .debug_str:0000000000000e2f .LASF62
+     /tmp/ccHzDirL.s:3916   .debug_str:000000000000061b .LASF63
+     /tmp/ccHzDirL.s:4230   .debug_str:0000000000000e58 .LASF64
+     /tmp/ccHzDirL.s:4204   .debug_str:0000000000000dcc .LASF65
+     /tmp/ccHzDirL.s:4116   .debug_str:0000000000000b11 .LASF66
+     /tmp/ccHzDirL.s:3808   .debug_str:00000000000003a3 .LASF67
+     /tmp/ccHzDirL.s:4080   .debug_str:0000000000000a10 .LASF68
+     /tmp/ccHzDirL.s:4122   .debug_str:0000000000000b27 .LASF69
+     /tmp/ccHzDirL.s:3730   .debug_str:00000000000001e4 .LASF70
+     /tmp/ccHzDirL.s:4210   .debug_str:0000000000000df8 .LASF71
+     /tmp/ccHzDirL.s:4190   .debug_str:0000000000000d7a .LASF72
+     /tmp/ccHzDirL.s:3720   .debug_str:00000000000001ac .LASF73
+     /tmp/ccHzDirL.s:3932   .debug_str:000000000000068d .LASF74
+     /tmp/ccHzDirL.s:3740   .debug_str:000000000000021d .LASF75
+     /tmp/ccHzDirL.s:4226   .debug_str:0000000000000e47 .LASF76
+     /tmp/ccHzDirL.s:3832   .debug_str:0000000000000438 .LASF77
+     /tmp/ccHzDirL.s:3812   .debug_str:00000000000003b2 .LASF78
+     /tmp/ccHzDirL.s:4208   .debug_str:0000000000000ddf .LASF79
+     /tmp/ccHzDirL.s:4180   .debug_str:0000000000000d40 .LASF80
+     /tmp/ccHzDirL.s:3922   .debug_str:000000000000064e .LASF81
+     /tmp/ccHzDirL.s:3970   .debug_str:0000000000000796 .LASF82
+     /tmp/ccHzDirL.s:3762   .debug_str:000000000000029e .LASF83
+     /tmp/ccHzDirL.s:3790   .debug_str:0000000000000338 .LASF84
+     /tmp/ccHzDirL.s:3878   .debug_str:000000000000052f .LASF85
+     /tmp/ccHzDirL.s:3940   .debug_str:00000000000006b7 .LASF86
+     /tmp/ccHzDirL.s:4106   .debug_str:0000000000000adc .LASF87
+     /tmp/ccHzDirL.s:4144   .debug_str:0000000000000bc5 .LASF88
+     /tmp/ccHzDirL.s:4102   .debug_str:0000000000000acb .LASF89
+     /tmp/ccHzDirL.s:3898   .debug_str:00000000000005a4 .LASF90
+     /tmp/ccHzDirL.s:3894   .debug_str:000000000000058b .LASF91
+     /tmp/ccHzDirL.s:4174   .debug_str:0000000000000d1d .LASF92
+     /tmp/ccHzDirL.s:4054   .debug_str:00000000000009a7 .LASF93
+     /tmp/ccHzDirL.s:3888   .debug_str:000000000000056c .LASF94
+     /tmp/ccHzDirL.s:3806   .debug_str:000000000000039c .LASF95
+     /tmp/ccHzDirL.s:4168   .debug_str:0000000000000d05 .LASF96
+     /tmp/ccHzDirL.s:4128   .debug_str:0000000000000b50 .LASF97
+     /tmp/ccHzDirL.s:3908   .debug_str:00000000000005e2 .LASF98
+     /tmp/ccHzDirL.s:3784   .debug_str:000000000000030e .LASF99
+     /tmp/ccHzDirL.s:4216   .debug_str:0000000000000e13 .LASF100
+     /tmp/ccHzDirL.s:3944   .debug_str:00000000000006dc .LASF101
+     /tmp/ccHzDirL.s:4156   .debug_str:0000000000000c11 .LASF102
+     /tmp/ccHzDirL.s:4206   .debug_str:0000000000000dd2 .LASF103
+     /tmp/ccHzDirL.s:4176   .debug_str:0000000000000d25 .LASF104
+     /tmp/ccHzDirL.s:3794   .debug_str:0000000000000359 .LASF105
+     /tmp/ccHzDirL.s:4094   .debug_str:0000000000000a73 .LASF106
+     /tmp/ccHzDirL.s:3934   .debug_str:0000000000000694 .LASF107
+     /tmp/ccHzDirL.s:4218   .debug_str:0000000000000e19 .LASF108
+     /tmp/ccHzDirL.s:3694   .debug_str:00000000000000d5 .LASF109
+     /tmp/ccHzDirL.s:3882   .debug_str:0000000000000545 .LASF110
+     /tmp/ccHzDirL.s:4178   .debug_str:0000000000000d32 .LASF111
+     /tmp/ccHzDirL.s:3686   .debug_str:000000000000008d .LASF112
+     /tmp/ccHzDirL.s:4110   .debug_str:0000000000000aec .LASF113
+     /tmp/ccHzDirL.s:3702   .debug_str:0000000000000122 .LASF114
+     /tmp/ccHzDirL.s:4152   .debug_str:0000000000000bf6 .LASF115
+     /tmp/ccHzDirL.s:3736   .debug_str:0000000000000205 .LASF116
+     /tmp/ccHzDirL.s:3896   .debug_str:0000000000000595 .LASF117
+     /tmp/ccHzDirL.s:3840   .debug_str:0000000000000463 .LASF118
+     /tmp/ccHzDirL.s:3950   .debug_str:00000000000006f6 .LASF119
+     /tmp/ccHzDirL.s:3880   .debug_str:0000000000000534 .LASF120
+     /tmp/ccHzDirL.s:3984   .debug_str:00000000000007fa .LASF121
+     /tmp/ccHzDirL.s:3780   .debug_str:00000000000002f7 .LASF122
+     /tmp/ccHzDirL.s:4228   .debug_str:0000000000000e4f .LASF123
+     /tmp/ccHzDirL.s:4098   .debug_str:0000000000000ab9 .LASF124
+     /tmp/ccHzDirL.s:4220   .debug_str:0000000000000e24 .LASF126
+     /tmp/ccHzDirL.s:3778   .debug_str:00000000000002eb .LASF127
+     /tmp/ccHzDirL.s:4084   .debug_str:0000000000000a1d .LASF128
+     /tmp/ccHzDirL.s:3672   .debug_str:000000000000001a .LASF129
+     /tmp/ccHzDirL.s:3786   .debug_str:0000000000000316 .LASF130
+     /tmp/ccHzDirL.s:3962   .debug_str:0000000000000754 .LASF131
+     /tmp/ccHzDirL.s:3978   .debug_str:00000000000007ca .LASF132
+     /tmp/ccHzDirL.s:3696   .debug_str:00000000000000da .LASF133
+     /tmp/ccHzDirL.s:3698   .debug_str:00000000000000f2 .LASF134
+     /tmp/ccHzDirL.s:3700   .debug_str:000000000000010a .LASF135
+     /tmp/ccHzDirL.s:4052   .debug_str:000000000000098e .LASF136
+     /tmp/ccHzDirL.s:4040   .debug_str:0000000000000942 .LASF137
+     /tmp/ccHzDirL.s:3674   .debug_str:000000000000002b .LASF138
+     /tmp/ccHzDirL.s:4136   .debug_str:0000000000000b7a .LASF139
+     /tmp/ccHzDirL.s:3902   .debug_str:00000000000005b9 .LASF140
+     /tmp/ccHzDirL.s:3824   .debug_str:0000000000000404 .LASF141
+     /tmp/ccHzDirL.s:3836   .debug_str:0000000000000442 .LASF142
+     /tmp/ccHzDirL.s:3930   .debug_str:000000000000067c .LASF143
+     /tmp/ccHzDirL.s:3986   .debug_str:0000000000000803 .LASF144
+     /tmp/ccHzDirL.s:3992   .debug_str:0000000000000841 .LASF145
+     /tmp/ccHzDirL.s:3886   .debug_str:000000000000055f .LASF146
+     /tmp/ccHzDirL.s:4044   .debug_str:000000000000096c .LASF147
+     /tmp/ccHzDirL.s:3868   .debug_str:00000000000004e8 .LASF180
+     /tmp/ccHzDirL.s:3842   .debug_str:0000000000000474 .LASF148
+     /tmp/ccHzDirL.s:3844   .debug_str:000000000000047b .LASF149
+     /tmp/ccHzDirL.s:3846   .debug_str:0000000000000482 .LASF150
+     /tmp/ccHzDirL.s:3848   .debug_str:0000000000000489 .LASF151
+     /tmp/ccHzDirL.s:3850   .debug_str:0000000000000490 .LASF152
+     /tmp/ccHzDirL.s:3852   .debug_str:0000000000000497 .LASF153
+     /tmp/ccHzDirL.s:3854   .debug_str:000000000000049e .LASF154
+     /tmp/ccHzDirL.s:3856   .debug_str:00000000000004a5 .LASF155
+     /tmp/ccHzDirL.s:3858   .debug_str:00000000000004ac .LASF156
+     /tmp/ccHzDirL.s:3860   .debug_str:00000000000004b3 .LASF157
+     /tmp/ccHzDirL.s:4016   .debug_str:00000000000008e0 .LASF158
+     /tmp/ccHzDirL.s:4018   .debug_str:00000000000008e8 .LASF159
+     /tmp/ccHzDirL.s:4020   .debug_str:00000000000008f0 .LASF160
+     /tmp/ccHzDirL.s:4022   .debug_str:00000000000008f8 .LASF161
+     /tmp/ccHzDirL.s:4024   .debug_str:0000000000000900 .LASF162
+     /tmp/ccHzDirL.s:4026   .debug_str:0000000000000908 .LASF163
+     /tmp/ccHzDirL.s:4028   .debug_str:0000000000000910 .LASF164
+     /tmp/ccHzDirL.s:4030   .debug_str:0000000000000918 .LASF165
+     /tmp/ccHzDirL.s:4032   .debug_str:0000000000000920 .LASF166
+     /tmp/ccHzDirL.s:4034   .debug_str:0000000000000928 .LASF167
+     /tmp/ccHzDirL.s:4062   .debug_str:00000000000009c8 .LASF168
+     /tmp/ccHzDirL.s:4064   .debug_str:00000000000009d0 .LASF169
+     /tmp/ccHzDirL.s:4066   .debug_str:00000000000009d8 .LASF170
+     /tmp/ccHzDirL.s:4068   .debug_str:00000000000009e0 .LASF171
+     /tmp/ccHzDirL.s:4070   .debug_str:00000000000009e8 .LASF172
+     /tmp/ccHzDirL.s:4072   .debug_str:00000000000009f0 .LASF173
+     /tmp/ccHzDirL.s:4074   .debug_str:00000000000009f8 .LASF174
+     /tmp/ccHzDirL.s:4076   .debug_str:0000000000000a00 .LASF175
+     /tmp/ccHzDirL.s:4078   .debug_str:0000000000000a08 .LASF176
+     /tmp/ccHzDirL.s:4170   .debug_str:0000000000000d0b .LASF177
+     /tmp/ccHzDirL.s:4118   .debug_str:0000000000000b1a .LASF178
+     /tmp/ccHzDirL.s:3668   .debug_str:0000000000000000 .LASF179
+     /tmp/ccHzDirL.s:3816   .debug_str:00000000000003c4 .LASF181
+     /tmp/ccHzDirL.s:3968   .debug_str:0000000000000782 .LASF182
+     /tmp/ccHzDirL.s:3688   .debug_str:000000000000009b .LASF183
+     /tmp/ccHzDirL.s:3708   .debug_str:000000000000014b .LASF184
+     /tmp/ccHzDirL.s:4090   .debug_str:0000000000000a42 .LASF185
+     /tmp/ccHzDirL.s:3788   .debug_str:0000000000000327 .LASF186
+     /tmp/ccHzDirL.s:3802   .debug_str:000000000000037f .LASF187
+     /tmp/ccHzDirL.s:4172   .debug_str:0000000000000d13 .LASF188
+     /tmp/ccHzDirL.s:4154   .debug_str:0000000000000c03 .LASF189
+     /tmp/ccHzDirL.s:3706   .debug_str:000000000000013b .LASF190
+     /tmp/ccHzDirL.s:4114   .debug_str:0000000000000b02 .LASF191
+     /tmp/ccHzDirL.s:3864   .debug_str:00000000000004ce .LASF192
+     /tmp/ccHzDirL.s:4012   .debug_str:00000000000008ce .LASF193
+     /tmp/ccHzDirL.s:4112   .debug_str:0000000000000af6 .LASF194
+     /tmp/ccHzDirL.s:4104   .debug_str:0000000000000ad0 .LASF195
+     /tmp/ccHzDirL.s:4214   .debug_str:0000000000000e08 .LASF196
+     /tmp/ccHzDirL.s:3820   .debug_str:00000000000003ec .LASF197
+     /tmp/ccHzDirL.s:3948   .debug_str:00000000000006ea .LASF198
+     /tmp/ccHzDirL.s:4188   .debug_str:0000000000000d69 .LASF199
+     /tmp/ccHzDirL.s:3952   .debug_str:0000000000000705 .LASF200
+     /tmp/ccHzDirL.s:3874   .debug_str:0000000000000514 .LASF201
+     /tmp/ccHzDirL.s:3872   .debug_str:00000000000004fb .LASF202
+     /tmp/ccHzDirL.s:4232   .debug_str:0000000000000e5e .LASF203
+     /tmp/ccHzDirL.s:3692   .debug_str:00000000000000bb .LASF204
+     /tmp/ccHzDirL.s:3760   .debug_str:000000000000028b .LASF205
+     /tmp/ccHzDirL.s:3742   .debug_str:0000000000000225 .LASF206
+     /tmp/ccHzDirL.s:4150   .debug_str:0000000000000be6 .LASF207
+     /tmp/ccHzDirL.s:4166   .debug_str:0000000000000cf6 .LASF208
+     /tmp/ccHzDirL.s:4010   .debug_str:00000000000008b7 .LASF209
+     /tmp/ccHzDirL.s:3750   .debug_str:0000000000000249 .LASF210
+     /tmp/ccHzDirL.s:3810   .debug_str:00000000000003ab .LASF211
+     /tmp/ccHzDirL.s:3870   .debug_str:00000000000004f4 .LASF212
+     /tmp/ccHzDirL.s:3814   .debug_str:00000000000003bd .LASF213
+     /tmp/ccHzDirL.s:4088   .debug_str:0000000000000a3a .LASF214
+     /tmp/ccHzDirL.s:4158   .debug_str:0000000000000c16 .LASF215
+     /tmp/ccHzDirL.s:4200   .debug_str:0000000000000dbc .LASF216
+     /tmp/ccHzDirL.s:3966   .debug_str:0000000000000779 .LASF217
+     /tmp/ccHzDirL.s:4194   .debug_str:0000000000000d94 .LASF218
+     /tmp/ccHzDirL.s:3714   .debug_str:0000000000000170 .LASF219
+     /tmp/ccHzDirL.s:3964   .debug_str:000000000000075e .LASF220
+     /tmp/ccHzDirL.s:3862   .debug_str:00000000000004ba .LASF221
+     /tmp/ccHzDirL.s:3942   .debug_str:00000000000006c1 .LASF222
+     /tmp/ccHzDirL.s:3890   .debug_str:0000000000000571 .LASF223
+     /tmp/ccHzDirL.s:3772   .debug_str:00000000000002cb .LASF224
+     /tmp/ccHzDirL.s:3800   .debug_str:0000000000000373 .LASF225
+     /tmp/ccHzDirL.s:4142   .debug_str:0000000000000bb9 .LASF226
+     /tmp/ccHzDirL.s:3928   .debug_str:000000000000066e .LASF227
+     /tmp/ccHzDirL.s:3682   .debug_str:0000000000000071 .LASF228
+     /tmp/ccHzDirL.s:3746   .debug_str:0000000000000236 .LASF229
+     /tmp/ccHzDirL.s:3690   .debug_str:00000000000000b0 .LASF230
+     /tmp/ccHzDirL.s:4060   .debug_str:00000000000009be .LASF231
+     /tmp/ccHzDirL.s:3726   .debug_str:00000000000001cb .LASF232
+     /tmp/ccHzDirL.s:4132   .debug_str:0000000000000b5e .LASF233
+     /tmp/ccHzDirL.s:3718   .debug_str:000000000000019a .LASF234
+     /tmp/ccHzDirL.s:3918   .debug_str:0000000000000622 .LASF235
+     /tmp/ccHzDirL.s:4182   .debug_str:0000000000000d48 .LASF236
+     /tmp/ccHzDirL.s:3722   .debug_str:00000000000001b3 .LASF237
+     /tmp/ccHzDirL.s:3670   .debug_str:0000000000000008 .LASF241
+     /tmp/ccHzDirL.s:309    .text.v_Set_Stepper_Vel:0000000000000000 .LFB4
+     /tmp/ccHzDirL.s:317    .text.v_Set_Stepper_Vel:0000000000000008 .LFE4
+     /tmp/ccHzDirL.s:3728   .debug_str:00000000000001dc .LASF282
+     /tmp/ccHzDirL.s:3621   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccHzDirL.s:315    .text.v_Set_Stepper_Vel:0000000000000008 .LVL35
+     /tmp/ccHzDirL.s:3990   .debug_str:000000000000082c .LASF238
+     /tmp/ccHzDirL.s:293    .text.u32_Get_Power_Status:0000000000000000 .LFB3
+     /tmp/ccHzDirL.s:302    .text.u32_Get_Power_Status:0000000000000010 .LFE3
+     /tmp/ccHzDirL.s:3724   .debug_str:00000000000001c0 .LASF240
+     /tmp/ccHzDirL.s:300    .text.u32_Get_Power_Status:0000000000000010 .LVL33
+     /tmp/ccHzDirL.s:3960   .debug_str:000000000000073e .LASF239
+     /tmp/ccHzDirL.s:277    .text.u32_Get_Power_Enables:0000000000000000 .LFB2
+     /tmp/ccHzDirL.s:286    .text.u32_Get_Power_Enables:0000000000000010 .LFE2
+     /tmp/ccHzDirL.s:284    .text.u32_Get_Power_Enables:0000000000000010 .LVL32
+     /tmp/ccHzDirL.s:3764   .debug_str:00000000000002a6 .LASF242
+     /tmp/ccHzDirL.s:14     .text.v_Hw_Init:0000000000000000 .LFB1
+     /tmp/ccHzDirL.s:270    .text.v_Hw_Init:0000000000000274 .LFE1
+     /tmp/ccHzDirL.s:3676   .debug_str:0000000000000044 .LASF243
+     /tmp/ccHzDirL.s:3830   .debug_str:0000000000000431 .LASF244
+     /tmp/ccHzDirL.s:4048   .debug_str:000000000000097d .LASF245
+     /tmp/ccHzDirL.s:3926   .debug_str:0000000000000669 .LASF246
+     /tmp/ccHzDirL.s:4038   .debug_str:0000000000000938 .LASF247
+     /tmp/ccHzDirL.s:4160   .debug_str:0000000000000c1e .LASF248
+     /tmp/ccHzDirL.s:3958   .debug_str:0000000000000731 .LASF249
+     /tmp/ccHzDirL.s:3754   .debug_str:0000000000000268 .LASF250
+     /tmp/ccHzDirL.s:3884   .debug_str:0000000000000552 .LASF251
+     /tmp/ccHzDirL.s:3774   .debug_str:00000000000002d1 .LASF252
+     /tmp/ccHzDirL.s:39     .text.v_Hw_Init:000000000000001c .LVL1
+     /tmp/ccHzDirL.s:43     .text.v_Hw_Init:0000000000000028 .LVL2
+     /tmp/ccHzDirL.s:49     .text.v_Hw_Init:0000000000000038 .LVL3
+     /tmp/ccHzDirL.s:52     .text.v_Hw_Init:0000000000000040 .LVL4
+     /tmp/ccHzDirL.s:55     .text.v_Hw_Init:0000000000000048 .LVL5
+     /tmp/ccHzDirL.s:58     .text.v_Hw_Init:0000000000000050 .LVL6
+     /tmp/ccHzDirL.s:61     .text.v_Hw_Init:0000000000000058 .LVL7
+     /tmp/ccHzDirL.s:67     .text.v_Hw_Init:000000000000006c .LVL8
+     /tmp/ccHzDirL.s:73     .text.v_Hw_Init:0000000000000084 .LVL9
+     /tmp/ccHzDirL.s:79     .text.v_Hw_Init:0000000000000098 .LVL10
+     /tmp/ccHzDirL.s:93     .text.v_Hw_Init:00000000000000b8 .LVL11
+     /tmp/ccHzDirL.s:110    .text.v_Hw_Init:00000000000000e0 .LVL12
+     /tmp/ccHzDirL.s:114    .text.v_Hw_Init:00000000000000ec .LVL13
+     /tmp/ccHzDirL.s:118    .text.v_Hw_Init:00000000000000f8 .LVL14
+     /tmp/ccHzDirL.s:166    .text.v_Hw_Init:000000000000015c .LVL15
+     /tmp/ccHzDirL.s:170    .text.v_Hw_Init:0000000000000168 .LVL16
+     /tmp/ccHzDirL.s:174    .text.v_Hw_Init:0000000000000174 .LVL17
+     /tmp/ccHzDirL.s:178    .text.v_Hw_Init:0000000000000180 .LVL18
+     /tmp/ccHzDirL.s:182    .text.v_Hw_Init:000000000000018c .LVL19
+     /tmp/ccHzDirL.s:214    .text.v_Hw_Init:00000000000001e0 .LVL20
+     /tmp/ccHzDirL.s:218    .text.v_Hw_Init:00000000000001ec .LVL21
+     /tmp/ccHzDirL.s:222    .text.v_Hw_Init:00000000000001f8 .LVL22
+     /tmp/ccHzDirL.s:226    .text.v_Hw_Init:0000000000000204 .LVL23
+     /tmp/ccHzDirL.s:230    .text.v_Hw_Init:0000000000000210 .LVL24
+     /tmp/ccHzDirL.s:234    .text.v_Hw_Init:000000000000021c .LVL25
+     /tmp/ccHzDirL.s:238    .text.v_Hw_Init:0000000000000228 .LVL26
+     /tmp/ccHzDirL.s:242    .text.v_Hw_Init:0000000000000234 .LVL27
+     /tmp/ccHzDirL.s:245    .text.v_Hw_Init:000000000000023c .LVL28
+     /tmp/ccHzDirL.s:249    .text.v_Hw_Init:0000000000000248 .LVL29
+     /tmp/ccHzDirL.s:252    .text.v_Hw_Init:0000000000000250 .LVL30
+     /tmp/ccHzDirL.s:256    .text.v_Hw_Init:000000000000025c .LVL31
+     /tmp/ccHzDirL.s:4224   .debug_str:0000000000000e35 .LASF253
+     /tmp/ccHzDirL.s:3716   .debug_str:000000000000018a .LASF254
+     /tmp/ccHzDirL.s:3684   .debug_str:000000000000007c .LASF255
+     /tmp/ccHzDirL.s:4124   .debug_str:0000000000000b2d .LASF256
+     /tmp/ccHzDirL.s:3782   .debug_str:00000000000002fe .LASF257
+     /tmp/ccHzDirL.s:3920   .debug_str:0000000000000638 .LASF258
+     /tmp/ccHzDirL.s:3956   .debug_str:0000000000000720 .LASF259
+     /tmp/ccHzDirL.s:3866   .debug_str:00000000000004db .LASF260
+     /tmp/ccHzDirL.s:4000   .debug_str:0000000000000870 .LASF261
+     /tmp/ccHzDirL.s:4092   .debug_str:0000000000000a5d .LASF262
+     /tmp/ccHzDirL.s:3738   .debug_str:0000000000000213 .LASF263
+     /tmp/ccHzDirL.s:3924   .debug_str:0000000000000659 .LASF264
+     /tmp/ccHzDirL.s:4058   .debug_str:00000000000009b2 .LASF265
+     /tmp/ccHzDirL.s:3994   .debug_str:0000000000000849 .LASF266
+     /tmp/ccHzDirL.s:3912   .debug_str:00000000000005f0 .LASF267
+     /tmp/ccHzDirL.s:4008   .debug_str:000000000000089b .LASF268
+     /tmp/ccHzDirL.s:3980   .debug_str:00000000000007e0 .LASF269
+     /tmp/ccHzDirL.s:3972   .debug_str:00000000000007a0 .LASF270
+     /tmp/ccHzDirL.s:3988   .debug_str:000000000000080f .LASF271
+     /tmp/ccHzDirL.s:3818   .debug_str:00000000000003d7 .LASF272
+     /tmp/ccHzDirL.s:3996   .debug_str:0000000000000856 .LASF273
+     /tmp/ccHzDirL.s:3680   .debug_str:000000000000005a .LASF274
+     /tmp/ccHzDirL.s:3900   .debug_str:00000000000005ad .LASF275
+     /tmp/ccHzDirL.s:3914   .debug_str:000000000000060b .LASF276
+     /tmp/ccHzDirL.s:3732   .debug_str:00000000000001ed .LASF277
+     /tmp/ccHzDirL.s:4140   .debug_str:0000000000000b9b .LASF278
+     /tmp/ccHzDirL.s:312    .text.v_Set_Stepper_Vel:0000000000000000 .LVL34
+     /tmp/ccHzDirL.s:385    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+v_Init_Debug_Mux
+v_Set_Debug_Mux
+v_Init_Debug_Switches
+v_Init_Registers
+v_Init_Flash
+v_Flash_Reset
+v_Global_Flash_Unlock
+GPIO_init
+GPIO_set_output
+v_Init_UART
+v_Init_Timer
+v_Set_Serial_Comm_Instance
+v_Set_Serial_Timer_Instance
+v_Init_Stepper
+v_Set_Stepper_Instance
+v_Set_Stepper_Control_Output
+v_Set_Microstep_Mode
+v_Set_Decay_Mode
+v_Stepper_Set_I_Max_mA
+v_Set_Stepper_out
+v_Init_LVDT
+v_Set_LVDT_Gain
+v_Init_Debug_GPIO
+v_PPS_Enable_Local_PPS_Source
+GPIO_get_outputs
+GPIO_get_inputs

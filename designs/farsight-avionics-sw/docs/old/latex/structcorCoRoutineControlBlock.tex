@@ -1,0 +1,98 @@
+\doxysection{cor\+Co\+Routine\+Control\+Block Struct Reference}
+\hypertarget{structcorCoRoutineControlBlock}{}\label{structcorCoRoutineControlBlock}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+
+
+{\ttfamily \+\#include $<$croutine.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{croutine_8h_ac1dc8634ed2f2698ca66545571a195c4}{cr\+COROUTINE\+\_\+\+CODE}} \doxymbox{\hyperlink{structcorCoRoutineControlBlock_aa842d81ed7b4c345cf52cde20c5b22e5}{px\+Co\+Routine\+Function}}
+\item 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}} \doxymbox{\hyperlink{structcorCoRoutineControlBlock_ad91115e6e382ba8961310c4559abc7d2}{x\+Generic\+List\+Item}}
+\item 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}} \doxymbox{\hyperlink{structcorCoRoutineControlBlock_a139605d93d834601f34be927ecba3a15}{x\+Event\+List\+Item}}
+\item 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} \doxymbox{\hyperlink{structcorCoRoutineControlBlock_a0befed3dd0fe55b4314158f4814f50ae}{ux\+Priority}}
+\item 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} \doxymbox{\hyperlink{structcorCoRoutineControlBlock_a0a9f1b8d3c0676d256f119fdc5fddfb5}{ux\+Index}}
+\item 
+uint16\+\_\+t \doxymbox{\hyperlink{structcorCoRoutineControlBlock_a40a191332ff98e1969a821b870f59531}{ux\+State}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00053}{53}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structcorCoRoutineControlBlock_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structcorCoRoutineControlBlock_aa842d81ed7b4c345cf52cde20c5b22e5}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!pxCoRoutineFunction@{pxCoRoutineFunction}}
+\index{pxCoRoutineFunction@{pxCoRoutineFunction}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{pxCoRoutineFunction}{pxCoRoutineFunction}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_aa842d81ed7b4c345cf52cde20c5b22e5} 
+\doxymbox{\hyperlink{croutine_8h_ac1dc8634ed2f2698ca66545571a195c4}{cr\+COROUTINE\+\_\+\+CODE}} px\+Co\+Routine\+Function}
+
+
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00055}{55}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+\Hypertarget{structcorCoRoutineControlBlock_a0a9f1b8d3c0676d256f119fdc5fddfb5}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!uxIndex@{uxIndex}}
+\index{uxIndex@{uxIndex}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{uxIndex}{uxIndex}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_a0a9f1b8d3c0676d256f119fdc5fddfb5} 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} ux\+Index}
+
+Used to distinguish between co-\/routines when multiple co-\/routines use the same co-\/routine function. 
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00059}{59}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+\Hypertarget{structcorCoRoutineControlBlock_a0befed3dd0fe55b4314158f4814f50ae}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!uxPriority@{uxPriority}}
+\index{uxPriority@{uxPriority}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{uxPriority}{uxPriority}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_a0befed3dd0fe55b4314158f4814f50ae} 
+\doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} ux\+Priority}
+
+The priority of the co-\/routine in relation to other co-\/routines. 
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00058}{58}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+\Hypertarget{structcorCoRoutineControlBlock_a40a191332ff98e1969a821b870f59531}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!uxState@{uxState}}
+\index{uxState@{uxState}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{uxState}{uxState}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_a40a191332ff98e1969a821b870f59531} 
+uint16\+\_\+t ux\+State}
+
+Used internally by the co-\/routine implementation. 
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00060}{60}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+\Hypertarget{structcorCoRoutineControlBlock_a139605d93d834601f34be927ecba3a15}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!xEventListItem@{xEventListItem}}
+\index{xEventListItem@{xEventListItem}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{xEventListItem}{xEventListItem}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_a139605d93d834601f34be927ecba3a15} 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}} x\+Event\+List\+Item}
+
+List item used to place the CRCB in event lists. 
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00057}{57}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+\Hypertarget{structcorCoRoutineControlBlock_ad91115e6e382ba8961310c4559abc7d2}\index{corCoRoutineControlBlock@{corCoRoutineControlBlock}!xGenericListItem@{xGenericListItem}}
+\index{xGenericListItem@{xGenericListItem}!corCoRoutineControlBlock@{corCoRoutineControlBlock}}
+\doxysubsubsection{\texorpdfstring{xGenericListItem}{xGenericListItem}}
+{\footnotesize\ttfamily \label{structcorCoRoutineControlBlock_ad91115e6e382ba8961310c4559abc7d2} 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}} x\+Generic\+List\+Item}
+
+List item used to place the CRCB in ready and blocked queues. 
+
+Definition at line \doxymbox{\hyperlink{croutine_8h_source_l00056}{56}} of file \doxymbox{\hyperlink{croutine_8h_source}{croutine.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+\+Free\+RTOS/\+include/\+\doxymbox{\hyperlink{croutine_8h}{croutine.\+h}}\end{DoxyCompactItemize}

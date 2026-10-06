@@ -1,0 +1,314 @@
+\doxysection{spi\+\_\+instance Struct Reference}
+\hypertarget{structspi__instance}{}\label{structspi__instance}\index{spi\_instance@{spi\_instance}}
+
+
+{\ttfamily \+\#include $<$core\+\_\+spi.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_a36e0e69f6e9e7a591b421c1178b5b099}{base\+\_\+addr}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f}{rx\+\_\+frame}}
+\item 
+const uint8\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structspi__instance_a2875f77b7f664a267d56731f25cb29b6}{slave\+\_\+tx\+\_\+buffer}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a1d5dc578a8806564b4f8282c461160c2}{slave\+\_\+tx\+\_\+size}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a3c0b5fac4860a27aa7100a1c996e78a5}{slave\+\_\+tx\+\_\+idx}}
+\item 
+const uint8\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structspi__instance_aafd5b287055641006388cb4d2a35a0de}{resp\+\_\+tx\+\_\+buffer}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a559f6860e8abd746d426391526110de9}{resp\+\_\+buff\+\_\+size}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_af1e5ecdf815fb3fce7d945a6fb000b4c}{resp\+\_\+buff\+\_\+tx\+\_\+idx}}
+\item 
+\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_a0db05beb67032edd46846acc4863f339}{cmd\+\_\+handler}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a970727cb2ff593f25c40516ea33652ee}{cmd\+\_\+done}}
+\item 
+uint8\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structspi__instance_a0632d3b1b398cb254c7340c6cd6c8553}{slave\+\_\+rx\+\_\+buffer}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a30db5d3af574b806028259d52041774d}{slave\+\_\+rx\+\_\+size}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a349458d6856b919a4108fd3c94271127}{slave\+\_\+rx\+\_\+idx}}
+\item 
+\doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_a567e92d627ccbcd13643cf4da283946b}{frame\+\_\+rx\+\_\+handler}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{structspi__instance_a223ec6f1329510bc15d6140e98dee7a3}{slave\+\_\+tx\+\_\+frame}}
+\item 
+\doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_a0b0e308873d136aff81aa4aed3b5244b}{slave\+\_\+tx\+\_\+frame\+\_\+handler}}
+\item 
+\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_ab16a6d4dfeb9af00591f47ae5fe32917}{block\+\_\+rx\+\_\+handler}}
+\item 
+uint16\+\_\+t \doxymbox{\hyperlink{structspi__instance_a187a0349c01c45c90628b21b244b8700}{fifo\+\_\+depth}}
+\item 
+\doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\+\_\+sxfer\+\_\+mode\+\_\+t}} \doxymbox{\hyperlink{structspi__instance_a684269632332b8741b72987a23b2163f}{slave\+\_\+xfer\+\_\+mode}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+There is one instance of this structure for each of the core SPIs. Instances of this structure are used to identify a specific SPI. A pointer to an instance of the \doxylink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t} structure is passed as the first parameter to SPI driver functions to identify which SPI should perform the requested operation. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00396}{396}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structspi__instance_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structspi__instance_a36e0e69f6e9e7a591b421c1178b5b099}\index{spi\_instance@{spi\_instance}!base\_addr@{base\_addr}}
+\index{base\_addr@{base\_addr}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{base\_addr}{base\_addr}}
+{\footnotesize\ttfamily \label{structspi__instance_a36e0e69f6e9e7a591b421c1178b5b099} 
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}} base\+\_\+addr}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00400}{400}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_ab16a6d4dfeb9af00591f47ae5fe32917}\index{spi\_instance@{spi\_instance}!block\_rx\_handler@{block\_rx\_handler}}
+\index{block\_rx\_handler@{block\_rx\_handler}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{block\_rx\_handler}{block\_rx\_handler}}
+{\footnotesize\ttfamily \label{structspi__instance_ab16a6d4dfeb9af00591f47ae5fe32917} 
+\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} block\+\_\+rx\+\_\+handler}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00431}{431}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a970727cb2ff593f25c40516ea33652ee}\index{spi\_instance@{spi\_instance}!cmd\_done@{cmd\_done}}
+\index{cmd\_done@{cmd\_done}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{cmd\_done}{cmd\_done}}
+{\footnotesize\ttfamily \label{structspi__instance_a970727cb2ff593f25c40516ea33652ee} 
+uint32\+\_\+t cmd\+\_\+done}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00414}{414}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a0db05beb67032edd46846acc4863f339}\index{spi\_instance@{spi\_instance}!cmd\_handler@{cmd\_handler}}
+\index{cmd\_handler@{cmd\_handler}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{cmd\_handler}{cmd\_handler}}
+{\footnotesize\ttfamily \label{structspi__instance_a0db05beb67032edd46846acc4863f339} 
+\doxymbox{\hyperlink{core__spi_8h_a1939b55555f08ad836eb7c11152dcd26}{spi\+\_\+block\+\_\+rx\+\_\+handler\+\_\+t}} cmd\+\_\+handler}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00413}{413}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a187a0349c01c45c90628b21b244b8700}\index{spi\_instance@{spi\_instance}!fifo\_depth@{fifo\_depth}}
+\index{fifo\_depth@{fifo\_depth}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{fifo\_depth}{fifo\_depth}}
+{\footnotesize\ttfamily \label{structspi__instance_a187a0349c01c45c90628b21b244b8700} 
+uint16\+\_\+t fifo\+\_\+depth}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00434}{434}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a567e92d627ccbcd13643cf4da283946b}\index{spi\_instance@{spi\_instance}!frame\_rx\_handler@{frame\_rx\_handler}}
+\index{frame\_rx\_handler@{frame\_rx\_handler}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{frame\_rx\_handler}{frame\_rx\_handler}}
+{\footnotesize\ttfamily \label{structspi__instance_a567e92d627ccbcd13643cf4da283946b} 
+\doxymbox{\hyperlink{core__spi_8h_a5a796548387621848b1da8a6386259e6}{spi\+\_\+frame\+\_\+rx\+\_\+handler\+\_\+t}} frame\+\_\+rx\+\_\+handler}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00423}{423}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a559f6860e8abd746d426391526110de9}\index{spi\_instance@{spi\_instance}!resp\_buff\_size@{resp\_buff\_size}}
+\index{resp\_buff\_size@{resp\_buff\_size}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{resp\_buff\_size}{resp\_buff\_size}}
+{\footnotesize\ttfamily \label{structspi__instance_a559f6860e8abd746d426391526110de9} 
+uint32\+\_\+t resp\+\_\+buff\+\_\+size}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00411}{411}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_af1e5ecdf815fb3fce7d945a6fb000b4c}\index{spi\_instance@{spi\_instance}!resp\_buff\_tx\_idx@{resp\_buff\_tx\_idx}}
+\index{resp\_buff\_tx\_idx@{resp\_buff\_tx\_idx}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{resp\_buff\_tx\_idx}{resp\_buff\_tx\_idx}}
+{\footnotesize\ttfamily \label{structspi__instance_af1e5ecdf815fb3fce7d945a6fb000b4c} 
+uint32\+\_\+t resp\+\_\+buff\+\_\+tx\+\_\+idx}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00412}{412}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_aafd5b287055641006388cb4d2a35a0de}\index{spi\_instance@{spi\_instance}!resp\_tx\_buffer@{resp\_tx\_buffer}}
+\index{resp\_tx\_buffer@{resp\_tx\_buffer}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{resp\_tx\_buffer}{resp\_tx\_buffer}}
+{\footnotesize\ttfamily \label{structspi__instance_aafd5b287055641006388cb4d2a35a0de} 
+const uint8\+\_\+t\texorpdfstring{$\ast$}{*} resp\+\_\+tx\+\_\+buffer}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00410}{410}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f}\index{spi\_instance@{spi\_instance}!rx\_frame@{rx\_frame}}
+\index{rx\_frame@{rx\_frame}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{rx\_frame}{rx\_frame}}
+{\footnotesize\ttfamily \label{structspi__instance_a4cba4a9fc165a4fb68ea3006b36b559f} 
+uint32\+\_\+t rx\+\_\+frame}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00402}{402}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a0632d3b1b398cb254c7340c6cd6c8553}\index{spi\_instance@{spi\_instance}!slave\_rx\_buffer@{slave\_rx\_buffer}}
+\index{slave\_rx\_buffer@{slave\_rx\_buffer}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_rx\_buffer}{slave\_rx\_buffer}}
+{\footnotesize\ttfamily \label{structspi__instance_a0632d3b1b398cb254c7340c6cd6c8553} 
+uint8\+\_\+t\texorpdfstring{$\ast$}{*} slave\+\_\+rx\+\_\+buffer}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00418}{418}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a349458d6856b919a4108fd3c94271127}\index{spi\_instance@{spi\_instance}!slave\_rx\_idx@{slave\_rx\_idx}}
+\index{slave\_rx\_idx@{slave\_rx\_idx}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_rx\_idx}{slave\_rx\_idx}}
+{\footnotesize\ttfamily \label{structspi__instance_a349458d6856b919a4108fd3c94271127} 
+uint32\+\_\+t slave\+\_\+rx\+\_\+idx}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00420}{420}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a30db5d3af574b806028259d52041774d}\index{spi\_instance@{spi\_instance}!slave\_rx\_size@{slave\_rx\_size}}
+\index{slave\_rx\_size@{slave\_rx\_size}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_rx\_size}{slave\_rx\_size}}
+{\footnotesize\ttfamily \label{structspi__instance_a30db5d3af574b806028259d52041774d} 
+uint32\+\_\+t slave\+\_\+rx\+\_\+size}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00419}{419}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a2875f77b7f664a267d56731f25cb29b6}\index{spi\_instance@{spi\_instance}!slave\_tx\_buffer@{slave\_tx\_buffer}}
+\index{slave\_tx\_buffer@{slave\_tx\_buffer}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_tx\_buffer}{slave\_tx\_buffer}}
+{\footnotesize\ttfamily \label{structspi__instance_a2875f77b7f664a267d56731f25cb29b6} 
+const uint8\+\_\+t\texorpdfstring{$\ast$}{*} slave\+\_\+tx\+\_\+buffer}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00405}{405}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a223ec6f1329510bc15d6140e98dee7a3}\index{spi\_instance@{spi\_instance}!slave\_tx\_frame@{slave\_tx\_frame}}
+\index{slave\_tx\_frame@{slave\_tx\_frame}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_tx\_frame}{slave\_tx\_frame}}
+{\footnotesize\ttfamily \label{structspi__instance_a223ec6f1329510bc15d6140e98dee7a3} 
+uint32\+\_\+t slave\+\_\+tx\+\_\+frame}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00426}{426}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a0b0e308873d136aff81aa4aed3b5244b}\index{spi\_instance@{spi\_instance}!slave\_tx\_frame\_handler@{slave\_tx\_frame\_handler}}
+\index{slave\_tx\_frame\_handler@{slave\_tx\_frame\_handler}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_tx\_frame\_handler}{slave\_tx\_frame\_handler}}
+{\footnotesize\ttfamily \label{structspi__instance_a0b0e308873d136aff81aa4aed3b5244b} 
+\doxymbox{\hyperlink{core__spi_8h_a072ad301d1096921aa9192840986d66b}{spi\+\_\+slave\+\_\+frame\+\_\+tx\+\_\+handler\+\_\+t}} slave\+\_\+tx\+\_\+frame\+\_\+handler}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00428}{428}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a3c0b5fac4860a27aa7100a1c996e78a5}\index{spi\_instance@{spi\_instance}!slave\_tx\_idx@{slave\_tx\_idx}}
+\index{slave\_tx\_idx@{slave\_tx\_idx}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_tx\_idx}{slave\_tx\_idx}}
+{\footnotesize\ttfamily \label{structspi__instance_a3c0b5fac4860a27aa7100a1c996e78a5} 
+uint32\+\_\+t slave\+\_\+tx\+\_\+idx}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00407}{407}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a1d5dc578a8806564b4f8282c461160c2}\index{spi\_instance@{spi\_instance}!slave\_tx\_size@{slave\_tx\_size}}
+\index{slave\_tx\_size@{slave\_tx\_size}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_tx\_size}{slave\_tx\_size}}
+{\footnotesize\ttfamily \label{structspi__instance_a1d5dc578a8806564b4f8282c461160c2} 
+uint32\+\_\+t slave\+\_\+tx\+\_\+size}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00406}{406}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+\Hypertarget{structspi__instance_a684269632332b8741b72987a23b2163f}\index{spi\_instance@{spi\_instance}!slave\_xfer\_mode@{slave\_xfer\_mode}}
+\index{slave\_xfer\_mode@{slave\_xfer\_mode}!spi\_instance@{spi\_instance}}
+\doxysubsubsection{\texorpdfstring{slave\_xfer\_mode}{slave\_xfer\_mode}}
+{\footnotesize\ttfamily \label{structspi__instance_a684269632332b8741b72987a23b2163f} 
+\doxymbox{\hyperlink{core__spi_8h_a5de1baf3bcc88688b5656f8c8801e18c}{spi\+\_\+sxfer\+\_\+mode\+\_\+t}} slave\+\_\+xfer\+\_\+mode}
+
+\begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_spi_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+spi.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__spi_8h_source_l00437}{437}} of file \doxymbox{\hyperlink{core__spi_8h_source}{core\+\_\+spi.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+\doxymbox{\hyperlink{core__spi_8h}{core\+\_\+spi.\+h}}\end{DoxyCompactItemize}

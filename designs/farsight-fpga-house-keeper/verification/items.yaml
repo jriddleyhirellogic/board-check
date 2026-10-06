@@ -1,0 +1,1875 @@
+# Verification items for the housekeeper FPGA.
+#
+# An item binds one or more requirements to a specific piece of evidence and
+# cites the plan clause that authorises the method. Schema: framework I.6.
+# Clauses: docs/plans/hk-fpga-vv-plan.md in farsight-verification.
+#
+# ---------------------------------------------------------------------------
+# NO VERIFICATION SIMULATION EXISTS YET.
+#
+# Every `artifact` below names a test that has still to be written. That is
+# the intended order, not a shortfall: an item states what would constitute a
+# pass, so writing it first makes the item the specification the test must
+# satisfy. Writing the criterion down is also what exposes a weak one, which
+# is how the two-build TMR criterion was found to be unworkable before anyone
+# implemented it.
+#
+# The framework already describes this state correctly and needs nothing added
+# for it (III.1). An item that exists and has never run is *no evidence*: D1
+# counts the requirement as traced, D3 records that nothing has executed, and
+# the two are reported separately so neither hides the other.
+#
+# The simulations currently in `test/sim/` are development material and are
+# not cited here. A script no item cites is engineering material, not
+# evidence (framework VII.6).
+#
+# ---------------------------------------------------------------------------
+# Identifiers are flat and opaque, allocated in creation order, and never
+# embed a requirement identifier -- an item that later covers a second
+# requirement would otherwise be lying about itself (framework I.2, Rule 1).
+#
+# `artifact` paths assume the testbench lives under `test/sim/`. The file
+# extension and harness follow the verification environment's implementation
+# choice, which is deliberately not made by a plan (VEP). The *test name* is
+# stable either way, because VVP-HK-004 derives it from the requirement.
+
+items:
+
+  - id:            VC-HK-0001
+    verifies:      [HK-LAT-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_01.py::test_HK_LAT_01_pgood_low_after_boot
+    criteria: >
+      With a hardware-controlled source booted successfully, driving its
+      filtered PGOOD low declares a latchup for that source within one
+      filtered sample.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0002
+    verifies:      [HK-LAT-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_01.py::test_HK_LAT_01_nfault_low_while_enabled
+    criteria: >
+      With a hardware-controlled source enabled, driving its filtered nFAULT
+      low declares a latchup for that source within one filtered sample.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Two items for one requirement, because the requirement has two
+    # independent trigger conditions joined by "or". A single test exercising
+    # only PGOOD would pass while the nFAULT path was never entered, and
+    # nothing in a pass/fail result would say so. Writing the criteria is what
+    # made the second path visible.
+
+  - id:            VC-HK-0003
+    verifies:      [HK-LAT-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_global.py::test_HK_LAT_02_global_latch_from_every_hw_region
+    criteria: >
+      For every hardware-controlled region in turn, a declared latchup in that
+      region asserts the global critical latchup condition. The test iterates
+      the region list rather than sampling it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # level: subsystem is load-bearing here. The requirement says "any
+    # hardware-controlled region", so evidence from one source state machine
+    # would satisfy D1 while the propagation path to the global latch stayed
+    # untested -- the exact limitation framework III.2 describes and reports
+    # rather than gates. VVP-HK-004 carries no Level, so IV.6 check 6 does not
+    # enforce this; it is a judgement recorded in the item.
+
+  - id:            VC-HK-0004
+    verifies:      [HK-LAT-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_hold.py::test_HK_LAT_03_all_enables_held_deasserted
+    criteria: >
+      While the global critical latchup condition is asserted, every power
+      enable output of the design is deasserted, and remains deasserted for
+      the duration of the condition. The check enumerates the enable outputs
+      of the synthesised top level rather than a list maintained in the test.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # "every power enable in the system" is the whole claim. A test carrying
+    # its own hand-written list of enables silently stops covering one that is
+    # added later, and still passes -- the same failure shape as a plan that
+    # lists requirements instead of selecting them (framework I.2, Rule 2).
+
+  - id:            VC-HK-0005
+    verifies:      [HK-LAT-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_hold.py::test_HK_LAT_04_recovery_requires_external_reset
+    criteria: >
+      With the global critical latchup condition asserted, the condition
+      remains asserted across the stimulus set the test applies -- including
+      removal of the originating fault, software commands to the affected
+      regions, and re-assertion of the source enables -- and clears only on
+      assertion of the external reset input.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # The requirement is a universal negative: recovery shall require external
+    # reset. No simulation establishes that no other input sequence clears the
+    # latch; it establishes that the sequences tried did not. The criterion
+    # says which were tried, so the strength of the evidence is legible rather
+    # than assumed. Widening it is a test change, not a requirement change.
+    #
+    # "Re-assertion of the source enables" is not applied: the enables are
+    # outputs, and nothing on a board drives them. The test substitutes the
+    # nearest input -- the fault removed, so every rail would come good if
+    # enabled -- and adds the 1 s start-up interval elapsing, because that
+    # counter is not held by the latch and is what started the chain once.
+
+  - id:            VC-HK-0006
+    verifies:      [HK-LAT-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_lat_sw_region.py::test_HK_LAT_05_sw_region_isolated
+    criteria: >
+      A declared latchup in a software-controlled region deasserts that
+      region's power enables, and the enables of every other region are
+      unchanged across the event.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # "only that region" is the load-bearing word, and it is the half a test
+    # most easily omits: checking that the affected region powers down is
+    # obvious, checking that nothing else moved is the actual requirement.
+
+  - id:            VC-HK-0007
+    verifies:      [HK-LAT-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_beacon.py::test_HK_LAT_07_first_failure_snapshot_retained
+    criteria: >
+      After a first failure, the retained PGOOD and nFAULT state of every
+      hardware-controlled source equals the state sampled at the instant of
+      that failure, and a subsequent failure on another source does not
+      overwrite it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # "the first failure" is what the second clause of the criterion tests. A
+    # snapshot that is correct for one failure and overwritten by the next
+    # satisfies a naive reading and loses the diagnostic the requirement
+    # exists to preserve.
+
+  - id:            VC-HK-0008
+    verifies:      [HK-LAT-08]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_response.py::test_HK_LAT_08_deassert_within_bound
+    criteria: >
+      A latchup in a software-controlled region (IMX, its 1V8 rail
+      dropped after boot) and one in a hardware-controlled region (DDR16,
+      its 1V2 nFAULT asserted) each deassert every affected enable that
+      was asserted within 10 us of the fault first appearing at the input
+      pin. The 5 us input filter is inside the 10 us.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # 10 us proposed on 2026-09-29 for "immediately" in FAR-PM_FPGA_L4REQ-12,
+    # -14 and -17; confirmed for -14 on 2026-10-01 (avionics hardware), -12
+    # and -17 still pending. Previously BLOCKED on a TBR bound.
+
+# ---------------------------------------------------------------------------
+# Not yet written for this area:
+#
+#   HK-LAT-06   withdrawn; identifier retained (framework I.4). No item, and
+#               its absence from the sequence above is correct rather than an
+#               omission.
+#
+# There are no coverage items here, and there should not be. Coverage over the
+# housekeeper RTL is an obligation on the verification environment -- VENV-03
+# and VENV-04, governed by the verification environment plan -- and resolving
+# what it finds is closure condition D5, reported per configuration. It was
+# previously written as VVP-HK-008, a `shall` inside a V&V plan, which is a
+# requirement on the environment stated in a design's plan (framework IV).
+
+  # =========================================================================
+  # The remaining housekeeper requirements, written as specifications.
+  #
+  # Method follows the requirement's own `Verify:` field. Where a requirement
+  # names more than one, the item takes the method that produces the primary
+  # evidence and the clause that authorises it; a second item can be added
+  # later for the confirming method without changing this one.
+  #
+  # `criteria: BLOCKED` appears where the requirement carries an open TBR
+  # bound. That is not an omission: the requirement does not yet say what
+  # would pass, so no criterion can be written, and D6 names the bound and
+  # its owner. D1 does not count these as traced.
+  #
+  # `expect: FAIL` appears wherever the requirement's status is GAP, DEFECT
+  # or AMBIG. The shortfall is already known; the item exists to measure it,
+  # and without the field a failing test invites somebody to fix the test.
+  # =========================================================================
+
+  - id:            VC-HK-0009
+    verifies:      [HK-IMPL-01]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/build.py::test_HK_IMPL_01_target_device
+    criteria: >
+      The synthesis and place-and-route settings for the flight build
+      name device A3PE3000L in package FG484M, and the device field of
+      the delivered programming file matches. A build targeting any
+      other device or package fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0010
+    verifies:      [HK-IMPL-02]
+    authorised_by: VVP-HK-005
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/build.py::test_HK_IMPL_02_tmr_on_all_sequential
+    criteria: >
+      Every sequential element in the delivered netlist belongs to a
+      triplicated group with a voter on its output. The count of un-
+      triplicated sequential elements is zero, and any element excluded
+      appears in the approved exception list with a rationale. A report
+      that cannot enumerate sequential elements fails rather than
+      reporting none.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    # Met in the flight build of 2026-10-01 (b67f8ad): 6,519 of 6,519
+    # flip-flops voted triplicates, CoreUART included (HK-F-20).
+
+  - id:            VC-HK-0011
+    verifies:      [HK-IMPL-03]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/build.py::test_HK_IMPL_03_safe_state_encoding
+    criteria: >
+      The retained synthesis report lists every extracted state machine,
+      and each carries safe encoding with a defined transition out of
+      illegal states. A state machine present in the source but absent
+      from the report fails, because an FSM that was not extracted was
+      not encoded safely either.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+    # The CoreUART's xmit_state is encoded one-hot without safe recovery
+    # (HK-F-31); the housekeeper's own state machines are all safe.
+
+  - id:            VC-HK-0012
+    verifies:      [HK-IMPL-04]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/build.py::test_HK_IMPL_04_no_test_logic_in_flight
+    criteria: >
+      The flight build sets no parameter value and no define of its own
+      beyond the variant's TMR switch, and its source set, at the commit
+      it records, tests no other conditional-compilation symbol and
+      contains no synthesis-excluded test hook. Parameters set inside the
+      RTL are design, reviewed with it; what is checked is what the build
+      changes. The comparison is against the delivered build, not the
+      working tree.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0013
+    verifies:      [HK-IMPL-18]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/build.py::test_HK_IMPL_18_variant_identifier_in_file
+    criteria: >
+      The programming file carries a variant identifier readable from
+      its contents alone -- its silicon signature (USERCODE), which a
+      programmed device also reports -- and that identifier equals the
+      one recorded in the build manifest. Renaming the file or moving it
+      does not change the answer, which is the property under test. A
+      path inside the file that happens to name the variant is not an
+      identifier.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0014
+    verifies:      [HK-IMPL-10]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      test/sim/upset_tb::test_HK_IMPL_10_tolerant_beyond_first_upset
+    criteria: >
+      After an injected upset in one leg of a triplicated group is
+      corrected, a further upset injected into a different leg of the
+      same group is also corrected and the voted output stays correct. A
+      design that survives the first upset and diverges on the second
+      fails. At least one injection is performed into every triplicated
+      group.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Not writable in the RTL simulation this suite runs. TMR is inserted by
+    # Synplify at synthesis (syn_radhardlevel="tmr"); the RTL has no
+    # triplicated groups to inject into, and nothing in it says what the
+    # synthesiser emits -- which is the question. This needs a gate-level
+    # simulation of the synthesised TMR netlist against the ProASIC3
+    # primitive library: a Synplify licence to produce the netlist, and a
+    # simulator decision (framework II.4) that no plan has made.
+
+  - id:            VC-HK-0015
+    verifies:      [HK-IMPL-20]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/build.py::test_HK_IMPL_20_utilisation_margin
+    criteria: >
+      For each resource class r of the device -- core cells, RAM blocks,
+      I/O, global clock networks -- CBE_r = (U_r / A_r) x 100% is no more
+      than 80%, where U_r is the use of class r reported by Libero after
+      place-and-route of the latest flight-configuration build (TMR
+      enabled, flight pinout) and A_r is what the A3PE3000L-FG484
+      provides. A report that does not state a class counts as that
+      class failing, not as zero.
+    evidence:      [the retained tool report]
+    # Pending systems confirmation: 80% CBE at CDR is the margin policy
+    # proposed on 2026-09-29. Previously BLOCKED on a TBR bound.
+
+  - id:            VC-HK-0016
+    verifies:      [HK-CLK-01]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/clock.py::test_HK_CLK_01_single_free_running_clock
+    criteria: >
+      The constraint file declares exactly one create_clock, at 50 MHz,
+      and the elaborated design contains no generated clock, no derived
+      clock and no inferred clock gate. A second clock domain fails even
+      if unused.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0017
+    verifies:      [HK-CLK-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_clk.py::test_HK_CLK_03_async_reset_active_low
+    criteria: >
+      Driving the reset input low at a time not aligned to any clock
+      edge places every output in its reset state without a clock edge
+      occurring. Holding the clock static while reset is asserted still
+      produces the reset state.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Fails on HK-F-18 / DRV-HK-05: the reset input is asynchronous and every
+    # register it resets is synchronous, so with the clock stopped reset does
+    # nothing at the pins.
+
+  - id:            VC-HK-0018
+    verifies:      [HK-CLK-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_clk.py::test_HK_CLK_04_async_assert_sync_release
+    criteria: >
+      With reset released between two clock edges, no sequential element
+      leaves reset before the next rising clock edge, and all of them
+      leave on that same edge. Assertion takes effect with no clock
+      edge; release does not.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Fails on HK-F-18 / DRV-HK-05: the reset input is asynchronous and every
+    # register it resets is synchronous, so with the clock stopped reset does
+    # nothing at the pins.
+
+  - id:            VC-HK-0019
+    verifies:      [HK-CLK-06]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/timing.py::test_HK_CLK_06_setup_hold_positive_slack
+    criteria: >
+      The retained timing report for the delivered build shows worst
+      negative slack greater than zero for setup and for hold on every
+      path at 50 MHz. Any path reported as unconstrained, false or
+      multicycle appears in the documented exception list; an unlisted
+      exclusion fails.
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-HK-0020
+    verifies:      [DRV-HK-03]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/timing.py::test_DRV_HK_03_reset_release_synchronous
+    criteria: >
+      The reset release path is constrained as a synchronous path and
+      the retained report shows recovery and removal analysed with
+      positive slack for every sequential element, so that all of them
+      leave reset on the same clock edge. A reset release left
+      unconstrained fails.
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-HK-0021
+    verifies:      [DRV-HK-04]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/timing.py::test_DRV_HK_04_async_input_max_delay
+    criteria: >
+      Every path from an asynchronous input to the first stage of its
+      synchroniser carries a maximum delay constraint of less than 20
+      ns, one period of the 50 MHz clock, and the retained report shows
+      each path meeting it.
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-HK-0022
+    verifies:      [DRV-HK-05]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/reset.py::test_DRV_HK_05_every_register_async_reset
+    criteria: >
+      Every sequential element in the elaborated netlist has an
+      asynchronous reset connected. Each that does not appears
+      individually in the approved exception list with a recorded
+      rationale; a blanket exception fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0023
+    verifies:      [DRV-HK-06]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/timing.py::test_DRV_HK_06_interval_tolerance_over_life
+    criteria: >
+      For every interval and rate derived from the 50 MHz reference, the
+      analysis uses the fitted oscillator's worst-case total frequency
+      error -- initial accuracy, temperature drift over the full
+      operating range, and ageing over mission life, combined -- and
+      shows the resulting interval within the tolerance its requirement
+      states.
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-HK-0024
+    verifies:      [DRV-HK-07]
+    authorised_by: VVP-HK-002
+    method:        ANA
+    level:         subsystem
+    artifact:      test/analysis/timing.py::test_DRV_HK_07_worst_case_pvt_corners
+    criteria: >
+      Retained timing reports exist for the slow and fast process
+      corners at the voltage and temperature extremes of the range over
+      which the housekeeper is required to operate, and every reported
+      path has positive slack at both. A report at nominal only fails.
+    evidence:      [the retained tool report]
+    expect:        FAIL
+
+  - id:            VC-HK-0025
+    verifies:      [HK-IO-01]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/pins.py::test_HK_IO_01_every_port_placed_or_declared
+    criteria: >
+      The set of top-level ports equals the union of ports carrying a
+      pin assignment and ports named in an active constraint recording
+      them as deliberately unplaced. A port in neither set fails, and so
+      does a constraint naming a port the design does not have.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0026
+    verifies:      [HK-IO-02]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/pins.py::test_HK_IO_02_assigned_pins_exist_on_package
+    criteria: >
+      Every assigned pin name appears in the A3PE3000L-FG484M package
+      pin list. A pin the package does not have fails, as does a pin
+      that exists but is not user I/O.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0027
+    verifies:      [HK-IO-08]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/pins.py::test_HK_IO_08_pin_matches_net_of_port_name
+    criteria: >
+      For every assigned pin, the schematic net at that ball is the net
+      the port name denotes under the documented naming transform. Every
+      mismatch is named with both the port name and the net found.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0028
+    verifies:      [HK-IO-09]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/pins.py::test_HK_IO_09_outputs_held_inactive_before_drive
+    criteria: >
+      Every output port carries a pull resistor setting whose polarity
+      equals that port's inactive level, so the pin is inactive from I/O
+      ring power until the design drives it. An output with no inactive
+      level appears in the approved exception list.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0029
+    verifies:      [HK-IO-04]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/capture.py::test_HK_IO_04_inputs_captured_appropriately
+    criteria: >
+      Every input port is classified as synchronous or asynchronous to
+      the housekeeper clock. Each asynchronous input passes through at
+      least two register stages before any combinational logic reads it;
+      each synchronous input carries a constrained input delay. An
+      unclassified input fails.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0030
+    verifies:      [HK-IO-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_io_filter.py::test_HK_IO_05_pgood_nfault_5us_filter
+    criteria: >
+      For every PGOOD, nFAULT and EPS eFuse PGOOD input: a pulse of 4.74
+      us -- just below the 5 us +/-5 % band -- does not propagate; a level
+      held for 5.26 us -- just above it -- does. Both edge directions are
+      exercised on every such input, and every input has the same
+      pin-to-filter latency.
+    # The band was proposed on 2026-09-29 for the TBR in FAR-PM_FPGA_L4REQ-4,
+    # -5, -14 and -17, and confirmed on 2026-10-01 (avionics hardware).
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Reaches inside the design: the test reads glitch_filter.d_out, made
+    # addressable for that module alone. Two of the six directions have no
+    # consequence at the pins -- latchup is on a low nFAULT, and the eFuse
+    # sets a power-down that nothing clears -- so "both directions on every
+    # input" cannot be shown there. The filter output shows every one.
+
+  - id:            VC-HK-0031
+    verifies:      [HK-IO-06]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_io_filter.py::test_HK_IO_06_control_input_5us_filter
+    criteria: >
+      For every input by which the PolarFire commands a software-
+      controlled region: a pulse of 4.98 us does not propagate; a level
+      held for 5.00 us propagates. Both edge directions are exercised on
+      every such input.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0032
+    verifies:      [HK-SRC-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      test/sim/source_tb::test_HK_SRC_01_individually_controllable
+    criteria: >
+      Every power source has an enable output of its own, which changes
+      only for that source's own boot, power-down or failure. In each
+      software-controlled region, a boot failure and a latchup of each
+      source read on the region's outputs distinctly from each other, from
+      those of every other source in the region, and from no failure.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Not yet written. The software-region half is HK-TLM-03's measurement,
+    # and fails with it: the first source's boot failure reads 0, the same as
+    # no failure (HK-F-06).
+    # Scoping per-source failure identity to the software-controlled regions
+    # was proposed on 2026-09-29 and confirmed on 2026-10-01.
+    # HK-SRC-01 was AMBIG, and this criterion asked for outputs that no other
+    # source drives, which no practical design could meet.
+
+  - id:            VC-HK-0033
+    verifies:      [HK-SRC-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_02.py::test_HK_SRC_02_enables_low_after_reset
+    criteria: >
+      With every source driven to enabled before reset is asserted,
+      every enable output is deasserted at reset release and stays
+      deasserted until a boot is requested. The pre-reset state does not
+      survive.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0034
+    verifies:      [HK-SRC-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_attempt.py::test_HK_SRC_03_enable_needs_request_and_no_pdn
+    criteria: >
+      A source enable asserts only when that source has been requested
+      to boot and no power-down is in effect for it. With a power-down
+      latched, a boot request does not assert the enable. A region
+      withdrawn during its retry hold asserts nothing as it leaves the
+      hold and can be requested again afterwards; withdrawn and requested
+      again during the hold, it does not re-enable the failed rail before
+      the hold has ended.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-29 (a 20 ns enable pulse as the hold ended);
+    # fixed 2026-10-05 by leaving RETRY for POWER_OFF at the end of the hold
+    # when a power-down is in effect.
+
+  - id:            VC-HK-0035
+    verifies:      [HK-SRC-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_attempt.py::test_HK_SRC_04_enable_held_through_attempt
+    criteria: >
+      A source enable stays asserted continuously from the start of its
+      boot attempt until that source is powered down, declared failed,
+      or declared latched up, and deasserts on whichever occurs first.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0036
+    verifies:      [HK-SRC-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_attempt.py::test_HK_SRC_05_boot_success_on_rising_pgood
+    criteria: >
+      Success is declared only on a rising edge of filtered PGOOD
+      observed while the enable is asserted and the attempt is in
+      progress. A PGOOD already high when the enable asserts does not
+      declare success, and neither does a rising edge while the enable
+      is deasserted.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0037
+    verifies:      [HK-SRC-06]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_06.py::test_HK_SRC_06_fail_at_200pct_nominal
+    criteria: >
+      With PGOOD held low, the source is declared failed -- its enable
+      deasserts -- no later than 200% of its nominal boot time after its
+      enable asserts, plus 0.1 ms for the input filter and margin. A PGOOD
+      rising edge at its nominal time, inside the bound, declares success
+      instead, and no failure is declared. Nominal is enable to PGOOD, from
+      the regulator's datasheet with the soft-start capacitor fitted, read
+      from the board model; the source is DDR8's 2V5, nominal 4.139 ms.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Fails: the design gives every source a flat 25 ms. HK-F-03.
+    # Datasheet start-up confirmed as nominal by avionics hardware on
+    # 2026-10-01; still pending: that it means enable to PGOOD, and whether
+    # a per-source timeout is wanted on SV1. Previously 25 ms, which the
+    # design meets (timeout at 25.231 ms).
+
+  - id:            VC-HK-0038
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_software.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      A source already declared successfully booted is declared latched
+      up when its filtered nFAULT goes low, and separately when its
+      filtered PGOOD goes low. Both routes are exercised on every
+      software-controlled source that has them.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07, split by region because the item it
+    # replaced asked for every source and a hardware-region latchup is
+    # global: each hardware source needs a boot of its own, and 26 boots in
+    # one module took longer than the rest of the suite together. Split, they
+    # run side by side. VC-HK-0109 to -0113 are the hardware regions. The
+    # nFAULT route exists only where a source has the pin; 22 of the 33 have
+    # their nfault tied high in the RTL.
+  - id:            VC-HK-0039
+    verifies:      [HK-SRC-08]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_latch.py::test_HK_SRC_08_latchup_during_boot
+    criteria: >
+      A source in a boot attempt is declared latched up when its
+      filtered nFAULT goes low, except where that source is configured
+      to ignore nFAULT while booting. The exception is exercised as well
+      as the rule.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0040
+    verifies:      [HK-SRC-09]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_latch.py::test_HK_SRC_09_stepdown_ignores_nfault
+    criteria: >
+      With the step-down 4V0 source in a boot attempt, driving its
+      nFAULT low does not declare latchup. The same stimulus after the
+      attempt completes does declare it, which distinguishes ignoring
+      from not being connected.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0041
+    verifies:      [HK-SRC-10]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_latch.py::test_HK_SRC_10_latchup_holdoff_2ms
+    criteria: >
+      A source declared latched up holds its enable deasserted for at
+      least 2 ms. A re-enable requested at 1.9 ms does not assert the
+      enable; one requested after 2 ms does.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0042
+    verifies:      [HK-SRC-11]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_attempt.py::test_HK_SRC_11_powered_down_when_pgood_low_or_2ms
+    criteria: >
+      A source being powered down is considered off at whichever comes
+      first: its filtered PGOOD going low, or 2 ms after the enable
+      deasserts. Both orderings are exercised -- PGOOD falling early,
+      and PGOOD stuck high. With PGOOD stuck high the source is
+      abandoned once the timeout has run rather than stalling the
+      shutdown, and the wait is the same whether the source booted long
+      before the power-down or just before it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-28 (the 2 ms was counted from boot); fixed
+    # 2026-10-02 by clearing the counter on entry to POWERING_DOWN.
+
+  - id:            VC-HK-0043
+    verifies:      [HK-REG-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_observable.py::test_HK_REG_01_independently_controllable
+    criteria: >
+      LVDS, which reports on a single status bit, is read by the 1 s rule:
+      with its rail dead, it has made its last attempt and is not enabled
+      1 s after the FPGA region reports booted, reports booted at no point,
+      and makes no further attempt afterwards; with its rail healthy, it
+      reports booted within that 1 s. Together these make "status still
+      low at 1 s" conclusive, and never wrong about a working region.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # LVDS only: Step Down and FPGA also report on one bit, but either failing
+    # leaves the PolarFire unpowered. HK-F-27.
+    # Pending systems confirmation: the 1 s rule is the answer proposed on
+    # 2026-09-29 for FAR-PM_FPGA_L4REQ-28; "probably acceptable" on
+    # 2026-10-01, for the PolarFire firmware owner to confirm. Previously the criterion asked for
+    # failed to read differently from booting, which LVDS's bit cannot.
+
+  - id:            VC-HK-0044
+    verifies:      [HK-REG-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_sequence.py::test_HK_REG_02_sources_in_fixed_order
+    criteria: >
+      Within a region, exactly one source enable asserts at a time, in
+      the region's fixed order, and each source starts only after the
+      previous one is declared successfully booted. Two enables
+      asserting together fails.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0045
+    verifies:      [HK-REG-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_sequence.py::test_HK_REG_03_booted_only_when_all_sources
+    criteria: >
+      A region is declared successfully booted only when every source in
+      it reports success. With any one source not reporting success, the
+      region is not declared booted.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0046
+    verifies:      [HK-REG-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_retry.py::test_HK_REG_04_reattempt_under_three
+    criteria: >
+      When any source in the region is declared failed and fewer than
+      three re-attempts have been used, the region begins a re-attempt.
+      With three re-attempts already used, it does not.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0047
+    verifies:      [HK-REG-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_retry.py::test_HK_REG_05_reattempt_holdoff_200ms
+    criteria: >
+      On beginning a re-attempt the region deasserts every enable in the
+      region and holds them deasserted for at least 200 ms before asserting
+      the first source's enable, per the parent FAR-PM_FPGA_L4REQ-18.
+      The bound is the parent's, not this requirement's own -1/+2 ms
+      tolerance, which would have accepted the 199.229 ms hold that HK-F-04
+      was about.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-04 (199.229 ms); fixed 2026-10-05 by rounding
+    # the threshold up to 153 ticks, 200.540 ms.
+
+  - id:            VC-HK-0048
+    verifies:      [HK-REG-06]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_retry.py::test_HK_REG_06_at_most_four_attempts
+    criteria: >
+      A region makes at most four boot attempts, the initial attempt
+      plus three re-attempts, and is declared failed on the fourth
+      failing. A fifth enable assertion fails.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0049
+    verifies:      [HK-REG-08]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_latchup.py::test_HK_REG_08_latched_while_any_source_latched
+    criteria: >
+      A region reports latched up for exactly as long as any source
+      within it is declared latched up, and stops reporting it when the
+      last such source clears.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Verified for one latched source only. Once one source latches, the
+    # region powers the others down within a clock cycle and they stop
+    # checking for a latchup, and every source has the same hold, so several
+    # sources latched together and clearing apart cannot be produced at the
+    # pins. The OR over sources is by construction (pwr_region_imx_bootseq.sv:77).
+
+  - id:            VC-HK-0050
+    verifies:      [HK-REG-09]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_reg_latchup.py::test_HK_REG_09_latched_region_deasserts_enables
+    criteria: >
+      When a region is declared latched up, every enable in that region
+      is deasserted, including sources that had booted successfully.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0051
+    verifies:      [HK-SEQ-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_initial.py::test_HK_SEQ_01_wait_1s_after_reset
+    criteria: >
+      The first power enable asserts no earlier than 950 ms and no later
+      than 1050 ms after reset release. No enable asserts before that
+      window.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0052
+    verifies:      [HK-SEQ-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_initial.py::test_HK_SEQ_02_hardware_region_order
+    criteria: >
+      The hardware-controlled regions begin booting in the order Step
+      Down, DDR8, DDR16, FPGA, LVDS. Any other order of first enable
+      assertion fails.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0053
+    verifies:      [HK-SEQ-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_critical.py::test_HK_SEQ_03_ddr8_lvds_need_success
+    criteria: >
+      The DDR8 and LVDS regions begin booting only after the preceding
+      region is declared successfully booted. With the preceding region
+      failed, neither begins.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0054
+    verifies:      [HK-SEQ-09]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_noncritical.py::test_HK_SEQ_09_ddr16_fpga_need_finish
+    criteria: >
+      The DDR16 and FPGA regions begin booting once the preceding region
+      has finished, whether it succeeded or failed. The failed case is
+      exercised, because that is what distinguishes this from HK-SEQ-03.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0055
+    verifies:      [HK-SEQ-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_initial.py::test_HK_SEQ_04_boot_once_per_reset
+    criteria: >
+      The boot sequence starts exactly once per deassertion of reset.
+      After it completes, no further sequence starts without another
+      reset deassertion.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0056
+    verifies:      [HK-SEQ-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_software.py::test_HK_SEQ_05_sw_region_rising_edge_only
+    criteria: >
+      A software-controlled region starts booting only on a rising edge
+      of its control input, and only while the FPGA region is declared
+      successfully booted. A control input already high when the FPGA
+      region boots does not start it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0057
+    verifies:      [HK-SEQ-06]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_software.py::test_HK_SEQ_06_start_request_cleared
+    criteria: >
+      A software-controlled region's start request clears once that
+      region reports done or latchup, so that a subsequent rising edge
+      is required to start it again.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0058
+    verifies:      [HK-SEQ-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_software.py::test_HK_SEQ_07_sw_regions_down_until_fpga
+    criteria: >
+      While the FPGA region is not declared successfully booted, every
+      software-controlled region has all its enables deasserted,
+      regardless of its control input.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0059
+    verifies:      [HK-SEQ-08]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_initial.py::test_HK_SEQ_08_hw_regions_boot_unrequested
+    criteria: >
+      With no external request asserted at any time, all hardware-
+      controlled regions boot during the initial sequence.
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0060
+    verifies:      [HK-SEQ-10]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_seq_complete.py::test_HK_SEQ_10_sequence_completes_in_time
+    criteria: >
+      With DDR8, DDR16 and LVDS each failing every attempt on their last
+      source -- the slowest boot the board model can produce without a
+      shutdown -- the last change of any hardware-controlled enable occurs
+      within 6 s of reset release, and nothing changes for longer than a
+      retry hold after it. LVDS must have made all four attempts, or the
+      test has not reached the end it is timing.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Pending systems confirmation: 6 s is the value proposed on 2026-09-29
+    # for FAR-PM_FPGA_L4REQ-8 and -27; referred to flight software on
+    # 2026-10-01. Previously BLOCKED on a TBR bound.
+
+  - id:            VC-HK-0061
+    verifies:      [HK-SW-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_request.py::test_HK_SW_01_imx_region_on_request
+    criteria: >
+      A rising edge on the IMX sensor region's control input, while the
+      FPGA region is booted, starts that region and no other.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0062
+    verifies:      [HK-SW-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_request.py::test_HK_SW_02_lvdt_region_on_request
+    criteria: >
+      A rising edge on the LVDT region's control input, while the FPGA
+      region is booted, starts that region and no other.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0063
+    verifies:      [HK-SW-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_request.py::test_HK_SW_03_ethernet_regions_independent
+    criteria: >
+      Each Ethernet region starts on a rising edge of its own control
+      input, and starting one does not change the enables of the other.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0064
+    verifies:      [HK-SW-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_request.py::test_HK_SW_04_stepper_primary_or_secondary
+    criteria: >
+      A rising edge on the primary stepper control input starts the
+      primary region; a rising edge on the secondary control input
+      starts the secondary region. Each is exercised from the powered-
+      down state.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0065
+    verifies:      [HK-SW-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_down.py::test_HK_SW_05_secondary_stepper_down_on_primary
+    criteria: >
+      Whenever the primary stepper region is declared successfully
+      booted, the secondary stepper region's enables are deasserted,
+      including when the secondary was already booted at that moment --
+      and the two regions' enables are never asserted at the same time,
+      per the parent FAR-PM_FPGA_L4REQ-24. The second clause is the
+      parent's, not this requirement's wording, which the design meets;
+      without it the test would pass over exactly the overlap HK-F-05 is
+      about, and the gate would report this item's expect: FAIL as stale.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0066
+    verifies:      [HK-SW-06]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_down.py::test_HK_SW_06_region_down_on_deassert
+    criteria: >
+      Deasserting a software-controlled region's control input deasserts
+      that region's enables, following the region power-down order.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0067
+    verifies:      [HK-SW-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_sw_down.py::test_HK_SW_07_latched_region_needs_low_high
+    criteria: >
+      A software-controlled region that has latched up re-enables only
+      after its control input goes low and then high. Holding the
+      control input high does not re-enable it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0068
+    verifies:      [HK-PDN-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_routes.py::test_HK_PDN_01_latch_conditions
+    criteria: >
+      A global power-down request latches on filtered EPS eFuse PGOOD
+      going low, on the FPGA region failing to boot, and on the step-
+      down region failing to boot. Each of the three routes is exercised
+      separately, and no other stimulus latches it.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0069
+    verifies:      [HK-PDN-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_02_reverse_boot_order
+    criteria: >
+      On a latched power-down the regions' enables deassert in reverse
+      boot order, and each stage begins only once every source in the
+      following stage is off: its enable deasserted, and its PGOOD low for
+      the 5 us filter or its 2 ms power-down timeout run, whichever is
+      first. A stage beginning early fails. Exercised with every software
+      region up, and with LVDT the only one.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-28 (fixed 2026-10-02) and on HK-F-33, the LVDS
+    # gate omitting LVDT (fixed 2026-10-05).
+
+  - id:            VC-HK-0070
+    verifies:      [HK-PDN-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_03_sw_regions_simultaneous
+    criteria: >
+      Every software-controlled region's enables deassert on the same
+      clock at the start of a global power-down, before the hardware-
+      controlled stages begin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0071
+    verifies:      [HK-PDN-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_04_source_reverse_within_region
+    criteria: >
+      Within a region, source enables deassert in reverse of their boot
+      order, each source beginning only once the source after it is off:
+      its PGOOD low for the 5 us filter or its 2 ms power-down timeout run,
+      whichever is first. On the LT3065 rails, whose PGOOD stays high once
+      disabled, only the timeout can make a source off.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-28 (each source began 0.04 us after the one
+    # after it); fixed 2026-10-02.
+
+  - id:            VC-HK-0072
+    verifies:      [HK-PDN-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_05_latched_until_reset
+    criteria: >
+      Once latched, the global power-down request stays latched while
+      the conditions that set it clear, and clears only on reset.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  # VC-HK-0073 retired with HK-PDN-07, withdrawn on 2026-10-01: the board
+  # has too little hold-up for a controlled shutdown on eFuse loss, and an
+  # uncontrolled one does no harm (avionics hardware). Identifier retained
+  # (framework I.4); its absence here is correct rather than an omission.
+
+  - id:            VC-HK-0074
+    verifies:      [HK-TLM-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_tlm_status.py::test_HK_TLM_01_per_region_status_output
+    criteria: >
+      Each region drives its own dedicated status output to the
+      PolarFire, and no two regions share one. A status change on one
+      region does not alter another region's output.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0075
+    verifies:      [HK-TLM-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_tlm_status.py::test_HK_TLM_02_status_low_until_fpga
+    criteria: >
+      While the FPGA region is not declared successfully booted, every
+      region status output is driven low, regardless of the actual state
+      of those regions.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0076
+    verifies:      [HK-TLM-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_tlm_metadata.py::test_HK_TLM_03_failure_source_and_kind
+    criteria: >
+      For each software-controlled region, the failure metadata
+      identifies which source in that region failed and whether the
+      failure was a boot failure or a latchup. The two kinds are
+      distinguishable from the outputs alone.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0077
+    verifies:      [HK-TLM-04]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/telemetry.py::test_HK_TLM_04_metadata_width_matches_sources
+    criteria: >
+      For each region, the width of its failure metadata output is
+      sufficient to identify any one of that region's sources, and no wider
+      than needed to do so -- plus one bit in a software-controlled region,
+      for whether the failure was a boot failure or a latchup (HK-TLM-03).
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  # VC-HK-0078 retired with HK-TLM-05, which was withdrawn for contradicting
+  # its parent. Identifier retained (framework I.4); its absence here is
+  # correct rather than an omission. The need is carried by HK-OFFNOM-02 and
+  # VC-HK-0097.
+
+  - id:            VC-HK-0079
+    verifies:      [HK-TLM-06]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/telemetry.py::test_HK_TLM_06_powered_and_configured
+    criteria: >
+      An output to the PolarFire indicates that the housekeeper is
+      powered and configured, and it is driven from a source that cannot
+      assert before configuration completes.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0080
+    verifies:      [HK-TLM-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_tlm_heartbeat.py::test_HK_TLM_07_heartbeat_1s
+    criteria: >
+      The heartbeat output toggles with a period between 950 ms and 1050
+      ms, measured over at least ten consecutive toggles, and continues
+      to toggle while regions are failed.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0081
+    verifies:      [HK-TLM-08]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/version.py::test_HK_TLM_08_firmware_version_reported
+    criteria: >
+      A firmware version number is readable by the PolarFire, and its
+      value in the delivered build equals the version recorded in the
+      build manifest.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0082
+    verifies:      [HK-TLM-09]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_tlm_status.py::test_HK_TLM_09_status_identifies_enabled
+    criteria: >
+      From the region status outputs alone, which components are enabled
+      is determinable for every combination of region states the design
+      can reach.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # Fails as written: the status outputs report boot succeeded, so a
+    # region powered and still booting reads 0, the same as one that is off.
+    # Its requirement's own note says so. HK-F-27.
+
+  - id:            VC-HK-0083
+    verifies:      [HK-TLM-10]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_response.py::test_HK_TLM_10_status_change_latency
+    criteria: >
+      A region's status output changes within 1 us of its boot status
+      changing, on both a boot success and a latchup, in a
+      software-controlled region. The change is taken as the moment the
+      input that causes it has passed the input filter: the causing
+      pin's edge plus the filter's measured pin-to-output latency of 252
+      clocks (HK-IO-05). A status output that moves before that is a
+      measurement fault and fails.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # 1 us was proposed on 2026-09-29 for the reporting latency of
+    # FAR-PM_FPGA_L4REQ-28 and -29, and confirmed on 2026-10-01.
+    # Previously BLOCKED on a TBR bound.
+
+  - id:            VC-HK-0084
+    verifies:      [HK-UART-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_forward.py::test_HK_UART_01_forward_rx_when_booted
+    criteria: >
+      While the FPGA region is declared successfully booted, the RS-422
+      receive line from the payload bus appears at the PolarFire, bit
+      for bit, at 115,200 baud.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0085
+    verifies:      [HK-UART-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_forward.py::test_HK_UART_02_drive_low_when_unbooted
+    criteria: >
+      While the FPGA region is not declared successfully booted, the
+      RS-422 line to the PolarFire does not follow the payload bus, and
+      is held low, with traffic on the bus throughout. Held low rather
+      than at the UART idle level: the PolarFire is unpowered in that
+      window and FAR-PM_FPGA_L4REQ-3 forbids driving it high.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0086
+    verifies:      [HK-UART-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_forward.py::test_HK_UART_03_forward_tx_when_booted
+    criteria: >
+      While the FPGA region is declared successfully booted and no
+      failure is latched, the RS-422 transmit line from the PolarFire
+      appears on the payload bus. With a failure latched, it does not.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0087
+    verifies:      [HK-UART-10]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_forward.py::test_HK_UART_10_idle_level_when_not_forwarding
+    criteria: >
+      Whenever the housekeeper is neither forwarding the PolarFire nor
+      transmitting the failure beacon, the RS-422 transmit line to the
+      payload bus sits at the UART idle level.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0088
+    verifies:      [HK-UART-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_forward.py::test_HK_UART_04_takes_line_on_failure
+    criteria: >
+      On a latched failure the housekeeper drives the RS-422 transmit
+      line to the payload bus itself, and any PolarFire traffic present
+      at that moment stops being forwarded.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0089
+    verifies:      [HK-UART-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_beacon.py::test_HK_UART_05_beacon_framing
+    criteria: >
+      The failure status message is transmitted at 115,200 baud within 2
+      %, with 8 data bits, no parity and one stop bit. Bit period is
+      measured across a full character, not inferred from the divisor.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0090
+    verifies:      [HK-UART-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_beacon.py::test_HK_UART_07_snapshot_not_live
+    criteria: >
+      The failure status message reports the PGOOD and nFAULT values
+      latched at the first failure. Changing those inputs after the
+      latch does not change the transmitted message.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0091
+    verifies:      [HK-UART-08]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_beacon.py::test_HK_UART_08_beacon_repeats_1s
+    criteria: >
+      The failure status message repeats with a period between 950 ms
+      and 1050 ms, and continues to repeat until reset.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0092
+    verifies:      [HK-UART-09]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_uart_beacon.py::test_HK_UART_09_first_beacon_within_1s
+    criteria: >
+      The first failure status message begins transmitting between 950
+      ms and 1050 ms after the failure is latched.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # HK-UART-09 is met: the first message comes 996 ms after the latch,
+    # inside the 1 s +/-5 % this requirement states. Its DEFECT was the code
+    # contradicting its own comment ("immediately"), which is HK-F-12's
+    # business and not a failure of the requirement.
+
+  - id:            VC-HK-0093
+    verifies:      [HK-PROT-01]
+    authorised_by: VVP-HK-001
+    method:        INSP
+    level:         subsystem
+    artifact:      test/inspect/protect.py::test_HK_PROT_01_short_outputs_exist
+    criteria: >
+      The design has one active-low short output for the IMX 1V1 supply
+      and one for the IMX 1V8 supply, each assigned to a pin and each
+      driven only by the protection logic.
+    evidence:      [JUnit result, the artefact inspected]
+    execution:     auto
+
+  - id:            VC-HK-0094
+    verifies:      [HK-PROT-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_prot.py::test_HK_PROT_02_both_shorts_on_imx_latchup
+    criteria: >
+      Each of the four IMX sources is latched in turn, from a state where
+      neither short is asserted, and both IMX short outputs assert every
+      time -- including for 2V9 and 3V3, which have no short of their own.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Intent confirmed by avionics hardware on 2026-10-01: pull every IMX rail
+    # down as fast as possible on a latchup in any of them. The per-supply
+    # reading proposed on 2026-09-29 was wrong.
+
+  - id:            VC-HK-0095
+    verifies:      [HK-PROT-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_prot.py::test_HK_PROT_03_short_released_on_enable
+    criteria: >
+      An asserted IMX short output releases when the corresponding IMX
+      supply enable is next asserted, and not before.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+
+  - id:            VC-HK-0096
+    verifies:      [HK-OFFNOM-01]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_offnom_unreachable.py::test_HK_OFFNOM_01_enables_low_during_config
+    criteria: >
+      Every power enable output is deasserted from the moment the device
+      begins configuration until internal reset is released. The
+      stimulus starts before reset release, so a testbench that begins
+      at reset release cannot satisfy this.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0097
+    verifies:      [HK-OFFNOM-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_offnom.py::test_HK_OFFNOM_02_outputs_inactive_while_fpga_down
+    criteria: >
+      Every output to the PolarFire sits at its inactive state whenever
+      the FPGA power region is not declared successfully booted -- from
+      reset release until it boots, and after a power-down has taken it
+      down -- with the inactive state taken per port from the interface
+      definition rather than assumed to be low. The window after the
+      power-down is entered with a failure recorded in the failure
+      metadata, and a hardware latchup is not the route into it, since
+      it clears the metadata itself. The set of outputs is every
+      housekeeper pin whose net reaches the PolarFire in the schematic.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0098
+    verifies:      [HK-OFFNOM-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_offnom_unreachable.py::test_HK_OFFNOM_03_shutdown_on_undervoltage
+    criteria: >
+      With the bus input driven below the minimum operating voltage of
+      the step-down converters, a controlled shutdown begins, following
+      the power-down ordering rather than dropping enables together.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0099
+    verifies:      [HK-OFFNOM-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_offnom.py::test_HK_OFFNOM_04_enables_low_on_clock_loss
+    criteria: >
+      With the input clock stopped, every power enable is driven to its
+      deasserted state. The path that does this cannot itself require
+      the clock, which is what the test exercises.
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+
+  - id:            VC-HK-0100
+    verifies:      [HK-OFFNOM-08]
+    authorised_by: VVP-HK-003
+    method:        HW
+    level:         bench
+    artifact:      test/hitl/offnominal.py::test_HK_OFFNOM_08_enables_low_on_supply_ramp
+    criteria:      BLOCKED
+    evidence:      [a hardware test record]
+
+  - id:            VC-HK-0101
+    verifies:      [HK-TEST-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_test_debug.py::test_HK_TEST_02_first_fault_identity_on_pins
+    criteria: >
+      The identity of the first critical fault is readable from external
+      pins with no JTAG connection. The first fault is retained when a
+      later fault occurs, so the pins identify the first and not the
+      most recent.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # "First fault" read as the first code debug[2:0] records. The only
+    # reachable pair is a DDR8 boot failure, which is non-critical, then a
+    # DDR16 latchup: two critical faults cannot follow one another, because
+    # the first shuts everything down. Read strictly as "first critical",
+    # DDR16 would be first and the pins would be right.
+
+  # -------------------------------------------------------------------------
+  # Hardware confirmation (VVP-HK-006) and the one delegation (VVP-HK-007).
+  #
+  # A revalidation item does not repeat its simulation item. Different
+  # artifact, different criterion, different evidence: the rig observes the
+  # same claim by another route, and `revalidates:` is what makes the
+  # difference between "verified in simulation" and "verified in simulation
+  # and confirmed on hardware" visible. Reported, never gated.
+  # -------------------------------------------------------------------------
+
+  - id:            VC-HK-0102
+    verifies:      [HK-OFFNOM-01]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/offnominal.py::test_HK_OFFNOM_01_enables_low_during_config
+    criteria: >
+      On the rig, with a scope on the power enable outputs and the
+      device driven through a full configuration cycle, no enable output
+      leaves its deasserted state before internal reset releases. This
+      observes the interval the simulation asserts, which begins before
+      any testbench clock exists.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0096]
+    expect:        FAIL
+
+  - id:            VC-HK-0103
+    verifies:      [HK-OFFNOM-03]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/offnominal.py::test_HK_OFFNOM_03_shutdown_on_undervoltage
+    criteria: >
+      On the rig, ramping the bus input down through the step-down
+      converters' minimum operating voltage begins a controlled
+      shutdown, and the enable deassertion order observed matches the
+      order the simulation shows.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0098]
+    expect:        FAIL
+
+  - id:            VC-HK-0104
+    verifies:      [HK-OFFNOM-04]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/offnominal.py::test_HK_OFFNOM_04_enables_low_on_clock_loss
+    criteria: >
+      On the rig, stopping the input clock drives every power enable to
+      its deasserted state. Hardware is what makes this meaningful: a
+      simulation of a stopped clock cannot show what the real I/O ring
+      does as the clock decays.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0099]
+    expect:        FAIL
+
+  - id:            VC-HK-0105
+    verifies:      [HK-TEST-02]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/test.py::test_HK_TEST_02_first_fault_identity_on_pins
+    criteria: >
+      On the rig, with no JTAG connected, the first critical fault is
+      read from the external pins and matches the fault injected. A
+      later fault does not change the reading.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0101]
+    expect:        FAIL
+
+  - id:            VC-HK-0106
+    verifies:      [HK-TLM-01]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/telemetry.py::test_HK_TLM_01_per_region_status_output
+    criteria: >
+      On the rig, the PolarFire reads each region's status from its own
+      line, and the value read matches the region state commanded. This
+      confirms the wiring and levels that the simulation assumes.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0074]
+
+  - id:            VC-HK-0107
+    verifies:      [HK-UART-05]
+    authorised_by: VVP-HK-006
+    method:        HW
+    level:         integration
+    artifact:      test/hitl/uart.py::test_HK_UART_05_beacon_framing
+    criteria: >
+      On the rig, the failure status message is captured at the payload
+      bus connector and decodes at 115,200 baud, 8N1, within 2 %. Bit
+      period is measured from the captured waveform, not from a decoder
+      configured to expect it.
+    evidence:      [a HITL record]
+    revalidates:   [VC-HK-0089]
+
+  - id:            VC-HK-0108
+    verifies:      [HK-TLM-08]
+    authorised_by: VVP-HK-007
+    method:        INSP
+    level:         subsystem
+    artifact:      farsight-verification/items/governance.yaml::VC-GOV-0018
+    criteria: >
+      The obligation to establish that the housekeeper's fw_version[1]
+      output and the PolarFire's lvds_pwr_en output do not contend on
+      their shared net is discharged by VC-GOV-0018 under the interface
+      verification plan. This item is satisfied when that item exists,
+      is authorised, and reports a result. It does not re-perform the
+      check.
+    evidence:      [the receiving plan's item, resolved by identifier]
+    execution:     auto
+    expect:        FAIL
+
+  - id:            VC-HK-0109
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_step_down.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      Each step-down source, once declared successfully booted, is declared latched up
+      when its filtered nFAULT goes low, and separately when its filtered
+      PGOOD goes low, each route on a boot of its own. The nFAULT route is
+      exercised wherever the source has the pin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07; see VC-HK-0038.
+
+  - id:            VC-HK-0110
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_ddr8.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      Each DDR8 source, once declared successfully booted, is declared latched up
+      when its filtered nFAULT goes low, and separately when its filtered
+      PGOOD goes low, each route on a boot of its own. The nFAULT route is
+      exercised wherever the source has the pin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07; see VC-HK-0038.
+
+  - id:            VC-HK-0111
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_ddr16.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      Each DDR16 source, once declared successfully booted, is declared latched up
+      when its filtered nFAULT goes low, and separately when its filtered
+      PGOOD goes low, each route on a boot of its own. The nFAULT route is
+      exercised wherever the source has the pin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07; see VC-HK-0038.
+
+  - id:            VC-HK-0112
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_fpga_a.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      Each one of the first four FPGA sources (1V0, 1V0A, 1V25A, 1V8), once declared successfully booted, is declared latched up
+      when its filtered nFAULT goes low, and separately when its filtered
+      PGOOD goes low, each route on a boot of its own. The nFAULT route is
+      exercised wherever the source has the pin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07; see VC-HK-0038.
+
+  - id:            VC-HK-0113
+    verifies:      [HK-SRC-07]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_src_07_fpga_b_lvds.py::test_HK_SRC_07_latchup_after_boot
+    criteria: >
+      Each one of the last four FPGA sources (1V8_IMX, 2V5A, 3V3_B4, 3V3_B5) and the LVDS source, once declared successfully booted, is declared latched up
+      when its filtered nFAULT goes low, and separately when its filtered
+      PGOOD goes low, each route on a boot of its own. The nFAULT route is
+      exercised wherever the source has the pin.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # One of six items for HK-SRC-07; see VC-HK-0038.
+
+  - id:            VC-HK-0114
+    verifies:      [DRV-HK-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_drv_reset.py::test_DRV_HK_05_reset_without_clock
+    criteria: >
+      With the device booted and the clock stopped, reset asserted between
+      clock edges returns every register instance that had moved away from
+      its reset value to that value, with no clock edge occurring. The
+      registers are enumerated from the RTL, not listed by hand, and every
+      instance of each is read. One that is not reset fails, unless it is
+      individually recorded as an approved exception.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    expect:        FAIL
+    # The simulation half of DRV-HK-05, alongside VC-HK-0022's inspection.
+    # Reaches inside the design by necessity -- the requirement is about
+    # registers, most of which drive no pin -- and makes public only the
+    # registers it names. HK-CLK-03 is the same fact at the pins.
+
+  - id:            VC-HK-0115
+    verifies:      [DRV-HK-03]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      test/sim/gatelevel_tb::test_DRV_HK_03_release_on_one_edge
+    criteria: >
+      In a simulation back-annotated with the routed delays, reset released
+      at several phases within a clock period leaves every sequential
+      element's reset on the same rising clock edge.
+    requires:      [VENV-02]
+    evidence:      [JUnit result]
+    expect:        FAIL
+    # Not writable in RTL simulation, and deliberately not written there. In
+    # RTL rstn is one net with no delay, so every element leaves reset on the
+    # same edge by construction and a test could not fail. What DRV-HK-03
+    # guards against is routing skew on a net of near-total fanout, which
+    # exists only after place and route. HK-CLK-04 shows the RTL half: the
+    # release acts on a clock edge whatever its phase. This needs a
+    # gate-level simulation with SDF -- the same environment gap as
+    # VC-HK-0014, and a decision no plan has made (framework II.4).
+
+  - id:            VC-HK-0116
+    verifies:      [HK-REG-05]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_response.py::test_HK_REG_05_enables_off_within_10us
+    criteria: >
+      With a region's second source held out of regulation and its first
+      source up, every enable in the region that was asserted is
+      deasserted within 10 us of the failing source being declared failed,
+      observed at the pins as that source's own enable falling (HK-SRC-04).
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # The response-time clause of HK-REG-05, beside VC-HK-0047's hold.
+    # Separate items because they fail and pass independently: the hold is
+    # 0.77 ms short of the parent (HK-F-04); the response is not in question.
+    # Pending systems confirmation: 10 us is the value proposed on 2026-09-29
+    # for "immediately" in FAR-PM_FPGA_L4REQ-18.
+
+  - id:            VC-HK-0117
+    verifies:      [HK-PDN-04]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_04_reverse_when_withdrawn_mid_boot
+    criteria: >
+      A software region withdrawn while a source is still booting -- its
+      earlier sources booted, its last enabled and without PGOOD -- powers
+      its sources down in reverse of their boot order, each beginning only
+      once the source after it is off: its PGOOD fallen and low for the
+      5 us filter, or its 2 ms power-down timeout run, whichever is first.
+      The source still booting never had a PGOOD to lose, so it is off only
+      once its timeout has run.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-32 (every source down at once); fixed
+    # 2026-10-05. Kept separate from VC-HK-0071, which covers the booted case.
+
+  - id:            VC-HK-0118
+    verifies:      [HK-PDN-02]
+    authorised_by: VVP-HK-004
+    method:        SIM
+    level:         subsystem
+    artifact:      verification/tests/test_hk_pdn_sequence.py::test_HK_PDN_02_stage_waits_for_region_mid_boot
+    criteria: >
+      A global power-down latched while a hardware region is still booting
+      -- DDR8 with 2V5 booted and 1V2 enabled without PGOOD -- powers that
+      region down in reverse, 1V2 off only once its 2 ms timeout has run,
+      and the stage after it, step-down, begins only once every source of
+      that region is off.
+    requires:      [VENV-01, VENV-02]
+    evidence:      [JUnit result, coverage contribution]
+    # Was expect: FAIL on HK-F-32 (step-down began with DDR8 still up);
+    # fixed 2026-10-05. Kept separate from VC-HK-0069, which covers the
+    # booted case.

@@ -1,0 +1,33 @@
+# Simulator build products and results. Evidence is published by the CI job
+# that produced it, not committed from a working copy: a results file in the
+# repository has no configuration attached to it and cannot be told from one
+# produced by a different build.
+sim_build/
+results/
+__pycache__/
+.pytest_cache/
+
+# Generated vendor IP. The RTL is marked "Actel Proprietary and Confidential"
+# and is redistributable only under the Microchip licence, so it is generated
+# rather than stored. `make ip` produces it.
+#
+# `UART0.lock.json` is NOT ignored, and that is the point: a digest of the IP
+# is not the IP. Committing it lets two engineers who generate independently
+# prove they got the same core, and lets a reviewer see which core the
+# evidence was produced against, without the repository carrying vendor RTL.
+ip/*/
+
+# The generated simulation wrapper lives under sim_build/ and is already
+# ignored with it. Listed here so nobody adds it deliberately: it restates the
+# device's 115 ports, and a stored copy describes a device that has gained or
+# lost a pin the moment one changes.
+**/tb_top.sv
+
+# The coverage page. Generated from items, tests and results; a committed copy
+# is a second answer to the same question and goes stale the moment a test is
+# written. CI publishes it as an artifact.
+public/
+
+# Raw Verilator coverage data, one file per test module and several megabytes
+# each. Measurement output, not a source: regenerate with FSVERIF_COVERAGE=1.
+coverage/

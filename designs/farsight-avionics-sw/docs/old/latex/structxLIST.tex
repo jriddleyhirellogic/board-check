@@ -1,0 +1,62 @@
+\doxysection{x\+LIST Struct Reference}
+\hypertarget{structxLIST}{}\label{structxLIST}\index{xLIST@{xLIST}}
+
+
+{\ttfamily \+\#include $<$list.\+h$>$}
+
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{list_8h_a3a52b5a4f70d3a07e37a5814a23ba880}{list\+FIRST\+\_\+\+LIST\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+VALUE}} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} \doxymbox{\hyperlink{structxLIST_a17b9828dd40520fcda9127b4cb4c0c0c}{ux\+Number\+Of\+Items}}
+\item 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{structxLIST_ae8639154918acc3f75d718480322aa82}{px\+Index}}
+\item 
+\doxymbox{\hyperlink{list_8h_a772ab11ff7934353ef5ae63b387fe465}{Mini\+List\+Item\+\_\+t}} \doxymbox{\hyperlink{structxLIST_a83a65be4e3a2bb70855742896126bf63}{x\+List\+End}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00172}{172}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structxLIST_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structxLIST_ae8639154918acc3f75d718480322aa82}\index{xLIST@{xLIST}!pxIndex@{pxIndex}}
+\index{pxIndex@{pxIndex}!xLIST@{xLIST}}
+\doxysubsubsection{\texorpdfstring{pxIndex}{pxIndex}}
+{\footnotesize\ttfamily \label{structxLIST_ae8639154918acc3f75d718480322aa82} 
+\doxymbox{\hyperlink{list_8h_a1a62d469392f9bfe2443e7efab9c8398}{List\+Item\+\_\+t}}\texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} px\+Index}
+
+Used to walk through the list. Points to the last item returned by a call to list\+GET\+\_\+\+OWNER\+\_\+\+OF\+\_\+\+NEXT\+\_\+\+ENTRY (). 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00176}{176}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST_a17b9828dd40520fcda9127b4cb4c0c0c}\index{xLIST@{xLIST}!uxNumberOfItems@{uxNumberOfItems}}
+\index{uxNumberOfItems@{uxNumberOfItems}!xLIST@{xLIST}}
+\doxysubsubsection{\texorpdfstring{uxNumberOfItems}{uxNumberOfItems}}
+{\footnotesize\ttfamily \label{structxLIST_a17b9828dd40520fcda9127b4cb4c0c0c} 
+\doxymbox{\hyperlink{list_8h_a3a52b5a4f70d3a07e37a5814a23ba880}{list\+FIRST\+\_\+\+LIST\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+VALUE}} \doxymbox{\hyperlink{list_8h_a2d5de557c5561c8980d1bf51d87d8cba}{config\+LIST\+\_\+\+VOLATILE}} \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBase\+Type\+\_\+t}} ux\+Number\+Of\+Items}
+
+\texorpdfstring{$<$}{<} Set to a known value if config\+USE\+\_\+\+LIST\+\_\+\+DATA\+\_\+\+INTEGRITY\+\_\+\+CHECK\+\_\+\+BYTES is set to 1. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00175}{175}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+\Hypertarget{structxLIST_a83a65be4e3a2bb70855742896126bf63}\index{xLIST@{xLIST}!xListEnd@{xListEnd}}
+\index{xListEnd@{xListEnd}!xLIST@{xLIST}}
+\doxysubsubsection{\texorpdfstring{xListEnd}{xListEnd}}
+{\footnotesize\ttfamily \label{structxLIST_a83a65be4e3a2bb70855742896126bf63} 
+\doxymbox{\hyperlink{list_8h_a772ab11ff7934353ef5ae63b387fe465}{Mini\+List\+Item\+\_\+t}} x\+List\+End}
+
+List item that contains the maximum possible item value meaning it is always at the end of the list and is therefore used as a marker. 
+
+Definition at line \doxymbox{\hyperlink{list_8h_source_l00177}{177}} of file \doxymbox{\hyperlink{list_8h_source}{list.\+h}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+\+Free\+RTOS/\+include/\+\doxymbox{\hyperlink{list_8h}{list.\+h}}\end{DoxyCompactItemize}

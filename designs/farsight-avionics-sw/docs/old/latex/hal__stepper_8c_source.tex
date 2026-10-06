@@ -1,0 +1,188 @@
+\doxysection{hal\+\_\+stepper.\+c}
+\hypertarget{hal__stepper_8c_source}{}\label{hal__stepper_8c_source}\index{src/hal/hal\_stepper.c@{src/hal/hal\_stepper.c}}
+\doxymbox{\hyperlink{hal__stepper_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00002}00002\ \textcolor{comment}{\ *\ hal\_stepper.c}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Sep\ 27,\ 2025}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}hal\_stepper.h"{}}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00035}\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{00035}}\ \textcolor{keyword}{static}\ Stepper\_Instance\_t\ *\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00037}\doxymbox{\hyperlink{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a}{00037}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_aeafffb0de7ea28b2e65f47e833a4326a}{v\_Init\_Stepper}}(\ Stepper\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ Stepper\_Init\_t\ *init\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00038}00038\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00039}00039\ \ \ \ \ uint8\_t\ u8\_N;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00040}00040\ \ \ \ \ uint32\_t\ u32\_Config\_Reg\_Addr;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00042}00042\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00044}00044\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ Stepper\ Controls}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00047}00047\ \ \ \ \ \textcolor{comment}{//\ bits[6:0]\ are\ outputs,\ bit[7]\ is\ input}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00048}00048\ \ \ \ \ p\_Gpio\_Instance-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a9d04648b23cc5242ca0a88adbddeb7de}{apb\_bus\_width}}\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00049}00049\ \ \ \ \ p\_Gpio\_Instance-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ =\ init-\/>u32\_Stepper\_Control\_Base;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00051}00051\ \ \ \ \ \textcolor{comment}{//\ Set\ up\ config\ register\ for\ output\ bits\ [6:0]}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00052}00052\ \ \ \ \ \textcolor{keywordflow}{for}(\ u8\_N\ =\ 0;\ u8\_N\ <\ 7;\ u8\_N++\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00053}00053\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00054}00054\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\_config}}(\ p\_Gpio\_Instance,\ u8\_N,\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab232cbc80fe303fb9c0253f2ecc27e76}{GPIO\_OUTPUT\_MODE}}\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00056}00056\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00058}00058\ \ \ \ \ \textcolor{comment}{//\ Stepper\ Out}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ bits[31:0]\ are\ outputs}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00060}00060\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_out.apb\_bus\_width\ =\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a59d80ab98ab106cd1036b8a7de8c53eba41507c9c143cf205610902282e7e8980}{GPIO\_APB\_32\_BITS\_BUS}};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00061}00061\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_out.base\_addr\ =\ init-\/>u32\_Stepper\_Out\_Base;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ Initializing\ PWM\ to\ generate\ VRef}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00064}00064\ \ \ \ \ \doxymbox{\hyperlink{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf}{v\_Init\_PWM}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>pwm,\ init-\/>Pwm\_Init\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00065}00065\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00067}\doxymbox{\hyperlink{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d}{00067}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a9298eca590ee425d74207b3962c81d6d}{v\_Set\_Microstep\_Mode}}(\ Step\_Mode\_t\ e\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00068}00068\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00069}00069\ \ \ \ \ uint8\_t\ u8\_HiZ\_Set\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00070}00070\ \ \ \ \ uint32\_t\ u32\_Current\_Control\_Output\ =\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00071}00071\ \ \ \ \ u32\_Current\_Control\_Output\ \&=\ \string~(M0\_MASK\ |\ M1\_MASK);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00073}00073\ \ \ \ \ \textcolor{keywordflow}{switch}(\ e\_Mode\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00074}00074\ \ \ \ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ M0\ \ \ \ \ \ M1}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00075}00075\ \ \ \ \ \textcolor{keywordflow}{case}\ FULL\_STEP\_FULL\_CURRENT:\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00078}00078\ \ \ \ \ \textcolor{keywordflow}{case}\ NON\_CIRCULAR\_HALF\_STEP:\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1\ \ \ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00079}00079\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ M0\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00082}00082\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_2:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ HiZ\ \ \ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ M0\ value\ becomes\ don't\ care}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00084}00084\ \ \ \ \ \ \ \ \ u8\_HiZ\_Set\ =\ M0\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00087}00087\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_4:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00088}00088\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ M1\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00091}00091\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_8:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1\ \ \ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00092}00092\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ (M0\_MASK\ |\ M1\_MASK);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00095}00095\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_16:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ HiZ\ \ \ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00096}00096\ \ \ \ \ \ \ \ \ u8\_HiZ\_Set\ =\ M0\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00097}00097\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ M1\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00100}00100\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_32:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ \ \ \ \ \ \ HiZ}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00101}00101\ \ \ \ \ \ \ \ \ u8\_HiZ\_Set\ =\ M1\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00104}00104\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_128:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ HiZ\ \ \ \ \ HkZ}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00105}00105\ \ \ \ \ \ \ \ \ u8\_HiZ\_Set\ =\ (M0\_MASK\ |\ M1\_MASK);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00108}00108\ \ \ \ \ \textcolor{keywordflow}{case}\ STEP\_256:\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1\ \ \ \ \ \ \ HiZ}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00109}00109\ \ \ \ \ \ \ \ \ u8\_HiZ\_Set\ =\ M1\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00110}00110\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ M0\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00112}00112\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00113}00113\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ \textcolor{comment}{//\ assert(0}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00115}00115\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00117}00117\ \ \ \ \ \doxymbox{\hyperlink{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0}{v\_Stepper\_Control\_Enable\_HiZ}}(\ u8\_HiZ\_Set\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00118}00118\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls,\ u32\_Current\_Control\_Output);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00120}00120\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00122}\doxymbox{\hyperlink{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2}{00122}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a4a7e12b00eedda530b4f5e812adb04d2}{v\_Enable\_Stepper}}(uint8\_t\ b\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00123}00123\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00124}00124\ \ \ \ \ uint32\_t\ u32\_Current\_Control\_Output\ =\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00125}00125\ \ \ \ \ \textcolor{keywordflow}{if}(\ b\_Enable\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00126}00126\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00127}00127\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ |=\ EN\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00128}00128\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00129}00129\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00130}00130\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00131}00131\ \ \ \ \ \ \ \ \ u32\_Current\_Control\_Output\ \&=\ \string~EN\_MASK;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00132}00132\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00133}00133\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls,\ u32\_Current\_Control\_Output);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00134}00134\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00136}\doxymbox{\hyperlink{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157}{00136}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a399403aaf483b41aa3309eb825ff6157}{v\_Set\_Stepper\_Control\_Output}}(\ uint8\_t\ u8\_Output\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00137}00137\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00138}00138\ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00139}00139\ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}(\ p\_Gpio\_Instance,\ u8\_Output\ \&\ 0x7F\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00140}00140\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00141}00141\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00142}\doxymbox{\hyperlink{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6}{00142}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a2b41d50afe84844918be09e5f6da5bf6}{v\_Stepper\_Set\_Vref}}(\ uint16\_t\ u16\_V\_Set\_mV\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00143}00143\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00144}00144\ \ \ \ \ \doxymbox{\hyperlink{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea}{PWM\_Set\_Voltage\_mV}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>pwm,\ u16\_V\_Set\_mV\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00145}00145\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00146}00146\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00147}\doxymbox{\hyperlink{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac}{00147}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_acda667f8f3652bdf6df6d4f599f51fac}{v\_Stepper\_Set\_I\_Max\_mA}}(\ uint16\_t\ u16\_V\_Set\_I\_Max\_mA\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00148}00148\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00149}00149\ \ \ \ \ \doxymbox{\hyperlink{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb}{PWM\_Set\_Current\_mA}}(\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>pwm,\ u16\_V\_Set\_I\_Max\_mA\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00150}00150\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00152}00152\ \textcolor{comment}{//\ u8\_Set\_HiZ\ -\/\ enable/disable\ HiZ\ by\ bit\ position}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00153}\doxymbox{\hyperlink{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0}{00153}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a48d26a703db8e097c4a905fe270540c0}{v\_Stepper\_Control\_Enable\_HiZ}}(\ \ uint8\_t\ u8\_Set\_HiZ\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00154}00154\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00155}00155\ \ \ \ \ uint8\_t\ u8\_N;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00156}00156\ \ \ \ \ uint32\_t\ u32\_Config\_Reg\_Addr;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00157}00157\ \ \ \ \ uint8\_t\ u8\_Output\_Enabled;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00158}00158\ \ \ \ \ uint8\_t\ u8\_Config;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00160}00160\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00161}00161\ \ \ \ \ \textcolor{keywordflow}{for}(\ u8\_N\ =\ 0;\ u8\_N\ <\ 7;\ u8\_N++\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00162}00162\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Each\ output\ bit\ has\ it's\ own\ enable\ register}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00164}00164\ \ \ \ \ \ \ \ \ u32\_Config\_Reg\_Addr\ =\ p\_Gpio\_Instance-\/>\doxymbox{\hyperlink{struct____gpio__instance__t_a36e0e69f6e9e7a591b421c1178b5b099}{base\_addr}}\ +\ (u8\_N\ *\ 4);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00165}00165\ \ \ \ \ \ \ \ \ u8\_Config\ =\ \doxymbox{\hyperlink{hw__reg__access_8h_a1a0df398ecad4478457e22a5c596dc72}{HW\_get\_8bit\_reg}}(\ u32\_Config\_Reg\_Addr\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00166}00166\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !u8\_Set\_HiZ\ )\ \ \textcolor{comment}{//\ All\ remaining\ outputs\ enabled,\ can\ exit\ early}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00169}00169\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00170}00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ u8\_Set\_HiZ\ \&\ (1\ <<\ u8\_N))\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Hi-\/Z\ enabled\ clear\ output\ enable\ bit}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00171}00171\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ u8\_Config\ \&=\ \ \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{\string~OUTPUT\_BUFFER\_ENABLE\_MASK}};}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ u8\_Set\_HiZ\ \&=\ \string~(1\ <<\ u8\_N);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00174}00174\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00175}00175\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Normal\ mode,\ set\ output\ enable\ bit}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00177}00177\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ u8\_Config\ |=\ \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{OUTPUT\_BUFFER\_ENABLE\_MASK}};\ \ \ \ \textcolor{comment}{//\ Hi-\/Z\ disabled,\ output\ enabled}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00179}00179\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00181}00181\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hw__reg__access_8h_ae26d896d50e8f243148e8ec064e11ef0}{HW\_set\_8bit\_reg}}(\ u32\_Config\_Reg\_Addr,\ u8\_Config\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00182}00182\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00183}00183\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00184}00184\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00185}00185\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00186}00186\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00188}\doxymbox{\hyperlink{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}{00188}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__stepper_8c_a5df4f8348834b31088fac3d622f8bd19}{v\_Set\_Stepper\_out}}(\ \ uint32\_t\ u32\_Output)}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00189}00189\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00190}00190\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_out;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00191}00191\ \ \ \ \ \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\_set\_outputs}}(\ p\_Gpio\_Instance,\ u32\_Output\ );}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00192}00192\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00194}\doxymbox{\hyperlink{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634}{00194}}\ int32\_t\ \doxymbox{\hyperlink{hal__stepper_8c_a21e198626d1bf8fd8a3299c35d62e634}{i32\_Get\_Stepper\_Out}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00195}00195\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00196}00196\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_out;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00197}00197\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\_get\_outputs}}(p\_Gpio\_Instance);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00198}00198\ \}}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00200}00200\ }
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00201}\doxymbox{\hyperlink{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b}{00201}}\ uint8\_t\ \doxymbox{\hyperlink{hal__stepper_8c_aea13877cdb1117eacab35c090daac11b}{u8\_Get\_Stepper\_NFAULT}}(\ \textcolor{keywordtype}{void}\ )}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00202}00202\ \{}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00203}00203\ \ \ \ \ uint32\_t\ u32\_Inputs;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00204}00204\ \ \ \ \ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\_instance\_t}}\ *p\_Gpio\_Instance\ =\ \&\doxymbox{\hyperlink{hal__stepper_8c_a45867361302a83d15518fc302c970d79}{p\_instance}}-\/>stepper\_controls;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00205}00205\ \ \ \ \ u32\_Inputs\ =\ \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\_get\_inputs}}(p\_Gpio\_Instance);}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00206}00206\ \ \ \ \ \textcolor{keywordflow}{return}\ u32\_Inputs\ \&\ NFAULT\_MASK\ !=\ 0;}
+\DoxyCodeLine{\Hypertarget{hal__stepper_8c_source_l00207}00207\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,193 @@
+   1              		.file	"hw_version.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.u32_Get_HW_Version,"ax",@progbits
+  10              		.align	2
+  11              		.globl	u32_Get_HW_Version
+  13              	u32_Get_HW_Version:
+  14              	.LFB0:
+  15              		.file 1 "../src/hw_version.c"
+   1:../src/hw_version.c **** /*
+   2:../src/hw_version.c ****  * hw_version.c
+   3:../src/hw_version.c ****  *
+   4:../src/hw_version.c ****  *  Created on: Apr 1, 2026
+   5:../src/hw_version.c ****  *      Author: iboard
+   6:../src/hw_version.c ****  */
+   7:../src/hw_version.c **** 
+   8:../src/hw_version.c **** #include "mem_map.h"
+   9:../src/hw_version.c **** #include "hw_version.h"
+  10:../src/hw_version.c **** 
+  11:../src/hw_version.c **** uint32_t u32_Get_HW_Version(void)
+  12:../src/hw_version.c **** {
+  16              		.loc 1 12 1
+  17              		.cfi_startproc
+  13:../src/hw_version.c ****     return *((volatile uint32_t *)VERSION_BASE_ADDR);
+  18              		.loc 1 13 5
+  19              		.loc 1 13 12 is_stmt 0
+  20 0000 B7770170 		li	a5,1879142400
+  21 0004 03A50700 		lw	a0,0(a5)
+  14:../src/hw_version.c **** }
+  22              		.loc 1 14 1
+  23 0008 67800000 		ret
+  24              		.cfi_endproc
+  25              	.LFE0:
+  27              		.section	.text.u32_Get_HW_Git_Hash,"ax",@progbits
+  28              		.align	2
+  29              		.globl	u32_Get_HW_Git_Hash
+  31              	u32_Get_HW_Git_Hash:
+  32              	.LFB1:
+  15:../src/hw_version.c **** 
+  16:../src/hw_version.c **** uint32_t u32_Get_HW_Git_Hash(void)
+  17:../src/hw_version.c **** {
+  33              		.loc 1 17 1 is_stmt 1
+  34              		.cfi_startproc
+  18:../src/hw_version.c ****     return *((volatile uint32_t *)(VERSION_BASE_ADDR + 4));
+  35              		.loc 1 18 5
+  36              		.loc 1 18 12 is_stmt 0
+  37 0000 B7770170 		li	a5,1879142400
+  38 0004 03A54700 		lw	a0,4(a5)
+  19:../src/hw_version.c **** }
+  39              		.loc 1 19 1
+  40 0008 67800000 		ret
+  41              		.cfi_endproc
+  42              	.LFE1:
+  44              		.section	.text.u32_Get_HW_Build_Time,"ax",@progbits
+  45              		.align	2
+  46              		.globl	u32_Get_HW_Build_Time
+  48              	u32_Get_HW_Build_Time:
+  49              	.LFB2:
+  20:../src/hw_version.c **** 
+  21:../src/hw_version.c **** uint32_t u32_Get_HW_Build_Time(void)
+  22:../src/hw_version.c **** {
+  50              		.loc 1 22 1 is_stmt 1
+  51              		.cfi_startproc
+  23:../src/hw_version.c ****     return *((volatile uint32_t *)(VERSION_BASE_ADDR + 8));
+  52              		.loc 1 23 5
+  53              		.loc 1 23 12 is_stmt 0
+  54 0000 B7770170 		li	a5,1879142400
+  55 0004 03A58700 		lw	a0,8(a5)
+  24:../src/hw_version.c **** }
+  56              		.loc 1 24 1
+  57 0008 67800000 		ret
+  58              		.cfi_endproc
+  59              	.LFE2:
+  61              		.text
+  62              	.Letext0:
+  63              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+  64              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hw_version.c
+<<<<<<< HEAD
+     /tmp/cczWfzui.s:13     .text.u32_Get_HW_Version:0000000000000000 u32_Get_HW_Version
+     /tmp/cczWfzui.s:17     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/cczWfzui.s:18     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/cczWfzui.s:19     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/cczWfzui.s:20     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/cczWfzui.s:23     .text.u32_Get_HW_Version:0000000000000008 .L0 
+     /tmp/cczWfzui.s:24     .text.u32_Get_HW_Version:000000000000000c .L0 
+     /tmp/cczWfzui.s:31     .text.u32_Get_HW_Git_Hash:0000000000000000 u32_Get_HW_Git_Hash
+     /tmp/cczWfzui.s:34     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/cczWfzui.s:35     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/cczWfzui.s:36     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/cczWfzui.s:37     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/cczWfzui.s:40     .text.u32_Get_HW_Git_Hash:0000000000000008 .L0 
+     /tmp/cczWfzui.s:41     .text.u32_Get_HW_Git_Hash:000000000000000c .L0 
+     /tmp/cczWfzui.s:48     .text.u32_Get_HW_Build_Time:0000000000000000 u32_Get_HW_Build_Time
+     /tmp/cczWfzui.s:51     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/cczWfzui.s:52     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/cczWfzui.s:53     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/cczWfzui.s:54     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/cczWfzui.s:57     .text.u32_Get_HW_Build_Time:0000000000000008 .L0 
+     /tmp/cczWfzui.s:58     .text.u32_Get_HW_Build_Time:000000000000000c .L0 
+     /tmp/cczWfzui.s:27     .text.u32_Get_HW_Version:000000000000000c .L0 
+     /tmp/cczWfzui.s:44     .text.u32_Get_HW_Git_Hash:000000000000000c .L0 
+     /tmp/cczWfzui.s:61     .text.u32_Get_HW_Build_Time:000000000000000c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cczWfzui.s:163    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cczWfzui.s:277    .debug_str:0000000000000000 .LASF14
+     /tmp/cczWfzui.s:279    .debug_str:00000000000000c6 .LASF15
+     /tmp/cczWfzui.s:307    .debug_str:00000000000001a3 .LASF16
+     /tmp/cczWfzui.s:265    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cczWfzui.s:275    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cczWfzui.s:309    .debug_str:00000000000001da .LASF0
+     /tmp/cczWfzui.s:281    .debug_str:00000000000000da .LASF1
+     /tmp/cczWfzui.s:299    .debug_str:0000000000000171 .LASF2
+     /tmp/cczWfzui.s:285    .debug_str:00000000000000fa .LASF3
+     /tmp/cczWfzui.s:305    .debug_str:000000000000019a .LASF4
+     /tmp/cczWfzui.s:289    .debug_str:0000000000000121 .LASF9
+     /tmp/cczWfzui.s:283    .debug_str:00000000000000e8 .LASF5
+     /tmp/cczWfzui.s:297    .debug_str:0000000000000163 .LASF6
+     /tmp/cczWfzui.s:295    .debug_str:000000000000014c .LASF7
+     /tmp/cczWfzui.s:293    .debug_str:000000000000013f .LASF8
+     /tmp/cczWfzui.s:303    .debug_str:0000000000000191 .LASF10
+     /tmp/cczWfzui.s:301    .debug_str:000000000000017b .LASF11
+     /tmp/cczWfzui.s:49     .text.u32_Get_HW_Build_Time:0000000000000000 .LFB2
+     /tmp/cczWfzui.s:59     .text.u32_Get_HW_Build_Time:000000000000000c .LFE2
+     /tmp/cczWfzui.s:287    .debug_str:000000000000010d .LASF12
+     /tmp/cczWfzui.s:32     .text.u32_Get_HW_Git_Hash:0000000000000000 .LFB1
+     /tmp/cczWfzui.s:42     .text.u32_Get_HW_Git_Hash:000000000000000c .LFE1
+     /tmp/cczWfzui.s:291    .debug_str:000000000000012c .LASF13
+     /tmp/cczWfzui.s:14     .text.u32_Get_HW_Version:0000000000000000 .LFB0
+     /tmp/cczWfzui.s:25     .text.u32_Get_HW_Version:000000000000000c .LFE0
+     /tmp/cczWfzui.s:66     .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccB41UVy.s:13     .text.u32_Get_HW_Version:0000000000000000 u32_Get_HW_Version
+     /tmp/ccB41UVy.s:17     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:18     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:19     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:20     .text.u32_Get_HW_Version:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:23     .text.u32_Get_HW_Version:0000000000000008 .L0 
+     /tmp/ccB41UVy.s:24     .text.u32_Get_HW_Version:000000000000000c .L0 
+     /tmp/ccB41UVy.s:31     .text.u32_Get_HW_Git_Hash:0000000000000000 u32_Get_HW_Git_Hash
+     /tmp/ccB41UVy.s:34     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:35     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:36     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:37     .text.u32_Get_HW_Git_Hash:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:40     .text.u32_Get_HW_Git_Hash:0000000000000008 .L0 
+     /tmp/ccB41UVy.s:41     .text.u32_Get_HW_Git_Hash:000000000000000c .L0 
+     /tmp/ccB41UVy.s:48     .text.u32_Get_HW_Build_Time:0000000000000000 u32_Get_HW_Build_Time
+     /tmp/ccB41UVy.s:51     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:52     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:53     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:54     .text.u32_Get_HW_Build_Time:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:57     .text.u32_Get_HW_Build_Time:0000000000000008 .L0 
+     /tmp/ccB41UVy.s:58     .text.u32_Get_HW_Build_Time:000000000000000c .L0 
+     /tmp/ccB41UVy.s:27     .text.u32_Get_HW_Version:000000000000000c .L0 
+     /tmp/ccB41UVy.s:44     .text.u32_Get_HW_Git_Hash:000000000000000c .L0 
+     /tmp/ccB41UVy.s:61     .text.u32_Get_HW_Build_Time:000000000000000c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccB41UVy.s:163    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccB41UVy.s:277    .debug_str:0000000000000000 .LASF14
+     /tmp/ccB41UVy.s:279    .debug_str:00000000000000c6 .LASF15
+     /tmp/ccB41UVy.s:307    .debug_str:00000000000001a3 .LASF16
+     /tmp/ccB41UVy.s:265    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccB41UVy.s:275    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccB41UVy.s:309    .debug_str:00000000000001da .LASF0
+     /tmp/ccB41UVy.s:281    .debug_str:00000000000000da .LASF1
+     /tmp/ccB41UVy.s:299    .debug_str:0000000000000171 .LASF2
+     /tmp/ccB41UVy.s:285    .debug_str:00000000000000fa .LASF3
+     /tmp/ccB41UVy.s:305    .debug_str:000000000000019a .LASF4
+     /tmp/ccB41UVy.s:289    .debug_str:0000000000000121 .LASF9
+     /tmp/ccB41UVy.s:283    .debug_str:00000000000000e8 .LASF5
+     /tmp/ccB41UVy.s:297    .debug_str:0000000000000163 .LASF6
+     /tmp/ccB41UVy.s:295    .debug_str:000000000000014c .LASF7
+     /tmp/ccB41UVy.s:293    .debug_str:000000000000013f .LASF8
+     /tmp/ccB41UVy.s:303    .debug_str:0000000000000191 .LASF10
+     /tmp/ccB41UVy.s:301    .debug_str:000000000000017b .LASF11
+     /tmp/ccB41UVy.s:49     .text.u32_Get_HW_Build_Time:0000000000000000 .LFB2
+     /tmp/ccB41UVy.s:59     .text.u32_Get_HW_Build_Time:000000000000000c .LFE2
+     /tmp/ccB41UVy.s:287    .debug_str:000000000000010d .LASF12
+     /tmp/ccB41UVy.s:32     .text.u32_Get_HW_Git_Hash:0000000000000000 .LFB1
+     /tmp/ccB41UVy.s:42     .text.u32_Get_HW_Git_Hash:000000000000000c .LFE1
+     /tmp/ccB41UVy.s:291    .debug_str:000000000000012c .LASF13
+     /tmp/ccB41UVy.s:14     .text.u32_Get_HW_Version:0000000000000000 .LFB0
+     /tmp/ccB41UVy.s:25     .text.u32_Get_HW_Version:000000000000000c .LFE0
+     /tmp/ccB41UVy.s:66     .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

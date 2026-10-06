@@ -1,0 +1,290 @@
+\doxysection{src/\+register\+\_\+callbacks.c File Reference}
+\hypertarget{register__callbacks_8c}{}\label{register__callbacks_8c}\index{src/register\_callbacks.c@{src/register\_callbacks.c}}
+{\ttfamily \+\#include "{}register.\+h"{}}\newline
+{\ttfamily \+\#include "{}register\+\_\+callbacks.\+h"{}}\newline
+Include dependency graph for register\+\_\+callbacks.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=274pt]{register__callbacks_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201}{Get\+\_\+\+Sensor\+\_\+\+State}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}state)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39}{Get\+\_\+\+Sensor\+\_\+\+Frame\+\_\+\+Count}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}count)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd}{Get\+\_\+\+Requested\+\_\+\+Focus\+\_\+\+Distance}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}count)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f}{Get\+\_\+\+Computed\+\_\+\+Focus\+\_\+\+Distance}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}count)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124}{Get\+\_\+\+LVDT\+\_\+\+Position}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}count)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a4db6c8105962792738524ea049eb8133}{Get\+\_\+\+Sensor\+\_\+\+Temperature}} (uint32\+\_\+t \texorpdfstring{$\ast$}{*}temp)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0}{Read\+\_\+\+Only}} (uint32\+\_\+t dummy)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c}{Set\+\_\+\+Sensor\+\_\+\+Frame\+\_\+\+Mode}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841}{Set\+\_\+\+Sensor\+\_\+\+Bit\+\_\+\+Depth}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a1b93f53805f41a2a5be688c48477d2fc}{Set\+\_\+\+Sensor\+\_\+\+Black\+\_\+\+Level\+\_\+\+Offset}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_ab5bb6235fe5b95acdd749120a2153a68}{Set\+\_\+\+Sensor\+\_\+\+Exposure}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c}{Set\+\_\+\+Sensor\+\_\+\+Trigger\+\_\+\+Mode}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b}{Set\+\_\+\+Sensor\+\_\+\+Images\+\_\+\+Per\+\_\+\+Trigger}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa}{Set\+\_\+\+Sensor\+\_\+\+Frames\+\_\+\+Per\+\_\+\+Second}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\item 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} \doxymbox{\hyperlink{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631}{Set\+\_\+\+Sensor\+\_\+\+Capture\+\_\+\+Delay}} (uint32\+\_\+t u32\+\_\+\+Mode)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{register__callbacks_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_Computed\_Focus\_Distance@{Get\_Computed\_Focus\_Distance}}
+\index{Get\_Computed\_Focus\_Distance@{Get\_Computed\_Focus\_Distance}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Computed\_Focus\_Distance()}{Get\_Computed\_Focus\_Distance()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Computed\+\_\+\+Focus\+\_\+\+Distance (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{count}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a2d50a7dd858cee40ef2a0abecba78b2f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_LVDT\_Position@{Get\_LVDT\_Position}}
+\index{Get\_LVDT\_Position@{Get\_LVDT\_Position}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_LVDT\_Position()}{Get\_LVDT\_Position()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+LVDT\+\_\+\+Position (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{count}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00037}{37}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a2362f38ccb37c27c7979d4984824e124_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_Requested\_Focus\_Distance@{Get\_Requested\_Focus\_Distance}}
+\index{Get\_Requested\_Focus\_Distance@{Get\_Requested\_Focus\_Distance}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Requested\_Focus\_Distance()}{Get\_Requested\_Focus\_Distance()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Requested\+\_\+\+Focus\+\_\+\+Distance (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{count}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00025}{25}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_aec7ac19c7194c0d88a6c8c6f254beabd_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_Sensor\_Frame\_Count@{Get\_Sensor\_Frame\_Count}}
+\index{Get\_Sensor\_Frame\_Count@{Get\_Sensor\_Frame\_Count}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Sensor\_Frame\_Count()}{Get\_Sensor\_Frame\_Count()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Sensor\+\_\+\+Frame\+\_\+\+Count (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{count}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00017}{17}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a41f22cdbc7726ed933e0a5be2f96ea39_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_Sensor\_State@{Get\_Sensor\_State}}
+\index{Get\_Sensor\_State@{Get\_Sensor\_State}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Sensor\_State()}{Get\_Sensor\_State()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Sensor\+\_\+\+State (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{state}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00012}{12}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a5eccaa84c26b5645c1bdb59fa3dd2201_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a4db6c8105962792738524ea049eb8133}\index{register\_callbacks.c@{register\_callbacks.c}!Get\_Sensor\_Temperature@{Get\_Sensor\_Temperature}}
+\index{Get\_Sensor\_Temperature@{Get\_Sensor\_Temperature}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Get\_Sensor\_Temperature()}{Get\_Sensor\_Temperature()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a4db6c8105962792738524ea049eb8133} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Get\+\_\+\+Sensor\+\_\+\+Temperature (\begin{DoxyParamCaption}\item[{uint32\+\_\+t \texorpdfstring{$\ast$}{*}}]{temp}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00042}{42}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a4db6c8105962792738524ea049eb8133_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0}\index{register\_callbacks.c@{register\_callbacks.c}!Read\_Only@{Read\_Only}}
+\index{Read\_Only@{Read\_Only}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Read\_Only()}{Read\_Only()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Read\+\_\+\+Only (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{dummy}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00049}{49}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_aba34093dcb06b919c9b93ed3c4199bc0_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Bit\_Depth@{Set\_Sensor\_Bit\_Depth}}
+\index{Set\_Sensor\_Bit\_Depth@{Set\_Sensor\_Bit\_Depth}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Bit\_Depth()}{Set\_Sensor\_Bit\_Depth()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Bit\+\_\+\+Depth (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00059}{59}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a5dbe81ca7a8b730dae141aa006f02841_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a1b93f53805f41a2a5be688c48477d2fc}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Black\_Level\_Offset@{Set\_Sensor\_Black\_Level\_Offset}}
+\index{Set\_Sensor\_Black\_Level\_Offset@{Set\_Sensor\_Black\_Level\_Offset}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Black\_Level\_Offset()}{Set\_Sensor\_Black\_Level\_Offset()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a1b93f53805f41a2a5be688c48477d2fc} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Black\+\_\+\+Level\+\_\+\+Offset (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00064}{64}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+\Hypertarget{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Capture\_Delay@{Set\_Sensor\_Capture\_Delay}}
+\index{Set\_Sensor\_Capture\_Delay@{Set\_Sensor\_Capture\_Delay}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Capture\_Delay()}{Set\_Sensor\_Capture\_Delay()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Capture\+\_\+\+Delay (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00088}{88}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a442dba2f4a8ce258e6fa5e8fd8ef6631_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_ab5bb6235fe5b95acdd749120a2153a68}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Exposure@{Set\_Sensor\_Exposure}}
+\index{Set\_Sensor\_Exposure@{Set\_Sensor\_Exposure}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Exposure()}{Set\_Sensor\_Exposure()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_ab5bb6235fe5b95acdd749120a2153a68} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Exposure (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00068}{68}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+\Hypertarget{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Frame\_Mode@{Set\_Sensor\_Frame\_Mode}}
+\index{Set\_Sensor\_Frame\_Mode@{Set\_Sensor\_Frame\_Mode}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Frame\_Mode()}{Set\_Sensor\_Frame\_Mode()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Frame\+\_\+\+Mode (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00054}{54}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a2f497f6856358b1ff740ea3ff6f62f8c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Frames\_Per\_Second@{Set\_Sensor\_Frames\_Per\_Second}}
+\index{Set\_Sensor\_Frames\_Per\_Second@{Set\_Sensor\_Frames\_Per\_Second}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Frames\_Per\_Second()}{Set\_Sensor\_Frames\_Per\_Second()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Frames\+\_\+\+Per\+\_\+\+Second (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00083}{83}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a74630d7b187173c4d3034e25372eefaa_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Images\_Per\_Trigger@{Set\_Sensor\_Images\_Per\_Trigger}}
+\index{Set\_Sensor\_Images\_Per\_Trigger@{Set\_Sensor\_Images\_Per\_Trigger}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Images\_Per\_Trigger()}{Set\_Sensor\_Images\_Per\_Trigger()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Images\+\_\+\+Per\+\_\+\+Trigger (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00078}{78}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_afe0b40dd43fe1b75de3c7f0e3556d20b_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c}\index{register\_callbacks.c@{register\_callbacks.c}!Set\_Sensor\_Trigger\_Mode@{Set\_Sensor\_Trigger\_Mode}}
+\index{Set\_Sensor\_Trigger\_Mode@{Set\_Sensor\_Trigger\_Mode}!register\_callbacks.c@{register\_callbacks.c}}
+\doxysubsubsection{\texorpdfstring{Set\_Sensor\_Trigger\_Mode()}{Set\_Sensor\_Trigger\_Mode()}}
+{\footnotesize\ttfamily \label{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c} 
+\doxymbox{\hyperlink{errors_8h_a7588bf73fe853c42ca7ea33d9c40a8e1}{Error\+\_\+\+Code\+\_\+t}} Set\+\_\+\+Sensor\+\_\+\+Trigger\+\_\+\+Mode (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Mode}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{register__callbacks_8c_source_l00073}{73}} of file \doxymbox{\hyperlink{register__callbacks_8c_source}{register\+\_\+callbacks.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{register__callbacks_8c_a2c12bf44ac95173bbf46c46346b9426c_icgraph}
+\end{center}
+\end{figure}

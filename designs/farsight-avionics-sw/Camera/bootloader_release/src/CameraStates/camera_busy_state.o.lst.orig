@@ -1,0 +1,926 @@
+   1              		.file	"camera_busy_state.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Camera_Busy_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Camera_Busy_State
+  13              	Camera_Busy_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/CameraStates/camera_busy_state.c"
+   1:../src/CameraStates/camera_busy_state.c **** /*
+   2:../src/CameraStates/camera_busy_state.c ****  * camera_busy_state.c
+   3:../src/CameraStates/camera_busy_state.c ****  *
+   4:../src/CameraStates/camera_busy_state.c ****  *  Created on: Dec 8, 2025
+   5:../src/CameraStates/camera_busy_state.c ****  *      Author: iboard
+   6:../src/CameraStates/camera_busy_state.c ****  */
+   7:../src/CameraStates/camera_busy_state.c **** 
+   8:../src/CameraStates/camera_busy_state.c **** #include "FreeRTOSConfig.h"
+   9:../src/CameraStates/camera_busy_state.c **** #include "FreeRTOS.h"
+  10:../src/CameraStates/camera_busy_state.c **** #include "task.h"
+  11:../src/CameraStates/camera_busy_state.c **** #include "event_groups.h"
+  12:../src/CameraStates/camera_busy_state.c **** #include "queue.h"
+  13:../src/CameraStates/camera_busy_state.c **** #include "timers.h"
+  14:../src/CameraStates/camera_busy_state.c **** #include "mem_map.h"
+  15:../src/CameraStates/camera_busy_state.c **** #include "register.h"
+  16:../src/CameraStates/camera_busy_state.c **** #include "camera.h"
+  17:../src/CameraStates/camera_busy_state.c **** #include "camera_task.h"
+  18:../src/CameraStates/camera_busy_state.c **** #include "cam_mux.h"
+  19:../src/CameraStates/camera_busy_state.c **** #include "states.h"
+  20:../src/CameraStates/camera_busy_state.c **** #include "camera_states.h"
+  21:../src/CameraStates/camera_busy_state.c **** #include "command.h"
+  22:../src/CameraStates/camera_busy_state.c **** #include "misc.h"
+  23:../src/CameraStates/camera_busy_state.c **** #include "udp_core_reg.h"
+  24:../src/CameraStates/camera_busy_state.c **** #include "dma_read_reg.h"
+  25:../src/CameraStates/camera_busy_state.c **** #include "udp_dmactrl_reg.h"
+  26:../src/CameraStates/camera_busy_state.c **** 
+  27:../src/CameraStates/camera_busy_state.c **** /**
+  28:../src/CameraStates/camera_busy_state.c ****  * @fn State_t Camera_Busy_State(Camera_Context_t*, Event_t*)
+  29:../src/CameraStates/camera_busy_state.c ****  * @brief Camera has taken a picture and is busy transferring data
+  30:../src/CameraStates/camera_busy_state.c ****  * @param context
+  31:../src/CameraStates/camera_busy_state.c ****  * @param event
+  32:../src/CameraStates/camera_busy_state.c ****  * @return Next state
+  33:../src/CameraStates/camera_busy_state.c ****  */
+  34:../src/CameraStates/camera_busy_state.c **** 
+  35:../src/CameraStates/camera_busy_state.c **** static uint32_t u32_N_Frames;
+  36:../src/CameraStates/camera_busy_state.c **** static uint32_t u32_Frame_Capture_Time_usec;
+  37:../src/CameraStates/camera_busy_state.c **** static uint32_t u32_Timeout;
+  38:../src/CameraStates/camera_busy_state.c **** 
+  39:../src/CameraStates/camera_busy_state.c **** State_t Camera_Busy_State( Camera_Context_t *context, Event_t *event )
+  40:../src/CameraStates/camera_busy_state.c **** {
+  16              		.loc 1 40 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  41:../src/CameraStates/camera_busy_state.c ****     State_t next_state = (State_t)Camera_Busy_State;
+  19              		.loc 1 41 5
+  42:../src/CameraStates/camera_busy_state.c ****     Error_Code_t err = NO_ERROR;
+  20              		.loc 1 42 5
+  43:../src/CameraStates/camera_busy_state.c **** 
+  44:../src/CameraStates/camera_busy_state.c ****     switch( event->no_data.sig )
+  21              		.loc 1 44 5
+  22              		.loc 1 44 27 is_stmt 0
+  23 0000 83A70500 		lw	a5,0(a1)
+  40:../src/CameraStates/camera_busy_state.c ****     State_t next_state = (State_t)Camera_Busy_State;
+  24              		.loc 1 40 1
+  25 0004 130101FF 		addi	sp,sp,-16
+  26              		.cfi_def_cfa_offset 16
+  27 0008 23261100 		sw	ra,12(sp)
+  28 000c 23248100 		sw	s0,8(sp)
+  29 0010 23229100 		sw	s1,4(sp)
+  30              		.cfi_offset 1, -4
+  31              		.cfi_offset 8, -8
+  32              		.cfi_offset 9, -12
+  33              		.loc 1 44 5
+  34 0014 13071000 		li	a4,1
+  35 0018 638AE708 		beq	a5,a4,.L2
+  36 001c 638C0702 		beq	a5,zero,.L3
+  37 0020 13075000 		li	a4,5
+  45:../src/CameraStates/camera_busy_state.c ****     {
+  46:../src/CameraStates/camera_busy_state.c ****     case ENTRANCE:
+  47:../src/CameraStates/camera_busy_state.c ****         context->eState = CAMERA_BUSY_STATE;
+  48:../src/CameraStates/camera_busy_state.c ****         Read_Register( IMG_PER_TRIGGER_SYS_REG, &u32_N_Frames );
+  49:../src/CameraStates/camera_busy_state.c ****         Read_Register( FRAME_CAPTURE_TIME_REG, &u32_Frame_Capture_Time_usec );
+  50:../src/CameraStates/camera_busy_state.c ****         u32_Timeout = u32_N_Frames * u32_Frame_Capture_Time_usec;
+  51:../src/CameraStates/camera_busy_state.c ****         u32_Timeout += u32_Timeout / 2;
+  52:../src/CameraStates/camera_busy_state.c ****         v_Start_Camera_Timer(u32_Timeout);
+  53:../src/CameraStates/camera_busy_state.c ****         break;
+  54:../src/CameraStates/camera_busy_state.c **** 
+  55:../src/CameraStates/camera_busy_state.c ****     case EXIT:
+  56:../src/CameraStates/camera_busy_state.c ****         v_Stop_Camera_Timer();
+  57:../src/CameraStates/camera_busy_state.c ****         break;
+  58:../src/CameraStates/camera_busy_state.c **** 
+  59:../src/CameraStates/camera_busy_state.c ****     case BURST_CAPTURE_COMPLETE:
+  60:../src/CameraStates/camera_busy_state.c ****         next_state = (State_t)Camera_Armed_State;
+  38              		.loc 1 60 20
+  39 0024 17050000 		lla	a0,Camera_Armed_State
+  39      13050500 
+  40              	.LVL1:
+  44:../src/CameraStates/camera_busy_state.c ****     {
+  41              		.loc 1 44 5
+  42 002c 638AE700 		beq	a5,a4,.L1
+  43 0030 13073001 		li	a4,19
+  44 0034 6386E700 		beq	a5,a4,.L1
+  45              	.LVL2:
+  46              	.L8:
+  57:../src/CameraStates/camera_busy_state.c **** 
+  47              		.loc 1 57 9 is_stmt 1
+  41:../src/CameraStates/camera_busy_state.c ****     Error_Code_t err = NO_ERROR;
+  48              		.loc 1 41 13 is_stmt 0
+  49 0038 17050000 		lla	a0,Camera_Busy_State
+  49      13050500 
+  50              	.L1:
+  61:../src/CameraStates/camera_busy_state.c ****         break;
+  62:../src/CameraStates/camera_busy_state.c **** 
+  63:../src/CameraStates/camera_busy_state.c ****     case CAMERA_TIMER_EXPIRED:
+  64:../src/CameraStates/camera_busy_state.c ****         next_state = (State_t)Camera_Armed_State;
+  65:../src/CameraStates/camera_busy_state.c ****         break;
+  66:../src/CameraStates/camera_busy_state.c **** 
+  67:../src/CameraStates/camera_busy_state.c ****     default:
+  68:../src/CameraStates/camera_busy_state.c ****         break;
+  69:../src/CameraStates/camera_busy_state.c ****     }
+  70:../src/CameraStates/camera_busy_state.c **** 
+  71:../src/CameraStates/camera_busy_state.c ****     return next_state;
+  72:../src/CameraStates/camera_busy_state.c **** 
+  73:../src/CameraStates/camera_busy_state.c **** }
+  51              		.loc 1 73 1
+  52 0040 8320C100 		lw	ra,12(sp)
+  53              		.cfi_remember_state
+  54              		.cfi_restore 1
+  55 0044 03248100 		lw	s0,8(sp)
+  56              		.cfi_restore 8
+  57 0048 83244100 		lw	s1,4(sp)
+  58              		.cfi_restore 9
+  59 004c 13010101 		addi	sp,sp,16
+  60              		.cfi_def_cfa_offset 0
+  61 0050 67800000 		jr	ra
+  62              	.LVL3:
+  63              	.L3:
+  64              		.cfi_restore_state
+  65              	.LBB4:
+  66              	.LBB5:
+  47:../src/CameraStates/camera_busy_state.c ****         Read_Register( IMG_PER_TRIGGER_SYS_REG, &u32_N_Frames );
+  67              		.loc 1 47 9 is_stmt 1
+  47:../src/CameraStates/camera_busy_state.c ****         Read_Register( IMG_PER_TRIGGER_SYS_REG, &u32_N_Frames );
+  68              		.loc 1 47 25 is_stmt 0
+  69 0054 93078000 		li	a5,8
+  48:../src/CameraStates/camera_busy_state.c ****         Read_Register( FRAME_CAPTURE_TIME_REG, &u32_Frame_Capture_Time_usec );
+  70              		.loc 1 48 9
+  71 0058 97040000 		lla	s1,.LANCHOR0
+  71      93840400 
+  47:../src/CameraStates/camera_busy_state.c ****         Read_Register( IMG_PER_TRIGGER_SYS_REG, &u32_N_Frames );
+  72              		.loc 1 47 25
+  73 0060 2308F500 		sb	a5,16(a0)
+  48:../src/CameraStates/camera_busy_state.c ****         Read_Register( FRAME_CAPTURE_TIME_REG, &u32_Frame_Capture_Time_usec );
+  74              		.loc 1 48 9 is_stmt 1
+  75 0064 93850400 		mv	a1,s1
+  76              	.LVL4:
+  77 0068 1305A001 		li	a0,26
+  78              	.LVL5:
+  79 006c 97000000 		call	Read_Register
+  79      E7800000 
+  80              	.LVL6:
+  49:../src/CameraStates/camera_busy_state.c ****         u32_Timeout = u32_N_Frames * u32_Frame_Capture_Time_usec;
+  81              		.loc 1 49 9
+  82 0074 17040000 		lla	s0,.LANCHOR1
+  82      13040400 
+  83 007c 93050400 		mv	a1,s0
+  84 0080 13051002 		li	a0,33
+  85 0084 97000000 		call	Read_Register
+  85      E7800000 
+  86              	.LVL7:
+  50:../src/CameraStates/camera_busy_state.c ****         u32_Timeout += u32_Timeout / 2;
+  87              		.loc 1 50 9
+  50:../src/CameraStates/camera_busy_state.c ****         u32_Timeout += u32_Timeout / 2;
+  88              		.loc 1 50 36 is_stmt 0
+  89 008c 03250400 		lw	a0,0(s0)
+  90 0090 83A70400 		lw	a5,0(s1)
+  91 0094 B387A702 		mul	a5,a5,a0
+  51:../src/CameraStates/camera_busy_state.c ****         v_Start_Camera_Timer(u32_Timeout);
+  92              		.loc 1 51 9 is_stmt 1
+  52:../src/CameraStates/camera_busy_state.c ****         break;
+  93              		.loc 1 52 9
+  51:../src/CameraStates/camera_busy_state.c ****         v_Start_Camera_Timer(u32_Timeout);
+  94              		.loc 1 51 36 is_stmt 0
+  95 0098 13D51700 		srli	a0,a5,1
+  52:../src/CameraStates/camera_busy_state.c ****         break;
+  96              		.loc 1 52 9
+  97 009c 3305F500 		add	a0,a0,a5
+  98 00a0 97000000 		call	v_Start_Camera_Timer
+  98      E7800000 
+  99              	.LVL8:
+  53:../src/CameraStates/camera_busy_state.c **** 
+ 100              		.loc 1 53 9 is_stmt 1
+  71:../src/CameraStates/camera_busy_state.c **** 
+ 101              		.loc 1 71 5
+ 102 00a8 6FF01FF9 		j	.L8
+ 103              	.LVL9:
+ 104              	.L2:
+ 105              	.LBE5:
+ 106              	.LBE4:
+  56:../src/CameraStates/camera_busy_state.c ****         break;
+ 107              		.loc 1 56 9
+ 108 00ac 97000000 		call	v_Stop_Camera_Timer
+ 108      E7800000 
+ 109              	.LVL10:
+ 110 00b4 6FF05FF8 		j	.L8
+ 111              		.cfi_endproc
+ 112              	.LFE0:
+ 114              		.section	.sbss.u32_Frame_Capture_Time_usec,"aw",@nobits
+ 115              		.align	2
+ 116              		.set	.LANCHOR1,. + 0
+ 119              	u32_Frame_Capture_Time_usec:
+ 120 0000 00000000 		.zero	4
+ 121              		.section	.sbss.u32_N_Frames,"aw",@nobits
+ 122              		.align	2
+ 123              		.set	.LANCHOR0,. + 0
+ 126              	u32_N_Frames:
+ 127 0000 00000000 		.zero	4
+ 128              		.text
+ 129              	.Letext0:
+ 130              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 131              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 132              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 133              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/errors.h"
+ 134              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/register.h"
+ 135              		.file 7 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 136              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/core_gpio.h"
+ 137              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/core_spi.h"
+ 138              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/eth.h"
+ 139              		.file 11 "/home/iboard/farsight/avtemp/Camera/include/camera.h"
+ 140              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+ 141              		.file 13 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+ 142              		.file 14 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+ 143              		.file 15 "/home/iboard/farsight/avtemp/Camera/include/camera_states.h"
+ 144              		.file 16 "/home/iboard/farsight/avtemp/Camera/include/camera_task.h"
+ 145              		.file 17 "/home/iboard/farsight/avtemp/Camera/src/FreeRTOS/portmacro.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 camera_busy_state.c
+<<<<<<< HEAD
+     /tmp/cclXwwvX.s:13     .text.Camera_Busy_State:0000000000000000 Camera_Busy_State
+     /tmp/cclXwwvX.s:17     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:19     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:20     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:21     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:22     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:23     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:25     .text.Camera_Busy_State:0000000000000004 .L0 
+     /tmp/cclXwwvX.s:26     .text.Camera_Busy_State:0000000000000008 .L0 
+     /tmp/cclXwwvX.s:30     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/cclXwwvX.s:31     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/cclXwwvX.s:32     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/cclXwwvX.s:34     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/cclXwwvX.s:39     .text.Camera_Busy_State:0000000000000024 .L0 
+     /tmp/cclXwwvX.s:42     .text.Camera_Busy_State:000000000000002c .L0 
+     /tmp/cclXwwvX.s:48     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/cclXwwvX.s:49     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/cclXwwvX.s:52     .text.Camera_Busy_State:0000000000000040 .L0 
+     /tmp/cclXwwvX.s:53     .text.Camera_Busy_State:0000000000000044 .L0 
+     /tmp/cclXwwvX.s:54     .text.Camera_Busy_State:0000000000000044 .L0 
+     /tmp/cclXwwvX.s:56     .text.Camera_Busy_State:0000000000000048 .L0 
+     /tmp/cclXwwvX.s:58     .text.Camera_Busy_State:000000000000004c .L0 
+     /tmp/cclXwwvX.s:60     .text.Camera_Busy_State:0000000000000050 .L0 
+     /tmp/cclXwwvX.s:64     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/cclXwwvX.s:68     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/cclXwwvX.s:69     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/cclXwwvX.s:71     .text.Camera_Busy_State:0000000000000058 .L0 
+     /tmp/cclXwwvX.s:73     .text.Camera_Busy_State:0000000000000060 .L0 
+     /tmp/cclXwwvX.s:75     .text.Camera_Busy_State:0000000000000064 .L0 
+     /tmp/cclXwwvX.s:82     .text.Camera_Busy_State:0000000000000074 .L0 
+     /tmp/cclXwwvX.s:88     .text.Camera_Busy_State:000000000000008c .L0 
+     /tmp/cclXwwvX.s:89     .text.Camera_Busy_State:000000000000008c .L0 
+     /tmp/cclXwwvX.s:93     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/cclXwwvX.s:94     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/cclXwwvX.s:95     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/cclXwwvX.s:97     .text.Camera_Busy_State:000000000000009c .L0 
+     /tmp/cclXwwvX.s:101    .text.Camera_Busy_State:00000000000000a8 .L0 
+     /tmp/cclXwwvX.s:102    .text.Camera_Busy_State:00000000000000a8 .L0 
+     /tmp/cclXwwvX.s:108    .text.Camera_Busy_State:00000000000000ac .L0 
+     /tmp/cclXwwvX.s:111    .text.Camera_Busy_State:00000000000000b8 .L0 
+     /tmp/cclXwwvX.s:116    .sbss.u32_Frame_Capture_Time_usec:0000000000000000 .LANCHOR1
+     /tmp/cclXwwvX.s:119    .sbss.u32_Frame_Capture_Time_usec:0000000000000000 u32_Frame_Capture_Time_usec
+     /tmp/cclXwwvX.s:123    .sbss.u32_N_Frames:0000000000000000 .LANCHOR0
+     /tmp/cclXwwvX.s:126    .sbss.u32_N_Frames:0000000000000000 u32_N_Frames
+     /tmp/cclXwwvX.s:114    .text.Camera_Busy_State:00000000000000b8 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cclXwwvX.s:39     .text.Camera_Busy_State:0000000000000024 .L0 
+     /tmp/cclXwwvX.s:49     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/cclXwwvX.s:71     .text.Camera_Busy_State:0000000000000058 .L0 
+     /tmp/cclXwwvX.s:82     .text.Camera_Busy_State:0000000000000074 .L0 
+     /tmp/cclXwwvX.s:104    .text.Camera_Busy_State:00000000000000ac .L2
+     /tmp/cclXwwvX.s:63     .text.Camera_Busy_State:0000000000000054 .L3
+     /tmp/cclXwwvX.s:50     .text.Camera_Busy_State:0000000000000040 .L1
+     /tmp/cclXwwvX.s:46     .text.Camera_Busy_State:0000000000000038 .L8
+     /tmp/cclXwwvX.s:1792   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cclXwwvX.s:2950   .debug_str:0000000000000f5a .LASF254
+     /tmp/cclXwwvX.s:2874   .debug_str:0000000000000c74 .LASF255
+     /tmp/cclXwwvX.s:2882   .debug_str:0000000000000ce5 .LASF256
+     /tmp/cclXwwvX.s:2490   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cclXwwvX.s:2496   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cclXwwvX.s:2674   .debug_str:00000000000005e6 .LASF4
+     /tmp/cclXwwvX.s:2538   .debug_str:000000000000017a .LASF0
+     /tmp/cclXwwvX.s:2752   .debug_str:000000000000087f .LASF1
+     /tmp/cclXwwvX.s:2826   .debug_str:0000000000000ae8 .LASF2
+     /tmp/cclXwwvX.s:2972   .debug_str:00000000000010b0 .LASF3
+     /tmp/cclXwwvX.s:2884   .debug_str:0000000000000d1c .LASF5
+     /tmp/cclXwwvX.s:2926   .debug_str:0000000000000e99 .LASF6
+     /tmp/cclXwwvX.s:2844   .debug_str:0000000000000b7d .LASF7
+     /tmp/cclXwwvX.s:2648   .debug_str:0000000000000523 .LASF8
+     /tmp/cclXwwvX.s:2976   .debug_str:00000000000010d6 .LASF9
+     /tmp/cclXwwvX.s:2550   .debug_str:00000000000001f4 .LASF10
+     /tmp/cclXwwvX.s:2852   .debug_str:0000000000000bb6 .LASF11
+     /tmp/cclXwwvX.s:2932   .debug_str:0000000000000ec2 .LASF12
+     /tmp/cclXwwvX.s:2902   .debug_str:0000000000000dbf .LASF13
+     /tmp/cclXwwvX.s:2630   .debug_str:000000000000048c .LASF14
+     /tmp/cclXwwvX.s:2730   .debug_str:00000000000007e9 .LASF15
+     /tmp/cclXwwvX.s:2830   .debug_str:0000000000000b0a .LASF16
+     /tmp/cclXwwvX.s:2918   .debug_str:0000000000000e56 .LASF17
+     /tmp/cclXwwvX.s:2600   .debug_str:00000000000003a8 .LASF18
+     /tmp/cclXwwvX.s:2510   .debug_str:0000000000000086 .LASF257
+     /tmp/cclXwwvX.s:2712   .debug_str:0000000000000755 .LASF19
+     /tmp/cclXwwvX.s:2742   .debug_str:0000000000000842 .LASF20
+     /tmp/cclXwwvX.s:2634   .debug_str:00000000000004ac .LASF21
+     /tmp/cclXwwvX.s:2876   .debug_str:0000000000000c9c .LASF22
+     /tmp/cclXwwvX.s:2562   .debug_str:000000000000025d .LASF23
+     /tmp/cclXwwvX.s:2708   .debug_str:0000000000000733 .LASF24
+     /tmp/cclXwwvX.s:2570   .debug_str:00000000000002a1 .LASF25
+     /tmp/cclXwwvX.s:2846   .debug_str:0000000000000b87 .LASF26
+     /tmp/cclXwwvX.s:2502   .debug_str:000000000000002a .LASF27
+     /tmp/cclXwwvX.s:2952   .debug_str:0000000000001020 .LASF28
+     /tmp/cclXwwvX.s:2800   .debug_str:0000000000000a0f .LASF29
+     /tmp/cclXwwvX.s:2702   .debug_str:00000000000006f8 .LASF30
+     /tmp/cclXwwvX.s:2872   .debug_str:0000000000000c5d .LASF31
+     /tmp/cclXwwvX.s:2652   .debug_str:0000000000000537 .LASF32
+     /tmp/cclXwwvX.s:2840   .debug_str:0000000000000b5f .LASF33
+     /tmp/cclXwwvX.s:2956   .debug_str:0000000000001049 .LASF34
+     /tmp/cclXwwvX.s:2714   .debug_str:000000000000075a .LASF35
+     /tmp/cclXwwvX.s:2780   .debug_str:0000000000000960 .LASF36
+     /tmp/cclXwwvX.s:2920   .debug_str:0000000000000e5e .LASF37
+     /tmp/cclXwwvX.s:2774   .debug_str:0000000000000936 .LASF38
+     /tmp/cclXwwvX.s:3012   .debug_str:00000000000011d2 .LASF39
+     /tmp/cclXwwvX.s:2532   .debug_str:0000000000000138 .LASF40
+     /tmp/cclXwwvX.s:2804   .debug_str:0000000000000a37 .LASF41
+     /tmp/cclXwwvX.s:2536   .debug_str:000000000000015d .LASF42
+     /tmp/cclXwwvX.s:2758   .debug_str:00000000000008aa .LASF43
+     /tmp/cclXwwvX.s:2526   .debug_str:00000000000000fc .LASF44
+     /tmp/cclXwwvX.s:2992   .debug_str:000000000000115f .LASF45
+     /tmp/cclXwwvX.s:2642   .debug_str:00000000000004f0 .LASF46
+     /tmp/cclXwwvX.s:2626   .debug_str:0000000000000468 .LASF47
+     /tmp/cclXwwvX.s:2734   .debug_str:0000000000000808 .LASF48
+     /tmp/cclXwwvX.s:2644   .debug_str:0000000000000504 .LASF49
+     /tmp/cclXwwvX.s:2942   .debug_str:0000000000000eff .LASF50
+     /tmp/cclXwwvX.s:2824   .debug_str:0000000000000ace .LASF51
+     /tmp/cclXwwvX.s:2620   .debug_str:000000000000042a .LASF52
+     /tmp/cclXwwvX.s:2760   .debug_str:00000000000008b8 .LASF53
+     /tmp/cclXwwvX.s:2544   .debug_str:00000000000001ad .LASF54
+     /tmp/cclXwwvX.s:2696   .debug_str:00000000000006ad .LASF55
+     /tmp/cclXwwvX.s:2718   .debug_str:000000000000077f .LASF56
+     /tmp/cclXwwvX.s:2656   .debug_str:0000000000000556 .LASF57
+     /tmp/cclXwwvX.s:2736   .debug_str:0000000000000817 .LASF58
+     /tmp/cclXwwvX.s:2700   .debug_str:00000000000006dd .LASF59
+     /tmp/cclXwwvX.s:2560   .debug_str:0000000000000249 .LASF60
+     /tmp/cclXwwvX.s:2516   .debug_str:00000000000000b4 .LASF61
+     /tmp/cclXwwvX.s:2974   .debug_str:00000000000010bc .LASF62
+     /tmp/cclXwwvX.s:2984   .debug_str:0000000000001118 .LASF63
+     /tmp/cclXwwvX.s:2548   .debug_str:00000000000001dd .LASF64
+     /tmp/cclXwwvX.s:2858   .debug_str:0000000000000be9 .LASF65
+     /tmp/cclXwwvX.s:2866   .debug_str:0000000000000c30 .LASF66
+     /tmp/cclXwwvX.s:2828   .debug_str:0000000000000af4 .LASF67
+     /tmp/cclXwwvX.s:2498   .debug_str:0000000000000000 .LASF68
+     /tmp/cclXwwvX.s:2898   .debug_str:0000000000000d9e .LASF69
+     /tmp/cclXwwvX.s:2944   .debug_str:0000000000000f19 .LASF70
+     /tmp/cclXwwvX.s:2678   .debug_str:00000000000005f9 .LASF71
+     /tmp/cclXwwvX.s:2790   .debug_str:00000000000009c6 .LASF72
+     /tmp/cclXwwvX.s:2704   .debug_str:000000000000070e .LASF73
+     /tmp/cclXwwvX.s:2558   .debug_str:000000000000022d .LASF74
+     /tmp/cclXwwvX.s:2506   .debug_str:0000000000000059 .LASF75
+     /tmp/cclXwwvX.s:2594   .debug_str:0000000000000365 .LASF76
+     /tmp/cclXwwvX.s:2732   .debug_str:00000000000007f1 .LASF77
+     /tmp/cclXwwvX.s:2938   .debug_str:0000000000000ee1 .LASF78
+     /tmp/cclXwwvX.s:2728   .debug_str:00000000000007d5 .LASF79
+     /tmp/cclXwwvX.s:2584   .debug_str:0000000000000311 .LASF80
+     /tmp/cclXwwvX.s:2616   .debug_str:0000000000000403 .LASF81
+     /tmp/cclXwwvX.s:2788   .debug_str:00000000000009b0 .LASF82
+     /tmp/cclXwwvX.s:2772   .debug_str:0000000000000924 .LASF83
+     /tmp/cclXwwvX.s:2948   .debug_str:0000000000000f48 .LASF84
+     /tmp/cclXwwvX.s:2814   .debug_str:0000000000000a82 .LASF85
+     /tmp/cclXwwvX.s:2820   .debug_str:0000000000000aae .LASF86
+     /tmp/cclXwwvX.s:2954   .debug_str:0000000000001036 .LASF87
+     /tmp/cclXwwvX.s:2576   .debug_str:00000000000002df .LASF88
+     /tmp/cclXwwvX.s:2900   .debug_str:0000000000000db6 .LASF89
+     /tmp/cclXwwvX.s:2508   .debug_str:0000000000000075 .LASF90
+     /tmp/cclXwwvX.s:2842   .debug_str:0000000000000b76 .LASF91
+     /tmp/cclXwwvX.s:2670   .debug_str:00000000000005c2 .LASF124
+     /tmp/cclXwwvX.s:2782   .debug_str:0000000000000977 .LASF92
+     /tmp/cclXwwvX.s:2698   .debug_str:00000000000006c8 .LASF93
+     /tmp/cclXwwvX.s:2546   .debug_str:00000000000001c8 .LASF94
+     /tmp/cclXwwvX.s:2878   .debug_str:0000000000000cb3 .LASF95
+     /tmp/cclXwwvX.s:2624   .debug_str:0000000000000457 .LASF96
+     /tmp/cclXwwvX.s:2640   .debug_str:00000000000004de .LASF101
+     /tmp/cclXwwvX.s:2960   .debug_str:000000000000105e .LASF97
+     /tmp/cclXwwvX.s:2940   .debug_str:0000000000000ef1 .LASF98
+     /tmp/cclXwwvX.s:2540   .debug_str:0000000000000187 .LASF99
+     /tmp/cclXwwvX.s:2928   .debug_str:0000000000000ea7 .LASF100
+     /tmp/cclXwwvX.s:2556   .debug_str:0000000000000220 .LASF102
+     /tmp/cclXwwvX.s:2636   .debug_str:00000000000004c1 .LASF103
+     /tmp/cclXwwvX.s:2582   .debug_str:0000000000000301 .LASF104
+     /tmp/cclXwwvX.s:2514   .debug_str:00000000000000a6 .LASF105
+     /tmp/cclXwwvX.s:2966   .debug_str:0000000000001085 .LASF106
+     /tmp/cclXwwvX.s:2566   .debug_str:0000000000000285 .LASF107
+     /tmp/cclXwwvX.s:2996   .debug_str:000000000000117d .LASF108
+     /tmp/cclXwwvX.s:2716   .debug_str:000000000000076e .LASF109
+     /tmp/cclXwwvX.s:2676   .debug_str:00000000000005ed .LASF110
+     /tmp/cclXwwvX.s:2868   .debug_str:0000000000000c41 .LASF111
+     /tmp/cclXwwvX.s:2802   .debug_str:0000000000000a27 .LASF112
+     /tmp/cclXwwvX.s:2970   .debug_str:00000000000010a2 .LASF113
+     /tmp/cclXwwvX.s:2822   .debug_str:0000000000000ac1 .LASF114
+     /tmp/cclXwwvX.s:2666   .debug_str:000000000000059c .LASF115
+     /tmp/cclXwwvX.s:3014   .debug_str:00000000000011e1 .LASF116
+     /tmp/cclXwwvX.s:2880   .debug_str:0000000000000cce .LASF117
+     /tmp/cclXwwvX.s:2834   .debug_str:0000000000000b1e .LASF118
+     /tmp/cclXwwvX.s:2806   .debug_str:0000000000000a4f .LASF119
+     /tmp/cclXwwvX.s:2990   .debug_str:000000000000114f .LASF120
+     /tmp/cclXwwvX.s:2764   .debug_str:00000000000008e3 .LASF121
+     /tmp/cclXwwvX.s:2596   .debug_str:000000000000037c .LASF122
+     /tmp/cclXwwvX.s:2688   .debug_str:0000000000000662 .LASF123
+     /tmp/cclXwwvX.s:2754   .debug_str:000000000000088d .LASF125
+     /tmp/cclXwwvX.s:2638   .debug_str:00000000000004ca .LASF126
+     /tmp/cclXwwvX.s:2864   .debug_str:0000000000000c1b .LASF127
+     /tmp/cclXwwvX.s:2946   .debug_str:0000000000000f33 .LASF128
+     /tmp/cclXwwvX.s:2722   .debug_str:00000000000007a5 .LASF129
+     /tmp/cclXwwvX.s:2528   .debug_str:0000000000000112 .LASF130
+     /tmp/cclXwwvX.s:2542   .debug_str:0000000000000197 .LASF131
+     /tmp/cclXwwvX.s:2618   .debug_str:0000000000000414 .LASF132
+     /tmp/cclXwwvX.s:2986   .debug_str:000000000000112e .LASF133
+     /tmp/cclXwwvX.s:2682   .debug_str:0000000000000626 .LASF134
+     /tmp/cclXwwvX.s:2720   .debug_str:0000000000000791 .LASF135
+     /tmp/cclXwwvX.s:2524   .debug_str:00000000000000eb .LASF136
+     /tmp/cclXwwvX.s:2962   .debug_str:0000000000001068 .LASF137
+     /tmp/cclXwwvX.s:2686   .debug_str:000000000000064c .LASF138
+     /tmp/cclXwwvX.s:2978   .debug_str:00000000000010e9 .LASF139
+     /tmp/cclXwwvX.s:2888   .debug_str:0000000000000d32 .LASF140
+     /tmp/cclXwwvX.s:2862   .debug_str:0000000000000c06 .LASF141
+     /tmp/cclXwwvX.s:2904   .debug_str:0000000000000dd1 .LASF142
+     /tmp/cclXwwvX.s:2906   .debug_str:0000000000000de6 .LASF143
+     /tmp/cclXwwvX.s:2908   .debug_str:0000000000000dfb .LASF144
+     /tmp/cclXwwvX.s:2910   .debug_str:0000000000000e10 .LASF145
+     /tmp/cclXwwvX.s:2912   .debug_str:0000000000000e25 .LASF146
+     /tmp/cclXwwvX.s:2588   .debug_str:000000000000033a .LASF147
+     /tmp/cclXwwvX.s:2796   .debug_str:00000000000009f3 .LASF148
+     /tmp/cclXwwvX.s:2856   .debug_str:0000000000000bd3 .LASF149
+     /tmp/cclXwwvX.s:2726   .debug_str:00000000000007c5 .LASF150
+     /tmp/cclXwwvX.s:2632   .debug_str:00000000000004a3 .LASF151
+     /tmp/cclXwwvX.s:2794   .debug_str:00000000000009ea .LASF152
+     /tmp/cclXwwvX.s:3002   .debug_str:000000000000119e .LASF153
+     /tmp/cclXwwvX.s:2592   .debug_str:000000000000035e .LASF154
+     /tmp/cclXwwvX.s:2610   .debug_str:00000000000003e8 .LASF155
+     /tmp/cclXwwvX.s:2922   .debug_str:0000000000000e77 .LASF156
+     /tmp/cclXwwvX.s:2740   .debug_str:0000000000000836 .LASF157
+     /tmp/cclXwwvX.s:2534   .debug_str:0000000000000151 .LASF158
+     /tmp/cclXwwvX.s:2854   .debug_str:0000000000000bbf .LASF159
+     /tmp/cclXwwvX.s:2554   .debug_str:0000000000000217 .LASF160
+     /tmp/cclXwwvX.s:2614   .debug_str:00000000000003fa .LASF161
+     /tmp/cclXwwvX.s:3004   .debug_str:00000000000011a5 .LASF162
+     /tmp/cclXwwvX.s:2744   .debug_str:000000000000084b .LASF163
+     /tmp/cclXwwvX.s:2518   .debug_str:00000000000000cd .LASF164
+     /tmp/cclXwwvX.s:2580   .debug_str:00000000000002f8 .LASF165
+     /tmp/cclXwwvX.s:2706   .debug_str:000000000000072a .LASF166
+     /tmp/cclXwwvX.s:2766   .debug_str:0000000000000900 .LASF167
+     /tmp/cclXwwvX.s:2776   .debug_str:0000000000000946 .LASF168
+     /tmp/cclXwwvX.s:2870   .debug_str:0000000000000c4a .LASF169
+     /tmp/cclXwwvX.s:2530   .debug_str:0000000000000128 .LASF170
+     /tmp/cclXwwvX.s:2756   .debug_str:00000000000008a0 .LASF171
+     /tmp/cclXwwvX.s:2762   .debug_str:00000000000008d1 .LASF172
+     /tmp/cclXwwvX.s:2768   .debug_str:000000000000090d .LASF173
+     /tmp/cclXwwvX.s:3010   .debug_str:00000000000011c4 .LASF174
+     /tmp/cclXwwvX.s:2886   .debug_str:0000000000000d26 .LASF175
+     /tmp/cclXwwvX.s:2994   .debug_str:000000000000116e .LASF176
+     /tmp/cclXwwvX.s:2980   .debug_str:0000000000001103 .LASF177
+     /tmp/cclXwwvX.s:2606   .debug_str:00000000000003ce .LASF178
+     /tmp/cclXwwvX.s:2604   .debug_str:00000000000003c5 .LASF179
+     /tmp/cclXwwvX.s:2578   .debug_str:00000000000002f3 .LASF180
+     /tmp/cclXwwvX.s:2894   .debug_str:0000000000000d70 .LASF181
+     /tmp/cclXwwvX.s:2602   .debug_str:00000000000003b1 .LASF182
+     /tmp/cclXwwvX.s:2504   .debug_str:000000000000003f .LASF183
+     /tmp/cclXwwvX.s:2892   .debug_str:0000000000000d5b .LASF184
+     /tmp/cclXwwvX.s:2512   .debug_str:0000000000000097 .LASF185
+     /tmp/cclXwwvX.s:2684   .debug_str:000000000000063f .LASF186
+     /tmp/cclXwwvX.s:2664   .debug_str:000000000000058e .LASF187
+     /tmp/cclXwwvX.s:2968   .debug_str:0000000000001092 .LASF188
+     /tmp/cclXwwvX.s:2690   .debug_str:0000000000000679 .LASF189
+     /tmp/cclXwwvX.s:2658   .debug_str:000000000000056e .LASF190
+     /tmp/cclXwwvX.s:2692   .debug_str:000000000000068b .LASF191
+     /tmp/cclXwwvX.s:2836   .debug_str:0000000000000b2f .LASF192
+     /tmp/cclXwwvX.s:2564   .debug_str:0000000000000275 .LASF193
+     /tmp/cclXwwvX.s:2812   .debug_str:0000000000000a6f .LASF194
+     /tmp/cclXwwvX.s:2818   .debug_str:0000000000000a9a .LASF195
+     /tmp/cclXwwvX.s:2982   .debug_str:000000000000110f .LASF196
+     /tmp/cclXwwvX.s:2552   .debug_str:00000000000001fe .LASF197
+     /tmp/cclXwwvX.s:2786   .debug_str:0000000000000999 .LASF198
+     /tmp/cclXwwvX.s:2924   .debug_str:0000000000000e83 .LASF199
+     /tmp/cclXwwvX.s:2694   .debug_str:0000000000000697 .LASF200
+     /tmp/cclXwwvX.s:2522   .debug_str:00000000000000de .LASF201
+     /tmp/cclXwwvX.s:2896   .debug_str:0000000000000d88 .LASF202
+     /tmp/cclXwwvX.s:2916   .debug_str:0000000000000e41 .LASF203
+     /tmp/cclXwwvX.s:2848   .debug_str:0000000000000ba1 .LASF204
+     /tmp/cclXwwvX.s:2724   .debug_str:00000000000007b6 .LASF205
+     /tmp/cclXwwvX.s:2770   .debug_str:0000000000000917 .LASF206
+     /tmp/cclXwwvX.s:2998   .debug_str:000000000000118c .LASF207
+     /tmp/cclXwwvX.s:2650   .debug_str:000000000000052e .LASF208
+     /tmp/cclXwwvX.s:2964   .debug_str:0000000000001079 .LASF209
+     /tmp/cclXwwvX.s:2798   .debug_str:0000000000000a08 .LASF210
+     /tmp/cclXwwvX.s:3000   .debug_str:0000000000001199 .LASF211
+     /tmp/cclXwwvX.s:2586   .debug_str:0000000000000322 .LASF212
+     /tmp/cclXwwvX.s:2850   .debug_str:0000000000000baf .LASF213
+     /tmp/cclXwwvX.s:2930   .debug_str:0000000000000eb6 .LASF214
+     /tmp/cclXwwvX.s:2628   .debug_str:000000000000047b .LASF215
+     /tmp/cclXwwvX.s:2680   .debug_str:0000000000000613 .LASF216
+     /tmp/cclXwwvX.s:2500   .debug_str:0000000000000016 .LASF217
+     /tmp/cclXwwvX.s:2816   .debug_str:0000000000000a92 .LASF218
+     /tmp/cclXwwvX.s:2572   .debug_str:00000000000002ba .LASF219
+     /tmp/cclXwwvX.s:2988   .debug_str:0000000000001143 .LASF220
+     /tmp/cclXwwvX.s:2914   .debug_str:0000000000000e3a .LASF221
+     /tmp/cclXwwvX.s:2936   .debug_str:0000000000000ed4 .LASF222
+     /tmp/cclXwwvX.s:2808   .debug_str:0000000000000a5a .LASF223
+     /tmp/cclXwwvX.s:2668   .debug_str:00000000000005ad .LASF224
+     /tmp/cclXwwvX.s:2654   .debug_str:000000000000054c .LASF225
+     /tmp/cclXwwvX.s:2958   .debug_str:0000000000001056 .LASF226
+     /tmp/cclXwwvX.s:2568   .debug_str:0000000000000294 .LASF227
+     /tmp/cclXwwvX.s:2574   .debug_str:00000000000002cb .LASF228
+     /tmp/cclXwwvX.s:2646   .debug_str:000000000000051b .LASF229
+     /tmp/cclXwwvX.s:2710   .debug_str:000000000000074c .LASF230
+     /tmp/cclXwwvX.s:2792   .debug_str:00000000000009e2 .LASF231
+     /tmp/cclXwwvX.s:3006   .debug_str:00000000000011af .LASF232
+     /tmp/cclXwwvX.s:2590   .debug_str:0000000000000353 .LASF233
+     /tmp/cclXwwvX.s:2746   .debug_str:0000000000000855 .LASF234
+     /tmp/cclXwwvX.s:2660   .debug_str:0000000000000579 .LASF235
+     /tmp/cclXwwvX.s:2520   .debug_str:00000000000000d6 .LASF236
+     /tmp/cclXwwvX.s:2608   .debug_str:00000000000003e2 .LASF237
+     /tmp/cclXwwvX.s:2738   .debug_str:000000000000082e .LASF238
+     /tmp/cclXwwvX.s:2890   .debug_str:0000000000000d4d .LASF239
+     /tmp/cclXwwvX.s:2860   .debug_str:0000000000000bfa .LASF240
+     /tmp/cclXwwvX.s:2778   .debug_str:000000000000095a .LASF241
+     /tmp/cclXwwvX.s:2662   .debug_str:0000000000000585 .LASF242
+     /tmp/cclXwwvX.s:2934   .debug_str:0000000000000ecd .LASF243
+     /tmp/cclXwwvX.s:2672   .debug_str:00000000000005d5 .LASF244
+     /tmp/cclXwwvX.s:2748   .debug_str:0000000000000860 .LASF245
+     /tmp/cclXwwvX.s:2838   .debug_str:0000000000000b43 .LASF246
+     /tmp/cclXwwvX.s:3008   .debug_str:00000000000011b8 .LASF249
+     /tmp/cclXwwvX.s:2750   .debug_str:000000000000086d .LASF258
+     /tmp/cclXwwvX.s:2810   .debug_str:0000000000000a67 .LASF247
+     /tmp/cclXwwvX.s:2612   .debug_str:00000000000003f4 .LASF248
+     /tmp/cclXwwvX.s:2832   .debug_str:0000000000000b13 .LASF250
+     /tmp/cclXwwvX.s:14     .text.Camera_Busy_State:0000000000000000 .LFB0
+     /tmp/cclXwwvX.s:112    .text.Camera_Busy_State:00000000000000b8 .LFE0
+     /tmp/cclXwwvX.s:2377   .debug_loc:0000000000000000 .LLST0
+     /tmp/cclXwwvX.s:2413   .debug_loc:0000000000000053 .LLST1
+     /tmp/cclXwwvX.s:65     .text.Camera_Busy_State:0000000000000054 .LBB4
+     /tmp/cclXwwvX.s:106    .text.Camera_Busy_State:00000000000000ac .LBE4
+     /tmp/cclXwwvX.s:2449   .debug_loc:00000000000000a6 .LLST2
+     /tmp/cclXwwvX.s:2463   .debug_loc:00000000000000c7 .LLST3
+     /tmp/cclXwwvX.s:66     .text.Camera_Busy_State:0000000000000054 .LBB5
+     /tmp/cclXwwvX.s:105    .text.Camera_Busy_State:00000000000000ac .LBE5
+     /tmp/cclXwwvX.s:80     .text.Camera_Busy_State:0000000000000074 .LVL6
+     /tmp/cclXwwvX.s:86     .text.Camera_Busy_State:000000000000008c .LVL7
+     /tmp/cclXwwvX.s:99     .text.Camera_Busy_State:00000000000000a8 .LVL8
+     /tmp/cclXwwvX.s:109    .text.Camera_Busy_State:00000000000000b4 .LVL10
+     /tmp/cclXwwvX.s:2784   .debug_str:000000000000098b .LASF251
+     /tmp/cclXwwvX.s:2598   .debug_str:0000000000000393 .LASF252
+     /tmp/cclXwwvX.s:2622   .debug_str:0000000000000443 .LASF253
+     /tmp/cclXwwvX.s:18     .text.Camera_Busy_State:0000000000000000 .LVL0
+     /tmp/cclXwwvX.s:40     .text.Camera_Busy_State:000000000000002c .LVL1
+     /tmp/cclXwwvX.s:62     .text.Camera_Busy_State:0000000000000054 .LVL3
+     /tmp/cclXwwvX.s:78     .text.Camera_Busy_State:000000000000006c .LVL5
+     /tmp/cclXwwvX.s:103    .text.Camera_Busy_State:00000000000000ac .LVL9
+     /tmp/cclXwwvX.s:45     .text.Camera_Busy_State:0000000000000038 .LVL2
+     /tmp/cclXwwvX.s:76     .text.Camera_Busy_State:0000000000000068 .LVL4
+     /tmp/cclXwwvX.s:147    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccqGheCV.s:13     .text.Camera_Busy_State:0000000000000000 Camera_Busy_State
+     /tmp/ccqGheCV.s:17     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:19     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:20     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:21     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:22     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:23     .text.Camera_Busy_State:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:25     .text.Camera_Busy_State:0000000000000004 .L0 
+     /tmp/ccqGheCV.s:26     .text.Camera_Busy_State:0000000000000008 .L0 
+     /tmp/ccqGheCV.s:30     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/ccqGheCV.s:31     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/ccqGheCV.s:32     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/ccqGheCV.s:34     .text.Camera_Busy_State:0000000000000014 .L0 
+     /tmp/ccqGheCV.s:39     .text.Camera_Busy_State:0000000000000024 .L0 
+     /tmp/ccqGheCV.s:42     .text.Camera_Busy_State:000000000000002c .L0 
+     /tmp/ccqGheCV.s:48     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/ccqGheCV.s:49     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/ccqGheCV.s:52     .text.Camera_Busy_State:0000000000000040 .L0 
+     /tmp/ccqGheCV.s:53     .text.Camera_Busy_State:0000000000000044 .L0 
+     /tmp/ccqGheCV.s:54     .text.Camera_Busy_State:0000000000000044 .L0 
+     /tmp/ccqGheCV.s:56     .text.Camera_Busy_State:0000000000000048 .L0 
+     /tmp/ccqGheCV.s:58     .text.Camera_Busy_State:000000000000004c .L0 
+     /tmp/ccqGheCV.s:60     .text.Camera_Busy_State:0000000000000050 .L0 
+     /tmp/ccqGheCV.s:64     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/ccqGheCV.s:68     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/ccqGheCV.s:69     .text.Camera_Busy_State:0000000000000054 .L0 
+     /tmp/ccqGheCV.s:71     .text.Camera_Busy_State:0000000000000058 .L0 
+     /tmp/ccqGheCV.s:73     .text.Camera_Busy_State:0000000000000060 .L0 
+     /tmp/ccqGheCV.s:75     .text.Camera_Busy_State:0000000000000064 .L0 
+     /tmp/ccqGheCV.s:82     .text.Camera_Busy_State:0000000000000074 .L0 
+     /tmp/ccqGheCV.s:88     .text.Camera_Busy_State:000000000000008c .L0 
+     /tmp/ccqGheCV.s:89     .text.Camera_Busy_State:000000000000008c .L0 
+     /tmp/ccqGheCV.s:93     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/ccqGheCV.s:94     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/ccqGheCV.s:95     .text.Camera_Busy_State:0000000000000098 .L0 
+     /tmp/ccqGheCV.s:97     .text.Camera_Busy_State:000000000000009c .L0 
+     /tmp/ccqGheCV.s:101    .text.Camera_Busy_State:00000000000000a8 .L0 
+     /tmp/ccqGheCV.s:102    .text.Camera_Busy_State:00000000000000a8 .L0 
+     /tmp/ccqGheCV.s:108    .text.Camera_Busy_State:00000000000000ac .L0 
+     /tmp/ccqGheCV.s:111    .text.Camera_Busy_State:00000000000000b8 .L0 
+     /tmp/ccqGheCV.s:116    .sbss.u32_Frame_Capture_Time_usec:0000000000000000 .LANCHOR1
+     /tmp/ccqGheCV.s:119    .sbss.u32_Frame_Capture_Time_usec:0000000000000000 u32_Frame_Capture_Time_usec
+     /tmp/ccqGheCV.s:123    .sbss.u32_N_Frames:0000000000000000 .LANCHOR0
+     /tmp/ccqGheCV.s:126    .sbss.u32_N_Frames:0000000000000000 u32_N_Frames
+     /tmp/ccqGheCV.s:114    .text.Camera_Busy_State:00000000000000b8 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccqGheCV.s:39     .text.Camera_Busy_State:0000000000000024 .L0 
+     /tmp/ccqGheCV.s:49     .text.Camera_Busy_State:0000000000000038 .L0 
+     /tmp/ccqGheCV.s:71     .text.Camera_Busy_State:0000000000000058 .L0 
+     /tmp/ccqGheCV.s:82     .text.Camera_Busy_State:0000000000000074 .L0 
+     /tmp/ccqGheCV.s:104    .text.Camera_Busy_State:00000000000000ac .L2
+     /tmp/ccqGheCV.s:63     .text.Camera_Busy_State:0000000000000054 .L3
+     /tmp/ccqGheCV.s:50     .text.Camera_Busy_State:0000000000000040 .L1
+     /tmp/ccqGheCV.s:46     .text.Camera_Busy_State:0000000000000038 .L8
+     /tmp/ccqGheCV.s:1792   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccqGheCV.s:2950   .debug_str:0000000000000f5a .LASF254
+     /tmp/ccqGheCV.s:2874   .debug_str:0000000000000c74 .LASF255
+     /tmp/ccqGheCV.s:2882   .debug_str:0000000000000ce5 .LASF256
+     /tmp/ccqGheCV.s:2490   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccqGheCV.s:2496   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccqGheCV.s:2674   .debug_str:00000000000005e6 .LASF4
+     /tmp/ccqGheCV.s:2538   .debug_str:000000000000017a .LASF0
+     /tmp/ccqGheCV.s:2752   .debug_str:000000000000087f .LASF1
+     /tmp/ccqGheCV.s:2826   .debug_str:0000000000000ae8 .LASF2
+     /tmp/ccqGheCV.s:2972   .debug_str:00000000000010b0 .LASF3
+     /tmp/ccqGheCV.s:2884   .debug_str:0000000000000d1c .LASF5
+     /tmp/ccqGheCV.s:2926   .debug_str:0000000000000e99 .LASF6
+     /tmp/ccqGheCV.s:2844   .debug_str:0000000000000b7d .LASF7
+     /tmp/ccqGheCV.s:2648   .debug_str:0000000000000523 .LASF8
+     /tmp/ccqGheCV.s:2976   .debug_str:00000000000010d6 .LASF9
+     /tmp/ccqGheCV.s:2550   .debug_str:00000000000001f4 .LASF10
+     /tmp/ccqGheCV.s:2852   .debug_str:0000000000000bb6 .LASF11
+     /tmp/ccqGheCV.s:2932   .debug_str:0000000000000ec2 .LASF12
+     /tmp/ccqGheCV.s:2902   .debug_str:0000000000000dbf .LASF13
+     /tmp/ccqGheCV.s:2630   .debug_str:000000000000048c .LASF14
+     /tmp/ccqGheCV.s:2730   .debug_str:00000000000007e9 .LASF15
+     /tmp/ccqGheCV.s:2830   .debug_str:0000000000000b0a .LASF16
+     /tmp/ccqGheCV.s:2918   .debug_str:0000000000000e56 .LASF17
+     /tmp/ccqGheCV.s:2600   .debug_str:00000000000003a8 .LASF18
+     /tmp/ccqGheCV.s:2510   .debug_str:0000000000000086 .LASF257
+     /tmp/ccqGheCV.s:2712   .debug_str:0000000000000755 .LASF19
+     /tmp/ccqGheCV.s:2742   .debug_str:0000000000000842 .LASF20
+     /tmp/ccqGheCV.s:2634   .debug_str:00000000000004ac .LASF21
+     /tmp/ccqGheCV.s:2876   .debug_str:0000000000000c9c .LASF22
+     /tmp/ccqGheCV.s:2562   .debug_str:000000000000025d .LASF23
+     /tmp/ccqGheCV.s:2708   .debug_str:0000000000000733 .LASF24
+     /tmp/ccqGheCV.s:2570   .debug_str:00000000000002a1 .LASF25
+     /tmp/ccqGheCV.s:2846   .debug_str:0000000000000b87 .LASF26
+     /tmp/ccqGheCV.s:2502   .debug_str:000000000000002a .LASF27
+     /tmp/ccqGheCV.s:2952   .debug_str:0000000000001020 .LASF28
+     /tmp/ccqGheCV.s:2800   .debug_str:0000000000000a0f .LASF29
+     /tmp/ccqGheCV.s:2702   .debug_str:00000000000006f8 .LASF30
+     /tmp/ccqGheCV.s:2872   .debug_str:0000000000000c5d .LASF31
+     /tmp/ccqGheCV.s:2652   .debug_str:0000000000000537 .LASF32
+     /tmp/ccqGheCV.s:2840   .debug_str:0000000000000b5f .LASF33
+     /tmp/ccqGheCV.s:2956   .debug_str:0000000000001049 .LASF34
+     /tmp/ccqGheCV.s:2714   .debug_str:000000000000075a .LASF35
+     /tmp/ccqGheCV.s:2780   .debug_str:0000000000000960 .LASF36
+     /tmp/ccqGheCV.s:2920   .debug_str:0000000000000e5e .LASF37
+     /tmp/ccqGheCV.s:2774   .debug_str:0000000000000936 .LASF38
+     /tmp/ccqGheCV.s:3012   .debug_str:00000000000011d2 .LASF39
+     /tmp/ccqGheCV.s:2532   .debug_str:0000000000000138 .LASF40
+     /tmp/ccqGheCV.s:2804   .debug_str:0000000000000a37 .LASF41
+     /tmp/ccqGheCV.s:2536   .debug_str:000000000000015d .LASF42
+     /tmp/ccqGheCV.s:2758   .debug_str:00000000000008aa .LASF43
+     /tmp/ccqGheCV.s:2526   .debug_str:00000000000000fc .LASF44
+     /tmp/ccqGheCV.s:2992   .debug_str:000000000000115f .LASF45
+     /tmp/ccqGheCV.s:2642   .debug_str:00000000000004f0 .LASF46
+     /tmp/ccqGheCV.s:2626   .debug_str:0000000000000468 .LASF47
+     /tmp/ccqGheCV.s:2734   .debug_str:0000000000000808 .LASF48
+     /tmp/ccqGheCV.s:2644   .debug_str:0000000000000504 .LASF49
+     /tmp/ccqGheCV.s:2942   .debug_str:0000000000000eff .LASF50
+     /tmp/ccqGheCV.s:2824   .debug_str:0000000000000ace .LASF51
+     /tmp/ccqGheCV.s:2620   .debug_str:000000000000042a .LASF52
+     /tmp/ccqGheCV.s:2760   .debug_str:00000000000008b8 .LASF53
+     /tmp/ccqGheCV.s:2544   .debug_str:00000000000001ad .LASF54
+     /tmp/ccqGheCV.s:2696   .debug_str:00000000000006ad .LASF55
+     /tmp/ccqGheCV.s:2718   .debug_str:000000000000077f .LASF56
+     /tmp/ccqGheCV.s:2656   .debug_str:0000000000000556 .LASF57
+     /tmp/ccqGheCV.s:2736   .debug_str:0000000000000817 .LASF58
+     /tmp/ccqGheCV.s:2700   .debug_str:00000000000006dd .LASF59
+     /tmp/ccqGheCV.s:2560   .debug_str:0000000000000249 .LASF60
+     /tmp/ccqGheCV.s:2516   .debug_str:00000000000000b4 .LASF61
+     /tmp/ccqGheCV.s:2974   .debug_str:00000000000010bc .LASF62
+     /tmp/ccqGheCV.s:2984   .debug_str:0000000000001118 .LASF63
+     /tmp/ccqGheCV.s:2548   .debug_str:00000000000001dd .LASF64
+     /tmp/ccqGheCV.s:2858   .debug_str:0000000000000be9 .LASF65
+     /tmp/ccqGheCV.s:2866   .debug_str:0000000000000c30 .LASF66
+     /tmp/ccqGheCV.s:2828   .debug_str:0000000000000af4 .LASF67
+     /tmp/ccqGheCV.s:2498   .debug_str:0000000000000000 .LASF68
+     /tmp/ccqGheCV.s:2898   .debug_str:0000000000000d9e .LASF69
+     /tmp/ccqGheCV.s:2944   .debug_str:0000000000000f19 .LASF70
+     /tmp/ccqGheCV.s:2678   .debug_str:00000000000005f9 .LASF71
+     /tmp/ccqGheCV.s:2790   .debug_str:00000000000009c6 .LASF72
+     /tmp/ccqGheCV.s:2704   .debug_str:000000000000070e .LASF73
+     /tmp/ccqGheCV.s:2558   .debug_str:000000000000022d .LASF74
+     /tmp/ccqGheCV.s:2506   .debug_str:0000000000000059 .LASF75
+     /tmp/ccqGheCV.s:2594   .debug_str:0000000000000365 .LASF76
+     /tmp/ccqGheCV.s:2732   .debug_str:00000000000007f1 .LASF77
+     /tmp/ccqGheCV.s:2938   .debug_str:0000000000000ee1 .LASF78
+     /tmp/ccqGheCV.s:2728   .debug_str:00000000000007d5 .LASF79
+     /tmp/ccqGheCV.s:2584   .debug_str:0000000000000311 .LASF80
+     /tmp/ccqGheCV.s:2616   .debug_str:0000000000000403 .LASF81
+     /tmp/ccqGheCV.s:2788   .debug_str:00000000000009b0 .LASF82
+     /tmp/ccqGheCV.s:2772   .debug_str:0000000000000924 .LASF83
+     /tmp/ccqGheCV.s:2948   .debug_str:0000000000000f48 .LASF84
+     /tmp/ccqGheCV.s:2814   .debug_str:0000000000000a82 .LASF85
+     /tmp/ccqGheCV.s:2820   .debug_str:0000000000000aae .LASF86
+     /tmp/ccqGheCV.s:2954   .debug_str:0000000000001036 .LASF87
+     /tmp/ccqGheCV.s:2576   .debug_str:00000000000002df .LASF88
+     /tmp/ccqGheCV.s:2900   .debug_str:0000000000000db6 .LASF89
+     /tmp/ccqGheCV.s:2508   .debug_str:0000000000000075 .LASF90
+     /tmp/ccqGheCV.s:2842   .debug_str:0000000000000b76 .LASF91
+     /tmp/ccqGheCV.s:2670   .debug_str:00000000000005c2 .LASF124
+     /tmp/ccqGheCV.s:2782   .debug_str:0000000000000977 .LASF92
+     /tmp/ccqGheCV.s:2698   .debug_str:00000000000006c8 .LASF93
+     /tmp/ccqGheCV.s:2546   .debug_str:00000000000001c8 .LASF94
+     /tmp/ccqGheCV.s:2878   .debug_str:0000000000000cb3 .LASF95
+     /tmp/ccqGheCV.s:2624   .debug_str:0000000000000457 .LASF96
+     /tmp/ccqGheCV.s:2640   .debug_str:00000000000004de .LASF101
+     /tmp/ccqGheCV.s:2960   .debug_str:000000000000105e .LASF97
+     /tmp/ccqGheCV.s:2940   .debug_str:0000000000000ef1 .LASF98
+     /tmp/ccqGheCV.s:2540   .debug_str:0000000000000187 .LASF99
+     /tmp/ccqGheCV.s:2928   .debug_str:0000000000000ea7 .LASF100
+     /tmp/ccqGheCV.s:2556   .debug_str:0000000000000220 .LASF102
+     /tmp/ccqGheCV.s:2636   .debug_str:00000000000004c1 .LASF103
+     /tmp/ccqGheCV.s:2582   .debug_str:0000000000000301 .LASF104
+     /tmp/ccqGheCV.s:2514   .debug_str:00000000000000a6 .LASF105
+     /tmp/ccqGheCV.s:2966   .debug_str:0000000000001085 .LASF106
+     /tmp/ccqGheCV.s:2566   .debug_str:0000000000000285 .LASF107
+     /tmp/ccqGheCV.s:2996   .debug_str:000000000000117d .LASF108
+     /tmp/ccqGheCV.s:2716   .debug_str:000000000000076e .LASF109
+     /tmp/ccqGheCV.s:2676   .debug_str:00000000000005ed .LASF110
+     /tmp/ccqGheCV.s:2868   .debug_str:0000000000000c41 .LASF111
+     /tmp/ccqGheCV.s:2802   .debug_str:0000000000000a27 .LASF112
+     /tmp/ccqGheCV.s:2970   .debug_str:00000000000010a2 .LASF113
+     /tmp/ccqGheCV.s:2822   .debug_str:0000000000000ac1 .LASF114
+     /tmp/ccqGheCV.s:2666   .debug_str:000000000000059c .LASF115
+     /tmp/ccqGheCV.s:3014   .debug_str:00000000000011e1 .LASF116
+     /tmp/ccqGheCV.s:2880   .debug_str:0000000000000cce .LASF117
+     /tmp/ccqGheCV.s:2834   .debug_str:0000000000000b1e .LASF118
+     /tmp/ccqGheCV.s:2806   .debug_str:0000000000000a4f .LASF119
+     /tmp/ccqGheCV.s:2990   .debug_str:000000000000114f .LASF120
+     /tmp/ccqGheCV.s:2764   .debug_str:00000000000008e3 .LASF121
+     /tmp/ccqGheCV.s:2596   .debug_str:000000000000037c .LASF122
+     /tmp/ccqGheCV.s:2688   .debug_str:0000000000000662 .LASF123
+     /tmp/ccqGheCV.s:2754   .debug_str:000000000000088d .LASF125
+     /tmp/ccqGheCV.s:2638   .debug_str:00000000000004ca .LASF126
+     /tmp/ccqGheCV.s:2864   .debug_str:0000000000000c1b .LASF127
+     /tmp/ccqGheCV.s:2946   .debug_str:0000000000000f33 .LASF128
+     /tmp/ccqGheCV.s:2722   .debug_str:00000000000007a5 .LASF129
+     /tmp/ccqGheCV.s:2528   .debug_str:0000000000000112 .LASF130
+     /tmp/ccqGheCV.s:2542   .debug_str:0000000000000197 .LASF131
+     /tmp/ccqGheCV.s:2618   .debug_str:0000000000000414 .LASF132
+     /tmp/ccqGheCV.s:2986   .debug_str:000000000000112e .LASF133
+     /tmp/ccqGheCV.s:2682   .debug_str:0000000000000626 .LASF134
+     /tmp/ccqGheCV.s:2720   .debug_str:0000000000000791 .LASF135
+     /tmp/ccqGheCV.s:2524   .debug_str:00000000000000eb .LASF136
+     /tmp/ccqGheCV.s:2962   .debug_str:0000000000001068 .LASF137
+     /tmp/ccqGheCV.s:2686   .debug_str:000000000000064c .LASF138
+     /tmp/ccqGheCV.s:2978   .debug_str:00000000000010e9 .LASF139
+     /tmp/ccqGheCV.s:2888   .debug_str:0000000000000d32 .LASF140
+     /tmp/ccqGheCV.s:2862   .debug_str:0000000000000c06 .LASF141
+     /tmp/ccqGheCV.s:2904   .debug_str:0000000000000dd1 .LASF142
+     /tmp/ccqGheCV.s:2906   .debug_str:0000000000000de6 .LASF143
+     /tmp/ccqGheCV.s:2908   .debug_str:0000000000000dfb .LASF144
+     /tmp/ccqGheCV.s:2910   .debug_str:0000000000000e10 .LASF145
+     /tmp/ccqGheCV.s:2912   .debug_str:0000000000000e25 .LASF146
+     /tmp/ccqGheCV.s:2588   .debug_str:000000000000033a .LASF147
+     /tmp/ccqGheCV.s:2796   .debug_str:00000000000009f3 .LASF148
+     /tmp/ccqGheCV.s:2856   .debug_str:0000000000000bd3 .LASF149
+     /tmp/ccqGheCV.s:2726   .debug_str:00000000000007c5 .LASF150
+     /tmp/ccqGheCV.s:2632   .debug_str:00000000000004a3 .LASF151
+     /tmp/ccqGheCV.s:2794   .debug_str:00000000000009ea .LASF152
+     /tmp/ccqGheCV.s:3002   .debug_str:000000000000119e .LASF153
+     /tmp/ccqGheCV.s:2592   .debug_str:000000000000035e .LASF154
+     /tmp/ccqGheCV.s:2610   .debug_str:00000000000003e8 .LASF155
+     /tmp/ccqGheCV.s:2922   .debug_str:0000000000000e77 .LASF156
+     /tmp/ccqGheCV.s:2740   .debug_str:0000000000000836 .LASF157
+     /tmp/ccqGheCV.s:2534   .debug_str:0000000000000151 .LASF158
+     /tmp/ccqGheCV.s:2854   .debug_str:0000000000000bbf .LASF159
+     /tmp/ccqGheCV.s:2554   .debug_str:0000000000000217 .LASF160
+     /tmp/ccqGheCV.s:2614   .debug_str:00000000000003fa .LASF161
+     /tmp/ccqGheCV.s:3004   .debug_str:00000000000011a5 .LASF162
+     /tmp/ccqGheCV.s:2744   .debug_str:000000000000084b .LASF163
+     /tmp/ccqGheCV.s:2518   .debug_str:00000000000000cd .LASF164
+     /tmp/ccqGheCV.s:2580   .debug_str:00000000000002f8 .LASF165
+     /tmp/ccqGheCV.s:2706   .debug_str:000000000000072a .LASF166
+     /tmp/ccqGheCV.s:2766   .debug_str:0000000000000900 .LASF167
+     /tmp/ccqGheCV.s:2776   .debug_str:0000000000000946 .LASF168
+     /tmp/ccqGheCV.s:2870   .debug_str:0000000000000c4a .LASF169
+     /tmp/ccqGheCV.s:2530   .debug_str:0000000000000128 .LASF170
+     /tmp/ccqGheCV.s:2756   .debug_str:00000000000008a0 .LASF171
+     /tmp/ccqGheCV.s:2762   .debug_str:00000000000008d1 .LASF172
+     /tmp/ccqGheCV.s:2768   .debug_str:000000000000090d .LASF173
+     /tmp/ccqGheCV.s:3010   .debug_str:00000000000011c4 .LASF174
+     /tmp/ccqGheCV.s:2886   .debug_str:0000000000000d26 .LASF175
+     /tmp/ccqGheCV.s:2994   .debug_str:000000000000116e .LASF176
+     /tmp/ccqGheCV.s:2980   .debug_str:0000000000001103 .LASF177
+     /tmp/ccqGheCV.s:2606   .debug_str:00000000000003ce .LASF178
+     /tmp/ccqGheCV.s:2604   .debug_str:00000000000003c5 .LASF179
+     /tmp/ccqGheCV.s:2578   .debug_str:00000000000002f3 .LASF180
+     /tmp/ccqGheCV.s:2894   .debug_str:0000000000000d70 .LASF181
+     /tmp/ccqGheCV.s:2602   .debug_str:00000000000003b1 .LASF182
+     /tmp/ccqGheCV.s:2504   .debug_str:000000000000003f .LASF183
+     /tmp/ccqGheCV.s:2892   .debug_str:0000000000000d5b .LASF184
+     /tmp/ccqGheCV.s:2512   .debug_str:0000000000000097 .LASF185
+     /tmp/ccqGheCV.s:2684   .debug_str:000000000000063f .LASF186
+     /tmp/ccqGheCV.s:2664   .debug_str:000000000000058e .LASF187
+     /tmp/ccqGheCV.s:2968   .debug_str:0000000000001092 .LASF188
+     /tmp/ccqGheCV.s:2690   .debug_str:0000000000000679 .LASF189
+     /tmp/ccqGheCV.s:2658   .debug_str:000000000000056e .LASF190
+     /tmp/ccqGheCV.s:2692   .debug_str:000000000000068b .LASF191
+     /tmp/ccqGheCV.s:2836   .debug_str:0000000000000b2f .LASF192
+     /tmp/ccqGheCV.s:2564   .debug_str:0000000000000275 .LASF193
+     /tmp/ccqGheCV.s:2812   .debug_str:0000000000000a6f .LASF194
+     /tmp/ccqGheCV.s:2818   .debug_str:0000000000000a9a .LASF195
+     /tmp/ccqGheCV.s:2982   .debug_str:000000000000110f .LASF196
+     /tmp/ccqGheCV.s:2552   .debug_str:00000000000001fe .LASF197
+     /tmp/ccqGheCV.s:2786   .debug_str:0000000000000999 .LASF198
+     /tmp/ccqGheCV.s:2924   .debug_str:0000000000000e83 .LASF199
+     /tmp/ccqGheCV.s:2694   .debug_str:0000000000000697 .LASF200
+     /tmp/ccqGheCV.s:2522   .debug_str:00000000000000de .LASF201
+     /tmp/ccqGheCV.s:2896   .debug_str:0000000000000d88 .LASF202
+     /tmp/ccqGheCV.s:2916   .debug_str:0000000000000e41 .LASF203
+     /tmp/ccqGheCV.s:2848   .debug_str:0000000000000ba1 .LASF204
+     /tmp/ccqGheCV.s:2724   .debug_str:00000000000007b6 .LASF205
+     /tmp/ccqGheCV.s:2770   .debug_str:0000000000000917 .LASF206
+     /tmp/ccqGheCV.s:2998   .debug_str:000000000000118c .LASF207
+     /tmp/ccqGheCV.s:2650   .debug_str:000000000000052e .LASF208
+     /tmp/ccqGheCV.s:2964   .debug_str:0000000000001079 .LASF209
+     /tmp/ccqGheCV.s:2798   .debug_str:0000000000000a08 .LASF210
+     /tmp/ccqGheCV.s:3000   .debug_str:0000000000001199 .LASF211
+     /tmp/ccqGheCV.s:2586   .debug_str:0000000000000322 .LASF212
+     /tmp/ccqGheCV.s:2850   .debug_str:0000000000000baf .LASF213
+     /tmp/ccqGheCV.s:2930   .debug_str:0000000000000eb6 .LASF214
+     /tmp/ccqGheCV.s:2628   .debug_str:000000000000047b .LASF215
+     /tmp/ccqGheCV.s:2680   .debug_str:0000000000000613 .LASF216
+     /tmp/ccqGheCV.s:2500   .debug_str:0000000000000016 .LASF217
+     /tmp/ccqGheCV.s:2816   .debug_str:0000000000000a92 .LASF218
+     /tmp/ccqGheCV.s:2572   .debug_str:00000000000002ba .LASF219
+     /tmp/ccqGheCV.s:2988   .debug_str:0000000000001143 .LASF220
+     /tmp/ccqGheCV.s:2914   .debug_str:0000000000000e3a .LASF221
+     /tmp/ccqGheCV.s:2936   .debug_str:0000000000000ed4 .LASF222
+     /tmp/ccqGheCV.s:2808   .debug_str:0000000000000a5a .LASF223
+     /tmp/ccqGheCV.s:2668   .debug_str:00000000000005ad .LASF224
+     /tmp/ccqGheCV.s:2654   .debug_str:000000000000054c .LASF225
+     /tmp/ccqGheCV.s:2958   .debug_str:0000000000001056 .LASF226
+     /tmp/ccqGheCV.s:2568   .debug_str:0000000000000294 .LASF227
+     /tmp/ccqGheCV.s:2574   .debug_str:00000000000002cb .LASF228
+     /tmp/ccqGheCV.s:2646   .debug_str:000000000000051b .LASF229
+     /tmp/ccqGheCV.s:2710   .debug_str:000000000000074c .LASF230
+     /tmp/ccqGheCV.s:2792   .debug_str:00000000000009e2 .LASF231
+     /tmp/ccqGheCV.s:3006   .debug_str:00000000000011af .LASF232
+     /tmp/ccqGheCV.s:2590   .debug_str:0000000000000353 .LASF233
+     /tmp/ccqGheCV.s:2746   .debug_str:0000000000000855 .LASF234
+     /tmp/ccqGheCV.s:2660   .debug_str:0000000000000579 .LASF235
+     /tmp/ccqGheCV.s:2520   .debug_str:00000000000000d6 .LASF236
+     /tmp/ccqGheCV.s:2608   .debug_str:00000000000003e2 .LASF237
+     /tmp/ccqGheCV.s:2738   .debug_str:000000000000082e .LASF238
+     /tmp/ccqGheCV.s:2890   .debug_str:0000000000000d4d .LASF239
+     /tmp/ccqGheCV.s:2860   .debug_str:0000000000000bfa .LASF240
+     /tmp/ccqGheCV.s:2778   .debug_str:000000000000095a .LASF241
+     /tmp/ccqGheCV.s:2662   .debug_str:0000000000000585 .LASF242
+     /tmp/ccqGheCV.s:2934   .debug_str:0000000000000ecd .LASF243
+     /tmp/ccqGheCV.s:2672   .debug_str:00000000000005d5 .LASF244
+     /tmp/ccqGheCV.s:2748   .debug_str:0000000000000860 .LASF245
+     /tmp/ccqGheCV.s:2838   .debug_str:0000000000000b43 .LASF246
+     /tmp/ccqGheCV.s:3008   .debug_str:00000000000011b8 .LASF249
+     /tmp/ccqGheCV.s:2750   .debug_str:000000000000086d .LASF258
+     /tmp/ccqGheCV.s:2810   .debug_str:0000000000000a67 .LASF247
+     /tmp/ccqGheCV.s:2612   .debug_str:00000000000003f4 .LASF248
+     /tmp/ccqGheCV.s:2832   .debug_str:0000000000000b13 .LASF250
+     /tmp/ccqGheCV.s:14     .text.Camera_Busy_State:0000000000000000 .LFB0
+     /tmp/ccqGheCV.s:112    .text.Camera_Busy_State:00000000000000b8 .LFE0
+     /tmp/ccqGheCV.s:2377   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccqGheCV.s:2413   .debug_loc:0000000000000053 .LLST1
+     /tmp/ccqGheCV.s:65     .text.Camera_Busy_State:0000000000000054 .LBB4
+     /tmp/ccqGheCV.s:106    .text.Camera_Busy_State:00000000000000ac .LBE4
+     /tmp/ccqGheCV.s:2449   .debug_loc:00000000000000a6 .LLST2
+     /tmp/ccqGheCV.s:2463   .debug_loc:00000000000000c7 .LLST3
+     /tmp/ccqGheCV.s:66     .text.Camera_Busy_State:0000000000000054 .LBB5
+     /tmp/ccqGheCV.s:105    .text.Camera_Busy_State:00000000000000ac .LBE5
+     /tmp/ccqGheCV.s:80     .text.Camera_Busy_State:0000000000000074 .LVL6
+     /tmp/ccqGheCV.s:86     .text.Camera_Busy_State:000000000000008c .LVL7
+     /tmp/ccqGheCV.s:99     .text.Camera_Busy_State:00000000000000a8 .LVL8
+     /tmp/ccqGheCV.s:109    .text.Camera_Busy_State:00000000000000b4 .LVL10
+     /tmp/ccqGheCV.s:2784   .debug_str:000000000000098b .LASF251
+     /tmp/ccqGheCV.s:2598   .debug_str:0000000000000393 .LASF252
+     /tmp/ccqGheCV.s:2622   .debug_str:0000000000000443 .LASF253
+     /tmp/ccqGheCV.s:18     .text.Camera_Busy_State:0000000000000000 .LVL0
+     /tmp/ccqGheCV.s:40     .text.Camera_Busy_State:000000000000002c .LVL1
+     /tmp/ccqGheCV.s:62     .text.Camera_Busy_State:0000000000000054 .LVL3
+     /tmp/ccqGheCV.s:78     .text.Camera_Busy_State:000000000000006c .LVL5
+     /tmp/ccqGheCV.s:103    .text.Camera_Busy_State:00000000000000ac .LVL9
+     /tmp/ccqGheCV.s:45     .text.Camera_Busy_State:0000000000000038 .LVL2
+     /tmp/ccqGheCV.s:76     .text.Camera_Busy_State:0000000000000068 .LVL4
+     /tmp/ccqGheCV.s:147    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+Camera_Armed_State
+Read_Register
+v_Start_Camera_Timer
+v_Stop_Camera_Timer

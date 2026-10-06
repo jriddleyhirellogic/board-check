@@ -1,0 +1,121 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+debug\+\_\+switches.h File Reference}
+\hypertarget{debug__switches_8h}{}\label{debug__switches_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/debug\_switches.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/debug\_switches.h}}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=245pt]{debug__switches_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_aa5005304191d28a1fa297d061b6fb34b}{SW7}}~(1 $<$$<$ 0)
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_a4003a3bf724cb40a91b025fb0818e04b}{SW8}}~(1 $<$$<$ 1)
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_a1337ec99d8cbd42d057af1fd77af0c06}{SW9}}~(1 $<$$<$ 2)
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_af36590d152544624efd3980ce6d21f51}{SW10}}~(1 $<$$<$ 3)
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_a297d518a6a7dc7b8fe3e93a5b9ff3636}{ALL\+\_\+\+SWITCHES}}~(\doxymbox{\hyperlink{debug__switches_8h_aa5005304191d28a1fa297d061b6fb34b}{SW7}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_a4003a3bf724cb40a91b025fb0818e04b}{SW8}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_a1337ec99d8cbd42d057af1fd77af0c06}{SW9}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_af36590d152544624efd3980ce6d21f51}{SW10}} )
+\item 
+\+\#define \doxymbox{\hyperlink{debug__switches_8h_a23028860df09845c2b3b1c9d1f5fbd25}{DEBOUNCE\+\_\+\+THRESHOLD\+\_\+\+COUNT}}~25
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{debug__switches_8h_a9e94ed5312f85c40554974454b241ff1}{v\+\_\+\+Init\+\_\+\+Debug\+\_\+\+Switches}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{debug__switches_8h_a0fb8d14aec598b3009c4a4d563f25449}{u8\+\_\+\+Get\+\_\+\+Switch\+\_\+\+State}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{debug__switches_8h_a473840d26579a843adcde167971bbd9e}{u8\+\_\+\+Update\+\_\+\+Switch\+\_\+\+Debounce}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Counter, uint8\+\_\+t u8\+\_\+\+Switch\+\_\+\+Mask)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{debug__switches_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{debug__switches_8h_a297d518a6a7dc7b8fe3e93a5b9ff3636}\index{debug\_switches.h@{debug\_switches.h}!ALL\_SWITCHES@{ALL\_SWITCHES}}
+\index{ALL\_SWITCHES@{ALL\_SWITCHES}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{ALL\_SWITCHES}{ALL\_SWITCHES}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a297d518a6a7dc7b8fe3e93a5b9ff3636} 
+\+\#define ALL\+\_\+\+SWITCHES~(\doxymbox{\hyperlink{debug__switches_8h_aa5005304191d28a1fa297d061b6fb34b}{SW7}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_a4003a3bf724cb40a91b025fb0818e04b}{SW8}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_a1337ec99d8cbd42d057af1fd77af0c06}{SW9}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{debug__switches_8h_af36590d152544624efd3980ce6d21f51}{SW10}} )}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00016}{16}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+\Hypertarget{debug__switches_8h_a23028860df09845c2b3b1c9d1f5fbd25}\index{debug\_switches.h@{debug\_switches.h}!DEBOUNCE\_THRESHOLD\_COUNT@{DEBOUNCE\_THRESHOLD\_COUNT}}
+\index{DEBOUNCE\_THRESHOLD\_COUNT@{DEBOUNCE\_THRESHOLD\_COUNT}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{DEBOUNCE\_THRESHOLD\_COUNT}{DEBOUNCE\_THRESHOLD\_COUNT}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a23028860df09845c2b3b1c9d1f5fbd25} 
+\+\#define DEBOUNCE\+\_\+\+THRESHOLD\+\_\+\+COUNT~25}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00018}{18}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+\Hypertarget{debug__switches_8h_af36590d152544624efd3980ce6d21f51}\index{debug\_switches.h@{debug\_switches.h}!SW10@{SW10}}
+\index{SW10@{SW10}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{SW10}{SW10}}
+{\footnotesize\ttfamily \label{debug__switches_8h_af36590d152544624efd3980ce6d21f51} 
+\+\#define SW10~(1 $<$$<$ 3)}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00014}{14}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+\Hypertarget{debug__switches_8h_aa5005304191d28a1fa297d061b6fb34b}\index{debug\_switches.h@{debug\_switches.h}!SW7@{SW7}}
+\index{SW7@{SW7}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{SW7}{SW7}}
+{\footnotesize\ttfamily \label{debug__switches_8h_aa5005304191d28a1fa297d061b6fb34b} 
+\+\#define SW7~(1 $<$$<$ 0)}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00011}{11}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+\Hypertarget{debug__switches_8h_a4003a3bf724cb40a91b025fb0818e04b}\index{debug\_switches.h@{debug\_switches.h}!SW8@{SW8}}
+\index{SW8@{SW8}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{SW8}{SW8}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a4003a3bf724cb40a91b025fb0818e04b} 
+\+\#define SW8~(1 $<$$<$ 1)}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00012}{12}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+\Hypertarget{debug__switches_8h_a1337ec99d8cbd42d057af1fd77af0c06}\index{debug\_switches.h@{debug\_switches.h}!SW9@{SW9}}
+\index{SW9@{SW9}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{SW9}{SW9}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a1337ec99d8cbd42d057af1fd77af0c06} 
+\+\#define SW9~(1 $<$$<$ 2)}
+
+
+
+Definition at line \doxymbox{\hyperlink{debug__switches_8h_source_l00013}{13}} of file \doxymbox{\hyperlink{debug__switches_8h_source}{debug\+\_\+switches.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{debug__switches_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{debug__switches_8h_a0fb8d14aec598b3009c4a4d563f25449}\index{debug\_switches.h@{debug\_switches.h}!u8\_Get\_Switch\_State@{u8\_Get\_Switch\_State}}
+\index{u8\_Get\_Switch\_State@{u8\_Get\_Switch\_State}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Switch\_State()}{u8\_Get\_Switch\_State()}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a0fb8d14aec598b3009c4a4d563f25449} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Switch\+\_\+\+State (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{debug__switches_8h_a473840d26579a843adcde167971bbd9e}\index{debug\_switches.h@{debug\_switches.h}!u8\_Update\_Switch\_Debounce@{u8\_Update\_Switch\_Debounce}}
+\index{u8\_Update\_Switch\_Debounce@{u8\_Update\_Switch\_Debounce}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Update\_Switch\_Debounce()}{u8\_Update\_Switch\_Debounce()}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a473840d26579a843adcde167971bbd9e} 
+uint8\+\_\+t u8\+\_\+\+Update\+\_\+\+Switch\+\_\+\+Debounce (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Counter}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Switch\+\_\+\+Mask}{}\end{DoxyParamCaption})}
+
+\Hypertarget{debug__switches_8h_a9e94ed5312f85c40554974454b241ff1}\index{debug\_switches.h@{debug\_switches.h}!v\_Init\_Debug\_Switches@{v\_Init\_Debug\_Switches}}
+\index{v\_Init\_Debug\_Switches@{v\_Init\_Debug\_Switches}!debug\_switches.h@{debug\_switches.h}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Debug\_Switches()}{v\_Init\_Debug\_Switches()}}
+{\footnotesize\ttfamily \label{debug__switches_8h_a9e94ed5312f85c40554974454b241ff1} 
+void v\+\_\+\+Init\+\_\+\+Debug\+\_\+\+Switches (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+

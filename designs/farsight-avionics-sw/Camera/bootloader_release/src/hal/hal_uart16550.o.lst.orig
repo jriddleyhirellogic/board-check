@@ -1,0 +1,1248 @@
+   1              		.file	"hal_uart16550.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.u8_Get_UART_Rx_Data,"ax",@progbits
+  10              		.align	2
+  11              		.globl	u8_Get_UART_Rx_Data
+  13              	u8_Get_UART_Rx_Data:
+  14              	.LFB1:
+  15              		.file 1 "../src/hal/hal_uart16550.c"
+   1:../src/hal/hal_uart16550.c **** /**
+   2:../src/hal/hal_uart16550.c ****  * @file hal_uart16550.h
+   3:../src/hal/hal_uart16550.c ****  * @author  iboard
+   4:../src/hal/hal_uart16550.c ****  * @brief driver for microchip/actal 16550 type uart
+   5:../src/hal/hal_uart16550.c ****  *  Created on: Sep 26, 2025
+   6:../src/hal/hal_uart16550.c ****  */
+   7:../src/hal/hal_uart16550.c **** 
+   8:../src/hal/hal_uart16550.c **** #include "hal_uart16550.h"
+   9:../src/hal/hal_uart16550.c **** #include "hal.h"
+  10:../src/hal/hal_uart16550.c **** #include "hw_reg_access.h"
+  11:../src/hal/hal_uart16550.c **** 
+  12:../src/hal/hal_uart16550.c **** static void v_Set_UART_Divisor( UART_16550_Instance_t *this_instance, uint16_t u16_Divisor );
+  13:../src/hal/hal_uart16550.c **** static void v_Init_UART_Line(UART_16550_Instance_t *this_instance, uint8_t u8_Line_Params );
+  14:../src/hal/hal_uart16550.c **** static void v_Init_FIFOs(UART_16550_Instance_t *this_instance);
+  15:../src/hal/hal_uart16550.c **** static void v_Set_Modem_Ctrl( UART_16550_Instance_t *this_instance );
+  16:../src/hal/hal_uart16550.c **** 
+  17:../src/hal/hal_uart16550.c **** /**
+  18:../src/hal/hal_uart16550.c ****  * @fn void v_Init_UART(UART_16550_Instance_t*)
+  19:../src/hal/hal_uart16550.c ****  * @brief Initializes 16550 type uart
+  20:../src/hal/hal_uart16550.c ****  * Initialization includes baud rate, line mode and fifos
+  21:../src/hal/hal_uart16550.c ****  * @param this_instance Pointer to particular instance
+  22:../src/hal/hal_uart16550.c ****  */
+  23:../src/hal/hal_uart16550.c **** void v_Init_UART( UART_16550_Instance_t *this_instance )
+  24:../src/hal/hal_uart16550.c **** {
+  25:../src/hal/hal_uart16550.c ****     v_Disable_UART_IRQ( this_instance, UART_ALL_IRQ_ENABLES );
+  26:../src/hal/hal_uart16550.c ****     v_Set_UART_Divisor(this_instance, BAUDRATE_115200 );         //115200 baud with 50 MHz clock
+  27:../src/hal/hal_uart16550.c ****     v_Init_UART_Line(this_instance, UART16550_WLS_8_BITS );      // 8/N/1
+  28:../src/hal/hal_uart16550.c ****     v_Init_FIFOs( this_instance );                               // Enable and clear RX and TX FIFO
+  29:../src/hal/hal_uart16550.c **** }
+  30:../src/hal/hal_uart16550.c **** 
+  31:../src/hal/hal_uart16550.c **** /**
+  32:../src/hal/hal_uart16550.c ****  * @fn uint8_t u8_Get_UART_Rx_Data(UART_16550_Instance_t*)
+  33:../src/hal/hal_uart16550.c ****  * @brief Wrapper function to retrieve single byte from receive fifo
+  34:../src/hal/hal_uart16550.c ****  *
+  35:../src/hal/hal_uart16550.c ****  * @param this_instance uart instance
+  36:../src/hal/hal_uart16550.c ****  * @return
+  37:../src/hal/hal_uart16550.c ****  */
+  38:../src/hal/hal_uart16550.c **** uint8_t u8_Get_UART_Rx_Data( UART_16550_Instance_t *this_instance )
+  39:../src/hal/hal_uart16550.c **** {
+  16              		.loc 1 39 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  40:../src/hal/hal_uart16550.c ****     return HAL_get_8bit_reg( this_instance->u32_Base_Address, RX_DATA );
+  19              		.loc 1 40 5
+  20              		.loc 1 40 12 is_stmt 0
+  21 0000 03250500 		lw	a0,0(a0)
+  22              	.LVL1:
+  23 0004 17030000 		tail	HW_get_8bit_reg
+  23      67000300 
+  24              	.LVL2:
+  25              		.cfi_endproc
+  26              	.LFE1:
+  28              		.section	.text.b_Is_Tx_Hold_Reg_Empty,"ax",@progbits
+  29              		.align	2
+  30              		.globl	b_Is_Tx_Hold_Reg_Empty
+  32              	b_Is_Tx_Hold_Reg_Empty:
+  33              	.LFB3:
+  41:../src/hal/hal_uart16550.c **** }
+  42:../src/hal/hal_uart16550.c **** 
+  43:../src/hal/hal_uart16550.c **** /**
+  44:../src/hal/hal_uart16550.c ****  * @fn void v_Init_FIFOs(UART_16550_Instance_t*)
+  45:../src/hal/hal_uart16550.c ****  * @brief Reset and initialize transmit and receive fifos
+  46:../src/hal/hal_uart16550.c ****  *
+  47:../src/hal/hal_uart16550.c ****  * @param this_instance
+  48:../src/hal/hal_uart16550.c ****  */
+  49:../src/hal/hal_uart16550.c **** static void v_Init_FIFOs(UART_16550_Instance_t *this_instance)
+  50:../src/hal/hal_uart16550.c **** {
+  51:../src/hal/hal_uart16550.c ****     // Enables and clears RX and TX FIFOs
+  52:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, FIFO_CTRL, 7 );
+  53:../src/hal/hal_uart16550.c **** }
+  54:../src/hal/hal_uart16550.c **** 
+  55:../src/hal/hal_uart16550.c **** /**
+  56:../src/hal/hal_uart16550.c ****  * @fn uint8_t b_Is_Tx_Hold_Reg_Empty(UART_16550_Instance_t*)
+  57:../src/hal/hal_uart16550.c ****  * @brief Test if tx holding register is empty
+  58:../src/hal/hal_uart16550.c ****  *
+  59:../src/hal/hal_uart16550.c ****  * @param this_instance
+  60:../src/hal/hal_uart16550.c ****  * @return 1 if empty, 0 if contains data
+  61:../src/hal/hal_uart16550.c ****  */
+  62:../src/hal/hal_uart16550.c **** uint8_t b_Is_Tx_Hold_Reg_Empty( UART_16550_Instance_t *this_instance )
+  63:../src/hal/hal_uart16550.c **** {
+  34              		.loc 1 63 1 is_stmt 1
+  35              		.cfi_startproc
+  36              	.LVL3:
+  64:../src/hal/hal_uart16550.c ****     uint8_t u8_LSR = HAL_get_8bit_reg( this_instance->u32_Base_Address, LINE_STATUS );
+  37              		.loc 1 64 5
+  38              		.loc 1 64 22 is_stmt 0
+  39 0000 03250500 		lw	a0,0(a0)
+  40              	.LVL4:
+  63:../src/hal/hal_uart16550.c ****     uint8_t u8_LSR = HAL_get_8bit_reg( this_instance->u32_Base_Address, LINE_STATUS );
+  41              		.loc 1 63 1
+  42 0004 130101FF 		addi	sp,sp,-16
+  43              		.cfi_def_cfa_offset 16
+  44 0008 23261100 		sw	ra,12(sp)
+  45              		.cfi_offset 1, -4
+  46              		.loc 1 64 22
+  47 000c 13054501 		addi	a0,a0,20
+  48 0010 97000000 		call	HW_get_8bit_reg
+  48      E7800000 
+  49              	.LVL5:
+  65:../src/hal/hal_uart16550.c ****     return (u8_LSR & LINE_STATUS_THRE) != 0;
+  50              		.loc 1 65 5 is_stmt 1
+  66:../src/hal/hal_uart16550.c **** }
+  51              		.loc 1 66 1 is_stmt 0
+  52 0018 8320C100 		lw	ra,12(sp)
+  53              		.cfi_restore 1
+  65:../src/hal/hal_uart16550.c ****     return (u8_LSR & LINE_STATUS_THRE) != 0;
+  54              		.loc 1 65 40
+  55 001c 13555500 		srli	a0,a0,5
+  56              	.LVL6:
+  57              		.loc 1 66 1
+  58 0020 13751500 		andi	a0,a0,1
+  59 0024 13010101 		addi	sp,sp,16
+  60              		.cfi_def_cfa_offset 0
+  61 0028 67800000 		jr	ra
+  62              		.cfi_endproc
+  63              	.LFE3:
+  65              		.section	.text.v_Write_UART_Tx_Data,"ax",@progbits
+  66              		.align	2
+  67              		.globl	v_Write_UART_Tx_Data
+  69              	v_Write_UART_Tx_Data:
+  70              	.LFB4:
+  67:../src/hal/hal_uart16550.c **** 
+  68:../src/hal/hal_uart16550.c **** /**
+  69:../src/hal/hal_uart16550.c ****  * @fn void v_Write_UART_Tx_Data(UART_16550_Instance_t*, uint8_t)
+  70:../src/hal/hal_uart16550.c ****  * @brief Write single byte to tx fifo
+  71:../src/hal/hal_uart16550.c ****  * @param this_instance
+  72:../src/hal/hal_uart16550.c ****  * @param u8_Data Byte to write to fifo
+  73:../src/hal/hal_uart16550.c ****  */
+  74:../src/hal/hal_uart16550.c **** void v_Write_UART_Tx_Data(UART_16550_Instance_t *this_instance, uint8_t u8_Data )
+  75:../src/hal/hal_uart16550.c **** {
+  71              		.loc 1 75 1 is_stmt 1
+  72              		.cfi_startproc
+  73              	.LVL7:
+  76:../src/hal/hal_uart16550.c ****     //@todo Need to wait while TXHR is not empty
+  77:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, TX_HOLD, u8_Data );
+  74              		.loc 1 77 5
+  75 0000 03250500 		lw	a0,0(a0)
+  76              	.LVL8:
+  77 0004 17030000 		tail	HW_set_8bit_reg
+  77      67000300 
+  78              	.LVL9:
+  79              		.cfi_endproc
+  80              	.LFE4:
+  82              		.section	.text.u8_Get_Modem_Status,"ax",@progbits
+  83              		.align	2
+  84              		.globl	u8_Get_Modem_Status
+  86              	u8_Get_Modem_Status:
+  87              	.LFB5:
+  78:../src/hal/hal_uart16550.c **** }
+  79:../src/hal/hal_uart16550.c **** 
+  80:../src/hal/hal_uart16550.c **** uint8_t u8_Get_Modem_Status(UART_16550_Instance_t *this_instance)
+  81:../src/hal/hal_uart16550.c **** {
+  88              		.loc 1 81 1
+  89              		.cfi_startproc
+  90              	.LVL10:
+  82:../src/hal/hal_uart16550.c ****     return HAL_get_8bit_reg( this_instance->u32_Base_Address, MODEM_STATUS );
+  91              		.loc 1 82 5
+  92              		.loc 1 82 12 is_stmt 0
+  93 0000 03250500 		lw	a0,0(a0)
+  94              	.LVL11:
+  95 0004 13058501 		addi	a0,a0,24
+  96 0008 17030000 		tail	HW_get_8bit_reg
+  96      67000300 
+  97              	.LVL12:
+  98              		.cfi_endproc
+  99              	.LFE5:
+ 101              		.section	.text.u8_Get_Interrupt_Cause,"ax",@progbits
+ 102              		.align	2
+ 103              		.globl	u8_Get_Interrupt_Cause
+ 105              	u8_Get_Interrupt_Cause:
+ 106              	.LFB6:
+  83:../src/hal/hal_uart16550.c **** }
+  84:../src/hal/hal_uart16550.c **** 
+  85:../src/hal/hal_uart16550.c **** uint8_t u8_Get_Interrupt_Cause( UART_16550_Instance_t *this_instance )
+  86:../src/hal/hal_uart16550.c **** {
+ 107              		.loc 1 86 1 is_stmt 1
+ 108              		.cfi_startproc
+ 109              	.LVL13:
+  87:../src/hal/hal_uart16550.c ****     return HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ID );
+ 110              		.loc 1 87 5
+ 111              		.loc 1 87 12 is_stmt 0
+ 112 0000 03250500 		lw	a0,0(a0)
+ 113              	.LVL14:
+ 114 0004 13058500 		addi	a0,a0,8
+ 115 0008 17030000 		tail	HW_get_8bit_reg
+ 115      67000300 
+ 116              	.LVL15:
+ 117              		.cfi_endproc
+ 118              	.LFE6:
+ 120              		.section	.text.u8_Get_Line_Status,"ax",@progbits
+ 121              		.align	2
+ 122              		.globl	u8_Get_Line_Status
+ 124              	u8_Get_Line_Status:
+ 125              	.LFB8:
+  88:../src/hal/hal_uart16550.c **** }
+  89:../src/hal/hal_uart16550.c **** 
+  90:../src/hal/hal_uart16550.c **** 
+  91:../src/hal/hal_uart16550.c **** __attribute__((unused)) static void v_Set_Modem_Ctrl( UART_16550_Instance_t *this_instance )
+  92:../src/hal/hal_uart16550.c **** {
+  93:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, MODEM_CTRL, (1 << 1 ) | (1 << 0 ));
+  94:../src/hal/hal_uart16550.c **** }
+  95:../src/hal/hal_uart16550.c **** 
+  96:../src/hal/hal_uart16550.c **** uint8_t u8_Get_Line_Status(UART_16550_Instance_t *this_instance )
+  97:../src/hal/hal_uart16550.c **** {
+ 126              		.loc 1 97 1 is_stmt 1
+ 127              		.cfi_startproc
+ 128              	.LVL16:
+  98:../src/hal/hal_uart16550.c ****     return HAL_get_8bit_reg( this_instance->u32_Base_Address, LINE_STATUS );
+ 129              		.loc 1 98 5
+ 130              		.loc 1 98 12 is_stmt 0
+ 131 0000 03250500 		lw	a0,0(a0)
+ 132              	.LVL17:
+ 133 0004 13054501 		addi	a0,a0,20
+ 134 0008 17030000 		tail	HW_get_8bit_reg
+ 134      67000300 
+ 135              	.LVL18:
+ 136              		.cfi_endproc
+ 137              	.LFE8:
+ 139              		.section	.text.v_Enable_UART_IRQ,"ax",@progbits
+ 140              		.align	2
+ 141              		.globl	v_Enable_UART_IRQ
+ 143              	v_Enable_UART_IRQ:
+ 144              	.LFB9:
+  99:../src/hal/hal_uart16550.c **** }
+ 100:../src/hal/hal_uart16550.c **** 
+ 101:../src/hal/hal_uart16550.c **** /**
+ 102:../src/hal/hal_uart16550.c ****  * @fn void v_Enable_UART_IRQ(UART_16550_Instance_t*, uint8_t)
+ 103:../src/hal/hal_uart16550.c ****  * @brief Enables the interrupt at the uart
+ 104:../src/hal/hal_uart16550.c ****  * @param this_instance
+ 105:../src/hal/hal_uart16550.c ****  * @param u8_IRQ
+ 106:../src/hal/hal_uart16550.c ****  */
+ 107:../src/hal/hal_uart16550.c **** void v_Enable_UART_IRQ( UART_16550_Instance_t *this_instance, uint8_t u8_IRQ )
+ 108:../src/hal/hal_uart16550.c **** {
+ 145              		.loc 1 108 1 is_stmt 1
+ 146              		.cfi_startproc
+ 147              	.LVL19:
+ 109:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 148              		.loc 1 109 5
+ 108:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 149              		.loc 1 108 1 is_stmt 0
+ 150 0000 130101FE 		addi	sp,sp,-32
+ 151              		.cfi_def_cfa_offset 32
+ 152 0004 232C8100 		sw	s0,24(sp)
+ 153              		.cfi_offset 8, -8
+ 154 0008 13040500 		mv	s0,a0
+ 155              		.loc 1 109 23
+ 156 000c 03250500 		lw	a0,0(a0)
+ 157              	.LVL20:
+ 108:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 158              		.loc 1 108 1
+ 159 0010 232E1100 		sw	ra,28(sp)
+ 160              		.cfi_offset 1, -4
+ 108:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 161              		.loc 1 108 1
+ 162 0014 2326B100 		sw	a1,12(sp)
+ 163              		.loc 1 109 23
+ 164 0018 13054500 		addi	a0,a0,4
+ 165 001c 97000000 		call	HW_get_8bit_reg
+ 165      E7800000 
+ 166              	.LVL21:
+ 110:../src/hal/hal_uart16550.c ****     u8_Temp |= u8_IRQ & 0xf;
+ 167              		.loc 1 110 5 is_stmt 1
+ 168              		.loc 1 110 23 is_stmt 0
+ 169 0024 8325C100 		lw	a1,12(sp)
+ 111:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 112:../src/hal/hal_uart16550.c **** }
+ 170              		.loc 1 112 1
+ 171 0028 8320C101 		lw	ra,28(sp)
+ 172              		.cfi_restore 1
+ 110:../src/hal/hal_uart16550.c ****     u8_Temp |= u8_IRQ & 0xf;
+ 173              		.loc 1 110 23
+ 174 002c 93F5F500 		andi	a1,a1,15
+ 110:../src/hal/hal_uart16550.c ****     u8_Temp |= u8_IRQ & 0xf;
+ 175              		.loc 1 110 13
+ 176 0030 B3E5A500 		or	a1,a1,a0
+ 177              	.LVL22:
+ 111:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 178              		.loc 1 111 5 is_stmt 1
+ 179 0034 03250400 		lw	a0,0(s0)
+ 180              		.loc 1 112 1 is_stmt 0
+ 181 0038 03248101 		lw	s0,24(sp)
+ 182              		.cfi_restore 8
+ 183              	.LVL23:
+ 111:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 184              		.loc 1 111 5
+ 185 003c 93F5F50F 		andi	a1,a1,0xff
+ 186 0040 13054500 		addi	a0,a0,4
+ 187              		.loc 1 112 1
+ 188 0044 13010102 		addi	sp,sp,32
+ 189              		.cfi_def_cfa_offset 0
+ 111:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 190              		.loc 1 111 5
+ 191 0048 17030000 		tail	HW_set_8bit_reg
+ 191      67000300 
+ 192              	.LVL24:
+ 193              		.cfi_endproc
+ 194              	.LFE9:
+ 196              		.section	.text.v_Disable_UART_IRQ,"ax",@progbits
+ 197              		.align	2
+ 198              		.globl	v_Disable_UART_IRQ
+ 200              	v_Disable_UART_IRQ:
+ 201              	.LFB10:
+ 113:../src/hal/hal_uart16550.c **** 
+ 114:../src/hal/hal_uart16550.c **** /**
+ 115:../src/hal/hal_uart16550.c ****  * @fn void v_Disable_UART_IRQ(UART_16550_Instance_t*, uint8_t)
+ 116:../src/hal/hal_uart16550.c ****  * @brief Disables the interrupt at the uart
+ 117:../src/hal/hal_uart16550.c ****  * @param this_instance
+ 118:../src/hal/hal_uart16550.c ****  * @param u8_IRQ
+ 119:../src/hal/hal_uart16550.c ****  */
+ 120:../src/hal/hal_uart16550.c **** void v_Disable_UART_IRQ( UART_16550_Instance_t *this_instance, uint8_t u8_IRQ )
+ 121:../src/hal/hal_uart16550.c **** {
+ 202              		.loc 1 121 1 is_stmt 1
+ 203              		.cfi_startproc
+ 204              	.LVL25:
+ 122:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 205              		.loc 1 122 5
+ 121:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 206              		.loc 1 121 1 is_stmt 0
+ 207 0000 130101FE 		addi	sp,sp,-32
+ 208              		.cfi_def_cfa_offset 32
+ 209 0004 232C8100 		sw	s0,24(sp)
+ 210              		.cfi_offset 8, -8
+ 211 0008 13040500 		mv	s0,a0
+ 212              		.loc 1 122 23
+ 213 000c 03250500 		lw	a0,0(a0)
+ 214              	.LVL26:
+ 121:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 215              		.loc 1 121 1
+ 216 0010 232E1100 		sw	ra,28(sp)
+ 217              		.cfi_offset 1, -4
+ 121:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, IRQ_ENABLE );
+ 218              		.loc 1 121 1
+ 219 0014 2326B100 		sw	a1,12(sp)
+ 220              		.loc 1 122 23
+ 221 0018 13054500 		addi	a0,a0,4
+ 222 001c 97000000 		call	HW_get_8bit_reg
+ 222      E7800000 
+ 223              	.LVL27:
+ 123:../src/hal/hal_uart16550.c ****     u8_Temp &= (~u8_IRQ) & 0xf;
+ 224              		.loc 1 123 5 is_stmt 1
+ 225              		.loc 1 123 13 is_stmt 0
+ 226 0024 8325C100 		lw	a1,12(sp)
+ 124:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 125:../src/hal/hal_uart16550.c **** }
+ 227              		.loc 1 125 1
+ 228 0028 8320C101 		lw	ra,28(sp)
+ 229              		.cfi_restore 1
+ 123:../src/hal/hal_uart16550.c ****     u8_Temp &= (~u8_IRQ) & 0xf;
+ 230              		.loc 1 123 13
+ 231 002c 93C5F5FF 		not	a1,a1
+ 232 0030 B375B500 		and	a1,a0,a1
+ 233              	.LVL28:
+ 124:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 234              		.loc 1 124 5 is_stmt 1
+ 235 0034 03250400 		lw	a0,0(s0)
+ 236              		.loc 1 125 1 is_stmt 0
+ 237 0038 03248101 		lw	s0,24(sp)
+ 238              		.cfi_restore 8
+ 239              	.LVL29:
+ 124:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 240              		.loc 1 124 5
+ 241 003c 93F5F500 		andi	a1,a1,15
+ 242              	.LVL30:
+ 243 0040 13054500 		addi	a0,a0,4
+ 244              		.loc 1 125 1
+ 245 0044 13010102 		addi	sp,sp,32
+ 246              		.cfi_def_cfa_offset 0
+ 124:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, IRQ_ENABLE, u8_Temp );
+ 247              		.loc 1 124 5
+ 248 0048 17030000 		tail	HW_set_8bit_reg
+ 248      67000300 
+ 249              	.LVL31:
+ 250              		.cfi_endproc
+ 251              	.LFE10:
+ 253              		.section	.text.v_Init_UART,"ax",@progbits
+ 254              		.align	2
+ 255              		.globl	v_Init_UART
+ 257              	v_Init_UART:
+ 258              	.LFB0:
+  24:../src/hal/hal_uart16550.c ****     v_Disable_UART_IRQ( this_instance, UART_ALL_IRQ_ENABLES );
+ 259              		.loc 1 24 1 is_stmt 1
+ 260              		.cfi_startproc
+ 261              	.LVL32:
+  25:../src/hal/hal_uart16550.c ****     v_Set_UART_Divisor(this_instance, BAUDRATE_115200 );         //115200 baud with 50 MHz clock
+ 262              		.loc 1 25 5
+  24:../src/hal/hal_uart16550.c ****     v_Disable_UART_IRQ( this_instance, UART_ALL_IRQ_ENABLES );
+ 263              		.loc 1 24 1 is_stmt 0
+ 264 0000 130101FF 		addi	sp,sp,-16
+ 265              		.cfi_def_cfa_offset 16
+  25:../src/hal/hal_uart16550.c ****     v_Set_UART_Divisor(this_instance, BAUDRATE_115200 );         //115200 baud with 50 MHz clock
+ 266              		.loc 1 25 5
+ 267 0004 9305F000 		li	a1,15
+  24:../src/hal/hal_uart16550.c ****     v_Disable_UART_IRQ( this_instance, UART_ALL_IRQ_ENABLES );
+ 268              		.loc 1 24 1
+ 269 0008 23261100 		sw	ra,12(sp)
+ 270 000c 23248100 		sw	s0,8(sp)
+ 271 0010 23229100 		sw	s1,4(sp)
+ 272              		.cfi_offset 1, -4
+ 273              		.cfi_offset 8, -8
+ 274              		.cfi_offset 9, -12
+  24:../src/hal/hal_uart16550.c ****     v_Disable_UART_IRQ( this_instance, UART_ALL_IRQ_ENABLES );
+ 275              		.loc 1 24 1
+ 276 0014 13040500 		mv	s0,a0
+  25:../src/hal/hal_uart16550.c ****     v_Set_UART_Divisor(this_instance, BAUDRATE_115200 );         //115200 baud with 50 MHz clock
+ 277              		.loc 1 25 5
+ 278 0018 97000000 		call	v_Disable_UART_IRQ
+ 278      E7800000 
+ 279              	.LVL33:
+  26:../src/hal/hal_uart16550.c ****     v_Init_UART_Line(this_instance, UART16550_WLS_8_BITS );      // 8/N/1
+ 280              		.loc 1 26 5 is_stmt 1
+ 281              	.LBB8:
+ 282              	.LBB9:
+ 126:../src/hal/hal_uart16550.c **** 
+ 127:../src/hal/hal_uart16550.c **** static void v_Init_UART_Line(UART_16550_Instance_t *this_instance, uint8_t u8_Line_Init )
+ 128:../src/hal/hal_uart16550.c **** {
+ 129:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, LINE_CTRL, u8_Line_Init);
+ 130:../src/hal/hal_uart16550.c **** }
+ 131:../src/hal/hal_uart16550.c **** 
+ 132:../src/hal/hal_uart16550.c **** /**
+ 133:../src/hal/hal_uart16550.c ****  * @fn void v_Set_UART_Divisor(UART_16550_Instance_t*, uint16_t)
+ 134:../src/hal/hal_uart16550.c ****  * @brief Sets the the baud rate
+ 135:../src/hal/hal_uart16550.c ****  *     Baud rate = PCLK/(16 * divisor)
+ 136:../src/hal/hal_uart16550.c ****  *     Example - for 115200, PCLK = 50 MHz Divisor = 27 Error is 0.4%
+ 137:../src/hal/hal_uart16550.c ****  * @param this_instance
+ 138:../src/hal/hal_uart16550.c ****  * @param u16_Divisor
+ 139:../src/hal/hal_uart16550.c ****  */
+ 140:../src/hal/hal_uart16550.c **** static void v_Set_UART_Divisor( UART_16550_Instance_t *this_instance, uint16_t u16_Divisor )
+ 141:../src/hal/hal_uart16550.c **** {
+ 142:../src/hal/hal_uart16550.c ****     uint8_t u8_Temp;
+ 283              		.loc 1 142 5
+ 143:../src/hal/hal_uart16550.c ****     uint8_t u8_Readback;
+ 284              		.loc 1 143 5
+ 144:../src/hal/hal_uart16550.c **** 
+ 145:../src/hal/hal_uart16550.c ****     // @todo enter critical section
+ 146:../src/hal/hal_uart16550.c ****     // Set Data latch access bit
+ 147:../src/hal/hal_uart16550.c ****     u8_Temp = HAL_get_8bit_reg( this_instance->u32_Base_Address, LINE_CTRL );
+ 285              		.loc 1 147 5
+ 286              		.loc 1 147 15 is_stmt 0
+ 287 0020 03250400 		lw	a0,0(s0)
+ 288 0024 1305C500 		addi	a0,a0,12
+ 289 0028 97000000 		call	HW_get_8bit_reg
+ 289      E7800000 
+ 290              	.LVL34:
+ 291 0030 93040500 		mv	s1,a0
+ 292              	.LVL35:
+ 148:../src/hal/hal_uart16550.c ****     u8_Temp |= UART16550_DLAB;
+ 293              		.loc 1 148 5 is_stmt 1
+ 149:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, LINE_CTRL, u8_Temp);
+ 294              		.loc 1 149 5
+ 148:../src/hal/hal_uart16550.c ****     u8_Temp |= UART16550_DLAB;
+ 295              		.loc 1 148 13 is_stmt 0
+ 296 0034 936505F8 		ori	a1,a0,-128
+ 297              		.loc 1 149 5
+ 298 0038 03250400 		lw	a0,0(s0)
+ 299              	.LVL36:
+ 300 003c 93F5F50F 		andi	a1,a1,0xff
+ 301 0040 1305C500 		addi	a0,a0,12
+ 302 0044 97000000 		call	HW_set_8bit_reg
+ 302      E7800000 
+ 303              	.LVL37:
+ 150:../src/hal/hal_uart16550.c **** 
+ 151:../src/hal/hal_uart16550.c ****     // Set MSB
+ 152:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, DIVISOR_LATCH_MSB, u16_Divisor >> 8);
+ 304              		.loc 1 152 5 is_stmt 1
+ 305 004c 03250400 		lw	a0,0(s0)
+ 306 0050 93050000 		li	a1,0
+ 307 0054 13054500 		addi	a0,a0,4
+ 308 0058 97000000 		call	HW_set_8bit_reg
+ 308      E7800000 
+ 309              	.LVL38:
+ 153:../src/hal/hal_uart16550.c ****     u8_Readback = HAL_get_8bit_reg( this_instance->u32_Base_Address, DIVISOR_LATCH_MSB );
+ 310              		.loc 1 153 5
+ 311              		.loc 1 153 19 is_stmt 0
+ 312 0060 03250400 		lw	a0,0(s0)
+ 313 0064 13054500 		addi	a0,a0,4
+ 314 0068 97000000 		call	HW_get_8bit_reg
+ 314      E7800000 
+ 315              	.LVL39:
+ 154:../src/hal/hal_uart16550.c **** 
+ 155:../src/hal/hal_uart16550.c ****     // Set LSB
+ 156:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, DIVISOR_LATCH_LSB, u16_Divisor & 0xFF);
+ 316              		.loc 1 156 5 is_stmt 1
+ 317 0070 03250400 		lw	a0,0(s0)
+ 318 0074 9305B001 		li	a1,27
+ 319 0078 97000000 		call	HW_set_8bit_reg
+ 319      E7800000 
+ 320              	.LVL40:
+ 157:../src/hal/hal_uart16550.c ****     u8_Readback = HAL_get_8bit_reg( this_instance->u32_Base_Address, DIVISOR_LATCH_LSB );
+ 321              		.loc 1 157 5
+ 322              		.loc 1 157 19 is_stmt 0
+ 323 0080 03250400 		lw	a0,0(s0)
+ 324 0084 97000000 		call	HW_get_8bit_reg
+ 324      E7800000 
+ 325              	.LVL41:
+ 158:../src/hal/hal_uart16550.c **** 
+ 159:../src/hal/hal_uart16550.c ****     // Clear Data latch access bit
+ 160:../src/hal/hal_uart16550.c ****     u8_Temp &= ~UART16550_DLAB;
+ 326              		.loc 1 160 5 is_stmt 1
+ 161:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, LINE_CTRL, u8_Temp );
+ 327              		.loc 1 161 5
+ 328 008c 03250400 		lw	a0,0(s0)
+ 329 0090 93F5F407 		andi	a1,s1,127
+ 330 0094 1305C500 		addi	a0,a0,12
+ 331 0098 97000000 		call	HW_set_8bit_reg
+ 331      E7800000 
+ 332              	.LVL42:
+ 333              	.LBE9:
+ 334              	.LBE8:
+  27:../src/hal/hal_uart16550.c ****     v_Init_FIFOs( this_instance );                               // Enable and clear RX and TX FIFO
+ 335              		.loc 1 27 5
+ 336              	.LBB10:
+ 337              	.LBB11:
+ 129:../src/hal/hal_uart16550.c **** }
+ 338              		.loc 1 129 5
+ 339 00a0 03250400 		lw	a0,0(s0)
+ 340 00a4 93053000 		li	a1,3
+ 341 00a8 1305C500 		addi	a0,a0,12
+ 342 00ac 97000000 		call	HW_set_8bit_reg
+ 342      E7800000 
+ 343              	.LVL43:
+ 344              	.LBE11:
+ 345              	.LBE10:
+  28:../src/hal/hal_uart16550.c **** }
+ 346              		.loc 1 28 5
+ 347              	.LBB12:
+ 348              	.LBB13:
+  52:../src/hal/hal_uart16550.c **** }
+ 349              		.loc 1 52 5
+ 350 00b4 03250400 		lw	a0,0(s0)
+ 351              	.LBE13:
+ 352              	.LBE12:
+  29:../src/hal/hal_uart16550.c **** 
+ 353              		.loc 1 29 1 is_stmt 0
+ 354 00b8 03248100 		lw	s0,8(sp)
+ 355              		.cfi_restore 8
+ 356              	.LVL44:
+ 357 00bc 8320C100 		lw	ra,12(sp)
+ 358              		.cfi_restore 1
+ 359 00c0 83244100 		lw	s1,4(sp)
+ 360              		.cfi_restore 9
+ 361              	.LBB17:
+ 362              	.LBB14:
+  52:../src/hal/hal_uart16550.c **** }
+ 363              		.loc 1 52 5
+ 364 00c4 93057000 		li	a1,7
+ 365              	.LBE14:
+ 366              	.LBE17:
+  29:../src/hal/hal_uart16550.c **** 
+ 367              		.loc 1 29 1
+ 368              	.LBB18:
+ 369              	.LBB15:
+  52:../src/hal/hal_uart16550.c **** }
+ 370              		.loc 1 52 5
+ 371 00c8 13058500 		addi	a0,a0,8
+ 372              	.LBE15:
+ 373              	.LBE18:
+  29:../src/hal/hal_uart16550.c **** 
+ 374              		.loc 1 29 1
+ 375 00cc 13010101 		addi	sp,sp,16
+ 376              		.cfi_def_cfa_offset 0
+ 377              	.LBB19:
+ 378              	.LBB16:
+  52:../src/hal/hal_uart16550.c **** }
+ 379              		.loc 1 52 5
+ 380 00d0 17030000 		tail	HW_set_8bit_reg
+ 380      67000300 
+ 381              	.LVL45:
+ 382              	.LBE16:
+ 383              	.LBE19:
+ 384              		.cfi_endproc
+ 385              	.LFE0:
+ 387              		.section	.text.v_Set_UART_Scratch,"ax",@progbits
+ 388              		.align	2
+ 389              		.globl	v_Set_UART_Scratch
+ 391              	v_Set_UART_Scratch:
+ 392              	.LFB13:
+ 162:../src/hal/hal_uart16550.c **** 
+ 163:../src/hal/hal_uart16550.c ****     // @todo exit critical section
+ 164:../src/hal/hal_uart16550.c **** }
+ 165:../src/hal/hal_uart16550.c **** 
+ 166:../src/hal/hal_uart16550.c **** void v_Set_UART_Scratch( UART_16550_Instance_t *this_instance, uint8_t u8_Value )
+ 167:../src/hal/hal_uart16550.c **** {
+ 393              		.loc 1 167 1 is_stmt 1
+ 394              		.cfi_startproc
+ 395              	.LVL46:
+ 168:../src/hal/hal_uart16550.c ****     HAL_set_8bit_reg(this_instance->u32_Base_Address, SCRATCH, u8_Value );
+ 396              		.loc 1 168 5
+ 397 0000 03250500 		lw	a0,0(a0)
+ 398              	.LVL47:
+ 399 0004 1305C501 		addi	a0,a0,28
+ 400 0008 17030000 		tail	HW_set_8bit_reg
+ 400      67000300 
+ 401              	.LVL48:
+ 402              		.cfi_endproc
+ 403              	.LFE13:
+ 405              		.text
+ 406              	.Letext0:
+ 407              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 408              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 409              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/hal_uart16550.h"
+ 410              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/hw_reg_access.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hal_uart16550.c
+<<<<<<< HEAD
+     /tmp/ccoob1xW.s:13     .text.u8_Get_UART_Rx_Data:0000000000000000 u8_Get_UART_Rx_Data
+     /tmp/ccoob1xW.s:17     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:19     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:20     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:21     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:25     .text.u8_Get_UART_Rx_Data:000000000000000c .L0 
+     /tmp/ccoob1xW.s:32     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 b_Is_Tx_Hold_Reg_Empty
+     /tmp/ccoob1xW.s:35     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:37     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:38     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:39     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:42     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000004 .L0 
+     /tmp/ccoob1xW.s:43     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000008 .L0 
+     /tmp/ccoob1xW.s:45     .text.b_Is_Tx_Hold_Reg_Empty:000000000000000c .L0 
+     /tmp/ccoob1xW.s:47     .text.b_Is_Tx_Hold_Reg_Empty:000000000000000c .L0 
+     /tmp/ccoob1xW.s:51     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .L0 
+     /tmp/ccoob1xW.s:52     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .L0 
+     /tmp/ccoob1xW.s:53     .text.b_Is_Tx_Hold_Reg_Empty:000000000000001c .L0 
+     /tmp/ccoob1xW.s:55     .text.b_Is_Tx_Hold_Reg_Empty:000000000000001c .L0 
+     /tmp/ccoob1xW.s:58     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:60     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000028 .L0 
+     /tmp/ccoob1xW.s:62     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .L0 
+     /tmp/ccoob1xW.s:69     .text.v_Write_UART_Tx_Data:0000000000000000 v_Write_UART_Tx_Data
+     /tmp/ccoob1xW.s:72     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:74     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:75     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:79     .text.v_Write_UART_Tx_Data:000000000000000c .L0 
+     /tmp/ccoob1xW.s:86     .text.u8_Get_Modem_Status:0000000000000000 u8_Get_Modem_Status
+     /tmp/ccoob1xW.s:89     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:91     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:92     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:93     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:98     .text.u8_Get_Modem_Status:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:105    .text.u8_Get_Interrupt_Cause:0000000000000000 u8_Get_Interrupt_Cause
+     /tmp/ccoob1xW.s:108    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:110    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:111    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:112    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:117    .text.u8_Get_Interrupt_Cause:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:124    .text.u8_Get_Line_Status:0000000000000000 u8_Get_Line_Status
+     /tmp/ccoob1xW.s:127    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:129    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:130    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:131    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:136    .text.u8_Get_Line_Status:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:143    .text.v_Enable_UART_IRQ:0000000000000000 v_Enable_UART_IRQ
+     /tmp/ccoob1xW.s:146    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:148    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:149    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:150    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:151    .text.v_Enable_UART_IRQ:0000000000000004 .L0 
+     /tmp/ccoob1xW.s:153    .text.v_Enable_UART_IRQ:0000000000000008 .L0 
+     /tmp/ccoob1xW.s:156    .text.v_Enable_UART_IRQ:000000000000000c .L0 
+     /tmp/ccoob1xW.s:159    .text.v_Enable_UART_IRQ:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:160    .text.v_Enable_UART_IRQ:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:162    .text.v_Enable_UART_IRQ:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:164    .text.v_Enable_UART_IRQ:0000000000000018 .L0 
+     /tmp/ccoob1xW.s:168    .text.v_Enable_UART_IRQ:0000000000000024 .L0 
+     /tmp/ccoob1xW.s:169    .text.v_Enable_UART_IRQ:0000000000000024 .L0 
+     /tmp/ccoob1xW.s:171    .text.v_Enable_UART_IRQ:0000000000000028 .L0 
+     /tmp/ccoob1xW.s:172    .text.v_Enable_UART_IRQ:000000000000002c .L0 
+     /tmp/ccoob1xW.s:174    .text.v_Enable_UART_IRQ:000000000000002c .L0 
+     /tmp/ccoob1xW.s:176    .text.v_Enable_UART_IRQ:0000000000000030 .L0 
+     /tmp/ccoob1xW.s:179    .text.v_Enable_UART_IRQ:0000000000000034 .L0 
+     /tmp/ccoob1xW.s:181    .text.v_Enable_UART_IRQ:0000000000000038 .L0 
+     /tmp/ccoob1xW.s:182    .text.v_Enable_UART_IRQ:000000000000003c .L0 
+     /tmp/ccoob1xW.s:185    .text.v_Enable_UART_IRQ:000000000000003c .L0 
+     /tmp/ccoob1xW.s:188    .text.v_Enable_UART_IRQ:0000000000000044 .L0 
+     /tmp/ccoob1xW.s:189    .text.v_Enable_UART_IRQ:0000000000000048 .L0 
+     /tmp/ccoob1xW.s:191    .text.v_Enable_UART_IRQ:0000000000000048 .L0 
+     /tmp/ccoob1xW.s:193    .text.v_Enable_UART_IRQ:0000000000000050 .L0 
+     /tmp/ccoob1xW.s:200    .text.v_Disable_UART_IRQ:0000000000000000 v_Disable_UART_IRQ
+     /tmp/ccoob1xW.s:203    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:205    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:206    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:207    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:208    .text.v_Disable_UART_IRQ:0000000000000004 .L0 
+     /tmp/ccoob1xW.s:210    .text.v_Disable_UART_IRQ:0000000000000008 .L0 
+     /tmp/ccoob1xW.s:213    .text.v_Disable_UART_IRQ:000000000000000c .L0 
+     /tmp/ccoob1xW.s:216    .text.v_Disable_UART_IRQ:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:217    .text.v_Disable_UART_IRQ:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:219    .text.v_Disable_UART_IRQ:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:221    .text.v_Disable_UART_IRQ:0000000000000018 .L0 
+     /tmp/ccoob1xW.s:225    .text.v_Disable_UART_IRQ:0000000000000024 .L0 
+     /tmp/ccoob1xW.s:226    .text.v_Disable_UART_IRQ:0000000000000024 .L0 
+     /tmp/ccoob1xW.s:228    .text.v_Disable_UART_IRQ:0000000000000028 .L0 
+     /tmp/ccoob1xW.s:229    .text.v_Disable_UART_IRQ:000000000000002c .L0 
+     /tmp/ccoob1xW.s:231    .text.v_Disable_UART_IRQ:000000000000002c .L0 
+     /tmp/ccoob1xW.s:235    .text.v_Disable_UART_IRQ:0000000000000034 .L0 
+     /tmp/ccoob1xW.s:237    .text.v_Disable_UART_IRQ:0000000000000038 .L0 
+     /tmp/ccoob1xW.s:238    .text.v_Disable_UART_IRQ:000000000000003c .L0 
+     /tmp/ccoob1xW.s:241    .text.v_Disable_UART_IRQ:000000000000003c .L0 
+     /tmp/ccoob1xW.s:245    .text.v_Disable_UART_IRQ:0000000000000044 .L0 
+     /tmp/ccoob1xW.s:246    .text.v_Disable_UART_IRQ:0000000000000048 .L0 
+     /tmp/ccoob1xW.s:248    .text.v_Disable_UART_IRQ:0000000000000048 .L0 
+     /tmp/ccoob1xW.s:250    .text.v_Disable_UART_IRQ:0000000000000050 .L0 
+     /tmp/ccoob1xW.s:257    .text.v_Init_UART:0000000000000000 v_Init_UART
+     /tmp/ccoob1xW.s:260    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:262    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:263    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:264    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:265    .text.v_Init_UART:0000000000000004 .L0 
+     /tmp/ccoob1xW.s:267    .text.v_Init_UART:0000000000000004 .L0 
+     /tmp/ccoob1xW.s:269    .text.v_Init_UART:0000000000000008 .L0 
+     /tmp/ccoob1xW.s:272    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:273    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:274    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:276    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/ccoob1xW.s:278    .text.v_Init_UART:0000000000000018 .L0 
+     /tmp/ccoob1xW.s:283    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:284    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:285    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:286    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:287    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/ccoob1xW.s:294    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/ccoob1xW.s:295    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/ccoob1xW.s:296    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/ccoob1xW.s:298    .text.v_Init_UART:0000000000000038 .L0 
+     /tmp/ccoob1xW.s:305    .text.v_Init_UART:000000000000004c .L0 
+     /tmp/ccoob1xW.s:311    .text.v_Init_UART:0000000000000060 .L0 
+     /tmp/ccoob1xW.s:312    .text.v_Init_UART:0000000000000060 .L0 
+     /tmp/ccoob1xW.s:317    .text.v_Init_UART:0000000000000070 .L0 
+     /tmp/ccoob1xW.s:322    .text.v_Init_UART:0000000000000080 .L0 
+     /tmp/ccoob1xW.s:323    .text.v_Init_UART:0000000000000080 .L0 
+     /tmp/ccoob1xW.s:327    .text.v_Init_UART:000000000000008c .L0 
+     /tmp/ccoob1xW.s:328    .text.v_Init_UART:000000000000008c .L0 
+     /tmp/ccoob1xW.s:338    .text.v_Init_UART:00000000000000a0 .L0 
+     /tmp/ccoob1xW.s:339    .text.v_Init_UART:00000000000000a0 .L0 
+     /tmp/ccoob1xW.s:349    .text.v_Init_UART:00000000000000b4 .L0 
+     /tmp/ccoob1xW.s:350    .text.v_Init_UART:00000000000000b4 .L0 
+     /tmp/ccoob1xW.s:354    .text.v_Init_UART:00000000000000b8 .L0 
+     /tmp/ccoob1xW.s:355    .text.v_Init_UART:00000000000000bc .L0 
+     /tmp/ccoob1xW.s:358    .text.v_Init_UART:00000000000000c0 .L0 
+     /tmp/ccoob1xW.s:360    .text.v_Init_UART:00000000000000c4 .L0 
+     /tmp/ccoob1xW.s:364    .text.v_Init_UART:00000000000000c4 .L0 
+     /tmp/ccoob1xW.s:370    .text.v_Init_UART:00000000000000c8 .L0 
+     /tmp/ccoob1xW.s:371    .text.v_Init_UART:00000000000000c8 .L0 
+     /tmp/ccoob1xW.s:375    .text.v_Init_UART:00000000000000cc .L0 
+     /tmp/ccoob1xW.s:376    .text.v_Init_UART:00000000000000d0 .L0 
+     /tmp/ccoob1xW.s:380    .text.v_Init_UART:00000000000000d0 .L0 
+     /tmp/ccoob1xW.s:384    .text.v_Init_UART:00000000000000d8 .L0 
+     /tmp/ccoob1xW.s:391    .text.v_Set_UART_Scratch:0000000000000000 v_Set_UART_Scratch
+     /tmp/ccoob1xW.s:394    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:396    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:397    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:402    .text.v_Set_UART_Scratch:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:28     .text.u8_Get_UART_Rx_Data:000000000000000c .L0 
+     /tmp/ccoob1xW.s:65     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .L0 
+     /tmp/ccoob1xW.s:82     .text.v_Write_UART_Tx_Data:000000000000000c .L0 
+     /tmp/ccoob1xW.s:101    .text.u8_Get_Modem_Status:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:120    .text.u8_Get_Interrupt_Cause:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:139    .text.u8_Get_Line_Status:0000000000000010 .L0 
+     /tmp/ccoob1xW.s:196    .text.v_Enable_UART_IRQ:0000000000000050 .L0 
+     /tmp/ccoob1xW.s:253    .text.v_Disable_UART_IRQ:0000000000000050 .L0 
+     /tmp/ccoob1xW.s:387    .text.v_Init_UART:00000000000000d8 .L0 
+     /tmp/ccoob1xW.s:405    .text.v_Set_UART_Scratch:0000000000000010 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccoob1xW.s:1021   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccoob1xW.s:1799   .debug_str:0000000000000000 .LASF42
+     /tmp/ccoob1xW.s:1825   .debug_str:0000000000000184 .LASF43
+     /tmp/ccoob1xW.s:1875   .debug_str:00000000000002e3 .LASF44
+     /tmp/ccoob1xW.s:1763   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccoob1xW.s:1797   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccoob1xW.s:1879   .debug_str:000000000000032b .LASF0
+     /tmp/ccoob1xW.s:1801   .debug_str:00000000000000c6 .LASF3
+     /tmp/ccoob1xW.s:1819   .debug_str:0000000000000151 .LASF1
+     /tmp/ccoob1xW.s:1859   .debug_str:0000000000000288 .LASF2
+     /tmp/ccoob1xW.s:1833   .debug_str:00000000000001cc .LASF4
+     /tmp/ccoob1xW.s:1823   .debug_str:0000000000000171 .LASF5
+     /tmp/ccoob1xW.s:1871   .debug_str:00000000000002c7 .LASF6
+     /tmp/ccoob1xW.s:1837   .debug_str:00000000000001e4 .LASF7
+     /tmp/ccoob1xW.s:1821   .debug_str:000000000000015f .LASF8
+     /tmp/ccoob1xW.s:1853   .debug_str:000000000000025c .LASF9
+     /tmp/ccoob1xW.s:1845   .debug_str:0000000000000217 .LASF10
+     /tmp/ccoob1xW.s:1843   .debug_str:000000000000020a .LASF11
+     /tmp/ccoob1xW.s:1847   .debug_str:000000000000022e .LASF12
+     /tmp/ccoob1xW.s:1863   .debug_str:000000000000029e .LASF13
+     /tmp/ccoob1xW.s:1869   .debug_str:00000000000002be .LASF14
+     /tmp/ccoob1xW.s:1877   .debug_str:000000000000031a .LASF15
+     /tmp/ccoob1xW.s:1867   .debug_str:00000000000002b4 .LASF16
+     /tmp/ccoob1xW.s:1849   .debug_str:0000000000000236 .LASF17
+     /tmp/ccoob1xW.s:1841   .debug_str:00000000000001f7 .LASF26
+     /tmp/ccoob1xW.s:392    .text.v_Set_UART_Scratch:0000000000000000 .LFB13
+     /tmp/ccoob1xW.s:403    .text.v_Set_UART_Scratch:0000000000000010 .LFE13
+     /tmp/ccoob1xW.s:1803   .debug_str:00000000000000d0 .LASF18
+     /tmp/ccoob1xW.s:1412   .debug_loc:0000000000000000 .LLST21
+     /tmp/ccoob1xW.s:1887   .debug_str:000000000000036b .LASF19
+     /tmp/ccoob1xW.s:1426   .debug_loc:0000000000000021 .LLST22
+     /tmp/ccoob1xW.s:401    .text.v_Set_UART_Scratch:0000000000000010 .LVL48
+     /tmp/ccoob1xW.s:1873   .debug_str:00000000000002d0 .LASF23
+     /tmp/ccoob1xW.s:1885   .debug_str:000000000000035f .LASF20
+     /tmp/ccoob1xW.s:1827   .debug_str:000000000000019f .LASF21
+     /tmp/ccoob1xW.s:1811   .debug_str:000000000000010a .LASF22
+     /tmp/ccoob1xW.s:1817   .debug_str:0000000000000140 .LASF24
+     /tmp/ccoob1xW.s:1865   .debug_str:00000000000002a7 .LASF25
+     /tmp/ccoob1xW.s:1813   .debug_str:0000000000000116 .LASF27
+     /tmp/ccoob1xW.s:201    .text.v_Disable_UART_IRQ:0000000000000000 .LFB10
+     /tmp/ccoob1xW.s:251    .text.v_Disable_UART_IRQ:0000000000000050 .LFE10
+     /tmp/ccoob1xW.s:1440   .debug_loc:0000000000000042 .LLST11
+     /tmp/ccoob1xW.s:1809   .debug_str:0000000000000103 .LASF28
+     /tmp/ccoob1xW.s:1458   .debug_loc:000000000000006e .LLST12
+     /tmp/ccoob1xW.s:1472   .debug_loc:000000000000008f .LLST13
+     /tmp/ccoob1xW.s:223    .text.v_Disable_UART_IRQ:0000000000000024 .LVL27
+     /tmp/ccoob1xW.s:249    .text.v_Disable_UART_IRQ:0000000000000050 .LVL31
+     /tmp/ccoob1xW.s:1805   .debug_str:00000000000000de .LASF29
+     /tmp/ccoob1xW.s:144    .text.v_Enable_UART_IRQ:0000000000000000 .LFB9
+     /tmp/ccoob1xW.s:194    .text.v_Enable_UART_IRQ:0000000000000050 .LFE9
+     /tmp/ccoob1xW.s:1487   .debug_loc:00000000000000b1 .LLST8
+     /tmp/ccoob1xW.s:1505   .debug_loc:00000000000000dd .LLST9
+     /tmp/ccoob1xW.s:1519   .debug_loc:00000000000000fe .LLST10
+     /tmp/ccoob1xW.s:166    .text.v_Enable_UART_IRQ:0000000000000024 .LVL21
+     /tmp/ccoob1xW.s:192    .text.v_Enable_UART_IRQ:0000000000000050 .LVL24
+     /tmp/ccoob1xW.s:1807   .debug_str:00000000000000f0 .LASF30
+     /tmp/ccoob1xW.s:125    .text.u8_Get_Line_Status:0000000000000000 .LFB8
+     /tmp/ccoob1xW.s:137    .text.u8_Get_Line_Status:0000000000000010 .LFE8
+     /tmp/ccoob1xW.s:1530   .debug_loc:000000000000011c .LLST7
+     /tmp/ccoob1xW.s:135    .text.u8_Get_Line_Status:0000000000000010 .LVL18
+     /tmp/ccoob1xW.s:1815   .debug_str:0000000000000129 .LASF31
+     /tmp/ccoob1xW.s:106    .text.u8_Get_Interrupt_Cause:0000000000000000 .LFB6
+     /tmp/ccoob1xW.s:118    .text.u8_Get_Interrupt_Cause:0000000000000010 .LFE6
+     /tmp/ccoob1xW.s:1544   .debug_loc:000000000000013d .LLST6
+     /tmp/ccoob1xW.s:116    .text.u8_Get_Interrupt_Cause:0000000000000010 .LVL15
+     /tmp/ccoob1xW.s:1881   .debug_str:0000000000000337 .LASF32
+     /tmp/ccoob1xW.s:87     .text.u8_Get_Modem_Status:0000000000000000 .LFB5
+     /tmp/ccoob1xW.s:99     .text.u8_Get_Modem_Status:0000000000000010 .LFE5
+     /tmp/ccoob1xW.s:1558   .debug_loc:000000000000015e .LLST5
+     /tmp/ccoob1xW.s:97     .text.u8_Get_Modem_Status:0000000000000010 .LVL12
+     /tmp/ccoob1xW.s:1831   .debug_str:00000000000001b7 .LASF33
+     /tmp/ccoob1xW.s:70     .text.v_Write_UART_Tx_Data:0000000000000000 .LFB4
+     /tmp/ccoob1xW.s:80     .text.v_Write_UART_Tx_Data:000000000000000c .LFE4
+     /tmp/ccoob1xW.s:1572   .debug_loc:000000000000017f .LLST3
+     /tmp/ccoob1xW.s:1839   .debug_str:00000000000001ef .LASF34
+     /tmp/ccoob1xW.s:1586   .debug_loc:00000000000001a0 .LLST4
+     /tmp/ccoob1xW.s:78     .text.v_Write_UART_Tx_Data:000000000000000c .LVL9
+     /tmp/ccoob1xW.s:1855   .debug_str:000000000000026a .LASF35
+     /tmp/ccoob1xW.s:33     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .LFB3
+     /tmp/ccoob1xW.s:63     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .LFE3
+     /tmp/ccoob1xW.s:1600   .debug_loc:00000000000001c1 .LLST1
+     /tmp/ccoob1xW.s:1857   .debug_str:0000000000000281 .LASF36
+     /tmp/ccoob1xW.s:1614   .debug_loc:00000000000001e2 .LLST2
+     /tmp/ccoob1xW.s:49     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .LVL5
+     /tmp/ccoob1xW.s:1835   .debug_str:00000000000001d7 .LASF37
+     /tmp/ccoob1xW.s:1883   .debug_str:000000000000034b .LASF38
+     /tmp/ccoob1xW.s:14     .text.u8_Get_UART_Rx_Data:0000000000000000 .LFB1
+     /tmp/ccoob1xW.s:26     .text.u8_Get_UART_Rx_Data:000000000000000c .LFE1
+     /tmp/ccoob1xW.s:1621   .debug_loc:00000000000001f5 .LLST0
+     /tmp/ccoob1xW.s:24     .text.u8_Get_UART_Rx_Data:000000000000000c .LVL2
+     /tmp/ccoob1xW.s:1861   .debug_str:0000000000000292 .LASF39
+     /tmp/ccoob1xW.s:258    .text.v_Init_UART:0000000000000000 .LFB0
+     /tmp/ccoob1xW.s:385    .text.v_Init_UART:00000000000000d8 .LFE0
+     /tmp/ccoob1xW.s:1635   .debug_loc:0000000000000216 .LLST14
+     /tmp/ccoob1xW.s:281    .text.v_Init_UART:0000000000000020 .LBB8
+     /tmp/ccoob1xW.s:334    .text.v_Init_UART:00000000000000a0 .LBE8
+     /tmp/ccoob1xW.s:1653   .debug_loc:0000000000000242 .LLST15
+     /tmp/ccoob1xW.s:1661   .debug_loc:0000000000000256 .LLST16
+     /tmp/ccoob1xW.s:282    .text.v_Init_UART:0000000000000020 .LBB9
+     /tmp/ccoob1xW.s:333    .text.v_Init_UART:00000000000000a0 .LBE9
+     /tmp/ccoob1xW.s:1675   .debug_loc:0000000000000277 .LLST17
+     /tmp/ccoob1xW.s:290    .text.v_Init_UART:0000000000000030 .LVL34
+     /tmp/ccoob1xW.s:303    .text.v_Init_UART:000000000000004c .LVL37
+     /tmp/ccoob1xW.s:309    .text.v_Init_UART:0000000000000060 .LVL38
+     /tmp/ccoob1xW.s:315    .text.v_Init_UART:0000000000000070 .LVL39
+     /tmp/ccoob1xW.s:320    .text.v_Init_UART:0000000000000080 .LVL40
+     /tmp/ccoob1xW.s:325    .text.v_Init_UART:000000000000008c .LVL41
+     /tmp/ccoob1xW.s:332    .text.v_Init_UART:00000000000000a0 .LVL42
+     /tmp/ccoob1xW.s:336    .text.v_Init_UART:00000000000000a0 .LBB10
+     /tmp/ccoob1xW.s:345    .text.v_Init_UART:00000000000000b4 .LBE10
+     /tmp/ccoob1xW.s:1696   .debug_loc:000000000000029f .LLST18
+     /tmp/ccoob1xW.s:1704   .debug_loc:00000000000002b3 .LLST19
+     /tmp/ccoob1xW.s:343    .text.v_Init_UART:00000000000000b4 .LVL43
+     /tmp/ccoob1xW.s:347    .text.v_Init_UART:00000000000000b4 .LBB12
+     /tmp/ccoob1xW.s:1718   .debug_loc:00000000000002d4 .LLST20
+     /tmp/ccoob1xW.s:381    .text.v_Init_UART:00000000000000d8 .LVL45
+     /tmp/ccoob1xW.s:279    .text.v_Init_UART:0000000000000020 .LVL33
+     /tmp/ccoob1xW.s:1851   .debug_str:000000000000024c .LASF40
+     /tmp/ccoob1xW.s:1829   .debug_str:00000000000001a7 .LASF41
+     /tmp/ccoob1xW.s:395    .text.v_Set_UART_Scratch:0000000000000000 .LVL46
+     /tmp/ccoob1xW.s:398    .text.v_Set_UART_Scratch:0000000000000004 .LVL47
+     /tmp/ccoob1xW.s:204    .text.v_Disable_UART_IRQ:0000000000000000 .LVL25
+     /tmp/ccoob1xW.s:214    .text.v_Disable_UART_IRQ:0000000000000010 .LVL26
+     /tmp/ccoob1xW.s:239    .text.v_Disable_UART_IRQ:000000000000003c .LVL29
+     /tmp/ccoob1xW.s:233    .text.v_Disable_UART_IRQ:0000000000000034 .LVL28
+     /tmp/ccoob1xW.s:242    .text.v_Disable_UART_IRQ:0000000000000040 .LVL30
+     /tmp/ccoob1xW.s:147    .text.v_Enable_UART_IRQ:0000000000000000 .LVL19
+     /tmp/ccoob1xW.s:157    .text.v_Enable_UART_IRQ:0000000000000010 .LVL20
+     /tmp/ccoob1xW.s:183    .text.v_Enable_UART_IRQ:000000000000003c .LVL23
+     /tmp/ccoob1xW.s:177    .text.v_Enable_UART_IRQ:0000000000000034 .LVL22
+     /tmp/ccoob1xW.s:128    .text.u8_Get_Line_Status:0000000000000000 .LVL16
+     /tmp/ccoob1xW.s:132    .text.u8_Get_Line_Status:0000000000000004 .LVL17
+     /tmp/ccoob1xW.s:109    .text.u8_Get_Interrupt_Cause:0000000000000000 .LVL13
+     /tmp/ccoob1xW.s:113    .text.u8_Get_Interrupt_Cause:0000000000000004 .LVL14
+     /tmp/ccoob1xW.s:90     .text.u8_Get_Modem_Status:0000000000000000 .LVL10
+     /tmp/ccoob1xW.s:94     .text.u8_Get_Modem_Status:0000000000000004 .LVL11
+     /tmp/ccoob1xW.s:73     .text.v_Write_UART_Tx_Data:0000000000000000 .LVL7
+     /tmp/ccoob1xW.s:76     .text.v_Write_UART_Tx_Data:0000000000000004 .LVL8
+     /tmp/ccoob1xW.s:36     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .LVL3
+     /tmp/ccoob1xW.s:40     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000004 .LVL4
+     /tmp/ccoob1xW.s:56     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000020 .LVL6
+     /tmp/ccoob1xW.s:18     .text.u8_Get_UART_Rx_Data:0000000000000000 .LVL0
+     /tmp/ccoob1xW.s:22     .text.u8_Get_UART_Rx_Data:0000000000000004 .LVL1
+     /tmp/ccoob1xW.s:261    .text.v_Init_UART:0000000000000000 .LVL32
+     /tmp/ccoob1xW.s:356    .text.v_Init_UART:00000000000000bc .LVL44
+     /tmp/ccoob1xW.s:292    .text.v_Init_UART:0000000000000034 .LVL35
+     /tmp/ccoob1xW.s:299    .text.v_Init_UART:000000000000003c .LVL36
+     /tmp/ccoob1xW.s:412    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/ccoob1xW.s:352    .text.v_Init_UART:00000000000000b8 .LBE12
+     /tmp/ccoob1xW.s:361    .text.v_Init_UART:00000000000000c4 .LBB17
+     /tmp/ccoob1xW.s:366    .text.v_Init_UART:00000000000000c8 .LBE17
+     /tmp/ccoob1xW.s:368    .text.v_Init_UART:00000000000000c8 .LBB18
+     /tmp/ccoob1xW.s:373    .text.v_Init_UART:00000000000000cc .LBE18
+     /tmp/ccoob1xW.s:377    .text.v_Init_UART:00000000000000d0 .LBB19
+     /tmp/ccoob1xW.s:383    .text.v_Init_UART:00000000000000d8 .LBE19
+=======
+     /tmp/cccbKRKU.s:13     .text.u8_Get_UART_Rx_Data:0000000000000000 u8_Get_UART_Rx_Data
+     /tmp/cccbKRKU.s:17     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:19     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:20     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:21     .text.u8_Get_UART_Rx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:25     .text.u8_Get_UART_Rx_Data:000000000000000c .L0 
+     /tmp/cccbKRKU.s:32     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 b_Is_Tx_Hold_Reg_Empty
+     /tmp/cccbKRKU.s:35     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:37     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:38     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:39     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:42     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000004 .L0 
+     /tmp/cccbKRKU.s:43     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000008 .L0 
+     /tmp/cccbKRKU.s:45     .text.b_Is_Tx_Hold_Reg_Empty:000000000000000c .L0 
+     /tmp/cccbKRKU.s:47     .text.b_Is_Tx_Hold_Reg_Empty:000000000000000c .L0 
+     /tmp/cccbKRKU.s:51     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .L0 
+     /tmp/cccbKRKU.s:52     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .L0 
+     /tmp/cccbKRKU.s:53     .text.b_Is_Tx_Hold_Reg_Empty:000000000000001c .L0 
+     /tmp/cccbKRKU.s:55     .text.b_Is_Tx_Hold_Reg_Empty:000000000000001c .L0 
+     /tmp/cccbKRKU.s:58     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:60     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000028 .L0 
+     /tmp/cccbKRKU.s:62     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .L0 
+     /tmp/cccbKRKU.s:69     .text.v_Write_UART_Tx_Data:0000000000000000 v_Write_UART_Tx_Data
+     /tmp/cccbKRKU.s:72     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:74     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:75     .text.v_Write_UART_Tx_Data:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:79     .text.v_Write_UART_Tx_Data:000000000000000c .L0 
+     /tmp/cccbKRKU.s:86     .text.u8_Get_Modem_Status:0000000000000000 u8_Get_Modem_Status
+     /tmp/cccbKRKU.s:89     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:91     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:92     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:93     .text.u8_Get_Modem_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:98     .text.u8_Get_Modem_Status:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:105    .text.u8_Get_Interrupt_Cause:0000000000000000 u8_Get_Interrupt_Cause
+     /tmp/cccbKRKU.s:108    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:110    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:111    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:112    .text.u8_Get_Interrupt_Cause:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:117    .text.u8_Get_Interrupt_Cause:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:124    .text.u8_Get_Line_Status:0000000000000000 u8_Get_Line_Status
+     /tmp/cccbKRKU.s:127    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:129    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:130    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:131    .text.u8_Get_Line_Status:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:136    .text.u8_Get_Line_Status:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:143    .text.v_Enable_UART_IRQ:0000000000000000 v_Enable_UART_IRQ
+     /tmp/cccbKRKU.s:146    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:148    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:149    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:150    .text.v_Enable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:151    .text.v_Enable_UART_IRQ:0000000000000004 .L0 
+     /tmp/cccbKRKU.s:153    .text.v_Enable_UART_IRQ:0000000000000008 .L0 
+     /tmp/cccbKRKU.s:156    .text.v_Enable_UART_IRQ:000000000000000c .L0 
+     /tmp/cccbKRKU.s:159    .text.v_Enable_UART_IRQ:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:160    .text.v_Enable_UART_IRQ:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:162    .text.v_Enable_UART_IRQ:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:164    .text.v_Enable_UART_IRQ:0000000000000018 .L0 
+     /tmp/cccbKRKU.s:168    .text.v_Enable_UART_IRQ:0000000000000024 .L0 
+     /tmp/cccbKRKU.s:169    .text.v_Enable_UART_IRQ:0000000000000024 .L0 
+     /tmp/cccbKRKU.s:171    .text.v_Enable_UART_IRQ:0000000000000028 .L0 
+     /tmp/cccbKRKU.s:172    .text.v_Enable_UART_IRQ:000000000000002c .L0 
+     /tmp/cccbKRKU.s:174    .text.v_Enable_UART_IRQ:000000000000002c .L0 
+     /tmp/cccbKRKU.s:176    .text.v_Enable_UART_IRQ:0000000000000030 .L0 
+     /tmp/cccbKRKU.s:179    .text.v_Enable_UART_IRQ:0000000000000034 .L0 
+     /tmp/cccbKRKU.s:181    .text.v_Enable_UART_IRQ:0000000000000038 .L0 
+     /tmp/cccbKRKU.s:182    .text.v_Enable_UART_IRQ:000000000000003c .L0 
+     /tmp/cccbKRKU.s:185    .text.v_Enable_UART_IRQ:000000000000003c .L0 
+     /tmp/cccbKRKU.s:188    .text.v_Enable_UART_IRQ:0000000000000044 .L0 
+     /tmp/cccbKRKU.s:189    .text.v_Enable_UART_IRQ:0000000000000048 .L0 
+     /tmp/cccbKRKU.s:191    .text.v_Enable_UART_IRQ:0000000000000048 .L0 
+     /tmp/cccbKRKU.s:193    .text.v_Enable_UART_IRQ:0000000000000050 .L0 
+     /tmp/cccbKRKU.s:200    .text.v_Disable_UART_IRQ:0000000000000000 v_Disable_UART_IRQ
+     /tmp/cccbKRKU.s:203    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:205    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:206    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:207    .text.v_Disable_UART_IRQ:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:208    .text.v_Disable_UART_IRQ:0000000000000004 .L0 
+     /tmp/cccbKRKU.s:210    .text.v_Disable_UART_IRQ:0000000000000008 .L0 
+     /tmp/cccbKRKU.s:213    .text.v_Disable_UART_IRQ:000000000000000c .L0 
+     /tmp/cccbKRKU.s:216    .text.v_Disable_UART_IRQ:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:217    .text.v_Disable_UART_IRQ:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:219    .text.v_Disable_UART_IRQ:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:221    .text.v_Disable_UART_IRQ:0000000000000018 .L0 
+     /tmp/cccbKRKU.s:225    .text.v_Disable_UART_IRQ:0000000000000024 .L0 
+     /tmp/cccbKRKU.s:226    .text.v_Disable_UART_IRQ:0000000000000024 .L0 
+     /tmp/cccbKRKU.s:228    .text.v_Disable_UART_IRQ:0000000000000028 .L0 
+     /tmp/cccbKRKU.s:229    .text.v_Disable_UART_IRQ:000000000000002c .L0 
+     /tmp/cccbKRKU.s:231    .text.v_Disable_UART_IRQ:000000000000002c .L0 
+     /tmp/cccbKRKU.s:235    .text.v_Disable_UART_IRQ:0000000000000034 .L0 
+     /tmp/cccbKRKU.s:237    .text.v_Disable_UART_IRQ:0000000000000038 .L0 
+     /tmp/cccbKRKU.s:238    .text.v_Disable_UART_IRQ:000000000000003c .L0 
+     /tmp/cccbKRKU.s:241    .text.v_Disable_UART_IRQ:000000000000003c .L0 
+     /tmp/cccbKRKU.s:245    .text.v_Disable_UART_IRQ:0000000000000044 .L0 
+     /tmp/cccbKRKU.s:246    .text.v_Disable_UART_IRQ:0000000000000048 .L0 
+     /tmp/cccbKRKU.s:248    .text.v_Disable_UART_IRQ:0000000000000048 .L0 
+     /tmp/cccbKRKU.s:250    .text.v_Disable_UART_IRQ:0000000000000050 .L0 
+     /tmp/cccbKRKU.s:257    .text.v_Init_UART:0000000000000000 v_Init_UART
+     /tmp/cccbKRKU.s:260    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:262    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:263    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:264    .text.v_Init_UART:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:265    .text.v_Init_UART:0000000000000004 .L0 
+     /tmp/cccbKRKU.s:267    .text.v_Init_UART:0000000000000004 .L0 
+     /tmp/cccbKRKU.s:269    .text.v_Init_UART:0000000000000008 .L0 
+     /tmp/cccbKRKU.s:272    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:273    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:274    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:276    .text.v_Init_UART:0000000000000014 .L0 
+     /tmp/cccbKRKU.s:278    .text.v_Init_UART:0000000000000018 .L0 
+     /tmp/cccbKRKU.s:283    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:284    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:285    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:286    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:287    .text.v_Init_UART:0000000000000020 .L0 
+     /tmp/cccbKRKU.s:294    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/cccbKRKU.s:295    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/cccbKRKU.s:296    .text.v_Init_UART:0000000000000034 .L0 
+     /tmp/cccbKRKU.s:298    .text.v_Init_UART:0000000000000038 .L0 
+     /tmp/cccbKRKU.s:305    .text.v_Init_UART:000000000000004c .L0 
+     /tmp/cccbKRKU.s:311    .text.v_Init_UART:0000000000000060 .L0 
+     /tmp/cccbKRKU.s:312    .text.v_Init_UART:0000000000000060 .L0 
+     /tmp/cccbKRKU.s:317    .text.v_Init_UART:0000000000000070 .L0 
+     /tmp/cccbKRKU.s:322    .text.v_Init_UART:0000000000000080 .L0 
+     /tmp/cccbKRKU.s:323    .text.v_Init_UART:0000000000000080 .L0 
+     /tmp/cccbKRKU.s:327    .text.v_Init_UART:000000000000008c .L0 
+     /tmp/cccbKRKU.s:328    .text.v_Init_UART:000000000000008c .L0 
+     /tmp/cccbKRKU.s:338    .text.v_Init_UART:00000000000000a0 .L0 
+     /tmp/cccbKRKU.s:339    .text.v_Init_UART:00000000000000a0 .L0 
+     /tmp/cccbKRKU.s:349    .text.v_Init_UART:00000000000000b4 .L0 
+     /tmp/cccbKRKU.s:350    .text.v_Init_UART:00000000000000b4 .L0 
+     /tmp/cccbKRKU.s:354    .text.v_Init_UART:00000000000000b8 .L0 
+     /tmp/cccbKRKU.s:355    .text.v_Init_UART:00000000000000bc .L0 
+     /tmp/cccbKRKU.s:358    .text.v_Init_UART:00000000000000c0 .L0 
+     /tmp/cccbKRKU.s:360    .text.v_Init_UART:00000000000000c4 .L0 
+     /tmp/cccbKRKU.s:364    .text.v_Init_UART:00000000000000c4 .L0 
+     /tmp/cccbKRKU.s:370    .text.v_Init_UART:00000000000000c8 .L0 
+     /tmp/cccbKRKU.s:371    .text.v_Init_UART:00000000000000c8 .L0 
+     /tmp/cccbKRKU.s:375    .text.v_Init_UART:00000000000000cc .L0 
+     /tmp/cccbKRKU.s:376    .text.v_Init_UART:00000000000000d0 .L0 
+     /tmp/cccbKRKU.s:380    .text.v_Init_UART:00000000000000d0 .L0 
+     /tmp/cccbKRKU.s:384    .text.v_Init_UART:00000000000000d8 .L0 
+     /tmp/cccbKRKU.s:391    .text.v_Set_UART_Scratch:0000000000000000 v_Set_UART_Scratch
+     /tmp/cccbKRKU.s:394    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:396    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:397    .text.v_Set_UART_Scratch:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:402    .text.v_Set_UART_Scratch:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:28     .text.u8_Get_UART_Rx_Data:000000000000000c .L0 
+     /tmp/cccbKRKU.s:65     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .L0 
+     /tmp/cccbKRKU.s:82     .text.v_Write_UART_Tx_Data:000000000000000c .L0 
+     /tmp/cccbKRKU.s:101    .text.u8_Get_Modem_Status:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:120    .text.u8_Get_Interrupt_Cause:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:139    .text.u8_Get_Line_Status:0000000000000010 .L0 
+     /tmp/cccbKRKU.s:196    .text.v_Enable_UART_IRQ:0000000000000050 .L0 
+     /tmp/cccbKRKU.s:253    .text.v_Disable_UART_IRQ:0000000000000050 .L0 
+     /tmp/cccbKRKU.s:387    .text.v_Init_UART:00000000000000d8 .L0 
+     /tmp/cccbKRKU.s:405    .text.v_Set_UART_Scratch:0000000000000010 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cccbKRKU.s:1021   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cccbKRKU.s:1799   .debug_str:0000000000000000 .LASF42
+     /tmp/cccbKRKU.s:1825   .debug_str:0000000000000184 .LASF43
+     /tmp/cccbKRKU.s:1875   .debug_str:00000000000002e3 .LASF44
+     /tmp/cccbKRKU.s:1763   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cccbKRKU.s:1797   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cccbKRKU.s:1879   .debug_str:000000000000032b .LASF0
+     /tmp/cccbKRKU.s:1801   .debug_str:00000000000000c6 .LASF3
+     /tmp/cccbKRKU.s:1819   .debug_str:0000000000000151 .LASF1
+     /tmp/cccbKRKU.s:1859   .debug_str:0000000000000288 .LASF2
+     /tmp/cccbKRKU.s:1833   .debug_str:00000000000001cc .LASF4
+     /tmp/cccbKRKU.s:1823   .debug_str:0000000000000171 .LASF5
+     /tmp/cccbKRKU.s:1871   .debug_str:00000000000002c7 .LASF6
+     /tmp/cccbKRKU.s:1837   .debug_str:00000000000001e4 .LASF7
+     /tmp/cccbKRKU.s:1821   .debug_str:000000000000015f .LASF8
+     /tmp/cccbKRKU.s:1853   .debug_str:000000000000025c .LASF9
+     /tmp/cccbKRKU.s:1845   .debug_str:0000000000000217 .LASF10
+     /tmp/cccbKRKU.s:1843   .debug_str:000000000000020a .LASF11
+     /tmp/cccbKRKU.s:1847   .debug_str:000000000000022e .LASF12
+     /tmp/cccbKRKU.s:1863   .debug_str:000000000000029e .LASF13
+     /tmp/cccbKRKU.s:1869   .debug_str:00000000000002be .LASF14
+     /tmp/cccbKRKU.s:1877   .debug_str:000000000000031a .LASF15
+     /tmp/cccbKRKU.s:1867   .debug_str:00000000000002b4 .LASF16
+     /tmp/cccbKRKU.s:1849   .debug_str:0000000000000236 .LASF17
+     /tmp/cccbKRKU.s:1841   .debug_str:00000000000001f7 .LASF26
+     /tmp/cccbKRKU.s:392    .text.v_Set_UART_Scratch:0000000000000000 .LFB13
+     /tmp/cccbKRKU.s:403    .text.v_Set_UART_Scratch:0000000000000010 .LFE13
+     /tmp/cccbKRKU.s:1803   .debug_str:00000000000000d0 .LASF18
+     /tmp/cccbKRKU.s:1412   .debug_loc:0000000000000000 .LLST21
+     /tmp/cccbKRKU.s:1887   .debug_str:000000000000036b .LASF19
+     /tmp/cccbKRKU.s:1426   .debug_loc:0000000000000021 .LLST22
+     /tmp/cccbKRKU.s:401    .text.v_Set_UART_Scratch:0000000000000010 .LVL48
+     /tmp/cccbKRKU.s:1873   .debug_str:00000000000002d0 .LASF23
+     /tmp/cccbKRKU.s:1885   .debug_str:000000000000035f .LASF20
+     /tmp/cccbKRKU.s:1827   .debug_str:000000000000019f .LASF21
+     /tmp/cccbKRKU.s:1811   .debug_str:000000000000010a .LASF22
+     /tmp/cccbKRKU.s:1817   .debug_str:0000000000000140 .LASF24
+     /tmp/cccbKRKU.s:1865   .debug_str:00000000000002a7 .LASF25
+     /tmp/cccbKRKU.s:1813   .debug_str:0000000000000116 .LASF27
+     /tmp/cccbKRKU.s:201    .text.v_Disable_UART_IRQ:0000000000000000 .LFB10
+     /tmp/cccbKRKU.s:251    .text.v_Disable_UART_IRQ:0000000000000050 .LFE10
+     /tmp/cccbKRKU.s:1440   .debug_loc:0000000000000042 .LLST11
+     /tmp/cccbKRKU.s:1809   .debug_str:0000000000000103 .LASF28
+     /tmp/cccbKRKU.s:1458   .debug_loc:000000000000006e .LLST12
+     /tmp/cccbKRKU.s:1472   .debug_loc:000000000000008f .LLST13
+     /tmp/cccbKRKU.s:223    .text.v_Disable_UART_IRQ:0000000000000024 .LVL27
+     /tmp/cccbKRKU.s:249    .text.v_Disable_UART_IRQ:0000000000000050 .LVL31
+     /tmp/cccbKRKU.s:1805   .debug_str:00000000000000de .LASF29
+     /tmp/cccbKRKU.s:144    .text.v_Enable_UART_IRQ:0000000000000000 .LFB9
+     /tmp/cccbKRKU.s:194    .text.v_Enable_UART_IRQ:0000000000000050 .LFE9
+     /tmp/cccbKRKU.s:1487   .debug_loc:00000000000000b1 .LLST8
+     /tmp/cccbKRKU.s:1505   .debug_loc:00000000000000dd .LLST9
+     /tmp/cccbKRKU.s:1519   .debug_loc:00000000000000fe .LLST10
+     /tmp/cccbKRKU.s:166    .text.v_Enable_UART_IRQ:0000000000000024 .LVL21
+     /tmp/cccbKRKU.s:192    .text.v_Enable_UART_IRQ:0000000000000050 .LVL24
+     /tmp/cccbKRKU.s:1807   .debug_str:00000000000000f0 .LASF30
+     /tmp/cccbKRKU.s:125    .text.u8_Get_Line_Status:0000000000000000 .LFB8
+     /tmp/cccbKRKU.s:137    .text.u8_Get_Line_Status:0000000000000010 .LFE8
+     /tmp/cccbKRKU.s:1530   .debug_loc:000000000000011c .LLST7
+     /tmp/cccbKRKU.s:135    .text.u8_Get_Line_Status:0000000000000010 .LVL18
+     /tmp/cccbKRKU.s:1815   .debug_str:0000000000000129 .LASF31
+     /tmp/cccbKRKU.s:106    .text.u8_Get_Interrupt_Cause:0000000000000000 .LFB6
+     /tmp/cccbKRKU.s:118    .text.u8_Get_Interrupt_Cause:0000000000000010 .LFE6
+     /tmp/cccbKRKU.s:1544   .debug_loc:000000000000013d .LLST6
+     /tmp/cccbKRKU.s:116    .text.u8_Get_Interrupt_Cause:0000000000000010 .LVL15
+     /tmp/cccbKRKU.s:1881   .debug_str:0000000000000337 .LASF32
+     /tmp/cccbKRKU.s:87     .text.u8_Get_Modem_Status:0000000000000000 .LFB5
+     /tmp/cccbKRKU.s:99     .text.u8_Get_Modem_Status:0000000000000010 .LFE5
+     /tmp/cccbKRKU.s:1558   .debug_loc:000000000000015e .LLST5
+     /tmp/cccbKRKU.s:97     .text.u8_Get_Modem_Status:0000000000000010 .LVL12
+     /tmp/cccbKRKU.s:1831   .debug_str:00000000000001b7 .LASF33
+     /tmp/cccbKRKU.s:70     .text.v_Write_UART_Tx_Data:0000000000000000 .LFB4
+     /tmp/cccbKRKU.s:80     .text.v_Write_UART_Tx_Data:000000000000000c .LFE4
+     /tmp/cccbKRKU.s:1572   .debug_loc:000000000000017f .LLST3
+     /tmp/cccbKRKU.s:1839   .debug_str:00000000000001ef .LASF34
+     /tmp/cccbKRKU.s:1586   .debug_loc:00000000000001a0 .LLST4
+     /tmp/cccbKRKU.s:78     .text.v_Write_UART_Tx_Data:000000000000000c .LVL9
+     /tmp/cccbKRKU.s:1855   .debug_str:000000000000026a .LASF35
+     /tmp/cccbKRKU.s:33     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .LFB3
+     /tmp/cccbKRKU.s:63     .text.b_Is_Tx_Hold_Reg_Empty:000000000000002c .LFE3
+     /tmp/cccbKRKU.s:1600   .debug_loc:00000000000001c1 .LLST1
+     /tmp/cccbKRKU.s:1857   .debug_str:0000000000000281 .LASF36
+     /tmp/cccbKRKU.s:1614   .debug_loc:00000000000001e2 .LLST2
+     /tmp/cccbKRKU.s:49     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000018 .LVL5
+     /tmp/cccbKRKU.s:1835   .debug_str:00000000000001d7 .LASF37
+     /tmp/cccbKRKU.s:1883   .debug_str:000000000000034b .LASF38
+     /tmp/cccbKRKU.s:14     .text.u8_Get_UART_Rx_Data:0000000000000000 .LFB1
+     /tmp/cccbKRKU.s:26     .text.u8_Get_UART_Rx_Data:000000000000000c .LFE1
+     /tmp/cccbKRKU.s:1621   .debug_loc:00000000000001f5 .LLST0
+     /tmp/cccbKRKU.s:24     .text.u8_Get_UART_Rx_Data:000000000000000c .LVL2
+     /tmp/cccbKRKU.s:1861   .debug_str:0000000000000292 .LASF39
+     /tmp/cccbKRKU.s:258    .text.v_Init_UART:0000000000000000 .LFB0
+     /tmp/cccbKRKU.s:385    .text.v_Init_UART:00000000000000d8 .LFE0
+     /tmp/cccbKRKU.s:1635   .debug_loc:0000000000000216 .LLST14
+     /tmp/cccbKRKU.s:281    .text.v_Init_UART:0000000000000020 .LBB8
+     /tmp/cccbKRKU.s:334    .text.v_Init_UART:00000000000000a0 .LBE8
+     /tmp/cccbKRKU.s:1653   .debug_loc:0000000000000242 .LLST15
+     /tmp/cccbKRKU.s:1661   .debug_loc:0000000000000256 .LLST16
+     /tmp/cccbKRKU.s:282    .text.v_Init_UART:0000000000000020 .LBB9
+     /tmp/cccbKRKU.s:333    .text.v_Init_UART:00000000000000a0 .LBE9
+     /tmp/cccbKRKU.s:1675   .debug_loc:0000000000000277 .LLST17
+     /tmp/cccbKRKU.s:290    .text.v_Init_UART:0000000000000030 .LVL34
+     /tmp/cccbKRKU.s:303    .text.v_Init_UART:000000000000004c .LVL37
+     /tmp/cccbKRKU.s:309    .text.v_Init_UART:0000000000000060 .LVL38
+     /tmp/cccbKRKU.s:315    .text.v_Init_UART:0000000000000070 .LVL39
+     /tmp/cccbKRKU.s:320    .text.v_Init_UART:0000000000000080 .LVL40
+     /tmp/cccbKRKU.s:325    .text.v_Init_UART:000000000000008c .LVL41
+     /tmp/cccbKRKU.s:332    .text.v_Init_UART:00000000000000a0 .LVL42
+     /tmp/cccbKRKU.s:336    .text.v_Init_UART:00000000000000a0 .LBB10
+     /tmp/cccbKRKU.s:345    .text.v_Init_UART:00000000000000b4 .LBE10
+     /tmp/cccbKRKU.s:1696   .debug_loc:000000000000029f .LLST18
+     /tmp/cccbKRKU.s:1704   .debug_loc:00000000000002b3 .LLST19
+     /tmp/cccbKRKU.s:343    .text.v_Init_UART:00000000000000b4 .LVL43
+     /tmp/cccbKRKU.s:347    .text.v_Init_UART:00000000000000b4 .LBB12
+     /tmp/cccbKRKU.s:1718   .debug_loc:00000000000002d4 .LLST20
+     /tmp/cccbKRKU.s:381    .text.v_Init_UART:00000000000000d8 .LVL45
+     /tmp/cccbKRKU.s:279    .text.v_Init_UART:0000000000000020 .LVL33
+     /tmp/cccbKRKU.s:1851   .debug_str:000000000000024c .LASF40
+     /tmp/cccbKRKU.s:1829   .debug_str:00000000000001a7 .LASF41
+     /tmp/cccbKRKU.s:395    .text.v_Set_UART_Scratch:0000000000000000 .LVL46
+     /tmp/cccbKRKU.s:398    .text.v_Set_UART_Scratch:0000000000000004 .LVL47
+     /tmp/cccbKRKU.s:204    .text.v_Disable_UART_IRQ:0000000000000000 .LVL25
+     /tmp/cccbKRKU.s:214    .text.v_Disable_UART_IRQ:0000000000000010 .LVL26
+     /tmp/cccbKRKU.s:239    .text.v_Disable_UART_IRQ:000000000000003c .LVL29
+     /tmp/cccbKRKU.s:233    .text.v_Disable_UART_IRQ:0000000000000034 .LVL28
+     /tmp/cccbKRKU.s:242    .text.v_Disable_UART_IRQ:0000000000000040 .LVL30
+     /tmp/cccbKRKU.s:147    .text.v_Enable_UART_IRQ:0000000000000000 .LVL19
+     /tmp/cccbKRKU.s:157    .text.v_Enable_UART_IRQ:0000000000000010 .LVL20
+     /tmp/cccbKRKU.s:183    .text.v_Enable_UART_IRQ:000000000000003c .LVL23
+     /tmp/cccbKRKU.s:177    .text.v_Enable_UART_IRQ:0000000000000034 .LVL22
+     /tmp/cccbKRKU.s:128    .text.u8_Get_Line_Status:0000000000000000 .LVL16
+     /tmp/cccbKRKU.s:132    .text.u8_Get_Line_Status:0000000000000004 .LVL17
+     /tmp/cccbKRKU.s:109    .text.u8_Get_Interrupt_Cause:0000000000000000 .LVL13
+     /tmp/cccbKRKU.s:113    .text.u8_Get_Interrupt_Cause:0000000000000004 .LVL14
+     /tmp/cccbKRKU.s:90     .text.u8_Get_Modem_Status:0000000000000000 .LVL10
+     /tmp/cccbKRKU.s:94     .text.u8_Get_Modem_Status:0000000000000004 .LVL11
+     /tmp/cccbKRKU.s:73     .text.v_Write_UART_Tx_Data:0000000000000000 .LVL7
+     /tmp/cccbKRKU.s:76     .text.v_Write_UART_Tx_Data:0000000000000004 .LVL8
+     /tmp/cccbKRKU.s:36     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000000 .LVL3
+     /tmp/cccbKRKU.s:40     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000004 .LVL4
+     /tmp/cccbKRKU.s:56     .text.b_Is_Tx_Hold_Reg_Empty:0000000000000020 .LVL6
+     /tmp/cccbKRKU.s:18     .text.u8_Get_UART_Rx_Data:0000000000000000 .LVL0
+     /tmp/cccbKRKU.s:22     .text.u8_Get_UART_Rx_Data:0000000000000004 .LVL1
+     /tmp/cccbKRKU.s:261    .text.v_Init_UART:0000000000000000 .LVL32
+     /tmp/cccbKRKU.s:356    .text.v_Init_UART:00000000000000bc .LVL44
+     /tmp/cccbKRKU.s:292    .text.v_Init_UART:0000000000000034 .LVL35
+     /tmp/cccbKRKU.s:299    .text.v_Init_UART:000000000000003c .LVL36
+     /tmp/cccbKRKU.s:412    .debug_info:0000000000000000 .Ldebug_info0
+     /tmp/cccbKRKU.s:352    .text.v_Init_UART:00000000000000b8 .LBE12
+     /tmp/cccbKRKU.s:361    .text.v_Init_UART:00000000000000c4 .LBB17
+     /tmp/cccbKRKU.s:366    .text.v_Init_UART:00000000000000c8 .LBE17
+     /tmp/cccbKRKU.s:368    .text.v_Init_UART:00000000000000c8 .LBB18
+     /tmp/cccbKRKU.s:373    .text.v_Init_UART:00000000000000cc .LBE18
+     /tmp/cccbKRKU.s:377    .text.v_Init_UART:00000000000000d0 .LBB19
+     /tmp/cccbKRKU.s:383    .text.v_Init_UART:00000000000000d8 .LBE19
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+HW_get_8bit_reg
+HW_set_8bit_reg

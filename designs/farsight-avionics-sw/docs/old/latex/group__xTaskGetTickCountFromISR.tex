@@ -1,0 +1,13 @@
+\doxysection{x\+Task\+Get\+Tick\+Count\+From\+ISR }
+\hypertarget{group__xTaskGetTickCountFromISR}{}\label{group__xTaskGetTickCountFromISR}\index{xTaskGetTickCountFromISR@{xTaskGetTickCountFromISR}}
+task. h 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ \doxymbox{\hyperlink{task_8h_a092be3fd5752625303c307620be523ff}{xTaskGetTickCountFromISR}}(\ \textcolor{keywordtype}{void}\ );}
+
+\end{DoxyCode}
+
+
+\begin{DoxyReturn}{Returns}
+The count of ticks since v\+Task\+Start\+Scheduler was called.
+\end{DoxyReturn}
+This is a version of \doxylink{task_8h_a753ecfe23e7386066ecccad5d16422f7}{x\+Task\+Get\+Tick\+Count()} that is safe to be called from an ISR -\/ provided that \doxylink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t} is the natural word size of the microcontroller being used or interrupt nesting is either not supported or not being used. 

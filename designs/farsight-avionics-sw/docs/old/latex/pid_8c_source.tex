@@ -1,0 +1,145 @@
+\doxysection{pid.\+c}
+\hypertarget{pid_8c_source}{}\label{pid_8c_source}\index{src/pid.c@{src/pid.c}}
+\doxymbox{\hyperlink{pid_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00002}00002\ \textcolor{comment}{\ *\ pid.c}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 29,\ 2025}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <string.h>}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00013}00013\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc__math_8h}{misc\_math.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{pid_8h}{pid.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{path__planner_8h}{path\_planner.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00018}\doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{00018}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structPID__Log__Info__t}{PID\_Log\_Info\_t}}\ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00027}\doxymbox{\hyperlink{pid_8c_a760893cd1a049654eed8fd3e9c4e6804}{00027}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8c_a760893cd1a049654eed8fd3e9c4e6804}{v\_Init\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ \ \doxymbox{\hyperlink{structPID__Init__t}{PID\_Init\_t}}\ *init\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00028}00028\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00029}00029\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a45e6a1e451a10b720fe645e9da1034a6}{memset}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ 0,\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}));}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00031}00031\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>k\_p\ =\ init-\/>\doxymbox{\hyperlink{structPID__Init__t_a91729034eb76b81af8effb06803a8b94}{k\_p}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00032}00032\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>k\_i\ =\ init-\/>\doxymbox{\hyperlink{structPID__Init__t_add2e55125fb5c43e2bc76af4d0730418}{k\_i}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00033}00033\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>deadband\ =\ init-\/>\doxymbox{\hyperlink{structPID__Init__t_a150432a4015e38c264be4652b9a46d92}{deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00034}00034\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>integral\_deadband\ =\ init-\/>\doxymbox{\hyperlink{structPID__Init__t_a7240db484ff671a092846796b87b5d85}{integral\_deadband}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00035}00035\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>max\_out\ =\ \doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\_V}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00036}00036\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>min\_out\ =\ -\/\doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\_V}};}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00037}00037\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00039}00039\ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00041}00041\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{i32\_Clamp}}(\ int32\_t\ x,\ int32\_t\ i32\_Min,\ int32\_t\ i32\_Max\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00043}00043\ \textcolor{comment}{//static\ int32\_t\ i32\_Integral\_Sum;}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00055}\doxymbox{\hyperlink{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750}{00055}}\ int32\_t\ \doxymbox{\hyperlink{pid_8c_a7dfbcc37381fb9feacf8aed03c97d750}{i32\_Update\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ int32\_t\ i32\_Setpoint,\ int32\_t\ i32\_Feedback,int32\_t\ i32\_Feedforward\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00056}00056\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00057}00057\ \ \ \ \ int32\_t\ i32\_Retval\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00058}00058\ \ \ \ \ int32\_t\ i32\_Proportional\_Term\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00059}00059\ \ \ \ \ int32\_t\ i32\_integral\_term\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00060}00060\ \ \ \ \ int32\_t\ i32\_Non\_Integral\_Sum\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00061}00061\ \ \ \ \ \textcolor{keywordtype}{int}\ state;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00062}00062\ \ \ \ \ int32\_t\ i32\_Save;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00063}00063\ \ \ \ \ \textcolor{keywordtype}{float}\ f\_Error\ =\ 0.0f;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00064}00064\ \ \ \ \ int8\_t\ before,\ after;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00066}00066\ \ \ \ \ int32\_t\ i32\_Error\ =\ i32\_Setpoint\ -\/\ i32\_Feedback;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00067}00067\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00068}00068\ \ \ \ \ \textcolor{comment}{//\ Use\ only\ feedforward\ if\ error\ is\ within\ deadband}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00069}00069\ \textcolor{preprocessor}{\#ifdef\ USE\_FEEDFORWARD\_W\_DEADBAND}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}(i32\_Error)\ <=\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>deadband\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00071}00071\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00072}00072\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00073}00073\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ i32\_Feedforward;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00074}00074\ \ \ \ \ \ \ \ \ state\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00075}00075\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00076}00076\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00078}00078\ \textcolor{preprocessor}{\#ifdef\ USE\_INTEGRAL\_DEADBAND}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00079}00079\ \ \ \ \ \textcolor{keywordflow}{if}(\ \doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}(i32\_Error)\ <=\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>integral\_deadband\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00080}00080\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00081}00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Use\ only\ proportional\ part\ if\ error\ is\ withn\ integral\ deadband}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00082}00082\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00083}00083\ \ \ \ \ \ \ \ \ i32\_Proportional\_Term\ \ =\ (int32\_t)((\textcolor{keywordtype}{float})i32\_Error\ *\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>k\_p);}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00084}00084\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ \doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{i32\_Clamp}}(\ i32\_Proportional\_Term\ +\ i32\_Feedforward,}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>min\_out,}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>max\_out\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00087}00087\ \ \ \ \ \ \ \ \ state\ =\ 1;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00088}00088\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00089}00089\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00091}00091\ \ \ \ \ f\_Error\ =\ (float)i32\_Error;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00093}00093\ \ \ \ \ i32\_Proportional\_Term\ \ =\ (int32\_t)(\ f\_Error\ *\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>k\_p\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00095}00095\ \ \ \ \ \textcolor{comment}{//\ Proportional\ part}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00096}00096\ \ \ \ \ i32\_Non\_Integral\_Sum\ =\ i32\_Feedforward\ +\ i32\_Proportional\_Term;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00098}00098\ \ \ \ \ \textcolor{comment}{//\ Integral\ part}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00099}00099\ \ \ \ \ i32\_integral\_term\ =\ (int32\_t)(\ f\_Error\ \ *\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>k\_i\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00101}00101\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ +=\ i32\_integral\_term;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00103}00103\ \ \ \ \ \textcolor{comment}{//\ Bounds\ the\ integral\ portion}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00104}00104\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ =\ \doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{i32\_Clamp}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum,}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>min\_out\ -\/\ i32\_Non\_Integral\_Sum,}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>max\_out\ -\/\ i32\_Non\_Integral\_Sum\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00108}00108\ \ \ \ \ i32\_Retval\ =\ (\ i32\_Non\_Integral\_Sum\ +\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ );}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00109}00109\ \ \ \ \ state\ =\ 2;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00112}00112\ \ \ \ \ \doxymbox{\hyperlink{task_8h_ab7bf0ae866292ba8296091a9d5209689}{taskENTER\_CRITICAL}}();}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00113}00113\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.i32\_Position\ =\ i32\_Feedback;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00114}00114\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.i32\_Setpoint\ =\ i32\_Setpoint;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00115}00115\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.i32\_Error\ =\ i32\_Error;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00116}00116\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.i32\_Integral\_Sum\ =\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00117}00117\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.i32\_Output\ =\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00118}00118\ \ \ \ \ \doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}.state\ =\ state;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00119}00119\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aac8f36abc45ac4ee714bd6b81e3b1643}{taskEXIT\_CRITICAL}}();}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00122}00122\ \ \ \ \ \textcolor{keywordflow}{return}\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00123}00123\ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00124}00124\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00131}\doxymbox{\hyperlink{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35}{00131}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8c_a65f01ae1b5f3c272732fe45a46ba2f35}{v\_Get\_PID\_Log\_Info}}(\ \doxymbox{\hyperlink{structPID__Log__Info__t}{PID\_Log\_Info\_t}}\ *p\_Info\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00132}00132\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00133}00133\ \ \ \ \ \doxymbox{\hyperlink{task_8h_ab7bf0ae866292ba8296091a9d5209689}{taskENTER\_CRITICAL}}();}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00134}00134\ \ \ \ \ \doxymbox{\hyperlink{misc_8c_a1cd40c40a6410f01b1439b165e76a00e}{memcpy}}(\ p\_Info,\ \&\doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}},\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{pid_8c_a046bb2960dce68583026aeb25d123bd8}{Log\_Info}}));}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00135}00135\ \ \ \ \ \doxymbox{\hyperlink{task_8h_aac8f36abc45ac4ee714bd6b81e3b1643}{taskEXIT\_CRITICAL}}();}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00136}00136\ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00139}\doxymbox{\hyperlink{pid_8c_a83c89cdaeaa69f4e1e33c098d144e8d8}{00139}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{pid_8c_a83c89cdaeaa69f4e1e33c098d144e8d8}{v\_Reset\_PID}}(\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00140}00140\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00141}00141\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_E\_m\_1\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00142}00142\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>i32\_Integral\_Sum\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00143}00143\ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00154}\doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{00154}}\ \textcolor{keyword}{static}\ int32\_t\ \doxymbox{\hyperlink{pid_8c_a4492fb6f81107f3779b26e805f896bc9}{i32\_Clamp}}(\ int32\_t\ x,\ int32\_t\ i32\_Min,\ int32\_t\ i32\_Max\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00155}00155\ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00156}00156\ \ \ \ \ int32\_t\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00157}00157\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00158}00158\ \ \ \ \ \textcolor{keywordflow}{if}(\ x\ >=\ i32\_Max\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00159}00159\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00160}00160\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ i32\_Max;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00161}00161\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00162}00162\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ x\ <=\ i32\_Min\ )}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00163}00163\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00164}00164\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ i32\_Min;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00165}00165\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00166}00166\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00167}00167\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ x;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00168}00168\ }
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00169}00169\ \ \ \ \ \textcolor{keywordflow}{return}\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00170}00170\ \}}
+\DoxyCodeLine{\Hypertarget{pid_8c_source_l00171}00171\ }
+
+\end{DoxyCode}

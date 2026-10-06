@@ -1,0 +1,171 @@
+\doxysection{src/\+main.c File Reference}
+\hypertarget{main_8c}{}\label{main_8c}\index{src/main.c@{src/main.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include $<$camera\+\_\+task.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+Include dependency graph for main.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982}{v\+\_\+\+Hw\+\_\+\+Init}} (void)
+\begin{DoxyCompactList}\small\item\em Low level hardware initialization. This is called before the scheduler is started. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{main_8c_ad274afb53f96e3260f8c463d70d16a25}{v\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\begin{DoxyCompactList}\small\item\em Thread to manage serial communcations Serial messages are parse and crc-\/checked in the serial interrupt. When a well formed message arrives, an event is sent to the queue in the this thread. Where (optionally) a command is executed and a response sent. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{main_8c_a9a9175987165a91248fcc2d4284f0a3f}{v\+\_\+\+System\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\item 
+void \doxymbox{\hyperlink{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}{main}} (void)
+\begin{DoxyCompactList}\small\item\em Low level initialization of hardware, creates threads and starts scheduler. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} \doxymbox{\hyperlink{main_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{main_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667}\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667} 
+void main (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Low level initialization of hardware, creates threads and starts scheduler. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{main_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{main_8c_source}{main.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{main_8c_a6288eba0f8e8ad3ab1544ad731eb7667_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982}\index{main.c@{main.c}!v\_Hw\_Init@{v\_Hw\_Init}}
+\index{v\_Hw\_Init@{v\_Hw\_Init}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{v\_Hw\_Init()}{v\_Hw\_Init()}}
+{\footnotesize\ttfamily \label{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982} 
+void v\+\_\+\+Hw\+\_\+\+Init (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Low level hardware initialization. This is called before the scheduler is started. 
+
+
+
+Definition at line \doxymbox{\hyperlink{hw__init_8c_source_l00040}{40}} of file \doxymbox{\hyperlink{hw__init_8c_source}{hw\+\_\+init.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=296pt]{main_8c_a56dcf7c2e0fdbd1879f6622d91ade982_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{main_8c_ad274afb53f96e3260f8c463d70d16a25}\index{main.c@{main.c}!v\_Serial\_Comm\_Task@{v\_Serial\_Comm\_Task}}
+\index{v\_Serial\_Comm\_Task@{v\_Serial\_Comm\_Task}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{v\_Serial\_Comm\_Task()}{v\_Serial\_Comm\_Task()}}
+{\footnotesize\ttfamily \label{main_8c_ad274afb53f96e3260f8c463d70d16a25} 
+void v\+\_\+\+Serial\+\_\+\+Comm\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Thread to manage serial communcations Serial messages are parse and crc-\/checked in the serial interrupt. When a well formed message arrives, an event is sent to the queue in the this thread. Where (optionally) a command is executed and a response sent. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pv\+Parameters} & Optional param that can be passed into task when it is launched. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{serial__comm_8c_source_l00047}{47}} of file \doxymbox{\hyperlink{serial__comm_8c_source}{serial\+\_\+comm.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8c_ad274afb53f96e3260f8c463d70d16a25_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8c_ad274afb53f96e3260f8c463d70d16a25_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{main_8c_a9a9175987165a91248fcc2d4284f0a3f}\index{main.c@{main.c}!v\_System\_Task@{v\_System\_Task}}
+\index{v\_System\_Task@{v\_System\_Task}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{v\_System\_Task()}{v\_System\_Task()}}
+{\footnotesize\ttfamily \label{main_8c_a9a9175987165a91248fcc2d4284f0a3f} 
+void v\+\_\+\+System\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00034}{34}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{main_8c_a9a9175987165a91248fcc2d4284f0a3f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{main_8c_a9a9175987165a91248fcc2d4284f0a3f_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{main_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{main_8c_a41bd82d597649cdf060877fea69b23a2}\index{main.c@{main.c}!initialized@{initialized}}
+\index{initialized@{initialized}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{initialized}{initialized}}
+{\footnotesize\ttfamily \label{main_8c_a41bd82d597649cdf060877fea69b23a2} 
+\doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{Event\+Group\+Handle\+\_\+t}} initialized}
+
+
+
+Definition at line \doxymbox{\hyperlink{main_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{main_8c_source}{main.\+c}}.
+

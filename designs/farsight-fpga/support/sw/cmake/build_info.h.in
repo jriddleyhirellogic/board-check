@@ -1,0 +1,11 @@
+typedef struct {
+    const char* CommitSHA;
+    const char* Timestamp;
+    const char* Version;
+} build_info_t;
+
+static const build_info_t build_info = {
+    .CommitSHA = "@COMMIT_SHA@",
+    .Timestamp = "@TIMESTAMP@",
+    .Version = "@PROJECT_VERSION@"
+};

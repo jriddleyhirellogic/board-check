@@ -1,0 +1,14 @@
+Setting up new board -
+
+Assuming version of bootloader 2.1.0 or greater. Open python terminal and connect serial port.
+from SerialTest import *
+
+Power on board - hold button (on of the two buttons near the center) down to prevent booting into application, should one be present.
+
+In python terminal, type 'New_Board()'  This will install the calibration for the 3D printed focus mechanism and the latest application binary.
+
+Power cycle the board.
+
+Bootloader will hang anround for ~8-10 seconds (blink pattern slow with 50% duty cycle) then the application should start (faster blink with 25% DC).
+
+The calibration data in flash is not overwritten when an application is updated. It will need to be updated if a different focus mechanism is used.

@@ -1,0 +1,92 @@
+\doxysection{mem\+\_\+map.\+h}
+\hypertarget{mem__map_8h_source}{}\label{mem__map_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/mem\_map.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/mem\_map.h}}
+\doxymbox{\hyperlink{mem__map_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00001}00001\ \textcolor{preprocessor}{\#ifndef\ MEM\_MAP\_H}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00002}00002\ \textcolor{preprocessor}{\#define\ MEM\_MAP\_H}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00003}00003\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00004}\doxymbox{\hyperlink{mem__map_8h_ac1ed8f889852ca5ad56781b572fa8b87}{00004}}\ \textcolor{preprocessor}{\#define\ PRI\_STP\_VREF\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70031000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00005}\doxymbox{\hyperlink{mem__map_8h_a22647ecaaa9e42a4ca455b0ff2fc22ba}{00005}}\ \textcolor{preprocessor}{\#define\ PRI\_STP\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70030000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00006}\doxymbox{\hyperlink{mem__map_8h_a7ebd7551965805ac2e063affcede45ce}{00006}}\ \textcolor{preprocessor}{\#define\ PRI\_STP\_OUT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70032000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00008}\doxymbox{\hyperlink{mem__map_8h_ac78c05c55fcb311056310304e2966122}{00008}}\ \textcolor{preprocessor}{\#define\ SEC\_STP\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70033000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00009}\doxymbox{\hyperlink{mem__map_8h_a5010964fed8e915044f46a246f147c0c}{00009}}\ \textcolor{preprocessor}{\#define\ SEC\_STP\_VREF\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70034000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00010}\doxymbox{\hyperlink{mem__map_8h_a432be612292e6e6d7d66a822613406e9}{00010}}\ \textcolor{preprocessor}{\#define\ SEC\_STP\_OUT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70035000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00012}\doxymbox{\hyperlink{mem__map_8h_a8b90c527237bc3ac73d4219603b23feb}{00012}}\ \textcolor{preprocessor}{\#define\ LVDT\_RO\_PRI\_I\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70038000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00013}\doxymbox{\hyperlink{mem__map_8h_abdd67f4040607b6a313ea36833488b42}{00013}}\ \textcolor{preprocessor}{\#define\ LVDT\_RO\_PRI\_Q\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7003A000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00014}\doxymbox{\hyperlink{mem__map_8h_a63ad4d762e17e3782fb6a40512c99466}{00014}}\ \textcolor{preprocessor}{\#define\ LVDT\_RO\_SEC\_I\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70039000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00015}\doxymbox{\hyperlink{mem__map_8h_aea8c3607a495ed7614a0db9c30b2dbf3}{00015}}\ \textcolor{preprocessor}{\#define\ LVDT\_RO\_SEC\_Q\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70037000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00017}\doxymbox{\hyperlink{mem__map_8h_a9d6434ead44ff515d17d60f250b53e2e}{00017}}\ \textcolor{preprocessor}{\#define\ TMTC\_UART\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70000000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00019}\doxymbox{\hyperlink{mem__map_8h_ae14749410e6d09c17578bad843d68cb8}{00019}}\ \textcolor{preprocessor}{\#define\ DBG\_GPIO\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70012000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00020}\doxymbox{\hyperlink{mem__map_8h_a4079aa6e8aa64b8c12d1571ca4c7ec40}{00020}}\ \textcolor{preprocessor}{\#define\ LVDT\_GAIN\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70036000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00022}\doxymbox{\hyperlink{mem__map_8h_a6302cfdf958518b7ca1866dbdb79d402}{00022}}\ \textcolor{preprocessor}{\#define\ SERIAL\_COMM\_TIMER\_BASE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70016000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00024}\doxymbox{\hyperlink{mem__map_8h_a2d056590c22877e0db76ff4ac898183f}{00024}}\ \textcolor{preprocessor}{\#define\ SLVSEC\_SPI\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70001000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00025}\doxymbox{\hyperlink{mem__map_8h_a66c8e8b9a85c3caf5e610acab21d3090}{00025}}\ \textcolor{preprocessor}{\#define\ GPI\_CAM\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70002000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00026}\doxymbox{\hyperlink{mem__map_8h_a9c8188530fca18f16fa7ad720ececeb3}{00026}}\ \textcolor{preprocessor}{\#define\ GPO\_CAM\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70003000}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00028}\doxymbox{\hyperlink{mem__map_8h_ad0123bf117745a0000a0f8a302dc5e76}{00028}}\ \textcolor{preprocessor}{\#define\ DMA\_WRITE\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70004000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00029}\doxymbox{\hyperlink{mem__map_8h_ae7d5a881e058d2185c378e7302b294b9}{00029}}\ \textcolor{preprocessor}{\#define\ DMA\_WRITE\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70005000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00030}\doxymbox{\hyperlink{mem__map_8h_a91ae062f521d55e6c952d10a47e00d1c}{00030}}\ \textcolor{preprocessor}{\#define\ UDP\_DMACTRL\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70006000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00031}\doxymbox{\hyperlink{mem__map_8h_a7180a4b807599649a940531ad7cf98a4}{00031}}\ \textcolor{preprocessor}{\#define\ UDP\_DMACTRL\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70007000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00033}\doxymbox{\hyperlink{mem__map_8h_ab0e62eac20c8130d520e66b686cf8d17}{00033}}\ \textcolor{preprocessor}{\#define\ ETH1\_MAC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70008000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00034}\doxymbox{\hyperlink{mem__map_8h_a32b9bdddc356d0951708db943b9d11bf}{00034}}\ \textcolor{preprocessor}{\#define\ ETH1\_STAT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70009000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00035}\doxymbox{\hyperlink{mem__map_8h_aa1113713f24375f7891834cd55d4e1ad}{00035}}\ \textcolor{preprocessor}{\#define\ ETH1\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000A000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00036}\doxymbox{\hyperlink{mem__map_8h_a3071672bcb89eca88bbf057e75d490aa}{00036}}\ \textcolor{preprocessor}{\#define\ CAM\_MUX\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000B000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00037}\doxymbox{\hyperlink{mem__map_8h_aa3e97af7d20a402920fa3b207570a169}{00037}}\ \textcolor{preprocessor}{\#define\ ETH2\_STAT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000C000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00038}\doxymbox{\hyperlink{mem__map_8h_a7619a6ca43f006fe24785cab440d13d2}{00038}}\ \textcolor{preprocessor}{\#define\ ETH2\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000D000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00039}\doxymbox{\hyperlink{mem__map_8h_a6fba55d0134f4e92c4531f269d3ed68a}{00039}}\ \textcolor{preprocessor}{\#define\ UDP\_TX\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000E000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00040}\doxymbox{\hyperlink{mem__map_8h_ac17ecf6c5ec2ab2c5040eb937812c7af}{00040}}\ \textcolor{preprocessor}{\#define\ CAM\_TRIG\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000F000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00041}\doxymbox{\hyperlink{mem__map_8h_af237b3059a023f3588ed79ebad8bb80d}{00041}}\ \textcolor{preprocessor}{\#define\ GPI\_HK\_STATUS\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70010000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00042}\doxymbox{\hyperlink{mem__map_8h_a9456be99f90d055b24ccde7bef136354}{00042}}\ \textcolor{preprocessor}{\#define\ GPO\_HK\_PWR\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70011000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00043}\doxymbox{\hyperlink{mem__map_8h_a59c4e1adbf9b3212778156a7483dd55a}{00043}}\ \textcolor{preprocessor}{\#define\ DMA\_READ\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70013000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00044}\doxymbox{\hyperlink{mem__map_8h_a1d311ccf3386719732e71f41670d9966}{00044}}\ \textcolor{preprocessor}{\#define\ DMA\_READ\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70014000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00045}\doxymbox{\hyperlink{mem__map_8h_a69ddfa03d9d3008b1ad60ecbc37f4b9f}{00045}}\ \textcolor{preprocessor}{\#define\ PPS\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70015000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00046}\doxymbox{\hyperlink{mem__map_8h_a95266d2bde59c88af46cc495ee3c73e3}{00046}}\ \textcolor{preprocessor}{\#define\ ETH2\_MAC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x80002000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00047}\doxymbox{\hyperlink{mem__map_8h_a0e115e2a96b6cf5dccf2313a8984fa94}{00047}}\ \textcolor{preprocessor}{\#define\ VERSION\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70017000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00049}00049\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00050}00050\ }
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00051}00051\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00052}00052\ \textcolor{comment}{\#define\ TMTC\_UART\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70000000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00053}00053\ \textcolor{comment}{\#define\ SLVSEC\_SPI\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70001000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00054}00054\ \textcolor{comment}{\#define\ GPI\_CAM\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70002000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00055}00055\ \textcolor{comment}{\#define\ GPO\_CAM\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70003000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00056}00056\ \textcolor{comment}{\#define\ DMA\_WRITE\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70004000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00057}00057\ \textcolor{comment}{\#define\ DMA\_WRITE\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70005000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00058}00058\ \textcolor{comment}{\#define\ UDP\_DMACTRL\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70006000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00059}00059\ \textcolor{comment}{\#define\ UDP\_DMACTRL\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70007000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00060}00060\ \textcolor{comment}{\#define\ ETH1\_MAC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70008000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00061}00061\ \textcolor{comment}{\#define\ ETH1\_STAT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70009000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00062}00062\ \textcolor{comment}{\#define\ ETH1\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000A000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00063}00063\ \textcolor{comment}{\#define\ CAM\_MUX\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000B000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00064}00064\ \textcolor{comment}{\#define\ ETH2\_STAT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000C000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00065}00065\ \textcolor{comment}{\#define\ ETH2\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000D000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00066}00066\ \textcolor{comment}{\#define\ UDP\_TX\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000E000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00067}00067\ \textcolor{comment}{\#define\ CAM\_TRIG\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7000F000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00068}00068\ \textcolor{comment}{\#define\ GPI\_HK\_STATUS\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70010000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00069}00069\ \textcolor{comment}{\#define\ GPO\_HK\_PWR\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70011000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00070}00070\ \textcolor{comment}{\#define\ DBG\_GPIO\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70012000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00071}00071\ \textcolor{comment}{\#define\ DMA\_READ\_DDR4\_8GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70013000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00072}00072\ \textcolor{comment}{\#define\ DMA\_READ\_DDR4\_16GB\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70014000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00073}00073\ \textcolor{comment}{\#define\ PPS\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70015000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00074}00074\ \textcolor{comment}{\#define\ PRI\_STP\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70020000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00075}00075\ \textcolor{comment}{\#define\ PRI\_STP\_VREF\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70021000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00076}00076\ \textcolor{comment}{\#define\ PRI\_STP\_OUT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70022000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00077}00077\ \textcolor{comment}{\#define\ SEC\_STP\_CTRL\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70023000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00078}00078\ \textcolor{comment}{\#define\ SEC\_STP\_VREF\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70024000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00079}00079\ \textcolor{comment}{\#define\ SEC\_STP\_OUT\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70025000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00080}00080\ \textcolor{comment}{\#define\ LVDT\_GAIN\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70026000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00081}00081\ \textcolor{comment}{\#define\ LVDT\_RO\_SEC\_Q\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70027000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00082}00082\ \textcolor{comment}{\#define\ LVDT\_RO\_PRI\_I\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70028000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00083}00083\ \textcolor{comment}{\#define\ LVDT\_RO\_SEC\_I\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x70029000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00084}00084\ \textcolor{comment}{\#define\ LVDT\_RO\_PRI\_Q\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x7002A000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00085}00085\ \textcolor{comment}{\#define\ ETH2\_MAC\_BASE\_ADDR\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0x80002000UL}}
+\DoxyCodeLine{\Hypertarget{mem__map_8h_source_l00086}00086\ \textcolor{comment}{\ */}}
+
+\end{DoxyCode}

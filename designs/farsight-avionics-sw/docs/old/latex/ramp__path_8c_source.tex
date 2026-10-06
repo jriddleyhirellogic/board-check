@@ -1,0 +1,47 @@
+\doxysection{ramp\+\_\+path.\+c}
+\hypertarget{ramp__path_8c_source}{}\label{ramp__path_8c_source}\index{src/Test\_Paths/ramp\_path.c@{src/Test\_Paths/ramp\_path.c}}
+\doxymbox{\hyperlink{ramp__path_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00002}00002\ \textcolor{comment}{\ *\ ramp\_path.c}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 30,\ 2025}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{path_8h}{path.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00014}\doxymbox{\hyperlink{ramp__path_8c_adea5bed13f65a07a6380c082b7274767}{00014}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint32\_t\ \doxymbox{\hyperlink{ramp__path_8c_adea5bed13f65a07a6380c082b7274767}{u32\_Ramp\_Duration}}\ =\ 5000;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00015}\doxymbox{\hyperlink{ramp__path_8c_ac7ba23978d7448c628bbbc65cf503fce}{00015}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ int32\_t\ \doxymbox{\hyperlink{ramp__path_8c_ac7ba23978d7448c628bbbc65cf503fce}{i32\_Start\_Position}}\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00016}\doxymbox{\hyperlink{ramp__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}{00016}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ int32\_t\ \doxymbox{\hyperlink{constant__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}{i32\_Final\_Position}}\ =\ 300;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00017}\doxymbox{\hyperlink{ramp__path_8c_a3b60117cbfebbaecc0e0349f2ea68e94}{00017}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint32\_t\ \doxymbox{\hyperlink{ramp__path_8c_a3b60117cbfebbaecc0e0349f2ea68e94}{u32\_Start\_Time}}\ =\ 2000;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00018}\doxymbox{\hyperlink{ramp__path_8c_a4919f998a5018e95dab1b75615b5c224}{00018}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint32\_t\ \doxymbox{\hyperlink{constant__path_8c_a4919f998a5018e95dab1b75615b5c224}{u32\_End\_Time}}\ =\ 15000;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00020}\doxymbox{\hyperlink{ramp__path_8c_a8a296e8b25412be770c4905a7f14dd4f}{00020}}\ int32\_t\ \doxymbox{\hyperlink{ramp__path_8c_a8a296e8b25412be770c4905a7f14dd4f}{i32\_Get\_Setpoint}}(\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ current\_time\ )}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00021}00021\ \{}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00022}00022\ \ \ \ \ int32\_t\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00024}00024\ \ \ \ \ \textcolor{keywordflow}{if}(\ current\_time\ <\ \doxymbox{\hyperlink{ramp__path_8c_a3b60117cbfebbaecc0e0349f2ea68e94}{u32\_Start\_Time}}\ )}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00025}00025\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00026}00026\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00027}00027\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00028}00028\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ current\_time\ <=\ (\doxymbox{\hyperlink{ramp__path_8c_a3b60117cbfebbaecc0e0349f2ea68e94}{u32\_Start\_Time}}\ +\ \doxymbox{\hyperlink{ramp__path_8c_adea5bed13f65a07a6380c082b7274767}{u32\_Ramp\_Duration}}))}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00029}00029\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ r\ =\ (float)(current\_time\ -\/\ \doxymbox{\hyperlink{ramp__path_8c_a3b60117cbfebbaecc0e0349f2ea68e94}{u32\_Start\_Time}})/(float)\doxymbox{\hyperlink{ramp__path_8c_adea5bed13f65a07a6380c082b7274767}{u32\_Ramp\_Duration}};}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00031}00031\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ r\ *\ \doxymbox{\hyperlink{constant__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}{i32\_Final\_Position}}\ +\ (1.0f\ -\/\ r\ )*\ \doxymbox{\hyperlink{ramp__path_8c_ac7ba23978d7448c628bbbc65cf503fce}{i32\_Start\_Position}};}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00032}00032\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00033}00033\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00034}00034\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00035}00035\ \ \ \ \ \ \ \ \ i32\_Retval\ =\ \doxymbox{\hyperlink{constant__path_8c_af0e0ad9e0b74d0447b9dc0044b046a71}{i32\_Final\_Position}};}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00036}00036\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00038}00038\ \ \ \ \ i32\_Retval\ =\ current\_time\ >=\ \doxymbox{\hyperlink{constant__path_8c_a4919f998a5018e95dab1b75615b5c224}{u32\_End\_Time}}\ ?\ \doxymbox{\hyperlink{path_8h_a0fa6495f074babfd0f72fcfef0779c8d}{END\_OF\_PATH}}\ :\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00040}00040\ \ \ \ \ \textcolor{keywordflow}{return}\ i32\_Retval;}
+\DoxyCodeLine{\Hypertarget{ramp__path_8c_source_l00041}00041\ \}}
+
+\end{DoxyCode}

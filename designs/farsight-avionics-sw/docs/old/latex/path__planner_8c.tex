@@ -1,0 +1,362 @@
+\doxysection{src/\+path\+\_\+planner.c File Reference}
+\hypertarget{path__planner_8c}{}\label{path__planner_8c}\index{src/path\_planner.c@{src/path\_planner.c}}
+{\ttfamily \+\#include $<$stdio.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$math.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include "{}path\+\_\+planner.\+h"{}}\newline
+Include dependency graph for path\+\_\+planner.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}{ABS}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8c_a95ed41486ca0ed53262e4b8934d4afac}{SGN}}(x)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}} \{ \newline
+\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}{INIT}}
+, \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}{ACCELERATE}}
+, \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}{CONSTANT\+\_\+V}}
+, \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}{DECELERATE}}
+, \newline
+\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}{DONE}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22}{v\+\_\+\+Init\+\_\+\+Path\+\_\+\+Planner}} (int32\+\_\+t i32\+\_\+\+Start, int32\+\_\+t i32\+\_\+\+Final)
+\item 
+int32\+\_\+t \doxymbox{\hyperlink{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05}{i32\+\_\+\+\_\+\+Update\+\_\+\+Path\+\_\+\+SM}} (void)
+\item 
+void \doxymbox{\hyperlink{path__planner_8c_a794af90614053846b1535622ff70960c}{v\+\_\+\+Reset\+\_\+\+Path}} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}} \doxymbox{\hyperlink{path__planner_8c_a98ec243e28d488775e089447697ec300}{current\+\_\+state}}
+\item 
+static \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}} \doxymbox{\hyperlink{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}{next\+\_\+state}}
+\item 
+static const float \doxymbox{\hyperlink{path__planner_8c_a79e358c170d45dbe306c9e472932951f}{v\+\_\+base}} = 0.\+1f
+\item 
+static const float \doxymbox{\hyperlink{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}{T}} = 10.\+0e-\/3
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{path__planner_8c_a28e907d26d729f460c390072f19847bb}{i32\+\_\+\+Final\+\_\+\+Position\+\_\+microns}}
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}{i32\+\_\+\+Start\+\_\+\+Position\+\_\+microns}}
+\item 
+static const float \doxymbox{\hyperlink{path__planner_8c_ab9054d31b679638b68cbf36e9169c127}{f\+\_\+\+Tolerance\+\_\+microns}} = 0.\+5
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}{i32\+\_\+\+Current\+\_\+\+Position\+\_\+microns}}
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{path__planner_8c_a242656efb81ec9e780767febd9a43604}{i32\+\_\+\+Current\+\_\+\+Velocity}}
+\item 
+static float \doxymbox{\hyperlink{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5}{f\+\_\+\+Elapsed\+\_\+\+Time\+\_\+sec}}
+\item 
+static float \doxymbox{\hyperlink{path__planner_8c_a52fe3e497164bb97586893c31baaa770}{f\+\_\+\+Ramp\+\_\+\+Distance\+\_\+microns}}
+\item 
+static float \doxymbox{\hyperlink{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}{f\+\_\+\+Total\+\_\+\+Distance\+\_\+microns}}
+\item 
+static float \doxymbox{\hyperlink{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}{f\+\_\+\+Current\+\_\+\+Distance\+\_\+\+Travelled\+\_\+microns}}
+\item 
+static float \doxymbox{\hyperlink{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}{f\+\_\+\+Distance\+\_\+\+Remaining\+\_\+microns}}
+\item 
+static \doxymbox{\hyperlink{structMotion__Params__t}{Motion\+\_\+\+Params\+\_\+t}} \doxymbox{\hyperlink{path__planner_8c_a40d2177f7824d276900d72054d7721ac}{Motion}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{path__planner_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759}\index{path\_planner.c@{path\_planner.c}!ABS@{ABS}}
+\index{ABS@{ABS}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{ABS}{ABS}}
+{\footnotesize\ttfamily \label{path__planner_8c_a996f7be338ccb40d1a2a5abc1ad61759} 
+\+\#define ABS(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(((x)\ >=\ 0)\ ?\ (x):-\/(x))}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00027}{27}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a95ed41486ca0ed53262e4b8934d4afac}\index{path\_planner.c@{path\_planner.c}!SGN@{SGN}}
+\index{SGN@{SGN}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{SGN}{SGN}}
+{\footnotesize\ttfamily \label{path__planner_8c_a95ed41486ca0ed53262e4b8934d4afac} 
+\+\#define SGN(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(((x)\ >=\ 0)?\ 1\ :\ -\/1)}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00028}{28}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+
+
+\label{doc-enum-members}
+\Hypertarget{path__planner_8c_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aac}\index{path\_planner.c@{path\_planner.c}!Path\_State\_t@{Path\_State\_t}}
+\index{Path\_State\_t@{Path\_State\_t}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{Path\_State\_t}{Path\_State\_t}}
+{\footnotesize\ttfamily \label{path__planner_8c_a45df5932de0791025c223a3e42d14aac} 
+enum \doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{INIT@{INIT}!path\_planner.c@{path\_planner.c}}
+\index{path\_planner.c@{path\_planner.c}!INIT@{INIT}}
+}\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36}\label{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0cb1b2c6a7db1f1084886c98909a3f36} 
+INIT&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ACCELERATE@{ACCELERATE}!path\_planner.c@{path\_planner.c}}
+\index{path\_planner.c@{path\_planner.c}!ACCELERATE@{ACCELERATE}}
+}\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413}\label{path__planner_8c_a45df5932de0791025c223a3e42d14aaca6c3b7e604342e50d869bcfbdc63b6413} 
+ACCELERATE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CONSTANT\_V@{CONSTANT\_V}!path\_planner.c@{path\_planner.c}}
+\index{path\_planner.c@{path\_planner.c}!CONSTANT\_V@{CONSTANT\_V}}
+}\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b}\label{path__planner_8c_a45df5932de0791025c223a3e42d14aaca0f88e75a28615741d2a6505de537824b} 
+CONSTANT\+\_\+V&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DECELERATE@{DECELERATE}!path\_planner.c@{path\_planner.c}}
+\index{path\_planner.c@{path\_planner.c}!DECELERATE@{DECELERATE}}
+}\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576}\label{path__planner_8c_a45df5932de0791025c223a3e42d14aaca7605d14f3e1b34bb5f79d94f1b5e2576} 
+DECELERATE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DONE@{DONE}!path\_planner.c@{path\_planner.c}}
+\index{path\_planner.c@{path\_planner.c}!DONE@{DONE}}
+}\Hypertarget{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749}\label{path__planner_8c_a45df5932de0791025c223a3e42d14aaca9c954bcf443428c80b0f107b3bc48749} 
+DONE&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00030}{30}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{path__planner_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05}\index{path\_planner.c@{path\_planner.c}!i32\_\_Update\_Path\_SM@{i32\_\_Update\_Path\_SM}}
+\index{i32\_\_Update\_Path\_SM@{i32\_\_Update\_Path\_SM}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{i32\_\_Update\_Path\_SM()}{i32\_\_Update\_Path\_SM()}}
+{\footnotesize\ttfamily \label{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05} 
+int32\+\_\+t i32\+\_\+\+\_\+\+Update\+\_\+\+Path\+\_\+\+SM (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00078}{78}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8c_a0fca3990778c9bd750ccf9293f792e05_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22}\index{path\_planner.c@{path\_planner.c}!v\_Init\_Path\_Planner@{v\_Init\_Path\_Planner}}
+\index{v\_Init\_Path\_Planner@{v\_Init\_Path\_Planner}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Path\_Planner()}{v\_Init\_Path\_Planner()}}
+{\footnotesize\ttfamily \label{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22} 
+void v\+\_\+\+Init\+\_\+\+Path\+\_\+\+Planner (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{i32\+\_\+\+Start}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Final}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00064}{64}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8c_af59c10bbadd690729a6d1997cee0ea22_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{path__planner_8c_a794af90614053846b1535622ff70960c}\index{path\_planner.c@{path\_planner.c}!v\_Reset\_Path@{v\_Reset\_Path}}
+\index{v\_Reset\_Path@{v\_Reset\_Path}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{v\_Reset\_Path()}{v\_Reset\_Path()}}
+{\footnotesize\ttfamily \label{path__planner_8c_a794af90614053846b1535622ff70960c} 
+void v\+\_\+\+Reset\+\_\+\+Path (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00177}{177}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+
+
+\label{doc-var-members}
+\Hypertarget{path__planner_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{path__planner_8c_a98ec243e28d488775e089447697ec300}\index{path\_planner.c@{path\_planner.c}!current\_state@{current\_state}}
+\index{current\_state@{current\_state}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{current\_state}{current\_state}}
+{\footnotesize\ttfamily \label{path__planner_8c_a98ec243e28d488775e089447697ec300} 
+\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}} current\+\_\+state\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00039}{39}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a16a45737ecda27d24079db349a75e5f0}\index{path\_planner.c@{path\_planner.c}!f\_Current\_Distance\_Travelled\_microns@{f\_Current\_Distance\_Travelled\_microns}}
+\index{f\_Current\_Distance\_Travelled\_microns@{f\_Current\_Distance\_Travelled\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Current\_Distance\_Travelled\_microns}{f\_Current\_Distance\_Travelled\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_a16a45737ecda27d24079db349a75e5f0} 
+float f\+\_\+\+Current\+\_\+\+Distance\+\_\+\+Travelled\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00059}{59}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8}\index{path\_planner.c@{path\_planner.c}!f\_Distance\_Remaining\_microns@{f\_Distance\_Remaining\_microns}}
+\index{f\_Distance\_Remaining\_microns@{f\_Distance\_Remaining\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Distance\_Remaining\_microns}{f\_Distance\_Remaining\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_afb55f848b9c57cb876e96cceae12a3d8} 
+float f\+\_\+\+Distance\+\_\+\+Remaining\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00060}{60}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5}\index{path\_planner.c@{path\_planner.c}!f\_Elapsed\_Time\_sec@{f\_Elapsed\_Time\_sec}}
+\index{f\_Elapsed\_Time\_sec@{f\_Elapsed\_Time\_sec}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Elapsed\_Time\_sec}{f\_Elapsed\_Time\_sec}}
+{\footnotesize\ttfamily \label{path__planner_8c_a6b7fb3fe32253f76140009fcb528f7a5} 
+float f\+\_\+\+Elapsed\+\_\+\+Time\+\_\+sec\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00055}{55}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a52fe3e497164bb97586893c31baaa770}\index{path\_planner.c@{path\_planner.c}!f\_Ramp\_Distance\_microns@{f\_Ramp\_Distance\_microns}}
+\index{f\_Ramp\_Distance\_microns@{f\_Ramp\_Distance\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Ramp\_Distance\_microns}{f\_Ramp\_Distance\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_a52fe3e497164bb97586893c31baaa770} 
+float f\+\_\+\+Ramp\+\_\+\+Distance\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00056}{56}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_ab9054d31b679638b68cbf36e9169c127}\index{path\_planner.c@{path\_planner.c}!f\_Tolerance\_microns@{f\_Tolerance\_microns}}
+\index{f\_Tolerance\_microns@{f\_Tolerance\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Tolerance\_microns}{f\_Tolerance\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_ab9054d31b679638b68cbf36e9169c127} 
+const float f\+\_\+\+Tolerance\+\_\+microns = 0.\+5\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00050}{50}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a9218151d8ac24b97a62152a94fa35209}\index{path\_planner.c@{path\_planner.c}!f\_Total\_Distance\_microns@{f\_Total\_Distance\_microns}}
+\index{f\_Total\_Distance\_microns@{f\_Total\_Distance\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{f\_Total\_Distance\_microns}{f\_Total\_Distance\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_a9218151d8ac24b97a62152a94fa35209} 
+float f\+\_\+\+Total\+\_\+\+Distance\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00057}{57}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c}\index{path\_planner.c@{path\_planner.c}!i32\_Current\_Position\_microns@{i32\_Current\_Position\_microns}}
+\index{i32\_Current\_Position\_microns@{i32\_Current\_Position\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Current\_Position\_microns}{i32\_Current\_Position\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_ade63193d81cad6031be4309ef3ff7e6c} 
+int32\+\_\+t i32\+\_\+\+Current\+\_\+\+Position\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00052}{52}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a242656efb81ec9e780767febd9a43604}\index{path\_planner.c@{path\_planner.c}!i32\_Current\_Velocity@{i32\_Current\_Velocity}}
+\index{i32\_Current\_Velocity@{i32\_Current\_Velocity}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Current\_Velocity}{i32\_Current\_Velocity}}
+{\footnotesize\ttfamily \label{path__planner_8c_a242656efb81ec9e780767febd9a43604} 
+int32\+\_\+t i32\+\_\+\+Current\+\_\+\+Velocity\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00053}{53}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a28e907d26d729f460c390072f19847bb}\index{path\_planner.c@{path\_planner.c}!i32\_Final\_Position\_microns@{i32\_Final\_Position\_microns}}
+\index{i32\_Final\_Position\_microns@{i32\_Final\_Position\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Final\_Position\_microns}{i32\_Final\_Position\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_a28e907d26d729f460c390072f19847bb} 
+int32\+\_\+t i32\+\_\+\+Final\+\_\+\+Position\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00047}{47}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_af39bd26e48e868ab027b115ec1b91714}\index{path\_planner.c@{path\_planner.c}!i32\_Start\_Position\_microns@{i32\_Start\_Position\_microns}}
+\index{i32\_Start\_Position\_microns@{i32\_Start\_Position\_microns}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Start\_Position\_microns}{i32\_Start\_Position\_microns}}
+{\footnotesize\ttfamily \label{path__planner_8c_af39bd26e48e868ab027b115ec1b91714} 
+int32\+\_\+t i32\+\_\+\+Start\+\_\+\+Position\+\_\+microns\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00048}{48}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a40d2177f7824d276900d72054d7721ac}\index{path\_planner.c@{path\_planner.c}!Motion@{Motion}}
+\index{Motion@{Motion}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{Motion}{Motion}}
+{\footnotesize\ttfamily \label{path__planner_8c_a40d2177f7824d276900d72054d7721ac} 
+\doxymbox{\hyperlink{structMotion__Params__t}{Motion\+\_\+\+Params\+\_\+t}} Motion\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00062}{62}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a}\index{path\_planner.c@{path\_planner.c}!next\_state@{next\_state}}
+\index{next\_state@{next\_state}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{next\_state}{next\_state}}
+{\footnotesize\ttfamily \label{path__planner_8c_ad5c0780b499b923e576f14c0ea0e8e3a} 
+\doxymbox{\hyperlink{path__planner_8c_a45df5932de0791025c223a3e42d14aac}{Path\+\_\+\+State\+\_\+t}} next\+\_\+state\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00039}{39}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d}\index{path\_planner.c@{path\_planner.c}!T@{T}}
+\index{T@{T}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{T}{T}}
+{\footnotesize\ttfamily \label{path__planner_8c_a5dca814183bfbabc5756f12c00b67f8d} 
+const float T = 10.\+0e-\/3\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00045}{45}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+\Hypertarget{path__planner_8c_a79e358c170d45dbe306c9e472932951f}\index{path\_planner.c@{path\_planner.c}!v\_base@{v\_base}}
+\index{v\_base@{v\_base}!path\_planner.c@{path\_planner.c}}
+\doxysubsubsection{\texorpdfstring{v\_base}{v\_base}}
+{\footnotesize\ttfamily \label{path__planner_8c_a79e358c170d45dbe306c9e472932951f} 
+const float v\+\_\+base = 0.\+1f\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00042}{42}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+

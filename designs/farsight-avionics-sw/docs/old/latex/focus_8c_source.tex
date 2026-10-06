@@ -1,0 +1,162 @@
+\doxysection{focus.\+c}
+\hypertarget{focus_8c_source}{}\label{focus_8c_source}\index{src/focus.c@{src/focus.c}}
+\doxymbox{\hyperlink{focus_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00002}00002\ \textcolor{comment}{\ *\ control.c}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 17,\ 2025}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ <stdio.h>}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00011}00011\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00012}00012\ \textcolor{preprocessor}{\#include\ <focus\_states.h>}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00014}00014\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOSConfig_8h}{FreeRTOSConfig.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00015}00015\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00016}00016\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{task_8h}{task.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00017}00017\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{event__groups_8h}{event\_groups.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00018}00018\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{queue_8h}{queue.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00019}00019\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{timers_8h}{timers.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00020}00020\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00021}00021\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{config_8h}{config.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00022}00022\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{misc_8h}{misc.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00023}00023\ \textcolor{preprocessor}{\#include\ "{}lvdt.h"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00024}00024\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{serial__comm_8h}{serial\_comm.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00025}00025\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{states_8h}{states.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{pid_8h}{pid.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{debug__gpio_8h}{debug\_gpio.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00029}00029\ \textcolor{keyword}{extern}\ \doxymbox{\hyperlink{event__groups_8h_acab96e0b6a5cab7f7b29822b79cc78ed}{EventGroupHandle\_t}}\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00031}\doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{00031}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{queue_8h_a57349603001f8ddf51c888c49e2804d7}{QueueHandle\_t}}\ \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\_Queue}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00032}\doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{00032}}\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00033}\doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{00033}}\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ \doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{Focus\_Fault\_Timer}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00035}\doxymbox{\hyperlink{focus_8c_a65d1d914294159c84cd637820f54a21b}{00035}}\ \textcolor{keyword}{static}\ uint32\_t\ \doxymbox{\hyperlink{focus_8c_a65d1d914294159c84cd637820f54a21b}{u32\_Timeout\_Counter}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00036}00036\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}{Focus\_Timer\_Expiration}}(\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ xTimer\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00037}00037\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}{Focus\_Fault\_Timer\_Expiration}}(\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ xTimer\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00038}\doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{00038}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structContext__t}{Context\_t}}\ \doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\_context}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00040}\doxymbox{\hyperlink{focus_8c_a168c68ffd6aa22054911c8a036da169b}{00040}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{structPID__Instance__t}{PID\_Instance\_t}}\ \doxymbox{\hyperlink{focus_8c_a168c68ffd6aa22054911c8a036da169b}{PID\_Instance}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00042}\doxymbox{\hyperlink{focus_8c_addba0c0da21d334acceced044449639f}{00042}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_addba0c0da21d334acceced044449639f}{v\_Focus\_Task}}(\textcolor{keywordtype}{void}\ *pvParameters)}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00043}00043\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00044}00044\ \ \ \ \ uint8\_t\ u8\_Timer\_ID;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00045}00045\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ Control\_Update\_Period\ =\ \doxymbox{\hyperlink{projdefs_8h_a353d0f62b82a402cb3db63706c81ec3f}{pdMS\_TO\_TICKS}}(10);\ \ \textcolor{comment}{//\ For\ periodic\ tasks}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00047}00047\ \ \ \ \ \textcolor{comment}{//\ Queue\ for\ events\ directed\ at\ control\ thread}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00048}00048\ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\_Queue}}\ =\ xQueueCreate(\ \doxymbox{\hyperlink{config_8h_a7a258bdd4649025406ca1504468a20db}{CONTROL\_QUEUE\_LENGTH}}\ ,\ \textcolor{keyword}{sizeof}(\doxymbox{\hyperlink{unionEvent__t}{Event\_t}})\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00050}00050\ \ \ \ \ \textcolor{comment}{//\ Control\ timer}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00051}00051\ \ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}}\ =\ xTimerCreate(}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Focus\_Timer"{}},}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00053}00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 100,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Default\ period\ (mS)}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{projdefs_8h_aa56260e937e7e203026707e5ba944273}{pdFALSE}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ One\ shot,\ no\ auto-\/reload}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00055}00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&u8\_Timer\_ID,}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}{Focus\_Timer\_Expiration}}\ \ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00058}00058\ \ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{Focus\_Fault\_Timer}}\ =\ xTimerCreate(}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Control\_Fault"{}},}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 100,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Default\ period\ (mS)}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{projdefs_8h_aa56260e937e7e203026707e5ba944273}{pdFALSE}},\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ One\ shot,\ no\ auto-\/reload}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&u8\_Timer\_ID,}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}{Focus\_Fault\_Timer\_Expiration}}\ \ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00066}00066\ \ \ \ \ \textcolor{comment}{//\ Initialization\ complete}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00067}00067\ \ \ \ \ \doxymbox{\hyperlink{event__groups_8h_a02d7b3bb55f7e11d9c47116266c5fb2e}{xEventGroupSetBits}}(\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}},\ \ \doxymbox{\hyperlink{config_8h_a22ae2f4e3c821057d3bc7d5c73b2301f}{CONTROL\_INITIALIZED}}\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00069}00069\ \ \ \ \ \textcolor{comment}{//\ Wait\ for\ all\ tasks\ to\ be\ initialized}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00070}00070\ \ \ \ \ \doxymbox{\hyperlink{event__groups_8h_aab9d5b405bc57b7624dcabe9a9a503db}{xEventGroupWaitBits}}(\ \doxymbox{\hyperlink{camera__task_8c_a41bd82d597649cdf060877fea69b23a2}{initialized}},\ \doxymbox{\hyperlink{config_8h_a86be670bc1d1a7442e8f0d578f105307}{ALL\_INITIALIZED}},\ \doxymbox{\hyperlink{projdefs_8h_aa56260e937e7e203026707e5ba944273}{pdFALSE}},\ \doxymbox{\hyperlink{projdefs_8h_af268cf937960eb029256bd9c4d949fbe}{pdTRUE}},\ portMAX\_DELAY\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00072}00072\ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}{v\_Stop\_Focus\_Timer}}();}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00073}00073\ \ \ \ \ \doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\_context}}.p\_PID\_Instance\ =\ \&\doxymbox{\hyperlink{focus_8c_a168c68ffd6aa22054911c8a036da169b}{PID\_Instance}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00075}00075\ \ \ \ \ \doxymbox{\hyperlink{focus__sm_8c_ab9d505703ade17d3928118ec67e2f8c7}{v\_Init\_Focus\_State\_Machine}}(\ \&\doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\_context}},\ \doxymbox{\hyperlink{Init__State_8c_add2cb481a9be5055385e47c653f0ef4e}{Initial\_State}}\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00077}00077\ \ \ \ \ \textcolor{keywordflow}{while}(1)}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00078}00078\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00079}00079\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ b\_Event\_Received;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00080}00080\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ Rcvd\_Event;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00082}00082\ \ \ \ \ \ \ \ \ b\_Event\_Received\ =\ \doxymbox{\hyperlink{queue_8h_ae8364d988c6f9b63c771cc2b3dfe5df9}{xQueueReceive}}(\ \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\_Queue}},}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&Rcvd\_Event,}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ portMAX\_DELAY\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ b\_Event\_Received)\ \textcolor{comment}{//\ Event\ received}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{focus__sm_8c_aa0a10bba876871104e1372464181e260}{v\_Update\_Focus\_State}}(\ \&\doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\_context}},\ \&Rcvd\_Event\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Timeout\ for\ period\ updates}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ ++\doxymbox{\hyperlink{focus_8c_a65d1d914294159c84cd637820f54a21b}{u32\_Timeout\_Counter}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00095}00095\ \textcolor{preprocessor}{\#ifdef\ MEM\_CHECK}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Measure\ remaining\ stack\ space}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a022f761f9698b55b7d6dbf4dc6fa7284}{UBaseType\_t}}\ uxHighWaterMark\ =\ uxTaskGetStackHighWaterMark(NULL);}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00098}00098\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00101}00101\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00103}\doxymbox{\hyperlink{focus_8c_ad8e07a7a6068315f36c3131a88a164fd}{00103}}\ uint8\_t\ \doxymbox{\hyperlink{focus_8c_ad8e07a7a6068315f36c3131a88a164fd}{b\_Is\_Idle}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00104}00104\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00105}00105\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{focus_8c_af7e0754d1e2a40f1c518f7ca4d3a918c}{focus\_context}}.current\_state\ ==\ (\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\_t}})\doxymbox{\hyperlink{Idle__State_8c_ab1d107ccd3e7db89f92eebb09d9b52c2}{Idle\_State}};}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00106}00106\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00108}\doxymbox{\hyperlink{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}{00108}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}{v\_Post\_Focus\_Event}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00109}00109\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00110}00110\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ Ret\_Val;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00111}00111\ \ \ \ \ Ret\_Val\ =\ \doxymbox{\hyperlink{queue_8h_af7eb49d3249351176992950d9185abe9}{xQueueSend}}(\ \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\_Queue}},\ event,\ 2\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00112}00112\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00114}\doxymbox{\hyperlink{focus_8c_a4547d93eb30111f428e9fcbcc43026bd}{00114}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a4547d93eb30111f428e9fcbcc43026bd}{v\_Post\_Focus\_Event\_ISR}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ )}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00115}00115\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00116}00116\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ Ret\_Val;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00117}00117\ \ \ \ \ Ret\_Val\ =\ \doxymbox{\hyperlink{queue_8h_a21d5919ed26c21d121df4a4debeb643c}{xQueueSendFromISR}}(\ \ \doxymbox{\hyperlink{focus_8c_a2162fcff61a61715b4f45a526e2fb1ea}{Control\_Queue}},\ event,\ NULL\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00118}00118\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00120}\doxymbox{\hyperlink{focus_8c_a685f1bbb2a062544b84507b06233249d}{00120}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a685f1bbb2a062544b84507b06233249d}{v\_Start\_Focus\_Timer}}(\ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ ticks)}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00121}00121\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00122}00122\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ ret\_val\ =\ \ \doxymbox{\hyperlink{timers_8h_ab12eac1c69a3437b8161ce81ff34b2f4}{xTimerChangePeriod}}(\ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}},\ ticks,\ 5);}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00123}00123\ \ \ \ \ ret\_val\ =\ \doxymbox{\hyperlink{timers_8h_a3a9b838f48991e852ce05c986b0eeb8c}{xTimerStart}}(\ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}},\ 5\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00124}00124\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00126}\doxymbox{\hyperlink{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}{00126}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a442d82fe90ed4461e35cf65d0f941d8f}{v\_Stop\_Focus\_Timer}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00127}00127\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00128}00128\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ ret\_val\ =\ \doxymbox{\hyperlink{timers_8h_a8327c7fc10aee414cb163b445c5269a4}{xTimerStop}}(\ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}},\ 5\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00129}00129\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00131}\doxymbox{\hyperlink{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}{00131}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a4b6c4ddff2b48f5138a503c1c23cda8d}{Focus\_Timer\_Expiration}}(\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ xTimer\ )}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00132}00132\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00133}00133\ \ \ \ \ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ event;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00134}00134\ \ \ \ \ \textcolor{keyword}{event}.\doxymbox{\hyperlink{unionEvent__t_a4e19afe281edd9a97e66b2d7284e07e4}{no\_data}}.\doxymbox{\hyperlink{structEvent__Msg__No__Data__t_a4df35076881d8d9a55c56ba5a26857ae}{sig}}\ =\ FOCUS\_TIMER\_EXPIRED;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00135}00135\ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}{v\_Post\_Focus\_Event}}(\ \&event\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00136}00136\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00137}00137\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00138}00138\ \textcolor{comment}{//\ Fault\ timer\ for\ focusing\ operations}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00140}\doxymbox{\hyperlink{focus_8c_af422cc23645075d8ec371f62bc98437f}{00140}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_af422cc23645075d8ec371f62bc98437f}{v\_Start\_Focus\_Fault\_Timer}}(\ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ ticks)}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00141}00141\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00142}00142\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ ret\_val\ =\ \ \doxymbox{\hyperlink{timers_8h_ab12eac1c69a3437b8161ce81ff34b2f4}{xTimerChangePeriod}}(\ \doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{Focus\_Fault\_Timer}},\ ticks,\ 5);}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00143}00143\ \ \ \ \ ret\_val\ =\ \doxymbox{\hyperlink{timers_8h_a3a9b838f48991e852ce05c986b0eeb8c}{xTimerStart}}(\ \doxymbox{\hyperlink{focus_8c_a20c8ef49ce16c76e38ec9ce03cf2c7ae}{Focus\_Timer}},\ 5\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00144}00144\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00145}00145\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00146}\doxymbox{\hyperlink{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d}{00146}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_ae4212b3bc42f83f3c91c8b998671a76d}{v\_Stop\_Focus\_Fault\_Timer}}(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00147}00147\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00148}00148\ \ \ \ \ \doxymbox{\hyperlink{portmacro_8h_a7b6a9cf84459e1e2b1d07d3b41ffb011}{BaseType\_t}}\ ret\_val\ =\ \doxymbox{\hyperlink{timers_8h_a8327c7fc10aee414cb163b445c5269a4}{xTimerStop}}(\ \doxymbox{\hyperlink{focus_8c_a2f69ef85da965e6cd031f6074c21b271}{Focus\_Fault\_Timer}},\ 5\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00149}00149\ \}}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00150}00150\ }
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00151}\doxymbox{\hyperlink{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}{00151}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{focus_8c_a4fc59319aa870b5f63fd11ca5c14e212}{Focus\_Fault\_Timer\_Expiration}}(\ \doxymbox{\hyperlink{timers_8h_ae2aa96927b4806e5dcfd264ba7bc8bf6}{TimerHandle\_t}}\ xTimer\ )}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00152}00152\ \{}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00153}00153\ \ \ \ \ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ event;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00154}00154\ \ \ \ \ \textcolor{keyword}{event}.\doxymbox{\hyperlink{unionEvent__t_a4e19afe281edd9a97e66b2d7284e07e4}{no\_data}}.\doxymbox{\hyperlink{structEvent__Msg__No__Data__t_a4df35076881d8d9a55c56ba5a26857ae}{sig}}\ =\ FOCUS\_FAULT\_TIMER\_EXPIRED;}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00155}00155\ \ \ \ \ \doxymbox{\hyperlink{focus_8c_a2e1bd511cd7fa2a1419c42b33397156f}{v\_Post\_Focus\_Event}}(\ \&event\ );}
+\DoxyCodeLine{\Hypertarget{focus_8c_source_l00156}00156\ \}}
+
+\end{DoxyCode}

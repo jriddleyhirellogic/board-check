@@ -1,0 +1,60 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+crc.h File Reference}
+\hypertarget{crc_8h}{}\label{crc_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/crc.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/crc.h}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+Include dependency graph for crc.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{crc_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{crc_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{crc_8h_adf94510471a0cd9c7ab4a85118f92561}{crc}} (uint8\+\_\+t const u8\+\_\+\+Msg\+[$\,$]\+, uint16\+\_\+t u16\+\_\+\+Len, uint32\+\_\+t u32\+\_\+\+Rem)
+\begin{DoxyCompactList}\small\item\em Updates the CRC-\/32 calculation using lookup table This updates the crc calculation using the polynomial 0x04\+C11\+DB7 with no initial or final complement and no reversals. The initial value is passed in to allow this function to be called iteratively. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{crc_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{crc_8h_adf94510471a0cd9c7ab4a85118f92561}\index{crc.h@{crc.h}!crc@{crc}}
+\index{crc@{crc}!crc.h@{crc.h}}
+\doxysubsubsection{\texorpdfstring{crc()}{crc()}}
+{\footnotesize\ttfamily \label{crc_8h_adf94510471a0cd9c7ab4a85118f92561} 
+uint32\+\_\+t crc (\begin{DoxyParamCaption}\item[{uint8\+\_\+t const}]{u8\+\_\+\+Msg}{\+[$\,$]\+, }\item[{uint16\+\_\+t}]{u16\+\_\+\+Len}{, }\item[{uint32\+\_\+t}]{u32\+\_\+\+Rem}{}\end{DoxyParamCaption})}
+
+
+
+Updates the CRC-\/32 calculation using lookup table This updates the crc calculation using the polynomial 0x04\+C11\+DB7 with no initial or final complement and no reversals. The initial value is passed in to allow this function to be called iteratively. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em u8\+\_\+\+Msg} & Message bytes. \\
+\hline
+{\em u16\+\_\+\+Len} & Number of message bytes \\
+\hline
+{\em u32\+\_\+\+Rem} & Initial value of crc remainder \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{crc32_8c_source_l00059}{59}} of file \doxymbox{\hyperlink{crc32_8c_source}{crc32.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{crc_8h_adf94510471a0cd9c7ab4a85118f92561_icgraph}
+\end{center}
+\end{figure}

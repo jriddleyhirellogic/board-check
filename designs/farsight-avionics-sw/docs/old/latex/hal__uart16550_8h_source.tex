@@ -1,0 +1,99 @@
+\doxysection{hal\+\_\+uart16550.\+h}
+\hypertarget{hal__uart16550_8h_source}{}\label{hal__uart16550_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/hal\_uart16550.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/hal\_uart16550.h}}
+\doxymbox{\hyperlink{hal__uart16550_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00001}00001\ \textcolor{preprocessor}{\#ifndef\ \_HAL\_UART16550\_H}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00002}00002\ \textcolor{preprocessor}{\#define\ \_HAL\_UART16550\_H}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00003}00003\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{mem__map_8h}{mem\_map.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00006}00006\ \textcolor{comment}{//\ To\ allow\ for\ the\ possibility\ of\ more\ than\ one\ UART}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00007}\doxymbox{\hyperlink{structUART__16550__Instance__t}{00007}}\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00008}00008\ \{}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00009}\doxymbox{\hyperlink{structUART__16550__Instance__t_aed9c360574146defba1368ada95a58fe}{00009}}\ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{structUART__16550__Instance__t_aed9c360574146defba1368ada95a58fe}{u32\_Base\_Address}};}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00010}\doxymbox{\hyperlink{structUART__16550__Instance__t_a75f0139800be91e64759cc9f2591eb49}{00010}}\ \ \ \ \ uint8\_t\ \doxymbox{\hyperlink{structUART__16550__Instance__t_a75f0139800be91e64759cc9f2591eb49}{u8\_Status}};}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00011}00011\ \}\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}};}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00013}00013\ \textcolor{comment}{//\ The\ addresses\ are\ the\ same.\ The\ use\ depends\ on\ the\ direction\ (R/W)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00014}\doxymbox{\hyperlink{hal__uart16550_8h_a7c7d87a129be386704b07bdbad3ed3cb}{00014}}\ \textcolor{preprocessor}{\#define\ RX\_DATA\_REG\_OFFSET\ 0\ \ \ \ \ }\textcolor{comment}{//\ (R)\ DL\ Bit\ =\ 0}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00015}\doxymbox{\hyperlink{hal__uart16550_8h_a31bb44bc6c62ce9303afb3865981ef62}{00015}}\ \textcolor{preprocessor}{\#define\ TX\_HOLD\_REG\_OFFSET\ 0\ \ \ \ \ \ }\textcolor{comment}{//\ (W)\ DL\ Bit\ =\ 0}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00017}00017\ \textcolor{comment}{//\ These\ depend\ on\ setting\ the\ divisor\ latch\ bit}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00018}\doxymbox{\hyperlink{hal__uart16550_8h_ae14bb1a0d908ce2bef49a5640028cb4c}{00018}}\ \textcolor{preprocessor}{\#define\ DIVISOR\_LATCH\_LSB\_REG\_OFFSET\ 0\ \ \ \ \ \ }\textcolor{comment}{//DL\ Bit\ =\ 1}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00019}\doxymbox{\hyperlink{hal__uart16550_8h_a5e212f98323e5dec3a2532c10567e5cf}{00019}}\ \textcolor{preprocessor}{\#define\ DIVISOR\_LATCH\_MSB\_REG\_OFFSET\ 4\ \ \ \ \ \ }\textcolor{comment}{//DL\ Bit\ =\ 1}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00021}00021\ \textcolor{comment}{//\ Interrupts}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00022}\doxymbox{\hyperlink{hal__uart16550_8h_af6a4958c319d57b7eb0db9fa406f2332}{00022}}\ \textcolor{preprocessor}{\#define\ IRQ\_ENABLE\_REG\_OFFSET\ 4}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00023}00023\ \textcolor{comment}{//\ Interrupt\ enable\ bits}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00024}\doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{00024}}\ \textcolor{preprocessor}{\#define\ UART\_ERBFI\ (1\ <<\ 0)\ \ }\textcolor{comment}{//\ Receive\ data}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00025}\doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{00025}}\ \textcolor{preprocessor}{\#define\ UART\_ETBEI\ (1\ <<\ 1)\ \ }\textcolor{comment}{//\ Transmit\ holding\ reg\ empty}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00026}\doxymbox{\hyperlink{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245}{00026}}\ \textcolor{preprocessor}{\#define\ UART\_ELSI\ \ (1\ <<\ 2)\ \ }\textcolor{comment}{//\ Receive\ line\ status\ change}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00027}\doxymbox{\hyperlink{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756}{00027}}\ \textcolor{preprocessor}{\#define\ UART\_EDSSI\ (1\ <<\ 3)\ \ }\textcolor{comment}{//\ Modem\ status\ change}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00028}\doxymbox{\hyperlink{hal__uart16550_8h_ad7a5b1b02ed6626bd2b279d6f27a1abd}{00028}}\ \textcolor{preprocessor}{\#define\ UART\_ALL\_IRQ\_ENABLES\ (UART\_ERBFI\ |\ UART\_ETBEI\ |\ UART\_ELSI\ |\ \ UART\_EDSSI)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00030}00030\ \textcolor{comment}{//\ Interrupt\ reasons}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00031}\doxymbox{\hyperlink{hal__uart16550_8h_a06c8e40d6d4894dfdd8c0192e497cde7}{00031}}\ \textcolor{preprocessor}{\#define\ IRQ\_ID\_REG\_OFFSET\ 8\ \ \ \ \ \ \ \ \ \ }\textcolor{comment}{//(R)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00032}00032\ \textcolor{comment}{//\ Possible\ values\ for\ the\ IRQ\ ID\ field}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00033}\doxymbox{\hyperlink{hal__uart16550_8h_a5d86483d3fd3c901e7135f758e00e8b1}{00033}}\ \textcolor{preprocessor}{\#define\ IRQ\_ID\_RX\_LINE\_STATUS\ 6}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00034}\doxymbox{\hyperlink{hal__uart16550_8h_ad116c184e6bdd0ca605322802760dd20}{00034}}\ \textcolor{preprocessor}{\#define\ IRQ\_ID\_RX\_DATA\_AVAIL\ \ 4}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00035}\doxymbox{\hyperlink{hal__uart16550_8h_aa999ceed24151f736aca1b1803c95a53}{00035}}\ \textcolor{preprocessor}{\#define\ IRQ\_ID\_TIMEOUT\_IND\ \ \ \ 0xC}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00036}\doxymbox{\hyperlink{hal__uart16550_8h_acc7e4f644bd9c8030731174af411e43f}{00036}}\ \textcolor{preprocessor}{\#define\ IRQ\_TX\_HOLD\_REG\_EMPTY\ 2}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00037}\doxymbox{\hyperlink{hal__uart16550_8h_acc518cab9351056f2be05284929cdeaf}{00037}}\ \textcolor{preprocessor}{\#define\ IRQ\_ID\_MODEM\_STATUS\ \ \ 0}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00039}\doxymbox{\hyperlink{hal__uart16550_8h_ae6656774c3b572707ac75e316b3ee91d}{00039}}\ \textcolor{preprocessor}{\#define\ FIFO\_CTRL\_REG\_OFFSET\ 8\ \ \ \ }\textcolor{comment}{//(W)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00041}00041\ \textcolor{comment}{//\ Line\ control\ register}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00042}\doxymbox{\hyperlink{hal__uart16550_8h_ac2b9ca8da71077352dee2e2e8e1cb995}{00042}}\ \textcolor{preprocessor}{\#define\ LINE\_CTRL\_REG\_OFFSET\ 0xC}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00043}00043\ \textcolor{comment}{//\ Word\ length}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00044}\doxymbox{\hyperlink{hal__uart16550_8h_ab5b0aaab3e555c445d9f20843175e1b9}{00044}}\ \textcolor{preprocessor}{\#define\ UART16550\_WLS\_5\_BITS\ 0}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00045}\doxymbox{\hyperlink{hal__uart16550_8h_a8cce7950514cd6cd4799311aa0addba3}{00045}}\ \textcolor{preprocessor}{\#define\ UART16550\_WLS\_6\_BITS\ 1}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00046}\doxymbox{\hyperlink{hal__uart16550_8h_a62df7e7ea8c687ef43b64dc0e7f9f827}{00046}}\ \textcolor{preprocessor}{\#define\ UART16550\_WLS\_7\_BITS\ 2}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00047}\doxymbox{\hyperlink{hal__uart16550_8h_abac14a43a423ac62a0c90cdcb1cc0e50}{00047}}\ \textcolor{preprocessor}{\#define\ UART16550\_WLS\_8\_BITS\ 3}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00048}\doxymbox{\hyperlink{hal__uart16550_8h_a9a4b2aab506b212a768f5ee745fa939c}{00048}}\ \textcolor{preprocessor}{\#define\ UART16550\_WLS(x)\ \ (x\ \&\ 3)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00049}\doxymbox{\hyperlink{hal__uart16550_8h_a3daf35370c273380358c3f2280da0268}{00049}}\ \textcolor{preprocessor}{\#define\ UART16550\_STB\ (1\ <<\ 2)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00050}\doxymbox{\hyperlink{hal__uart16550_8h_a9918daae530d4fab174e1320d9287e3f}{00050}}\ \textcolor{preprocessor}{\#define\ UART16550\_PEN\ (1\ <<\ 3)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00051}\doxymbox{\hyperlink{hal__uart16550_8h_aac2932e2203fec384d1d65d4aecf63c0}{00051}}\ \textcolor{preprocessor}{\#define\ UART16550\_EPS\ (1\ <<\ 4)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00052}\doxymbox{\hyperlink{hal__uart16550_8h_a0af3c402f818234ee4b651e06966abc7}{00052}}\ \textcolor{preprocessor}{\#define\ UART16550\_SP\ \ (1\ <<\ 5)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00053}\doxymbox{\hyperlink{hal__uart16550_8h_a0756e5f06e754a0f51071cf3e21ce0cd}{00053}}\ \textcolor{preprocessor}{\#define\ UART16550\_SB\ \ (1\ <<\ 6)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00054}\doxymbox{\hyperlink{hal__uart16550_8h_a7a0b9f4e86bfd6bd72b75641ed36025c}{00054}}\ \textcolor{preprocessor}{\#define\ UART16550\_DLAB\ (1\ <<\ 7)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00056}\doxymbox{\hyperlink{hal__uart16550_8h_ab2bb6459049eb623d4554a5db20d97f7}{00056}}\ \textcolor{preprocessor}{\#define\ MODEM\_CTRL\_REG\_OFFSET\ \ \ \ \ 0x10}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00058}\doxymbox{\hyperlink{hal__uart16550_8h_a22c59d070885402799672c7bb69cc6e1}{00058}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_REG\_OFFSET\ \ \ \ 0x14}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00059}00059\ \textcolor{comment}{//\ Line\ Status\ Register\ Bits}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00060}\doxymbox{\hyperlink{hal__uart16550_8h_a75dfd38761c4da44a7dca25e3a6cf8af}{00060}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_DR\ \ \ \ \ (1\ <<\ 0)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00061}\doxymbox{\hyperlink{hal__uart16550_8h_a57842fefd7fa676c36779e4f43ac6cc0}{00061}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\ OE\ \ \ \ \ (1\ <<\ 1)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00062}\doxymbox{\hyperlink{hal__uart16550_8h_aa7139af86690a0a4a41083b72306f1ad}{00062}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_PE\ \ \ \ \ (1\ <<\ 2)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00063}\doxymbox{\hyperlink{hal__uart16550_8h_a197ad09e9329ed554b910dba4a5be52b}{00063}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_FE\ \ \ \ \ (1\ <<\ 3)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00064}\doxymbox{\hyperlink{hal__uart16550_8h_afc369fc6d4f1cc2dcd670a5eb846c841}{00064}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_BI\ \ \ \ \ (1\ <<\ 4)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00065}\doxymbox{\hyperlink{hal__uart16550_8h_a565bf64441f6738f62e5692a60ea7077}{00065}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_THRE\ \ \ (1\ <<\ 5)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00066}\doxymbox{\hyperlink{hal__uart16550_8h_a4adcc58d00e26d9639235c92aba948e3}{00066}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_TEMT\ \ \ (1\ <<\ 6)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00067}\doxymbox{\hyperlink{hal__uart16550_8h_a16dc9ef097379d9182e06f9c0d99ab66}{00067}}\ \textcolor{preprocessor}{\#define\ LINE\_STATUS\_FIER\ \ \ (1\ <<\ 7)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00070}\doxymbox{\hyperlink{hal__uart16550_8h_ab2ac3ee6ac259a48d6624cd16c699e61}{00070}}\ \textcolor{preprocessor}{\#define\ MODEM\_STATUS\_REG\_OFFSET\ \ \ 0x18}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00072}00072\ \textcolor{comment}{//\ Doesn't\ affect\ modem\ operation}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00073}\doxymbox{\hyperlink{hal__uart16550_8h_aae53ded3230a57965bb7cc3ec6dfe924}{00073}}\ \textcolor{preprocessor}{\#define\ SCRATCH\_REG\_OFFSET\ \ \ \ \ \ \ \ 0x1C}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00075}00075\ \textcolor{comment}{//\ Baud\ rate\ calc}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00076}00076\ \textcolor{comment}{//\ BR\ =\ F\_PCLK/(16\ *\ DIVISOR)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00077}00077\ \textcolor{comment}{//\ =>\ DIVISOR\ =\ F\_PCLK/(BR\ *\ 16)}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00078}00078\ \textcolor{comment}{//\ Round\ up\ or\ down\ to\ get\ least\ BR\ error}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00079}\doxymbox{\hyperlink{hal__uart16550_8h_acea5a86c00bb93e838804593843b30b7}{00079}}\ \textcolor{preprocessor}{\#define\ BAUDRATE\_115200\ 27}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00081}00081\ \textcolor{comment}{//\ Public\ functions}}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00082}00082\ uint8\_t\ \doxymbox{\hyperlink{hal__uart16550_8h_a461e651f8c3492cb7f9460a3eec49ee9}{u8\_Get\_UART\_Rx\_Data}}(\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_intance\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00083}00083\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__uart16550_8h_ad3e97d745edb6a2e2ba3c74b7c31ad25}{v\_Write\_UART\_Tx\_Data}}(\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance,\ uint8\_t\ u8\_Data\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00084}00084\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__uart16550_8h_a2c2cf3da603dee53f1f68f375a002483}{v\_Enable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance,\ uint8\_t\ u8\_IQQ\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00085}00085\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__uart16550_8h_ab657a148b42b9f3ed8c8ee7349767f30}{v\_Disable\_UART\_IRQ}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance,\ uint8\_t\ u8\_IQQ\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00086}00086\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2}{v\_Init\_UART}}(\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00087}00087\ uint8\_t\ \doxymbox{\hyperlink{hal__uart16550_8h_a329438ecc710ef49b37f5f56e56cfbde}{u8\_Get\_Modem\_Status}}(\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance);}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00088}00088\ uint8\_t\ \doxymbox{\hyperlink{hal__uart16550_8h_a5bd249a324832f64ff82c58c90162ba7}{u8\_Get\_Line\_Status}}(\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance);}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00089}00089\ uint8\_t\ \doxymbox{\hyperlink{hal__uart16550_8h_a181108f466028ba716b53993ea0bdc87}{b\_Is\_Tx\_Hold\_Reg\_Empty}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00090}00090\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__uart16550_8h_aa07804c6e655083fe3448c6272527ad1}{v\_Set\_UART\_Scratch}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance,\ uint8\_t\ u8\_Value\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00091}00091\ uint8\_t\ \doxymbox{\hyperlink{hal__uart16550_8h_aac5c419038bb196768ff8755cdb9431a}{u8\_Get\_Interrupt\_Cause}}(\ \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\_16550\_Instance\_t}}\ *this\_instance\ );}
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00092}00092\ }
+\DoxyCodeLine{\Hypertarget{hal__uart16550_8h_source_l00093}00093\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

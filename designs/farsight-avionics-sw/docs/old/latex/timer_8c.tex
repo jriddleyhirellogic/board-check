@@ -1,0 +1,90 @@
+\doxysection{src/\+hal/\+timer.c File Reference}
+\hypertarget{timer_8c}{}\label{timer_8c}\index{src/hal/timer.c@{src/hal/timer.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}timer.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+Include dependency graph for timer.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{timer_8c_a350462105c9e84d1624772a0799dbe86}{v\+\_\+\+Init\+\_\+\+Timer}} (Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance, Timer\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Init)
+\item 
+void \doxymbox{\hyperlink{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7}{v\+\_\+\+Enable\+\_\+\+Timer}} (Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance, uint8\+\_\+t b\+\_\+\+Enable)
+\item 
+void \doxymbox{\hyperlink{timer_8c_a41beb6cbc35beb3e21f64f4723aaf862}{v\+\_\+\+Load\+\_\+\+Timer}} (Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance, uint16\+\_\+t u16\+\_\+\+Timer\+\_\+\+Reload\+\_\+\+Value)
+\item 
+void \doxymbox{\hyperlink{timer_8c_a008f8e4947271fa0c50621f0f746e3da}{v\+\_\+\+Enable\+\_\+\+Timer\+\_\+\+IRQ}} (Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Instance, uint8\+\_\+t b\+\_\+\+Enable)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{timer_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7}\index{timer.c@{timer.c}!v\_Enable\_Timer@{v\_Enable\_Timer}}
+\index{v\_Enable\_Timer@{v\_Enable\_Timer}!timer.c@{timer.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Timer()}{v\_Enable\_Timer()}}
+{\footnotesize\ttfamily \label{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7} 
+void v\+\_\+\+Enable\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{, }\item[{uint8\+\_\+t}]{b\+\_\+\+Enable}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{timer_8c_source_l00026}{26}} of file \doxymbox{\hyperlink{timer_8c_source}{timer.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_ac75bcb01d88c11280f4e4c9c2955aab7_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{timer_8c_a008f8e4947271fa0c50621f0f746e3da}\index{timer.c@{timer.c}!v\_Enable\_Timer\_IRQ@{v\_Enable\_Timer\_IRQ}}
+\index{v\_Enable\_Timer\_IRQ@{v\_Enable\_Timer\_IRQ}!timer.c@{timer.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_Timer\_IRQ()}{v\_Enable\_Timer\_IRQ()}}
+{\footnotesize\ttfamily \label{timer_8c_a008f8e4947271fa0c50621f0f746e3da} 
+void v\+\_\+\+Enable\+\_\+\+Timer\+\_\+\+IRQ (\begin{DoxyParamCaption}\item[{Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{, }\item[{uint8\+\_\+t}]{b\+\_\+\+Enable}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{timer_8c_source_l00048}{48}} of file \doxymbox{\hyperlink{timer_8c_source}{timer.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_a008f8e4947271fa0c50621f0f746e3da_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{timer_8c_a350462105c9e84d1624772a0799dbe86}\index{timer.c@{timer.c}!v\_Init\_Timer@{v\_Init\_Timer}}
+\index{v\_Init\_Timer@{v\_Init\_Timer}!timer.c@{timer.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Timer()}{v\_Init\_Timer()}}
+{\footnotesize\ttfamily \label{timer_8c_a350462105c9e84d1624772a0799dbe86} 
+void v\+\_\+\+Init\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{, }\item[{Timer\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Init}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{timer_8c_source_l00012}{12}} of file \doxymbox{\hyperlink{timer_8c_source}{timer.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{timer_8c_a350462105c9e84d1624772a0799dbe86_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{timer_8c_a41beb6cbc35beb3e21f64f4723aaf862}\index{timer.c@{timer.c}!v\_Load\_Timer@{v\_Load\_Timer}}
+\index{v\_Load\_Timer@{v\_Load\_Timer}!timer.c@{timer.c}}
+\doxysubsubsection{\texorpdfstring{v\_Load\_Timer()}{v\_Load\_Timer()}}
+{\footnotesize\ttfamily \label{timer_8c_a41beb6cbc35beb3e21f64f4723aaf862} 
+void v\+\_\+\+Load\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{Timer\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Instance}{, }\item[{uint16\+\_\+t}]{u16\+\_\+\+Timer\+\_\+\+Reload\+\_\+\+Value}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{timer_8c_source_l00043}{43}} of file \doxymbox{\hyperlink{timer_8c_source}{timer.\+c}}.
+

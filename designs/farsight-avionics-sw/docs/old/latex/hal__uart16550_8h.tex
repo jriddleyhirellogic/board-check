@@ -1,0 +1,807 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+hal\+\_\+uart16550.h File Reference}
+\hypertarget{hal__uart16550_8h}{}\label{hal__uart16550_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/hal\_uart16550.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/hal\_uart16550.h}}
+
+
+driver for microchip/\+actal 16550 type uart Created on:\+ Sep 26, 2025  
+
+
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+Include dependency graph for hal\+\_\+uart16550.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{hal__uart16550_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a7c7d87a129be386704b07bdbad3ed3cb}{RX\+\_\+\+DATA\+\_\+\+REG\+\_\+\+OFFSET}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a31bb44bc6c62ce9303afb3865981ef62}{TX\+\_\+\+HOLD\+\_\+\+REG\+\_\+\+OFFSET}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ae14bb1a0d908ce2bef49a5640028cb4c}{DIVISOR\+\_\+\+LATCH\+\_\+\+LSB\+\_\+\+REG\+\_\+\+OFFSET}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a5e212f98323e5dec3a2532c10567e5cf}{DIVISOR\+\_\+\+LATCH\+\_\+\+MSB\+\_\+\+REG\+\_\+\+OFFSET}}~4
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_af6a4958c319d57b7eb0db9fa406f2332}{IRQ\+\_\+\+ENABLE\+\_\+\+REG\+\_\+\+OFFSET}}~4
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{UART\+\_\+\+ERBFI}}~(1 $<$$<$ 0)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{UART\+\_\+\+ETBEI}}~(1 $<$$<$ 1)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245}{UART\+\_\+\+ELSI}}~(1 $<$$<$ 2)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756}{UART\+\_\+\+EDSSI}}~(1 $<$$<$ 3)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ad7a5b1b02ed6626bd2b279d6f27a1abd}{UART\+\_\+\+ALL\+\_\+\+IRQ\+\_\+\+ENABLES}}~(\doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{UART\+\_\+\+ERBFI}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{UART\+\_\+\+ETBEI}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245}{UART\+\_\+\+ELSI}} \texorpdfstring{$\vert$}{|}  \doxymbox{\hyperlink{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756}{UART\+\_\+\+EDSSI}})
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a06c8e40d6d4894dfdd8c0192e497cde7}{IRQ\+\_\+\+ID\+\_\+\+REG\+\_\+\+OFFSET}}~8
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a5d86483d3fd3c901e7135f758e00e8b1}{IRQ\+\_\+\+ID\+\_\+\+RX\+\_\+\+LINE\+\_\+\+STATUS}}~6
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ad116c184e6bdd0ca605322802760dd20}{IRQ\+\_\+\+ID\+\_\+\+RX\+\_\+\+DATA\+\_\+\+AVAIL}}~4
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_aa999ceed24151f736aca1b1803c95a53}{IRQ\+\_\+\+ID\+\_\+\+TIMEOUT\+\_\+\+IND}}~0xC
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_acc7e4f644bd9c8030731174af411e43f}{IRQ\+\_\+\+TX\+\_\+\+HOLD\+\_\+\+REG\+\_\+\+EMPTY}}~2
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_acc518cab9351056f2be05284929cdeaf}{IRQ\+\_\+\+ID\+\_\+\+MODEM\+\_\+\+STATUS}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ae6656774c3b572707ac75e316b3ee91d}{FIFO\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET}}~8
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ac2b9ca8da71077352dee2e2e8e1cb995}{LINE\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET}}~0xC
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ab5b0aaab3e555c445d9f20843175e1b9}{UART16550\+\_\+\+WLS\+\_\+5\+\_\+\+BITS}}~0
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a8cce7950514cd6cd4799311aa0addba3}{UART16550\+\_\+\+WLS\+\_\+6\+\_\+\+BITS}}~1
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a62df7e7ea8c687ef43b64dc0e7f9f827}{UART16550\+\_\+\+WLS\+\_\+7\+\_\+\+BITS}}~2
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_abac14a43a423ac62a0c90cdcb1cc0e50}{UART16550\+\_\+\+WLS\+\_\+8\+\_\+\+BITS}}~3
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a9a4b2aab506b212a768f5ee745fa939c}{UART16550\+\_\+\+WLS}}(x)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a3daf35370c273380358c3f2280da0268}{UART16550\+\_\+\+STB}}~(1 $<$$<$ 2)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a9918daae530d4fab174e1320d9287e3f}{UART16550\+\_\+\+PEN}}~(1 $<$$<$ 3)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_aac2932e2203fec384d1d65d4aecf63c0}{UART16550\+\_\+\+EPS}}~(1 $<$$<$ 4)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a0af3c402f818234ee4b651e06966abc7}{UART16550\+\_\+\+SP}}~(1 $<$$<$ 5)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a0756e5f06e754a0f51071cf3e21ce0cd}{UART16550\+\_\+\+SB}}~(1 $<$$<$ 6)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a7a0b9f4e86bfd6bd72b75641ed36025c}{UART16550\+\_\+\+DLAB}}~(1 $<$$<$ 7)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ab2bb6459049eb623d4554a5db20d97f7}{MODEM\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET}}~0x10
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a22c59d070885402799672c7bb69cc6e1}{LINE\+\_\+\+STATUS\+\_\+\+REG\+\_\+\+OFFSET}}~0x14
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a75dfd38761c4da44a7dca25e3a6cf8af}{LINE\+\_\+\+STATUS\+\_\+\+DR}}~(1 $<$$<$ 0)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a57842fefd7fa676c36779e4f43ac6cc0}{LINE\+\_\+\+STATUS}}~OE     (1 $<$$<$ 1)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_aa7139af86690a0a4a41083b72306f1ad}{LINE\+\_\+\+STATUS\+\_\+\+PE}}~(1 $<$$<$ 2)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a197ad09e9329ed554b910dba4a5be52b}{LINE\+\_\+\+STATUS\+\_\+\+FE}}~(1 $<$$<$ 3)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_afc369fc6d4f1cc2dcd670a5eb846c841}{LINE\+\_\+\+STATUS\+\_\+\+BI}}~(1 $<$$<$ 4)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a565bf64441f6738f62e5692a60ea7077}{LINE\+\_\+\+STATUS\+\_\+\+THRE}}~(1 $<$$<$ 5)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a4adcc58d00e26d9639235c92aba948e3}{LINE\+\_\+\+STATUS\+\_\+\+TEMT}}~(1 $<$$<$ 6)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_a16dc9ef097379d9182e06f9c0d99ab66}{LINE\+\_\+\+STATUS\+\_\+\+FIER}}~(1 $<$$<$ 7)
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_ab2ac3ee6ac259a48d6624cd16c699e61}{MODEM\+\_\+\+STATUS\+\_\+\+REG\+\_\+\+OFFSET}}~0x18
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_aae53ded3230a57965bb7cc3ec6dfe924}{SCRATCH\+\_\+\+REG\+\_\+\+OFFSET}}~0x1C
+\item 
+\+\#define \doxymbox{\hyperlink{hal__uart16550_8h_acea5a86c00bb93e838804593843b30b7}{BAUDRATE\+\_\+115200}}~27
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8h_a461e651f8c3492cb7f9460a3eec49ee9}{u8\+\_\+\+Get\+\_\+\+UART\+\_\+\+Rx\+\_\+\+Data}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+intance)
+\begin{DoxyCompactList}\small\item\em Wrapper function to retrieve single byte from receive fifo. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8h_ad3e97d745edb6a2e2ba3c74b7c31ad25}{v\+\_\+\+Write\+\_\+\+UART\+\_\+\+Tx\+\_\+\+Data}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+Data)
+\begin{DoxyCompactList}\small\item\em Write single byte to tx fifo. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8h_a2c2cf3da603dee53f1f68f375a002483}{v\+\_\+\+Enable\+\_\+\+UART\+\_\+\+IRQ}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+IQQ)
+\begin{DoxyCompactList}\small\item\em Enables the interrupt at the uart. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8h_ab657a148b42b9f3ed8c8ee7349767f30}{v\+\_\+\+Disable\+\_\+\+UART\+\_\+\+IRQ}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+IQQ)
+\begin{DoxyCompactList}\small\item\em Disables the interrupt at the uart. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2}{v\+\_\+\+Init\+\_\+\+UART}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Initializes 16550 type uart Initialization includes baud rate, line mode and fifos. \end{DoxyCompactList}\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8h_a329438ecc710ef49b37f5f56e56cfbde}{u8\+\_\+\+Get\+\_\+\+Modem\+\_\+\+Status}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8h_a5bd249a324832f64ff82c58c90162ba7}{u8\+\_\+\+Get\+\_\+\+Line\+\_\+\+Status}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8h_a181108f466028ba716b53993ea0bdc87}{b\+\_\+\+Is\+\_\+\+Tx\+\_\+\+Hold\+\_\+\+Reg\+\_\+\+Empty}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Test if tx holding register is empty. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8h_aa07804c6e655083fe3448c6272527ad1}{v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Scratch}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+Value)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8h_aac5c419038bb196768ff8755cdb9431a}{u8\+\_\+\+Get\+\_\+\+Interrupt\+\_\+\+Cause}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+driver for microchip/\+actal 16550 type uart Created on:\+ Sep 26, 2025 
+
+\begin{DoxyAuthor}{Author}
+iboard 
+\end{DoxyAuthor}
+
+
+Definition in file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+
+
+\label{doc-define-members}
+\Hypertarget{hal__uart16550_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{hal__uart16550_8h_acea5a86c00bb93e838804593843b30b7}\index{hal\_uart16550.h@{hal\_uart16550.h}!BAUDRATE\_115200@{BAUDRATE\_115200}}
+\index{BAUDRATE\_115200@{BAUDRATE\_115200}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{BAUDRATE\_115200}{BAUDRATE\_115200}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_acea5a86c00bb93e838804593843b30b7} 
+\+\#define BAUDRATE\+\_\+115200~27}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00079}{79}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ae14bb1a0d908ce2bef49a5640028cb4c}\index{hal\_uart16550.h@{hal\_uart16550.h}!DIVISOR\_LATCH\_LSB\_REG\_OFFSET@{DIVISOR\_LATCH\_LSB\_REG\_OFFSET}}
+\index{DIVISOR\_LATCH\_LSB\_REG\_OFFSET@{DIVISOR\_LATCH\_LSB\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{DIVISOR\_LATCH\_LSB\_REG\_OFFSET}{DIVISOR\_LATCH\_LSB\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ae14bb1a0d908ce2bef49a5640028cb4c} 
+\+\#define DIVISOR\+\_\+\+LATCH\+\_\+\+LSB\+\_\+\+REG\+\_\+\+OFFSET~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00018}{18}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a5e212f98323e5dec3a2532c10567e5cf}\index{hal\_uart16550.h@{hal\_uart16550.h}!DIVISOR\_LATCH\_MSB\_REG\_OFFSET@{DIVISOR\_LATCH\_MSB\_REG\_OFFSET}}
+\index{DIVISOR\_LATCH\_MSB\_REG\_OFFSET@{DIVISOR\_LATCH\_MSB\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{DIVISOR\_LATCH\_MSB\_REG\_OFFSET}{DIVISOR\_LATCH\_MSB\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a5e212f98323e5dec3a2532c10567e5cf} 
+\+\#define DIVISOR\+\_\+\+LATCH\+\_\+\+MSB\+\_\+\+REG\+\_\+\+OFFSET~4}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00019}{19}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ae6656774c3b572707ac75e316b3ee91d}\index{hal\_uart16550.h@{hal\_uart16550.h}!FIFO\_CTRL\_REG\_OFFSET@{FIFO\_CTRL\_REG\_OFFSET}}
+\index{FIFO\_CTRL\_REG\_OFFSET@{FIFO\_CTRL\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{FIFO\_CTRL\_REG\_OFFSET}{FIFO\_CTRL\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ae6656774c3b572707ac75e316b3ee91d} 
+\+\#define FIFO\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET~8}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00039}{39}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_af6a4958c319d57b7eb0db9fa406f2332}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ENABLE\_REG\_OFFSET@{IRQ\_ENABLE\_REG\_OFFSET}}
+\index{IRQ\_ENABLE\_REG\_OFFSET@{IRQ\_ENABLE\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ENABLE\_REG\_OFFSET}{IRQ\_ENABLE\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_af6a4958c319d57b7eb0db9fa406f2332} 
+\+\#define IRQ\+\_\+\+ENABLE\+\_\+\+REG\+\_\+\+OFFSET~4}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00022}{22}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_acc518cab9351056f2be05284929cdeaf}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ID\_MODEM\_STATUS@{IRQ\_ID\_MODEM\_STATUS}}
+\index{IRQ\_ID\_MODEM\_STATUS@{IRQ\_ID\_MODEM\_STATUS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ID\_MODEM\_STATUS}{IRQ\_ID\_MODEM\_STATUS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_acc518cab9351056f2be05284929cdeaf} 
+\+\#define IRQ\+\_\+\+ID\+\_\+\+MODEM\+\_\+\+STATUS~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00037}{37}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a06c8e40d6d4894dfdd8c0192e497cde7}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ID\_REG\_OFFSET@{IRQ\_ID\_REG\_OFFSET}}
+\index{IRQ\_ID\_REG\_OFFSET@{IRQ\_ID\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ID\_REG\_OFFSET}{IRQ\_ID\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a06c8e40d6d4894dfdd8c0192e497cde7} 
+\+\#define IRQ\+\_\+\+ID\+\_\+\+REG\+\_\+\+OFFSET~8}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00031}{31}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ad116c184e6bdd0ca605322802760dd20}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ID\_RX\_DATA\_AVAIL@{IRQ\_ID\_RX\_DATA\_AVAIL}}
+\index{IRQ\_ID\_RX\_DATA\_AVAIL@{IRQ\_ID\_RX\_DATA\_AVAIL}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ID\_RX\_DATA\_AVAIL}{IRQ\_ID\_RX\_DATA\_AVAIL}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ad116c184e6bdd0ca605322802760dd20} 
+\+\#define IRQ\+\_\+\+ID\+\_\+\+RX\+\_\+\+DATA\+\_\+\+AVAIL~4}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00034}{34}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a5d86483d3fd3c901e7135f758e00e8b1}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ID\_RX\_LINE\_STATUS@{IRQ\_ID\_RX\_LINE\_STATUS}}
+\index{IRQ\_ID\_RX\_LINE\_STATUS@{IRQ\_ID\_RX\_LINE\_STATUS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ID\_RX\_LINE\_STATUS}{IRQ\_ID\_RX\_LINE\_STATUS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a5d86483d3fd3c901e7135f758e00e8b1} 
+\+\#define IRQ\+\_\+\+ID\+\_\+\+RX\+\_\+\+LINE\+\_\+\+STATUS~6}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00033}{33}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_aa999ceed24151f736aca1b1803c95a53}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_ID\_TIMEOUT\_IND@{IRQ\_ID\_TIMEOUT\_IND}}
+\index{IRQ\_ID\_TIMEOUT\_IND@{IRQ\_ID\_TIMEOUT\_IND}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_ID\_TIMEOUT\_IND}{IRQ\_ID\_TIMEOUT\_IND}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aa999ceed24151f736aca1b1803c95a53} 
+\+\#define IRQ\+\_\+\+ID\+\_\+\+TIMEOUT\+\_\+\+IND~0xC}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00035}{35}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_acc7e4f644bd9c8030731174af411e43f}\index{hal\_uart16550.h@{hal\_uart16550.h}!IRQ\_TX\_HOLD\_REG\_EMPTY@{IRQ\_TX\_HOLD\_REG\_EMPTY}}
+\index{IRQ\_TX\_HOLD\_REG\_EMPTY@{IRQ\_TX\_HOLD\_REG\_EMPTY}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{IRQ\_TX\_HOLD\_REG\_EMPTY}{IRQ\_TX\_HOLD\_REG\_EMPTY}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_acc7e4f644bd9c8030731174af411e43f} 
+\+\#define IRQ\+\_\+\+TX\+\_\+\+HOLD\+\_\+\+REG\+\_\+\+EMPTY~2}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00036}{36}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ac2b9ca8da71077352dee2e2e8e1cb995}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_CTRL\_REG\_OFFSET@{LINE\_CTRL\_REG\_OFFSET}}
+\index{LINE\_CTRL\_REG\_OFFSET@{LINE\_CTRL\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_CTRL\_REG\_OFFSET}{LINE\_CTRL\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ac2b9ca8da71077352dee2e2e8e1cb995} 
+\+\#define LINE\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET~0xC}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00042}{42}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a57842fefd7fa676c36779e4f43ac6cc0}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS@{LINE\_STATUS}}
+\index{LINE\_STATUS@{LINE\_STATUS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS}{LINE\_STATUS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a57842fefd7fa676c36779e4f43ac6cc0} 
+\+\#define LINE\+\_\+\+STATUS~OE     (1 $<$$<$ 1)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00061}{61}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_afc369fc6d4f1cc2dcd670a5eb846c841}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_BI@{LINE\_STATUS\_BI}}
+\index{LINE\_STATUS\_BI@{LINE\_STATUS\_BI}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_BI}{LINE\_STATUS\_BI}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_afc369fc6d4f1cc2dcd670a5eb846c841} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+BI~(1 $<$$<$ 4)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00064}{64}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a75dfd38761c4da44a7dca25e3a6cf8af}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_DR@{LINE\_STATUS\_DR}}
+\index{LINE\_STATUS\_DR@{LINE\_STATUS\_DR}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_DR}{LINE\_STATUS\_DR}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a75dfd38761c4da44a7dca25e3a6cf8af} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+DR~(1 $<$$<$ 0)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00060}{60}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a197ad09e9329ed554b910dba4a5be52b}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_FE@{LINE\_STATUS\_FE}}
+\index{LINE\_STATUS\_FE@{LINE\_STATUS\_FE}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_FE}{LINE\_STATUS\_FE}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a197ad09e9329ed554b910dba4a5be52b} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+FE~(1 $<$$<$ 3)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00063}{63}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a16dc9ef097379d9182e06f9c0d99ab66}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_FIER@{LINE\_STATUS\_FIER}}
+\index{LINE\_STATUS\_FIER@{LINE\_STATUS\_FIER}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_FIER}{LINE\_STATUS\_FIER}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a16dc9ef097379d9182e06f9c0d99ab66} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+FIER~(1 $<$$<$ 7)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00067}{67}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_aa7139af86690a0a4a41083b72306f1ad}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_PE@{LINE\_STATUS\_PE}}
+\index{LINE\_STATUS\_PE@{LINE\_STATUS\_PE}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_PE}{LINE\_STATUS\_PE}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aa7139af86690a0a4a41083b72306f1ad} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+PE~(1 $<$$<$ 2)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00062}{62}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a22c59d070885402799672c7bb69cc6e1}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_REG\_OFFSET@{LINE\_STATUS\_REG\_OFFSET}}
+\index{LINE\_STATUS\_REG\_OFFSET@{LINE\_STATUS\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_REG\_OFFSET}{LINE\_STATUS\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a22c59d070885402799672c7bb69cc6e1} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+REG\+\_\+\+OFFSET~0x14}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00058}{58}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a4adcc58d00e26d9639235c92aba948e3}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_TEMT@{LINE\_STATUS\_TEMT}}
+\index{LINE\_STATUS\_TEMT@{LINE\_STATUS\_TEMT}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_TEMT}{LINE\_STATUS\_TEMT}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a4adcc58d00e26d9639235c92aba948e3} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+TEMT~(1 $<$$<$ 6)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00066}{66}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a565bf64441f6738f62e5692a60ea7077}\index{hal\_uart16550.h@{hal\_uart16550.h}!LINE\_STATUS\_THRE@{LINE\_STATUS\_THRE}}
+\index{LINE\_STATUS\_THRE@{LINE\_STATUS\_THRE}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{LINE\_STATUS\_THRE}{LINE\_STATUS\_THRE}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a565bf64441f6738f62e5692a60ea7077} 
+\+\#define LINE\+\_\+\+STATUS\+\_\+\+THRE~(1 $<$$<$ 5)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00065}{65}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ab2bb6459049eb623d4554a5db20d97f7}\index{hal\_uart16550.h@{hal\_uart16550.h}!MODEM\_CTRL\_REG\_OFFSET@{MODEM\_CTRL\_REG\_OFFSET}}
+\index{MODEM\_CTRL\_REG\_OFFSET@{MODEM\_CTRL\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{MODEM\_CTRL\_REG\_OFFSET}{MODEM\_CTRL\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ab2bb6459049eb623d4554a5db20d97f7} 
+\+\#define MODEM\+\_\+\+CTRL\+\_\+\+REG\+\_\+\+OFFSET~0x10}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00056}{56}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ab2ac3ee6ac259a48d6624cd16c699e61}\index{hal\_uart16550.h@{hal\_uart16550.h}!MODEM\_STATUS\_REG\_OFFSET@{MODEM\_STATUS\_REG\_OFFSET}}
+\index{MODEM\_STATUS\_REG\_OFFSET@{MODEM\_STATUS\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{MODEM\_STATUS\_REG\_OFFSET}{MODEM\_STATUS\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ab2ac3ee6ac259a48d6624cd16c699e61} 
+\+\#define MODEM\+\_\+\+STATUS\+\_\+\+REG\+\_\+\+OFFSET~0x18}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00070}{70}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a7c7d87a129be386704b07bdbad3ed3cb}\index{hal\_uart16550.h@{hal\_uart16550.h}!RX\_DATA\_REG\_OFFSET@{RX\_DATA\_REG\_OFFSET}}
+\index{RX\_DATA\_REG\_OFFSET@{RX\_DATA\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{RX\_DATA\_REG\_OFFSET}{RX\_DATA\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a7c7d87a129be386704b07bdbad3ed3cb} 
+\+\#define RX\+\_\+\+DATA\+\_\+\+REG\+\_\+\+OFFSET~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00014}{14}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_aae53ded3230a57965bb7cc3ec6dfe924}\index{hal\_uart16550.h@{hal\_uart16550.h}!SCRATCH\_REG\_OFFSET@{SCRATCH\_REG\_OFFSET}}
+\index{SCRATCH\_REG\_OFFSET@{SCRATCH\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{SCRATCH\_REG\_OFFSET}{SCRATCH\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aae53ded3230a57965bb7cc3ec6dfe924} 
+\+\#define SCRATCH\+\_\+\+REG\+\_\+\+OFFSET~0x1C}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00073}{73}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a31bb44bc6c62ce9303afb3865981ef62}\index{hal\_uart16550.h@{hal\_uart16550.h}!TX\_HOLD\_REG\_OFFSET@{TX\_HOLD\_REG\_OFFSET}}
+\index{TX\_HOLD\_REG\_OFFSET@{TX\_HOLD\_REG\_OFFSET}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{TX\_HOLD\_REG\_OFFSET}{TX\_HOLD\_REG\_OFFSET}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a31bb44bc6c62ce9303afb3865981ef62} 
+\+\#define TX\+\_\+\+HOLD\+\_\+\+REG\+\_\+\+OFFSET~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00015}{15}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a7a0b9f4e86bfd6bd72b75641ed36025c}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_DLAB@{UART16550\_DLAB}}
+\index{UART16550\_DLAB@{UART16550\_DLAB}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_DLAB}{UART16550\_DLAB}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a7a0b9f4e86bfd6bd72b75641ed36025c} 
+\+\#define UART16550\+\_\+\+DLAB~(1 $<$$<$ 7)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00054}{54}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_aac2932e2203fec384d1d65d4aecf63c0}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_EPS@{UART16550\_EPS}}
+\index{UART16550\_EPS@{UART16550\_EPS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_EPS}{UART16550\_EPS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aac2932e2203fec384d1d65d4aecf63c0} 
+\+\#define UART16550\+\_\+\+EPS~(1 $<$$<$ 4)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00051}{51}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a9918daae530d4fab174e1320d9287e3f}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_PEN@{UART16550\_PEN}}
+\index{UART16550\_PEN@{UART16550\_PEN}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_PEN}{UART16550\_PEN}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a9918daae530d4fab174e1320d9287e3f} 
+\+\#define UART16550\+\_\+\+PEN~(1 $<$$<$ 3)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00050}{50}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a0756e5f06e754a0f51071cf3e21ce0cd}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_SB@{UART16550\_SB}}
+\index{UART16550\_SB@{UART16550\_SB}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_SB}{UART16550\_SB}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a0756e5f06e754a0f51071cf3e21ce0cd} 
+\+\#define UART16550\+\_\+\+SB~(1 $<$$<$ 6)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00053}{53}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a0af3c402f818234ee4b651e06966abc7}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_SP@{UART16550\_SP}}
+\index{UART16550\_SP@{UART16550\_SP}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_SP}{UART16550\_SP}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a0af3c402f818234ee4b651e06966abc7} 
+\+\#define UART16550\+\_\+\+SP~(1 $<$$<$ 5)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00052}{52}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a3daf35370c273380358c3f2280da0268}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_STB@{UART16550\_STB}}
+\index{UART16550\_STB@{UART16550\_STB}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_STB}{UART16550\_STB}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a3daf35370c273380358c3f2280da0268} 
+\+\#define UART16550\+\_\+\+STB~(1 $<$$<$ 2)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00049}{49}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a9a4b2aab506b212a768f5ee745fa939c}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_WLS@{UART16550\_WLS}}
+\index{UART16550\_WLS@{UART16550\_WLS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_WLS}{UART16550\_WLS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a9a4b2aab506b212a768f5ee745fa939c} 
+\+\#define UART16550\+\_\+\+WLS(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(x\ \&\ 3)}
+
+\end{DoxyCode}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00048}{48}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ab5b0aaab3e555c445d9f20843175e1b9}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_WLS\_5\_BITS@{UART16550\_WLS\_5\_BITS}}
+\index{UART16550\_WLS\_5\_BITS@{UART16550\_WLS\_5\_BITS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_WLS\_5\_BITS}{UART16550\_WLS\_5\_BITS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ab5b0aaab3e555c445d9f20843175e1b9} 
+\+\#define UART16550\+\_\+\+WLS\+\_\+5\+\_\+\+BITS~0}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00044}{44}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a8cce7950514cd6cd4799311aa0addba3}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_WLS\_6\_BITS@{UART16550\_WLS\_6\_BITS}}
+\index{UART16550\_WLS\_6\_BITS@{UART16550\_WLS\_6\_BITS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_WLS\_6\_BITS}{UART16550\_WLS\_6\_BITS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a8cce7950514cd6cd4799311aa0addba3} 
+\+\#define UART16550\+\_\+\+WLS\+\_\+6\+\_\+\+BITS~1}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00045}{45}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a62df7e7ea8c687ef43b64dc0e7f9f827}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_WLS\_7\_BITS@{UART16550\_WLS\_7\_BITS}}
+\index{UART16550\_WLS\_7\_BITS@{UART16550\_WLS\_7\_BITS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_WLS\_7\_BITS}{UART16550\_WLS\_7\_BITS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a62df7e7ea8c687ef43b64dc0e7f9f827} 
+\+\#define UART16550\+\_\+\+WLS\+\_\+7\+\_\+\+BITS~2}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00046}{46}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_abac14a43a423ac62a0c90cdcb1cc0e50}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART16550\_WLS\_8\_BITS@{UART16550\_WLS\_8\_BITS}}
+\index{UART16550\_WLS\_8\_BITS@{UART16550\_WLS\_8\_BITS}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART16550\_WLS\_8\_BITS}{UART16550\_WLS\_8\_BITS}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_abac14a43a423ac62a0c90cdcb1cc0e50} 
+\+\#define UART16550\+\_\+\+WLS\+\_\+8\+\_\+\+BITS~3}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00047}{47}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_ad7a5b1b02ed6626bd2b279d6f27a1abd}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART\_ALL\_IRQ\_ENABLES@{UART\_ALL\_IRQ\_ENABLES}}
+\index{UART\_ALL\_IRQ\_ENABLES@{UART\_ALL\_IRQ\_ENABLES}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART\_ALL\_IRQ\_ENABLES}{UART\_ALL\_IRQ\_ENABLES}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ad7a5b1b02ed6626bd2b279d6f27a1abd} 
+\+\#define UART\+\_\+\+ALL\+\_\+\+IRQ\+\_\+\+ENABLES~(\doxymbox{\hyperlink{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}{UART\+\_\+\+ERBFI}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}{UART\+\_\+\+ETBEI}} \texorpdfstring{$\vert$}{|} \doxymbox{\hyperlink{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245}{UART\+\_\+\+ELSI}} \texorpdfstring{$\vert$}{|}  \doxymbox{\hyperlink{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756}{UART\+\_\+\+EDSSI}})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00028}{28}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART\_EDSSI@{UART\_EDSSI}}
+\index{UART\_EDSSI@{UART\_EDSSI}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART\_EDSSI}{UART\_EDSSI}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a252688ff1b8ecf816fffcef3e576c756} 
+\+\#define UART\+\_\+\+EDSSI~(1 $<$$<$ 3)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00027}{27}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART\_ELSI@{UART\_ELSI}}
+\index{UART\_ELSI@{UART\_ELSI}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART\_ELSI}{UART\_ELSI}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a06032466f1bdf0a6a830c7ea065ec245} 
+\+\#define UART\+\_\+\+ELSI~(1 $<$$<$ 2)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00026}{26}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART\_ERBFI@{UART\_ERBFI}}
+\index{UART\_ERBFI@{UART\_ERBFI}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART\_ERBFI}{UART\_ERBFI}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a6150940408e4c3eabd6746f139cef7ea} 
+\+\#define UART\+\_\+\+ERBFI~(1 $<$$<$ 0)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00024}{24}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+\Hypertarget{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e}\index{hal\_uart16550.h@{hal\_uart16550.h}!UART\_ETBEI@{UART\_ETBEI}}
+\index{UART\_ETBEI@{UART\_ETBEI}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{UART\_ETBEI}{UART\_ETBEI}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_abe08f44b92b25c68f471c3448914de2e} 
+\+\#define UART\+\_\+\+ETBEI~(1 $<$$<$ 1)}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8h_source_l00025}{25}} of file \doxymbox{\hyperlink{hal__uart16550_8h_source}{hal\+\_\+uart16550.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{hal__uart16550_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal__uart16550_8h_a181108f466028ba716b53993ea0bdc87}\index{hal\_uart16550.h@{hal\_uart16550.h}!b\_Is\_Tx\_Hold\_Reg\_Empty@{b\_Is\_Tx\_Hold\_Reg\_Empty}}
+\index{b\_Is\_Tx\_Hold\_Reg\_Empty@{b\_Is\_Tx\_Hold\_Reg\_Empty}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{b\_Is\_Tx\_Hold\_Reg\_Empty()}{b\_Is\_Tx\_Hold\_Reg\_Empty()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a181108f466028ba716b53993ea0bdc87} 
+uint8\+\_\+t b\+\_\+\+Is\+\_\+\+Tx\+\_\+\+Hold\+\_\+\+Reg\+\_\+\+Empty (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Test if tx holding register is empty. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if empty, 0 if contains data 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00062}{62}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8h_aac5c419038bb196768ff8755cdb9431a}\index{hal\_uart16550.h@{hal\_uart16550.h}!u8\_Get\_Interrupt\_Cause@{u8\_Get\_Interrupt\_Cause}}
+\index{u8\_Get\_Interrupt\_Cause@{u8\_Get\_Interrupt\_Cause}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Interrupt\_Cause()}{u8\_Get\_Interrupt\_Cause()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aac5c419038bb196768ff8755cdb9431a} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Interrupt\+\_\+\+Cause (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00085}{85}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_aac5c419038bb196768ff8755cdb9431a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_a5bd249a324832f64ff82c58c90162ba7}\index{hal\_uart16550.h@{hal\_uart16550.h}!u8\_Get\_Line\_Status@{u8\_Get\_Line\_Status}}
+\index{u8\_Get\_Line\_Status@{u8\_Get\_Line\_Status}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Line\_Status()}{u8\_Get\_Line\_Status()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a5bd249a324832f64ff82c58c90162ba7} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Line\+\_\+\+Status (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00096}{96}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_a5bd249a324832f64ff82c58c90162ba7_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_a329438ecc710ef49b37f5f56e56cfbde}\index{hal\_uart16550.h@{hal\_uart16550.h}!u8\_Get\_Modem\_Status@{u8\_Get\_Modem\_Status}}
+\index{u8\_Get\_Modem\_Status@{u8\_Get\_Modem\_Status}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Modem\_Status()}{u8\_Get\_Modem\_Status()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a329438ecc710ef49b37f5f56e56cfbde} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Modem\+\_\+\+Status (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00080}{80}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8h_a461e651f8c3492cb7f9460a3eec49ee9}\index{hal\_uart16550.h@{hal\_uart16550.h}!u8\_Get\_UART\_Rx\_Data@{u8\_Get\_UART\_Rx\_Data}}
+\index{u8\_Get\_UART\_Rx\_Data@{u8\_Get\_UART\_Rx\_Data}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_UART\_Rx\_Data()}{u8\_Get\_UART\_Rx\_Data()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a461e651f8c3492cb7f9460a3eec49ee9} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+UART\+\_\+\+Rx\+\_\+\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Wrapper function to retrieve single byte from receive fifo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & uart instance \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_a461e651f8c3492cb7f9460a3eec49ee9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_ab657a148b42b9f3ed8c8ee7349767f30}\index{hal\_uart16550.h@{hal\_uart16550.h}!v\_Disable\_UART\_IRQ@{v\_Disable\_UART\_IRQ}}
+\index{v\_Disable\_UART\_IRQ@{v\_Disable\_UART\_IRQ}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{v\_Disable\_UART\_IRQ()}{v\_Disable\_UART\_IRQ()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ab657a148b42b9f3ed8c8ee7349767f30} 
+void v\+\_\+\+Disable\+\_\+\+UART\+\_\+\+IRQ (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+IRQ}{}\end{DoxyParamCaption})}
+
+
+
+Disables the interrupt at the uart. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+IRQ} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00120}{120}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_ab657a148b42b9f3ed8c8ee7349767f30_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_a2c2cf3da603dee53f1f68f375a002483}\index{hal\_uart16550.h@{hal\_uart16550.h}!v\_Enable\_UART\_IRQ@{v\_Enable\_UART\_IRQ}}
+\index{v\_Enable\_UART\_IRQ@{v\_Enable\_UART\_IRQ}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_UART\_IRQ()}{v\_Enable\_UART\_IRQ()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_a2c2cf3da603dee53f1f68f375a002483} 
+void v\+\_\+\+Enable\+\_\+\+UART\+\_\+\+IRQ (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+IRQ}{}\end{DoxyParamCaption})}
+
+
+
+Enables the interrupt at the uart. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+IRQ} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00107}{107}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_a2c2cf3da603dee53f1f68f375a002483_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2}\index{hal\_uart16550.h@{hal\_uart16550.h}!v\_Init\_UART@{v\_Init\_UART}}
+\index{v\_Init\_UART@{v\_Init\_UART}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_UART()}{v\_Init\_UART()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2} 
+void v\+\_\+\+Init\+\_\+\+UART (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Initializes 16550 type uart Initialization includes baud rate, line mode and fifos. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & Pointer to particular instance \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_abcf6680f5e761a60054c5cdb5688b8d2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8h_aa07804c6e655083fe3448c6272527ad1}\index{hal\_uart16550.h@{hal\_uart16550.h}!v\_Set\_UART\_Scratch@{v\_Set\_UART\_Scratch}}
+\index{v\_Set\_UART\_Scratch@{v\_Set\_UART\_Scratch}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_UART\_Scratch()}{v\_Set\_UART\_Scratch()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_aa07804c6e655083fe3448c6272527ad1} 
+void v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Scratch (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Value}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00166}{166}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8h_ad3e97d745edb6a2e2ba3c74b7c31ad25}\index{hal\_uart16550.h@{hal\_uart16550.h}!v\_Write\_UART\_Tx\_Data@{v\_Write\_UART\_Tx\_Data}}
+\index{v\_Write\_UART\_Tx\_Data@{v\_Write\_UART\_Tx\_Data}!hal\_uart16550.h@{hal\_uart16550.h}}
+\doxysubsubsection{\texorpdfstring{v\_Write\_UART\_Tx\_Data()}{v\_Write\_UART\_Tx\_Data()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8h_ad3e97d745edb6a2e2ba3c74b7c31ad25} 
+void v\+\_\+\+Write\+\_\+\+UART\+\_\+\+Tx\+\_\+\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Data}{}\end{DoxyParamCaption})}
+
+
+
+Write single byte to tx fifo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+Data} & Byte to write to fifo \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00074}{74}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8h_ad3e97d745edb6a2e2ba3c74b7c31ad25_icgraph}
+\end{center}
+\end{figure}

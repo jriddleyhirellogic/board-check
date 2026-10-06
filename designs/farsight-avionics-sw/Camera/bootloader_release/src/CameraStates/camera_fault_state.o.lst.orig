@@ -1,0 +1,500 @@
+   1              		.file	"camera_fault_state.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.Camera_Fault_State,"ax",@progbits
+  10              		.align	2
+  11              		.globl	Camera_Fault_State
+  13              	Camera_Fault_State:
+  14              	.LFB0:
+  15              		.file 1 "../src/CameraStates/camera_fault_state.c"
+   1:../src/CameraStates/camera_fault_state.c **** /*
+   2:../src/CameraStates/camera_fault_state.c ****  * camera_fault_state.c
+   3:../src/CameraStates/camera_fault_state.c ****  *
+   4:../src/CameraStates/camera_fault_state.c ****  *  Created on: Dec 11, 2025
+   5:../src/CameraStates/camera_fault_state.c ****  *      Author: iboard
+   6:../src/CameraStates/camera_fault_state.c ****  */
+   7:../src/CameraStates/camera_fault_state.c **** #include "camera.h"
+   8:../src/CameraStates/camera_fault_state.c **** #include "states.h"
+   9:../src/CameraStates/camera_fault_state.c **** #include "camera_states.h"
+  10:../src/CameraStates/camera_fault_state.c **** #include "misc.h"
+  11:../src/CameraStates/camera_fault_state.c **** 
+  12:../src/CameraStates/camera_fault_state.c **** /**
+  13:../src/CameraStates/camera_fault_state.c ****  * @fn State_t Camera_Fault_State(Camera_Context_t*, Event_t*)
+  14:../src/CameraStates/camera_fault_state.c ****  * @brief A fault has been experienced by the camera
+  15:../src/CameraStates/camera_fault_state.c ****  * This is an absorbing state. It will not respond to events. To exit this state,
+  16:../src/CameraStates/camera_fault_state.c ****  * a reset or power cycle is needed.
+  17:../src/CameraStates/camera_fault_state.c ****  * @param context State context
+  18:../src/CameraStates/camera_fault_state.c ****  * @param event
+  19:../src/CameraStates/camera_fault_state.c ****  * @return Next state.
+  20:../src/CameraStates/camera_fault_state.c ****  */
+  21:../src/CameraStates/camera_fault_state.c **** State_t Camera_Fault_State( Camera_Context_t *context, Event_t *event )
+  22:../src/CameraStates/camera_fault_state.c **** {
+  16              		.loc 1 22 1
+  17              		.cfi_startproc
+  18              	.LVL0:
+  23:../src/CameraStates/camera_fault_state.c ****     State_t next_state = (State_t)Camera_Fault_State;
+  19              		.loc 1 23 5
+  24:../src/CameraStates/camera_fault_state.c **** 
+  25:../src/CameraStates/camera_fault_state.c ****     switch( event->no_data.sig )
+  20              		.loc 1 25 5
+  21 0000 83A70500 		lw	a5,0(a1)
+  22 0004 63960700 		bne	a5,zero,.L2
+  26:../src/CameraStates/camera_fault_state.c ****     {
+  27:../src/CameraStates/camera_fault_state.c ****     case ENTRANCE:
+  28:../src/CameraStates/camera_fault_state.c ****         context->eState = CAMERA_FAULT_STATE;
+  23              		.loc 1 28 9
+  24              		.loc 1 28 25 is_stmt 0
+  25 0008 93070001 		li	a5,16
+  26 000c 2308F500 		sb	a5,16(a0)
+  29:../src/CameraStates/camera_fault_state.c ****         break;
+  27              		.loc 1 29 9 is_stmt 1
+  28              	.L2:
+  30:../src/CameraStates/camera_fault_state.c **** 
+  31:../src/CameraStates/camera_fault_state.c ****     case EXIT:
+  32:../src/CameraStates/camera_fault_state.c ****         break;
+  33:../src/CameraStates/camera_fault_state.c **** 
+  34:../src/CameraStates/camera_fault_state.c **** 
+  35:../src/CameraStates/camera_fault_state.c ****     default:
+  36:../src/CameraStates/camera_fault_state.c ****         break;
+  37:../src/CameraStates/camera_fault_state.c ****     }
+  38:../src/CameraStates/camera_fault_state.c **** 
+  39:../src/CameraStates/camera_fault_state.c ****     return next_state;
+  29              		.loc 1 39 5
+  40:../src/CameraStates/camera_fault_state.c **** 
+  41:../src/CameraStates/camera_fault_state.c **** }
+  30              		.loc 1 41 1 is_stmt 0
+  31 0010 17050000 		lla	a0,Camera_Fault_State
+  31      13050500 
+  32              	.LVL1:
+  33 0018 67800000 		ret
+  34              		.cfi_endproc
+  35              	.LFE0:
+  37              		.text
+  38              	.Letext0:
+  39              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+  40              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+  41              		.file 4 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+  42              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/core_gpio.h"
+  43              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/core_spi.h"
+  44              		.file 7 "/home/iboard/farsight/avtemp/Camera/include/eth.h"
+  45              		.file 8 "/home/iboard/farsight/avtemp/Camera/include/camera.h"
+  46              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/serial_sm.h"
+  47              		.file 10 "/home/iboard/farsight/avtemp/Camera/include/events.h"
+  48              		.file 11 "/home/iboard/farsight/avtemp/Camera/include/states.h"
+  49              		.file 12 "/home/iboard/farsight/avtemp/Camera/include/camera_states.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 camera_fault_state.c
+<<<<<<< HEAD
+     /tmp/cc08eZRi.s:13     .text.Camera_Fault_State:0000000000000000 Camera_Fault_State
+     /tmp/cc08eZRi.s:17     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/cc08eZRi.s:19     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/cc08eZRi.s:20     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/cc08eZRi.s:21     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/cc08eZRi.s:24     .text.Camera_Fault_State:0000000000000008 .L0 
+     /tmp/cc08eZRi.s:25     .text.Camera_Fault_State:0000000000000008 .L0 
+     /tmp/cc08eZRi.s:29     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/cc08eZRi.s:30     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/cc08eZRi.s:31     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/cc08eZRi.s:34     .text.Camera_Fault_State:000000000000001c .L0 
+     /tmp/cc08eZRi.s:37     .text.Camera_Fault_State:000000000000001c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc08eZRi.s:31     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/cc08eZRi.s:28     .text.Camera_Fault_State:0000000000000010 .L2
+     /tmp/cc08eZRi.s:1318   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc08eZRi.s:2095   .debug_str:0000000000000973 .LASF173
+     /tmp/cc08eZRi.s:1859   .debug_str:0000000000000219 .LASF174
+     /tmp/cc08eZRi.s:1871   .debug_str:0000000000000284 .LASF175
+     /tmp/cc08eZRi.s:1777   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc08eZRi.s:1783   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc08eZRi.s:1839   .debug_str:000000000000018c .LASF0
+     /tmp/cc08eZRi.s:1793   .debug_str:0000000000000041 .LASF3
+     /tmp/cc08eZRi.s:2003   .debug_str:000000000000068d .LASF1
+     /tmp/cc08eZRi.s:2011   .debug_str:00000000000006cf .LASF2
+     /tmp/cc08eZRi.s:2049   .debug_str:00000000000007fd .LASF4
+     /tmp/cc08eZRi.s:1921   .debug_str:0000000000000447 .LASF5
+     /tmp/cc08eZRi.s:2057   .debug_str:000000000000082b .LASF6
+     /tmp/cc08eZRi.s:1855   .debug_str:000000000000020b .LASF7
+     /tmp/cc08eZRi.s:1879   .debug_str:00000000000002f1 .LASF8
+     /tmp/cc08eZRi.s:1907   .debug_str:00000000000003cc .LASF9
+     /tmp/cc08eZRi.s:1837   .debug_str:000000000000017e .LASF10
+     /tmp/cc08eZRi.s:1815   .debug_str:00000000000000e2 .LASF11
+     /tmp/cc08eZRi.s:1897   .debug_str:0000000000000389 .LASF12
+     /tmp/cc08eZRi.s:2099   .debug_str:0000000000000a4d .LASF13
+     /tmp/cc08eZRi.s:1863   .debug_str:000000000000024c .LASF14
+     /tmp/cc08eZRi.s:2001   .debug_str:0000000000000685 .LASF15
+     /tmp/cc08eZRi.s:2027   .debug_str:000000000000074a .LASF16
+     /tmp/cc08eZRi.s:2121   .debug_str:0000000000000ae2 .LASF17
+     /tmp/cc08eZRi.s:1977   .debug_str:00000000000005ef .LASF50
+     /tmp/cc08eZRi.s:1929   .debug_str:0000000000000484 .LASF18
+     /tmp/cc08eZRi.s:2021   .debug_str:0000000000000712 .LASF19
+     /tmp/cc08eZRi.s:2101   .debug_str:0000000000000a55 .LASF20
+     /tmp/cc08eZRi.s:1787   .debug_str:0000000000000017 .LASF21
+     /tmp/cc08eZRi.s:2063   .debug_str:000000000000085f .LASF22
+     /tmp/cc08eZRi.s:2133   .debug_str:0000000000000b31 .LASF27
+     /tmp/cc08eZRi.s:1937   .debug_str:00000000000004c1 .LASF23
+     /tmp/cc08eZRi.s:1931   .debug_str:0000000000000498 .LASF24
+     /tmp/cc08eZRi.s:1961   .debug_str:000000000000055f .LASF25
+     /tmp/cc08eZRi.s:2017   .debug_str:00000000000006f2 .LASF26
+     /tmp/cc08eZRi.s:2015   .debug_str:00000000000006e5 .LASF28
+     /tmp/cc08eZRi.s:1989   .debug_str:0000000000000640 .LASF29
+     /tmp/cc08eZRi.s:1995   .debug_str:0000000000000656 .LASF30
+     /tmp/cc08eZRi.s:1935   .debug_str:00000000000004b3 .LASF31
+     /tmp/cc08eZRi.s:1831   .debug_str:000000000000015f .LASF32
+     /tmp/cc08eZRi.s:2029   .debug_str:0000000000000753 .LASF33
+     /tmp/cc08eZRi.s:1881   .debug_str:00000000000002fc .LASF34
+     /tmp/cc08eZRi.s:1843   .debug_str:00000000000001a4 .LASF35
+     /tmp/cc08eZRi.s:2087   .debug_str:0000000000000935 .LASF36
+     /tmp/cc08eZRi.s:1957   .debug_str:0000000000000550 .LASF37
+     /tmp/cc08eZRi.s:1893   .debug_str:0000000000000365 .LASF38
+     /tmp/cc08eZRi.s:1927   .debug_str:0000000000000476 .LASF39
+     /tmp/cc08eZRi.s:2089   .debug_str:0000000000000941 .LASF40
+     /tmp/cc08eZRi.s:2085   .debug_str:0000000000000924 .LASF41
+     /tmp/cc08eZRi.s:1899   .debug_str:0000000000000396 .LASF42
+     /tmp/cc08eZRi.s:1827   .debug_str:000000000000013f .LASF43
+     /tmp/cc08eZRi.s:2119   .debug_str:0000000000000ad1 .LASF44
+     /tmp/cc08eZRi.s:1941   .debug_str:00000000000004d7 .LASF45
+     /tmp/cc08eZRi.s:1955   .debug_str:0000000000000540 .LASF46
+     /tmp/cc08eZRi.s:2109   .debug_str:0000000000000a86 .LASF47
+     /tmp/cc08eZRi.s:1867   .debug_str:000000000000025d .LASF48
+     /tmp/cc08eZRi.s:1819   .debug_str:0000000000000101 .LASF49
+     /tmp/cc08eZRi.s:1997   .debug_str:0000000000000666 .LASF51
+     /tmp/cc08eZRi.s:1895   .debug_str:0000000000000375 .LASF52
+     /tmp/cc08eZRi.s:2067   .debug_str:000000000000087b .LASF53
+     /tmp/cc08eZRi.s:1917   .debug_str:000000000000042a .LASF54
+     /tmp/cc08eZRi.s:2125   .debug_str:0000000000000af9 .LASF55
+     /tmp/cc08eZRi.s:2039   .debug_str:00000000000007ab .LASF56
+     /tmp/cc08eZRi.s:1967   .debug_str:0000000000000588 .LASF57
+     /tmp/cc08eZRi.s:1809   .debug_str:00000000000000af .LASF58
+     /tmp/cc08eZRi.s:1885   .debug_str:000000000000031d .LASF59
+     /tmp/cc08eZRi.s:1971   .debug_str:00000000000005ac .LASF60
+     /tmp/cc08eZRi.s:1975   .debug_str:00000000000005db .LASF61
+     /tmp/cc08eZRi.s:1811   .debug_str:00000000000000c5 .LASF62
+     /tmp/cc08eZRi.s:2019   .debug_str:0000000000000701 .LASF63
+     /tmp/cc08eZRi.s:2061   .debug_str:0000000000000849 .LASF64
+     /tmp/cc08eZRi.s:2081   .debug_str:00000000000008f5 .LASF65
+     /tmp/cc08eZRi.s:1915   .debug_str:000000000000040f .LASF66
+     /tmp/cc08eZRi.s:1889   .debug_str:000000000000033b .LASF67
+     /tmp/cc08eZRi.s:1891   .debug_str:0000000000000350 .LASF68
+     /tmp/cc08eZRi.s:2075   .debug_str:00000000000008b6 .LASF69
+     /tmp/cc08eZRi.s:2077   .debug_str:00000000000008cb .LASF70
+     /tmp/cc08eZRi.s:2079   .debug_str:00000000000008e0 .LASF71
+     /tmp/cc08eZRi.s:2083   .debug_str:000000000000090f .LASF72
+     /tmp/cc08eZRi.s:2047   .debug_str:00000000000007e4 .LASF73
+     /tmp/cc08eZRi.s:2035   .debug_str:0000000000000780 .LASF74
+     /tmp/cc08eZRi.s:1973   .debug_str:00000000000005c5 .LASF75
+     /tmp/cc08eZRi.s:1797   .debug_str:0000000000000058 .LASF76
+     /tmp/cc08eZRi.s:1807   .debug_str:00000000000000a6 .LASF77
+     /tmp/cc08eZRi.s:2139   .debug_str:0000000000000b59 .LASF78
+     /tmp/cc08eZRi.s:1789   .debug_str:0000000000000032 .LASF79
+     /tmp/cc08eZRi.s:1991   .debug_str:0000000000000649 .LASF80
+     /tmp/cc08eZRi.s:2043   .debug_str:00000000000007cc .LASF81
+     /tmp/cc08eZRi.s:1813   .debug_str:00000000000000d6 .LASF82
+     /tmp/cc08eZRi.s:1873   .debug_str:00000000000002bb .LASF83
+     /tmp/cc08eZRi.s:1939   .debug_str:00000000000004cb .LASF84
+     /tmp/cc08eZRi.s:2097   .debug_str:0000000000000a39 .LASF85
+     /tmp/cc08eZRi.s:1887   .debug_str:0000000000000332 .LASF86
+     /tmp/cc08eZRi.s:1901   .debug_str:00000000000003a5 .LASF87
+     /tmp/cc08eZRi.s:2115   .debug_str:0000000000000abf .LASF88
+     /tmp/cc08eZRi.s:1903   .debug_str:00000000000003ae .LASF89
+     /tmp/cc08eZRi.s:1821   .debug_str:0000000000000118 .LASF90
+     /tmp/cc08eZRi.s:1829   .debug_str:0000000000000156 .LASF91
+     /tmp/cc08eZRi.s:2137   .debug_str:0000000000000b50 .LASF92
+     /tmp/cc08eZRi.s:1795   .debug_str:000000000000004b .LASF93
+     /tmp/cc08eZRi.s:1877   .debug_str:00000000000002dd .LASF94
+     /tmp/cc08eZRi.s:1805   .debug_str:0000000000000093 .LASF95
+     /tmp/cc08eZRi.s:2123   .debug_str:0000000000000ae9 .LASF96
+     /tmp/cc08eZRi.s:1913   .debug_str:0000000000000405 .LASF97
+     /tmp/cc08eZRi.s:2127   .debug_str:0000000000000b0a .LASF98
+     /tmp/cc08eZRi.s:1861   .debug_str:0000000000000242 .LASF99
+     /tmp/cc08eZRi.s:1969   .debug_str:000000000000059e .LASF100
+     /tmp/cc08eZRi.s:1981   .debug_str:000000000000060b .LASF101
+     /tmp/cc08eZRi.s:1987   .debug_str:0000000000000631 .LASF102
+     /tmp/cc08eZRi.s:2045   .debug_str:00000000000007d8 .LASF103
+     /tmp/cc08eZRi.s:1905   .debug_str:00000000000003b8 .LASF104
+     /tmp/cc08eZRi.s:1983   .debug_str:0000000000000617 .LASF105
+     /tmp/cc08eZRi.s:1857   .debug_str:0000000000000214 .LASF106
+     /tmp/cc08eZRi.s:1949   .debug_str:00000000000004ff .LASF107
+     /tmp/cc08eZRi.s:2051   .debug_str:0000000000000808 .LASF108
+     /tmp/cc08eZRi.s:2009   .debug_str:00000000000006b5 .LASF109
+     /tmp/cc08eZRi.s:1923   .debug_str:000000000000045a .LASF110
+     /tmp/cc08eZRi.s:1911   .debug_str:00000000000003f6 .LASF111
+     /tmp/cc08eZRi.s:1851   .debug_str:00000000000001ea .LASF112
+     /tmp/cc08eZRi.s:2071   .debug_str:000000000000089f .LASF113
+     /tmp/cc08eZRi.s:1869   .debug_str:0000000000000274 .LASF114
+     /tmp/cc08eZRi.s:1883   .debug_str:000000000000030b .LASF115
+     /tmp/cc08eZRi.s:2113   .debug_str:0000000000000ab4 .LASF116
+     /tmp/cc08eZRi.s:1841   .debug_str:0000000000000198 .LASF117
+     /tmp/cc08eZRi.s:1803   .debug_str:000000000000007f .LASF118
+     /tmp/cc08eZRi.s:2107   .debug_str:0000000000000a76 .LASF119
+     /tmp/cc08eZRi.s:1845   .debug_str:00000000000001b5 .LASF120
+     /tmp/cc08eZRi.s:2033   .debug_str:000000000000076c .LASF121
+     /tmp/cc08eZRi.s:2129   .debug_str:0000000000000b1c .LASF122
+     /tmp/cc08eZRi.s:2091   .debug_str:000000000000094e .LASF123
+     /tmp/cc08eZRi.s:1785   .debug_str:0000000000000000 .LASF124
+     /tmp/cc08eZRi.s:1875   .debug_str:00000000000002c7 .LASF125
+     /tmp/cc08eZRi.s:1953   .debug_str:000000000000052a .LASF126
+     /tmp/cc08eZRi.s:1933   .debug_str:00000000000004a6 .LASF127
+     /tmp/cc08eZRi.s:2037   .debug_str:0000000000000795 .LASF128
+     /tmp/cc08eZRi.s:2025   .debug_str:0000000000000735 .LASF129
+     /tmp/cc08eZRi.s:2023   .debug_str:0000000000000727 .LASF130
+     /tmp/cc08eZRi.s:2069   .debug_str:0000000000000890 .LASF131
+     /tmp/cc08eZRi.s:2005   .debug_str:000000000000069b .LASF132
+     /tmp/cc08eZRi.s:2007   .debug_str:00000000000006a8 .LASF133
+     /tmp/cc08eZRi.s:2073   .debug_str:00000000000008ad .LASF134
+     /tmp/cc08eZRi.s:2093   .debug_str:0000000000000967 .LASF135
+     /tmp/cc08eZRi.s:2105   .debug_str:0000000000000a6f .LASF136
+     /tmp/cc08eZRi.s:2103   .debug_str:0000000000000a6a .LASF137
+     /tmp/cc08eZRi.s:1909   .debug_str:00000000000003de .LASF138
+     /tmp/cc08eZRi.s:2053   .debug_str:000000000000081c .LASF139
+     /tmp/cc08eZRi.s:1999   .debug_str:0000000000000679 .LASF140
+     /tmp/cc08eZRi.s:1985   .debug_str:0000000000000620 .LASF141
+     /tmp/cc08eZRi.s:1825   .debug_str:000000000000012c .LASF142
+     /tmp/cc08eZRi.s:2059   .debug_str:0000000000000835 .LASF143
+     /tmp/cc08eZRi.s:2117   .debug_str:0000000000000ac9 .LASF144
+     /tmp/cc08eZRi.s:1799   .debug_str:0000000000000068 .LASF145
+     /tmp/cc08eZRi.s:1963   .debug_str:000000000000056f .LASF146
+     /tmp/cc08eZRi.s:1943   .debug_str:00000000000004e2 .LASF147
+     /tmp/cc08eZRi.s:2135   .debug_str:0000000000000b43 .LASF148
+     /tmp/cc08eZRi.s:1965   .debug_str:000000000000057b .LASF149
+     /tmp/cc08eZRi.s:1849   .debug_str:00000000000001d5 .LASF150
+     /tmp/cc08eZRi.s:2031   .debug_str:0000000000000762 .LASF151
+     /tmp/cc08eZRi.s:1947   .debug_str:00000000000004f7 .LASF152
+     /tmp/cc08eZRi.s:1847   .debug_str:00000000000001c8 .LASF153
+     /tmp/cc08eZRi.s:1853   .debug_str:00000000000001f7 .LASF154
+     /tmp/cc08eZRi.s:1817   .debug_str:00000000000000f9 .LASF155
+     /tmp/cc08eZRi.s:1979   .debug_str:0000000000000602 .LASF156
+     /tmp/cc08eZRi.s:2055   .debug_str:0000000000000823 .LASF157
+     /tmp/cc08eZRi.s:1833   .debug_str:000000000000016c .LASF158
+     /tmp/cc08eZRi.s:2065   .debug_str:0000000000000870 .LASF159
+     /tmp/cc08eZRi.s:2041   .debug_str:00000000000007c1 .LASF160
+     /tmp/cc08eZRi.s:2131   .debug_str:0000000000000b25 .LASF161
+     /tmp/cc08eZRi.s:1865   .debug_str:0000000000000255 .LASF162
+     /tmp/cc08eZRi.s:1801   .debug_str:0000000000000079 .LASF163
+     /tmp/cc08eZRi.s:1791   .debug_str:0000000000000039 .LASF164
+     /tmp/cc08eZRi.s:1945   .debug_str:00000000000004e9 .LASF165
+     /tmp/cc08eZRi.s:2013   .debug_str:00000000000006d9 .LASF166
+     /tmp/cc08eZRi.s:1959   .debug_str:0000000000000559 .LASF167
+     /tmp/cc08eZRi.s:1835   .debug_str:0000000000000175 .LASF168
+     /tmp/cc08eZRi.s:1925   .debug_str:000000000000046f .LASF169
+     /tmp/cc08eZRi.s:2111   .debug_str:0000000000000aa3 .LASF170
+     /tmp/cc08eZRi.s:1951   .debug_str:0000000000000517 .LASF176
+     /tmp/cc08eZRi.s:14     .text.Camera_Fault_State:0000000000000000 .LFB0
+     /tmp/cc08eZRi.s:35     .text.Camera_Fault_State:000000000000001c .LFE0
+     /tmp/cc08eZRi.s:1919   .debug_str:000000000000043f .LASF171
+     /tmp/cc08eZRi.s:1750   .debug_loc:0000000000000000 .LLST0
+     /tmp/cc08eZRi.s:1993   .debug_str:0000000000000650 .LASF172
+     /tmp/cc08eZRi.s:1823   .debug_str:0000000000000121 .LASF177
+     /tmp/cc08eZRi.s:18     .text.Camera_Fault_State:0000000000000000 .LVL0
+     /tmp/cc08eZRi.s:32     .text.Camera_Fault_State:0000000000000018 .LVL1
+     /tmp/cc08eZRi.s:51     .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccYYCKFS.s:13     .text.Camera_Fault_State:0000000000000000 Camera_Fault_State
+     /tmp/ccYYCKFS.s:17     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/ccYYCKFS.s:19     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/ccYYCKFS.s:20     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/ccYYCKFS.s:21     .text.Camera_Fault_State:0000000000000000 .L0 
+     /tmp/ccYYCKFS.s:24     .text.Camera_Fault_State:0000000000000008 .L0 
+     /tmp/ccYYCKFS.s:25     .text.Camera_Fault_State:0000000000000008 .L0 
+     /tmp/ccYYCKFS.s:29     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/ccYYCKFS.s:30     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/ccYYCKFS.s:31     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/ccYYCKFS.s:34     .text.Camera_Fault_State:000000000000001c .L0 
+     /tmp/ccYYCKFS.s:37     .text.Camera_Fault_State:000000000000001c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccYYCKFS.s:31     .text.Camera_Fault_State:0000000000000010 .L0 
+     /tmp/ccYYCKFS.s:28     .text.Camera_Fault_State:0000000000000010 .L2
+     /tmp/ccYYCKFS.s:1318   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccYYCKFS.s:2095   .debug_str:0000000000000973 .LASF173
+     /tmp/ccYYCKFS.s:1859   .debug_str:0000000000000219 .LASF174
+     /tmp/ccYYCKFS.s:1871   .debug_str:0000000000000284 .LASF175
+     /tmp/ccYYCKFS.s:1777   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccYYCKFS.s:1783   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccYYCKFS.s:1839   .debug_str:000000000000018c .LASF0
+     /tmp/ccYYCKFS.s:1793   .debug_str:0000000000000041 .LASF3
+     /tmp/ccYYCKFS.s:2003   .debug_str:000000000000068d .LASF1
+     /tmp/ccYYCKFS.s:2011   .debug_str:00000000000006cf .LASF2
+     /tmp/ccYYCKFS.s:2049   .debug_str:00000000000007fd .LASF4
+     /tmp/ccYYCKFS.s:1921   .debug_str:0000000000000447 .LASF5
+     /tmp/ccYYCKFS.s:2057   .debug_str:000000000000082b .LASF6
+     /tmp/ccYYCKFS.s:1855   .debug_str:000000000000020b .LASF7
+     /tmp/ccYYCKFS.s:1879   .debug_str:00000000000002f1 .LASF8
+     /tmp/ccYYCKFS.s:1907   .debug_str:00000000000003cc .LASF9
+     /tmp/ccYYCKFS.s:1837   .debug_str:000000000000017e .LASF10
+     /tmp/ccYYCKFS.s:1815   .debug_str:00000000000000e2 .LASF11
+     /tmp/ccYYCKFS.s:1897   .debug_str:0000000000000389 .LASF12
+     /tmp/ccYYCKFS.s:2099   .debug_str:0000000000000a4d .LASF13
+     /tmp/ccYYCKFS.s:1863   .debug_str:000000000000024c .LASF14
+     /tmp/ccYYCKFS.s:2001   .debug_str:0000000000000685 .LASF15
+     /tmp/ccYYCKFS.s:2027   .debug_str:000000000000074a .LASF16
+     /tmp/ccYYCKFS.s:2121   .debug_str:0000000000000ae2 .LASF17
+     /tmp/ccYYCKFS.s:1977   .debug_str:00000000000005ef .LASF50
+     /tmp/ccYYCKFS.s:1929   .debug_str:0000000000000484 .LASF18
+     /tmp/ccYYCKFS.s:2021   .debug_str:0000000000000712 .LASF19
+     /tmp/ccYYCKFS.s:2101   .debug_str:0000000000000a55 .LASF20
+     /tmp/ccYYCKFS.s:1787   .debug_str:0000000000000017 .LASF21
+     /tmp/ccYYCKFS.s:2063   .debug_str:000000000000085f .LASF22
+     /tmp/ccYYCKFS.s:2133   .debug_str:0000000000000b31 .LASF27
+     /tmp/ccYYCKFS.s:1937   .debug_str:00000000000004c1 .LASF23
+     /tmp/ccYYCKFS.s:1931   .debug_str:0000000000000498 .LASF24
+     /tmp/ccYYCKFS.s:1961   .debug_str:000000000000055f .LASF25
+     /tmp/ccYYCKFS.s:2017   .debug_str:00000000000006f2 .LASF26
+     /tmp/ccYYCKFS.s:2015   .debug_str:00000000000006e5 .LASF28
+     /tmp/ccYYCKFS.s:1989   .debug_str:0000000000000640 .LASF29
+     /tmp/ccYYCKFS.s:1995   .debug_str:0000000000000656 .LASF30
+     /tmp/ccYYCKFS.s:1935   .debug_str:00000000000004b3 .LASF31
+     /tmp/ccYYCKFS.s:1831   .debug_str:000000000000015f .LASF32
+     /tmp/ccYYCKFS.s:2029   .debug_str:0000000000000753 .LASF33
+     /tmp/ccYYCKFS.s:1881   .debug_str:00000000000002fc .LASF34
+     /tmp/ccYYCKFS.s:1843   .debug_str:00000000000001a4 .LASF35
+     /tmp/ccYYCKFS.s:2087   .debug_str:0000000000000935 .LASF36
+     /tmp/ccYYCKFS.s:1957   .debug_str:0000000000000550 .LASF37
+     /tmp/ccYYCKFS.s:1893   .debug_str:0000000000000365 .LASF38
+     /tmp/ccYYCKFS.s:1927   .debug_str:0000000000000476 .LASF39
+     /tmp/ccYYCKFS.s:2089   .debug_str:0000000000000941 .LASF40
+     /tmp/ccYYCKFS.s:2085   .debug_str:0000000000000924 .LASF41
+     /tmp/ccYYCKFS.s:1899   .debug_str:0000000000000396 .LASF42
+     /tmp/ccYYCKFS.s:1827   .debug_str:000000000000013f .LASF43
+     /tmp/ccYYCKFS.s:2119   .debug_str:0000000000000ad1 .LASF44
+     /tmp/ccYYCKFS.s:1941   .debug_str:00000000000004d7 .LASF45
+     /tmp/ccYYCKFS.s:1955   .debug_str:0000000000000540 .LASF46
+     /tmp/ccYYCKFS.s:2109   .debug_str:0000000000000a86 .LASF47
+     /tmp/ccYYCKFS.s:1867   .debug_str:000000000000025d .LASF48
+     /tmp/ccYYCKFS.s:1819   .debug_str:0000000000000101 .LASF49
+     /tmp/ccYYCKFS.s:1997   .debug_str:0000000000000666 .LASF51
+     /tmp/ccYYCKFS.s:1895   .debug_str:0000000000000375 .LASF52
+     /tmp/ccYYCKFS.s:2067   .debug_str:000000000000087b .LASF53
+     /tmp/ccYYCKFS.s:1917   .debug_str:000000000000042a .LASF54
+     /tmp/ccYYCKFS.s:2125   .debug_str:0000000000000af9 .LASF55
+     /tmp/ccYYCKFS.s:2039   .debug_str:00000000000007ab .LASF56
+     /tmp/ccYYCKFS.s:1967   .debug_str:0000000000000588 .LASF57
+     /tmp/ccYYCKFS.s:1809   .debug_str:00000000000000af .LASF58
+     /tmp/ccYYCKFS.s:1885   .debug_str:000000000000031d .LASF59
+     /tmp/ccYYCKFS.s:1971   .debug_str:00000000000005ac .LASF60
+     /tmp/ccYYCKFS.s:1975   .debug_str:00000000000005db .LASF61
+     /tmp/ccYYCKFS.s:1811   .debug_str:00000000000000c5 .LASF62
+     /tmp/ccYYCKFS.s:2019   .debug_str:0000000000000701 .LASF63
+     /tmp/ccYYCKFS.s:2061   .debug_str:0000000000000849 .LASF64
+     /tmp/ccYYCKFS.s:2081   .debug_str:00000000000008f5 .LASF65
+     /tmp/ccYYCKFS.s:1915   .debug_str:000000000000040f .LASF66
+     /tmp/ccYYCKFS.s:1889   .debug_str:000000000000033b .LASF67
+     /tmp/ccYYCKFS.s:1891   .debug_str:0000000000000350 .LASF68
+     /tmp/ccYYCKFS.s:2075   .debug_str:00000000000008b6 .LASF69
+     /tmp/ccYYCKFS.s:2077   .debug_str:00000000000008cb .LASF70
+     /tmp/ccYYCKFS.s:2079   .debug_str:00000000000008e0 .LASF71
+     /tmp/ccYYCKFS.s:2083   .debug_str:000000000000090f .LASF72
+     /tmp/ccYYCKFS.s:2047   .debug_str:00000000000007e4 .LASF73
+     /tmp/ccYYCKFS.s:2035   .debug_str:0000000000000780 .LASF74
+     /tmp/ccYYCKFS.s:1973   .debug_str:00000000000005c5 .LASF75
+     /tmp/ccYYCKFS.s:1797   .debug_str:0000000000000058 .LASF76
+     /tmp/ccYYCKFS.s:1807   .debug_str:00000000000000a6 .LASF77
+     /tmp/ccYYCKFS.s:2139   .debug_str:0000000000000b59 .LASF78
+     /tmp/ccYYCKFS.s:1789   .debug_str:0000000000000032 .LASF79
+     /tmp/ccYYCKFS.s:1991   .debug_str:0000000000000649 .LASF80
+     /tmp/ccYYCKFS.s:2043   .debug_str:00000000000007cc .LASF81
+     /tmp/ccYYCKFS.s:1813   .debug_str:00000000000000d6 .LASF82
+     /tmp/ccYYCKFS.s:1873   .debug_str:00000000000002bb .LASF83
+     /tmp/ccYYCKFS.s:1939   .debug_str:00000000000004cb .LASF84
+     /tmp/ccYYCKFS.s:2097   .debug_str:0000000000000a39 .LASF85
+     /tmp/ccYYCKFS.s:1887   .debug_str:0000000000000332 .LASF86
+     /tmp/ccYYCKFS.s:1901   .debug_str:00000000000003a5 .LASF87
+     /tmp/ccYYCKFS.s:2115   .debug_str:0000000000000abf .LASF88
+     /tmp/ccYYCKFS.s:1903   .debug_str:00000000000003ae .LASF89
+     /tmp/ccYYCKFS.s:1821   .debug_str:0000000000000118 .LASF90
+     /tmp/ccYYCKFS.s:1829   .debug_str:0000000000000156 .LASF91
+     /tmp/ccYYCKFS.s:2137   .debug_str:0000000000000b50 .LASF92
+     /tmp/ccYYCKFS.s:1795   .debug_str:000000000000004b .LASF93
+     /tmp/ccYYCKFS.s:1877   .debug_str:00000000000002dd .LASF94
+     /tmp/ccYYCKFS.s:1805   .debug_str:0000000000000093 .LASF95
+     /tmp/ccYYCKFS.s:2123   .debug_str:0000000000000ae9 .LASF96
+     /tmp/ccYYCKFS.s:1913   .debug_str:0000000000000405 .LASF97
+     /tmp/ccYYCKFS.s:2127   .debug_str:0000000000000b0a .LASF98
+     /tmp/ccYYCKFS.s:1861   .debug_str:0000000000000242 .LASF99
+     /tmp/ccYYCKFS.s:1969   .debug_str:000000000000059e .LASF100
+     /tmp/ccYYCKFS.s:1981   .debug_str:000000000000060b .LASF101
+     /tmp/ccYYCKFS.s:1987   .debug_str:0000000000000631 .LASF102
+     /tmp/ccYYCKFS.s:2045   .debug_str:00000000000007d8 .LASF103
+     /tmp/ccYYCKFS.s:1905   .debug_str:00000000000003b8 .LASF104
+     /tmp/ccYYCKFS.s:1983   .debug_str:0000000000000617 .LASF105
+     /tmp/ccYYCKFS.s:1857   .debug_str:0000000000000214 .LASF106
+     /tmp/ccYYCKFS.s:1949   .debug_str:00000000000004ff .LASF107
+     /tmp/ccYYCKFS.s:2051   .debug_str:0000000000000808 .LASF108
+     /tmp/ccYYCKFS.s:2009   .debug_str:00000000000006b5 .LASF109
+     /tmp/ccYYCKFS.s:1923   .debug_str:000000000000045a .LASF110
+     /tmp/ccYYCKFS.s:1911   .debug_str:00000000000003f6 .LASF111
+     /tmp/ccYYCKFS.s:1851   .debug_str:00000000000001ea .LASF112
+     /tmp/ccYYCKFS.s:2071   .debug_str:000000000000089f .LASF113
+     /tmp/ccYYCKFS.s:1869   .debug_str:0000000000000274 .LASF114
+     /tmp/ccYYCKFS.s:1883   .debug_str:000000000000030b .LASF115
+     /tmp/ccYYCKFS.s:2113   .debug_str:0000000000000ab4 .LASF116
+     /tmp/ccYYCKFS.s:1841   .debug_str:0000000000000198 .LASF117
+     /tmp/ccYYCKFS.s:1803   .debug_str:000000000000007f .LASF118
+     /tmp/ccYYCKFS.s:2107   .debug_str:0000000000000a76 .LASF119
+     /tmp/ccYYCKFS.s:1845   .debug_str:00000000000001b5 .LASF120
+     /tmp/ccYYCKFS.s:2033   .debug_str:000000000000076c .LASF121
+     /tmp/ccYYCKFS.s:2129   .debug_str:0000000000000b1c .LASF122
+     /tmp/ccYYCKFS.s:2091   .debug_str:000000000000094e .LASF123
+     /tmp/ccYYCKFS.s:1785   .debug_str:0000000000000000 .LASF124
+     /tmp/ccYYCKFS.s:1875   .debug_str:00000000000002c7 .LASF125
+     /tmp/ccYYCKFS.s:1953   .debug_str:000000000000052a .LASF126
+     /tmp/ccYYCKFS.s:1933   .debug_str:00000000000004a6 .LASF127
+     /tmp/ccYYCKFS.s:2037   .debug_str:0000000000000795 .LASF128
+     /tmp/ccYYCKFS.s:2025   .debug_str:0000000000000735 .LASF129
+     /tmp/ccYYCKFS.s:2023   .debug_str:0000000000000727 .LASF130
+     /tmp/ccYYCKFS.s:2069   .debug_str:0000000000000890 .LASF131
+     /tmp/ccYYCKFS.s:2005   .debug_str:000000000000069b .LASF132
+     /tmp/ccYYCKFS.s:2007   .debug_str:00000000000006a8 .LASF133
+     /tmp/ccYYCKFS.s:2073   .debug_str:00000000000008ad .LASF134
+     /tmp/ccYYCKFS.s:2093   .debug_str:0000000000000967 .LASF135
+     /tmp/ccYYCKFS.s:2105   .debug_str:0000000000000a6f .LASF136
+     /tmp/ccYYCKFS.s:2103   .debug_str:0000000000000a6a .LASF137
+     /tmp/ccYYCKFS.s:1909   .debug_str:00000000000003de .LASF138
+     /tmp/ccYYCKFS.s:2053   .debug_str:000000000000081c .LASF139
+     /tmp/ccYYCKFS.s:1999   .debug_str:0000000000000679 .LASF140
+     /tmp/ccYYCKFS.s:1985   .debug_str:0000000000000620 .LASF141
+     /tmp/ccYYCKFS.s:1825   .debug_str:000000000000012c .LASF142
+     /tmp/ccYYCKFS.s:2059   .debug_str:0000000000000835 .LASF143
+     /tmp/ccYYCKFS.s:2117   .debug_str:0000000000000ac9 .LASF144
+     /tmp/ccYYCKFS.s:1799   .debug_str:0000000000000068 .LASF145
+     /tmp/ccYYCKFS.s:1963   .debug_str:000000000000056f .LASF146
+     /tmp/ccYYCKFS.s:1943   .debug_str:00000000000004e2 .LASF147
+     /tmp/ccYYCKFS.s:2135   .debug_str:0000000000000b43 .LASF148
+     /tmp/ccYYCKFS.s:1965   .debug_str:000000000000057b .LASF149
+     /tmp/ccYYCKFS.s:1849   .debug_str:00000000000001d5 .LASF150
+     /tmp/ccYYCKFS.s:2031   .debug_str:0000000000000762 .LASF151
+     /tmp/ccYYCKFS.s:1947   .debug_str:00000000000004f7 .LASF152
+     /tmp/ccYYCKFS.s:1847   .debug_str:00000000000001c8 .LASF153
+     /tmp/ccYYCKFS.s:1853   .debug_str:00000000000001f7 .LASF154
+     /tmp/ccYYCKFS.s:1817   .debug_str:00000000000000f9 .LASF155
+     /tmp/ccYYCKFS.s:1979   .debug_str:0000000000000602 .LASF156
+     /tmp/ccYYCKFS.s:2055   .debug_str:0000000000000823 .LASF157
+     /tmp/ccYYCKFS.s:1833   .debug_str:000000000000016c .LASF158
+     /tmp/ccYYCKFS.s:2065   .debug_str:0000000000000870 .LASF159
+     /tmp/ccYYCKFS.s:2041   .debug_str:00000000000007c1 .LASF160
+     /tmp/ccYYCKFS.s:2131   .debug_str:0000000000000b25 .LASF161
+     /tmp/ccYYCKFS.s:1865   .debug_str:0000000000000255 .LASF162
+     /tmp/ccYYCKFS.s:1801   .debug_str:0000000000000079 .LASF163
+     /tmp/ccYYCKFS.s:1791   .debug_str:0000000000000039 .LASF164
+     /tmp/ccYYCKFS.s:1945   .debug_str:00000000000004e9 .LASF165
+     /tmp/ccYYCKFS.s:2013   .debug_str:00000000000006d9 .LASF166
+     /tmp/ccYYCKFS.s:1959   .debug_str:0000000000000559 .LASF167
+     /tmp/ccYYCKFS.s:1835   .debug_str:0000000000000175 .LASF168
+     /tmp/ccYYCKFS.s:1925   .debug_str:000000000000046f .LASF169
+     /tmp/ccYYCKFS.s:2111   .debug_str:0000000000000aa3 .LASF170
+     /tmp/ccYYCKFS.s:1951   .debug_str:0000000000000517 .LASF176
+     /tmp/ccYYCKFS.s:14     .text.Camera_Fault_State:0000000000000000 .LFB0
+     /tmp/ccYYCKFS.s:35     .text.Camera_Fault_State:000000000000001c .LFE0
+     /tmp/ccYYCKFS.s:1919   .debug_str:000000000000043f .LASF171
+     /tmp/ccYYCKFS.s:1750   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccYYCKFS.s:1993   .debug_str:0000000000000650 .LASF172
+     /tmp/ccYYCKFS.s:1823   .debug_str:0000000000000121 .LASF177
+     /tmp/ccYYCKFS.s:18     .text.Camera_Fault_State:0000000000000000 .LVL0
+     /tmp/ccYYCKFS.s:32     .text.Camera_Fault_State:0000000000000018 .LVL1
+     /tmp/ccYYCKFS.s:51     .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

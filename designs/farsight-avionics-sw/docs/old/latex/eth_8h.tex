@@ -1,0 +1,373 @@
+\doxysection{src/\+eth.h File Reference}
+\hypertarget{eth_8h}{}\label{eth_8h}\index{src/eth.h@{src/eth.h}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+Include dependency graph for eth.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=139pt]{eth_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=235pt]{eth_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a38f8f3e34999550c43be51fca120b026}{ETH\+\_\+H}}
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a3b8b84e8610c26cb56c284906df9100a}{MAC\+\_\+\+CONFIG\+\_\+1\+\_\+\+OFFSET}}~0x0000
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_abfc7ac42a4e82f18e1760df4644f7c5c}{MAC\+\_\+\+CONFIG\+\_\+2\+\_\+\+OFFSET}}~0x0004
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a7ac8f4e46051d0126ec1feb46318acd3}{MAC\+\_\+\+MAX\+\_\+\+FRAME\+\_\+\+LEN\+\_\+\+OFFSET}}~0x0010
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a68ffcfa974a3a456ad0d2bf195eb33ee}{MDIO\+\_\+\+MGMT\+\_\+\+CONFIG\+\_\+\+OFFSET}}~0x0020
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a8e08fadb8d4813d3e6b57e44fb7f5da0}{MDIO\+\_\+\+MGMT\+\_\+\+COMMAND\+\_\+\+OFFSET}}~0x0024
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a4026452a9acfd482472c2f145aa57cf9}{MDIO\+\_\+\+MGMT\+\_\+\+ADDRESS\+\_\+\+OFFSET}}~0x0028
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_ab077f2e84f6205d91ed4347bfae0660b}{MDIO\+\_\+\+MGMT\+\_\+\+CONTROL\+\_\+\+OFFSET}}~0x002C
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a62bb242b06691b0d1eb251d2cd2a717d}{MDIO\+\_\+\+MGMT\+\_\+\+STATUS\+\_\+\+OFFSET}}~0x0030
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a28810feb2a48f7b674d11448545680d1}{MDIO\+\_\+\+MGMT\+\_\+\+INDICATORS\+\_\+\+OFFSET}}~0x0034
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a488d6cc643d1bd70f72d75195ac1720e}{INTERFACE\+\_\+\+CONTROL\+\_\+\+OFFSET}}~0x0038
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a0870da9ef8bd97f25de40e69a4945309}{STATION\+\_\+\+ADDRESS\+\_\+\+LOWER\+\_\+\+OFFSET}}~0x0040
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a6f98034d1d58d4c502d7308366916f02}{STATION\+\_\+\+ADDRESS\+\_\+\+HIGHER\+\_\+\+OFFSET}}~0x0044
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_aeb7faa8d854c9b61d913151641b57782}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+0\+\_\+\+OFFSET}}~0x0048
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a737031268fb11c78793b22e831eba631}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+1\+\_\+\+OFFSET}}~0x004C
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a6e3d9210a094924a4098bb5c763661d3}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+2\+\_\+\+OFFSET}}~0x0050
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a7872e33d250671ec6c0c936731c6025a}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+3\+\_\+\+OFFSET}}~0x0054
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a44cc40f476daf85210d648bffca3133c}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+4\+\_\+\+OFFSET}}~0x0058
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_adf25770949ab041a30201ef7f17c8a8e}{MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+5\+\_\+\+OFFSET}}~0x005C
+\item 
+\+\#define \doxymbox{\hyperlink{eth_8h_a94cabcc866150fb1a5ad7cef85b88b31}{FRAME\+\_\+\+CONTROL\+\_\+\+FILTER\+\_\+\+OFFSET}}~0x01\+C0
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{eth_8h_a4e3e7f0a830012fd4a008f4aacced5f9}{eth\+\_\+core\+\_\+init\+\_\+regs}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}regs, uint32\+\_\+t base\+\_\+address)
+\item 
+void \doxymbox{\hyperlink{eth_8h_a0430d38d671d1696904e074af2453b6e}{phy\+\_\+advertise}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}regs)
+\item 
+void \doxymbox{\hyperlink{eth_8h_abe71503d3700d7311cc1b13f93a16291}{phy\+\_\+autonegotiation}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}regs)
+\item 
+void \doxymbox{\hyperlink{eth_8h_a2a4b556ebd34273cd3cd887884f9eb16}{phy\+\_\+init}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}regs)
+\item 
+void \doxymbox{\hyperlink{eth_8h_a8d121b9ceea235b0d1a9000ccc5b1108}{tse\+\_\+init}} (\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}regs)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{eth_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{eth_8h_a38f8f3e34999550c43be51fca120b026}\index{eth.h@{eth.h}!ETH\_H@{ETH\_H}}
+\index{ETH\_H@{ETH\_H}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{ETH\_H}{ETH\_H}}
+{\footnotesize\ttfamily \label{eth_8h_a38f8f3e34999550c43be51fca120b026} 
+\+\#define ETH\+\_\+H}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00012}{12}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a94cabcc866150fb1a5ad7cef85b88b31}\index{eth.h@{eth.h}!FRAME\_CONTROL\_FILTER\_OFFSET@{FRAME\_CONTROL\_FILTER\_OFFSET}}
+\index{FRAME\_CONTROL\_FILTER\_OFFSET@{FRAME\_CONTROL\_FILTER\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{FRAME\_CONTROL\_FILTER\_OFFSET}{FRAME\_CONTROL\_FILTER\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a94cabcc866150fb1a5ad7cef85b88b31} 
+\+\#define FRAME\+\_\+\+CONTROL\+\_\+\+FILTER\+\_\+\+OFFSET~0x01\+C0}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00040}{40}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a488d6cc643d1bd70f72d75195ac1720e}\index{eth.h@{eth.h}!INTERFACE\_CONTROL\_OFFSET@{INTERFACE\_CONTROL\_OFFSET}}
+\index{INTERFACE\_CONTROL\_OFFSET@{INTERFACE\_CONTROL\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{INTERFACE\_CONTROL\_OFFSET}{INTERFACE\_CONTROL\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a488d6cc643d1bd70f72d75195ac1720e} 
+\+\#define INTERFACE\+\_\+\+CONTROL\+\_\+\+OFFSET~0x0038}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00031}{31}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a3b8b84e8610c26cb56c284906df9100a}\index{eth.h@{eth.h}!MAC\_CONFIG\_1\_OFFSET@{MAC\_CONFIG\_1\_OFFSET}}
+\index{MAC\_CONFIG\_1\_OFFSET@{MAC\_CONFIG\_1\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_CONFIG\_1\_OFFSET}{MAC\_CONFIG\_1\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a3b8b84e8610c26cb56c284906df9100a} 
+\+\#define MAC\+\_\+\+CONFIG\+\_\+1\+\_\+\+OFFSET~0x0000}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00022}{22}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_abfc7ac42a4e82f18e1760df4644f7c5c}\index{eth.h@{eth.h}!MAC\_CONFIG\_2\_OFFSET@{MAC\_CONFIG\_2\_OFFSET}}
+\index{MAC\_CONFIG\_2\_OFFSET@{MAC\_CONFIG\_2\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_CONFIG\_2\_OFFSET}{MAC\_CONFIG\_2\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_abfc7ac42a4e82f18e1760df4644f7c5c} 
+\+\#define MAC\+\_\+\+CONFIG\+\_\+2\+\_\+\+OFFSET~0x0004}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00023}{23}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_aeb7faa8d854c9b61d913151641b57782}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_0\_OFFSET@{MAC\_FIFO\_CONFIG\_0\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_0\_OFFSET@{MAC\_FIFO\_CONFIG\_0\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_0\_OFFSET}{MAC\_FIFO\_CONFIG\_0\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_aeb7faa8d854c9b61d913151641b57782} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+0\+\_\+\+OFFSET~0x0048}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00034}{34}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a737031268fb11c78793b22e831eba631}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_1\_OFFSET@{MAC\_FIFO\_CONFIG\_1\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_1\_OFFSET@{MAC\_FIFO\_CONFIG\_1\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_1\_OFFSET}{MAC\_FIFO\_CONFIG\_1\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a737031268fb11c78793b22e831eba631} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+1\+\_\+\+OFFSET~0x004C}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00035}{35}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a6e3d9210a094924a4098bb5c763661d3}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_2\_OFFSET@{MAC\_FIFO\_CONFIG\_2\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_2\_OFFSET@{MAC\_FIFO\_CONFIG\_2\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_2\_OFFSET}{MAC\_FIFO\_CONFIG\_2\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a6e3d9210a094924a4098bb5c763661d3} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+2\+\_\+\+OFFSET~0x0050}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00036}{36}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a7872e33d250671ec6c0c936731c6025a}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_3\_OFFSET@{MAC\_FIFO\_CONFIG\_3\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_3\_OFFSET@{MAC\_FIFO\_CONFIG\_3\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_3\_OFFSET}{MAC\_FIFO\_CONFIG\_3\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a7872e33d250671ec6c0c936731c6025a} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+3\+\_\+\+OFFSET~0x0054}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00037}{37}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a44cc40f476daf85210d648bffca3133c}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_4\_OFFSET@{MAC\_FIFO\_CONFIG\_4\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_4\_OFFSET@{MAC\_FIFO\_CONFIG\_4\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_4\_OFFSET}{MAC\_FIFO\_CONFIG\_4\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a44cc40f476daf85210d648bffca3133c} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+4\+\_\+\+OFFSET~0x0058}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00038}{38}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_adf25770949ab041a30201ef7f17c8a8e}\index{eth.h@{eth.h}!MAC\_FIFO\_CONFIG\_5\_OFFSET@{MAC\_FIFO\_CONFIG\_5\_OFFSET}}
+\index{MAC\_FIFO\_CONFIG\_5\_OFFSET@{MAC\_FIFO\_CONFIG\_5\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_FIFO\_CONFIG\_5\_OFFSET}{MAC\_FIFO\_CONFIG\_5\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_adf25770949ab041a30201ef7f17c8a8e} 
+\+\#define MAC\+\_\+\+FIFO\+\_\+\+CONFIG\+\_\+5\+\_\+\+OFFSET~0x005C}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00039}{39}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a7ac8f4e46051d0126ec1feb46318acd3}\index{eth.h@{eth.h}!MAC\_MAX\_FRAME\_LEN\_OFFSET@{MAC\_MAX\_FRAME\_LEN\_OFFSET}}
+\index{MAC\_MAX\_FRAME\_LEN\_OFFSET@{MAC\_MAX\_FRAME\_LEN\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MAC\_MAX\_FRAME\_LEN\_OFFSET}{MAC\_MAX\_FRAME\_LEN\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a7ac8f4e46051d0126ec1feb46318acd3} 
+\+\#define MAC\+\_\+\+MAX\+\_\+\+FRAME\+\_\+\+LEN\+\_\+\+OFFSET~0x0010}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00024}{24}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a4026452a9acfd482472c2f145aa57cf9}\index{eth.h@{eth.h}!MDIO\_MGMT\_ADDRESS\_OFFSET@{MDIO\_MGMT\_ADDRESS\_OFFSET}}
+\index{MDIO\_MGMT\_ADDRESS\_OFFSET@{MDIO\_MGMT\_ADDRESS\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_ADDRESS\_OFFSET}{MDIO\_MGMT\_ADDRESS\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a4026452a9acfd482472c2f145aa57cf9} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+ADDRESS\+\_\+\+OFFSET~0x0028}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00027}{27}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a8e08fadb8d4813d3e6b57e44fb7f5da0}\index{eth.h@{eth.h}!MDIO\_MGMT\_COMMAND\_OFFSET@{MDIO\_MGMT\_COMMAND\_OFFSET}}
+\index{MDIO\_MGMT\_COMMAND\_OFFSET@{MDIO\_MGMT\_COMMAND\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_COMMAND\_OFFSET}{MDIO\_MGMT\_COMMAND\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a8e08fadb8d4813d3e6b57e44fb7f5da0} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+COMMAND\+\_\+\+OFFSET~0x0024}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00026}{26}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a68ffcfa974a3a456ad0d2bf195eb33ee}\index{eth.h@{eth.h}!MDIO\_MGMT\_CONFIG\_OFFSET@{MDIO\_MGMT\_CONFIG\_OFFSET}}
+\index{MDIO\_MGMT\_CONFIG\_OFFSET@{MDIO\_MGMT\_CONFIG\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_CONFIG\_OFFSET}{MDIO\_MGMT\_CONFIG\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a68ffcfa974a3a456ad0d2bf195eb33ee} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+CONFIG\+\_\+\+OFFSET~0x0020}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00025}{25}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_ab077f2e84f6205d91ed4347bfae0660b}\index{eth.h@{eth.h}!MDIO\_MGMT\_CONTROL\_OFFSET@{MDIO\_MGMT\_CONTROL\_OFFSET}}
+\index{MDIO\_MGMT\_CONTROL\_OFFSET@{MDIO\_MGMT\_CONTROL\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_CONTROL\_OFFSET}{MDIO\_MGMT\_CONTROL\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_ab077f2e84f6205d91ed4347bfae0660b} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+CONTROL\+\_\+\+OFFSET~0x002C}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00028}{28}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a28810feb2a48f7b674d11448545680d1}\index{eth.h@{eth.h}!MDIO\_MGMT\_INDICATORS\_OFFSET@{MDIO\_MGMT\_INDICATORS\_OFFSET}}
+\index{MDIO\_MGMT\_INDICATORS\_OFFSET@{MDIO\_MGMT\_INDICATORS\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_INDICATORS\_OFFSET}{MDIO\_MGMT\_INDICATORS\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a28810feb2a48f7b674d11448545680d1} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+INDICATORS\+\_\+\+OFFSET~0x0034}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00030}{30}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a62bb242b06691b0d1eb251d2cd2a717d}\index{eth.h@{eth.h}!MDIO\_MGMT\_STATUS\_OFFSET@{MDIO\_MGMT\_STATUS\_OFFSET}}
+\index{MDIO\_MGMT\_STATUS\_OFFSET@{MDIO\_MGMT\_STATUS\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{MDIO\_MGMT\_STATUS\_OFFSET}{MDIO\_MGMT\_STATUS\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a62bb242b06691b0d1eb251d2cd2a717d} 
+\+\#define MDIO\+\_\+\+MGMT\+\_\+\+STATUS\+\_\+\+OFFSET~0x0030}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00029}{29}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a6f98034d1d58d4c502d7308366916f02}\index{eth.h@{eth.h}!STATION\_ADDRESS\_HIGHER\_OFFSET@{STATION\_ADDRESS\_HIGHER\_OFFSET}}
+\index{STATION\_ADDRESS\_HIGHER\_OFFSET@{STATION\_ADDRESS\_HIGHER\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{STATION\_ADDRESS\_HIGHER\_OFFSET}{STATION\_ADDRESS\_HIGHER\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a6f98034d1d58d4c502d7308366916f02} 
+\+\#define STATION\+\_\+\+ADDRESS\+\_\+\+HIGHER\+\_\+\+OFFSET~0x0044}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00033}{33}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+\Hypertarget{eth_8h_a0870da9ef8bd97f25de40e69a4945309}\index{eth.h@{eth.h}!STATION\_ADDRESS\_LOWER\_OFFSET@{STATION\_ADDRESS\_LOWER\_OFFSET}}
+\index{STATION\_ADDRESS\_LOWER\_OFFSET@{STATION\_ADDRESS\_LOWER\_OFFSET}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{STATION\_ADDRESS\_LOWER\_OFFSET}{STATION\_ADDRESS\_LOWER\_OFFSET}}
+{\footnotesize\ttfamily \label{eth_8h_a0870da9ef8bd97f25de40e69a4945309} 
+\+\#define STATION\+\_\+\+ADDRESS\+\_\+\+LOWER\+\_\+\+OFFSET~0x0040}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8h_source_l00032}{32}} of file \doxymbox{\hyperlink{eth_8h_source}{eth.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{eth_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{eth_8h_a4e3e7f0a830012fd4a008f4aacced5f9}\index{eth.h@{eth.h}!eth\_core\_init\_regs@{eth\_core\_init\_regs}}
+\index{eth\_core\_init\_regs@{eth\_core\_init\_regs}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{eth\_core\_init\_regs()}{eth\_core\_init\_regs()}}
+{\footnotesize\ttfamily \label{eth_8h_a4e3e7f0a830012fd4a008f4aacced5f9} 
+void eth\+\_\+core\+\_\+init\+\_\+regs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{regs}{, }\item[{uint32\+\_\+t}]{base\+\_\+address}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8c_source_l00019}{19}} of file \doxymbox{\hyperlink{eth_8c_source}{eth.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{eth_8h_a4e3e7f0a830012fd4a008f4aacced5f9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{eth_8h_a0430d38d671d1696904e074af2453b6e}\index{eth.h@{eth.h}!phy\_advertise@{phy\_advertise}}
+\index{phy\_advertise@{phy\_advertise}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{phy\_advertise()}{phy\_advertise()}}
+{\footnotesize\ttfamily \label{eth_8h_a0430d38d671d1696904e074af2453b6e} 
+void phy\+\_\+advertise (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{regs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8c_source_l00066}{66}} of file \doxymbox{\hyperlink{eth_8c_source}{eth.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{eth_8h_a0430d38d671d1696904e074af2453b6e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{eth_8h_abe71503d3700d7311cc1b13f93a16291}\index{eth.h@{eth.h}!phy\_autonegotiation@{phy\_autonegotiation}}
+\index{phy\_autonegotiation@{phy\_autonegotiation}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{phy\_autonegotiation()}{phy\_autonegotiation()}}
+{\footnotesize\ttfamily \label{eth_8h_abe71503d3700d7311cc1b13f93a16291} 
+void phy\+\_\+autonegotiation (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{regs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8c_source_l00111}{111}} of file \doxymbox{\hyperlink{eth_8c_source}{eth.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{eth_8h_abe71503d3700d7311cc1b13f93a16291_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{eth_8h_a2a4b556ebd34273cd3cd887884f9eb16}\index{eth.h@{eth.h}!phy\_init@{phy\_init}}
+\index{phy\_init@{phy\_init}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{phy\_init()}{phy\_init()}}
+{\footnotesize\ttfamily \label{eth_8h_a2a4b556ebd34273cd3cd887884f9eb16} 
+void phy\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{regs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8c_source_l00176}{176}} of file \doxymbox{\hyperlink{eth_8c_source}{eth.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{eth_8h_a2a4b556ebd34273cd3cd887884f9eb16_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{eth_8h_a8d121b9ceea235b0d1a9000ccc5b1108}\index{eth.h@{eth.h}!tse\_init@{tse\_init}}
+\index{tse\_init@{tse\_init}!eth.h@{eth.h}}
+\doxysubsubsection{\texorpdfstring{tse\_init()}{tse\_init()}}
+{\footnotesize\ttfamily \label{eth_8h_a8d121b9ceea235b0d1a9000ccc5b1108} 
+void tse\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structeth__core__regs__t}{eth\+\_\+core\+\_\+regs\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{regs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{eth_8c_source_l00315}{315}} of file \doxymbox{\hyperlink{eth_8c_source}{eth.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{eth_8h_a8d121b9ceea235b0d1a9000ccc5b1108_icgraph}
+\end{center}
+\end{figure}

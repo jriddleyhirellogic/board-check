@@ -1,0 +1,46 @@
+\doxysection{Queue\+Pointers Struct Reference}
+\hypertarget{structQueuePointers}{}\label{structQueuePointers}\index{QueuePointers@{QueuePointers}}
+\doxysubsubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+int8\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structQueuePointers_aec0a6e253e1e05c107bf2a77c1bed940}{pc\+Tail}}
+\item 
+int8\+\_\+t \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{structQueuePointers_af716fa534e7d09f91df1fbdd8ab7a693}{pc\+Read\+From}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00068}{68}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+
+
+\label{doc-variable-members}
+\Hypertarget{structQueuePointers_doc-variable-members}
+\doxysubsection{Field Documentation}
+\Hypertarget{structQueuePointers_af716fa534e7d09f91df1fbdd8ab7a693}\index{QueuePointers@{QueuePointers}!pcReadFrom@{pcReadFrom}}
+\index{pcReadFrom@{pcReadFrom}!QueuePointers@{QueuePointers}}
+\doxysubsubsection{\texorpdfstring{pcReadFrom}{pcReadFrom}}
+{\footnotesize\ttfamily \label{structQueuePointers_af716fa534e7d09f91df1fbdd8ab7a693} 
+int8\+\_\+t\texorpdfstring{$\ast$}{*} pc\+Read\+From}
+
+Points to the last place that a queued item was read from when the structure is used as a queue. 
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00071}{71}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+\Hypertarget{structQueuePointers_aec0a6e253e1e05c107bf2a77c1bed940}\index{QueuePointers@{QueuePointers}!pcTail@{pcTail}}
+\index{pcTail@{pcTail}!QueuePointers@{QueuePointers}}
+\doxysubsubsection{\texorpdfstring{pcTail}{pcTail}}
+{\footnotesize\ttfamily \label{structQueuePointers_aec0a6e253e1e05c107bf2a77c1bed940} 
+int8\+\_\+t\texorpdfstring{$\ast$}{*} pc\+Tail}
+
+Points to the byte at the end of the queue storage area. Once more byte is allocated than necessary to store the queue items, this is used as a marker. 
+
+Definition at line \doxymbox{\hyperlink{queue_8c_source_l00070}{70}} of file \doxymbox{\hyperlink{queue_8c_source}{queue.\+c}}.
+
+
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+\+Free\+RTOS/\+\doxymbox{\hyperlink{queue_8c}{queue.\+c}}\end{DoxyCompactItemize}

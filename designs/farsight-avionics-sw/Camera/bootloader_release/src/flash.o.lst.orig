@@ -1,0 +1,2820 @@
+   1              		.file	"flash.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Set_Write_Enable,"ax",@progbits
+  10              		.align	2
+  12              	v_Set_Write_Enable:
+  13              	.LFB2:
+  14              		.file 1 "../src/flash.c"
+   1:../src/flash.c **** /*
+   2:../src/flash.c ****  * flash.c
+   3:../src/flash.c ****  *
+   4:../src/flash.c ****  *  Created on: Dec 23, 2025
+   5:../src/flash.c ****  *      Author: iboard
+   6:../src/flash.c ****  */
+   7:../src/flash.c **** #include <stdint.h>
+   8:../src/flash.c **** #include <string.h>
+   9:../src/flash.c **** #include <assert.h>
+  10:../src/flash.c **** #include "mem_map.h"
+  11:../src/flash.c **** #include "core_spi.h"
+  12:../src/flash.c **** #include "flash.h"
+  13:../src/flash.c **** 
+  14:../src/flash.c **** static spi_instance_t flash_spi;
+  15:../src/flash.c **** 
+  16:../src/flash.c **** static void v_Wait_For_Not_Busy(void);
+  17:../src/flash.c **** static void v_Wait_For_Write_Enable(void);
+  18:../src/flash.c **** 
+  19:../src/flash.c **** static void __attribute__((unused)) spi_status(void)   // For debug purposes
+  20:../src/flash.c **** {
+  21:../src/flash.c ****     uint32_t u32_Reg_Val;
+  22:../src/flash.c **** 
+  23:../src/flash.c ****     u32_Reg_Val = *(volatile uint32_t *)(FLASH_NORMAL_SPI_BASE );        // Control
+  24:../src/flash.c ****     u32_Reg_Val = *(volatile uint32_t *)(FLASH_NORMAL_SPI_BASE + 0x18 ); // control2
+  25:../src/flash.c ****     u32_Reg_Val = *(volatile uint32_t *)(FLASH_NORMAL_SPI_BASE + 0x20 ); // status
+  26:../src/flash.c ****     u32_Reg_Val = *(volatile uint32_t *)(FLASH_NORMAL_SPI_BASE + 0x24 ); // SSEL
+  27:../src/flash.c **** }
+  28:../src/flash.c **** 
+  29:../src/flash.c **** static void v_Set_Write_Enable( void )
+  30:../src/flash.c **** {
+  15              		.loc 1 30 1
+  16              		.cfi_startproc
+  31:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4)));
+  17              		.loc 1 31 5
+  32:../src/flash.c **** 
+  33:../src/flash.c ****     command_buf[0] = FLASH_WREN;
+  18              		.loc 1 33 5
+  30:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4)));
+  19              		.loc 1 30 1 is_stmt 0
+  20 0000 130101FE 		addi	sp,sp,-32
+  21              		.cfi_def_cfa_offset 32
+  22              		.loc 1 33 20
+  23 0004 93076000 		li	a5,6
+  34:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, (void *)0, 0 );
+  24              		.loc 1 34 5
+  25 0008 9305C100 		addi	a1,sp,12
+  26 000c 13070000 		li	a4,0
+  27 0010 93060000 		li	a3,0
+  28 0014 13061000 		li	a2,1
+  29 0018 17050000 		lla	a0,.LANCHOR0
+  29      13050500 
+  30:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4)));
+  30              		.loc 1 30 1
+  31 0020 232E1100 		sw	ra,28(sp)
+  32              		.cfi_offset 1, -4
+  33:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, (void *)0, 0 );
+  33              		.loc 1 33 20
+  34 0024 2306F100 		sb	a5,12(sp)
+  35              		.loc 1 34 5 is_stmt 1
+  36 0028 97000000 		call	SPI_transfer_block
+  36      E7800000 
+  37              	.LVL0:
+  35:../src/flash.c **** }
+  38              		.loc 1 35 1 is_stmt 0
+  39 0030 8320C101 		lw	ra,28(sp)
+  40              		.cfi_restore 1
+  41 0034 13010102 		addi	sp,sp,32
+  42              		.cfi_def_cfa_offset 0
+  43 0038 67800000 		jr	ra
+  44              		.cfi_endproc
+  45              	.LFE2:
+  47              		.section	.text.v_Init_Flash,"ax",@progbits
+  48              		.align	2
+  49              		.globl	v_Init_Flash
+  51              	v_Init_Flash:
+  52              	.LFB3:
+  36:../src/flash.c **** 
+  37:../src/flash.c **** void v_Init_Flash(void)
+  38:../src/flash.c **** {
+  53              		.loc 1 38 1 is_stmt 1
+  54              		.cfi_startproc
+  39:../src/flash.c ****     uint32_t reg;
+  55              		.loc 1 39 5
+  40:../src/flash.c **** 
+  41:../src/flash.c ****     SPI_init( &flash_spi, FLASH_NORMAL_SPI_BASE, 32 );
+  56              		.loc 1 41 5
+  38:../src/flash.c ****     uint32_t reg;
+  57              		.loc 1 38 1 is_stmt 0
+  58 0000 130101FF 		addi	sp,sp,-16
+  59              		.cfi_def_cfa_offset 16
+  60 0004 23248100 		sw	s0,8(sp)
+  61              		.cfi_offset 8, -8
+  62              		.loc 1 41 5
+  63 0008 17040000 		lla	s0,.LANCHOR0
+  63      13040400 
+  64 0010 B7850170 		li	a1,1879146496
+  65 0014 13050400 		mv	a0,s0
+  66 0018 13060002 		li	a2,32
+  38:../src/flash.c ****     uint32_t reg;
+  67              		.loc 1 38 1
+  68 001c 23261100 		sw	ra,12(sp)
+  69              		.cfi_offset 1, -4
+  70              		.loc 1 41 5
+  71 0020 97000000 		call	SPI_init
+  71      E7800000 
+  72              	.LVL1:
+  42:../src/flash.c ****     SPI_configure_master_mode( &flash_spi );
+  73              		.loc 1 42 5 is_stmt 1
+  74 0028 13050400 		mv	a0,s0
+  75 002c 97000000 		call	SPI_configure_master_mode
+  75      E7800000 
+  76              	.LVL2:
+  43:../src/flash.c ****     SPI_set_slave_select(&flash_spi, SPI_SLAVE_0 );
+  77              		.loc 1 43 5
+  78 0034 13050400 		mv	a0,s0
+  44:../src/flash.c **** }
+  79              		.loc 1 44 1 is_stmt 0
+  80 0038 03248100 		lw	s0,8(sp)
+  81              		.cfi_restore 8
+  82 003c 8320C100 		lw	ra,12(sp)
+  83              		.cfi_restore 1
+  43:../src/flash.c ****     SPI_set_slave_select(&flash_spi, SPI_SLAVE_0 );
+  84              		.loc 1 43 5
+  85 0040 93050000 		li	a1,0
+  86              		.loc 1 44 1
+  87 0044 13010101 		addi	sp,sp,16
+  88              		.cfi_def_cfa_offset 0
+  43:../src/flash.c ****     SPI_set_slave_select(&flash_spi, SPI_SLAVE_0 );
+  89              		.loc 1 43 5
+  90 0048 17030000 		tail	SPI_set_slave_select
+  90      67000300 
+  91              	.LVL3:
+  92              		.cfi_endproc
+  93              	.LFE3:
+  95              		.section	.text.v_Flash_Reset,"ax",@progbits
+  96              		.align	2
+  97              		.globl	v_Flash_Reset
+  99              	v_Flash_Reset:
+ 100              	.LFB4:
+  45:../src/flash.c **** 
+  46:../src/flash.c **** void v_Flash_Reset(void)
+  47:../src/flash.c **** {
+ 101              		.loc 1 47 1 is_stmt 1
+ 102              		.cfi_startproc
+  48:../src/flash.c ****     uint8_t num_idle_cycles = 0;
+ 103              		.loc 1 48 5
+ 104              	.LVL4:
+  49:../src/flash.c ****     uint8_t u8_Rd_Buf;
+ 105              		.loc 1 49 5
+  50:../src/flash.c ****     uint32_t u32_Reg_Val;
+ 106              		.loc 1 50 5
+  51:../src/flash.c **** 
+  52:../src/flash.c ****     const uint8_t rst_en_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RSTEN};
+ 107              		.loc 1 52 5
+  47:../src/flash.c ****     uint8_t num_idle_cycles = 0;
+ 108              		.loc 1 47 1 is_stmt 0
+ 109 0000 130101FE 		addi	sp,sp,-32
+ 110              		.cfi_def_cfa_offset 32
+ 111 0004 232C8100 		sw	s0,24(sp)
+ 112              		.loc 1 52 19
+ 113 0008 93076006 		li	a5,102
+ 114              		.cfi_offset 8, -8
+  53:../src/flash.c ****     const uint8_t rst_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RST};
+  54:../src/flash.c **** 
+  55:../src/flash.c ****     SPI_transfer_block( &flash_spi, rst_en_command_buf, 1, &u8_Rd_Buf, 0 );
+ 115              		.loc 1 55 5
+ 116 000c 17040000 		lla	s0,.LANCHOR0
+ 116      13040400 
+  52:../src/flash.c ****     const uint8_t rst_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RST};
+ 117              		.loc 1 52 19
+ 118 0014 2304F100 		sb	a5,8(sp)
+  53:../src/flash.c ****     const uint8_t rst_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RST};
+ 119              		.loc 1 53 5 is_stmt 1
+ 120              		.loc 1 55 5 is_stmt 0
+ 121 0018 9306F100 		addi	a3,sp,15
+  53:../src/flash.c ****     const uint8_t rst_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RST};
+ 122              		.loc 1 53 19
+ 123 001c 930790F9 		li	a5,-103
+ 124              		.loc 1 55 5
+ 125 0020 93058100 		addi	a1,sp,8
+ 126 0024 13050400 		mv	a0,s0
+ 127 0028 13070000 		li	a4,0
+ 128 002c 13061000 		li	a2,1
+  47:../src/flash.c ****     uint8_t num_idle_cycles = 0;
+ 129              		.loc 1 47 1
+ 130 0030 232E1100 		sw	ra,28(sp)
+ 131              		.cfi_offset 1, -4
+  53:../src/flash.c ****     const uint8_t rst_command_buf[1] __attribute__ ((aligned (4))) = {FLASH_RST};
+ 132              		.loc 1 53 19
+ 133 0034 2306F100 		sb	a5,12(sp)
+ 134              		.loc 1 55 5 is_stmt 1
+ 135 0038 97000000 		call	SPI_transfer_block
+ 135      E7800000 
+ 136              	.LVL5:
+  56:../src/flash.c ****     SPI_transfer_block( &flash_spi, rst_command_buf, 1, &u8_Rd_Buf, 0 );
+ 137              		.loc 1 56 5
+ 138 0040 9306F100 		addi	a3,sp,15
+ 139 0044 9305C100 		addi	a1,sp,12
+ 140 0048 13050400 		mv	a0,s0
+ 141 004c 13070000 		li	a4,0
+ 142 0050 13061000 		li	a2,1
+ 143 0054 97000000 		call	SPI_transfer_block
+ 143      E7800000 
+ 144              	.LVL6:
+  57:../src/flash.c **** }
+ 145              		.loc 1 57 1 is_stmt 0
+ 146 005c 8320C101 		lw	ra,28(sp)
+ 147              		.cfi_restore 1
+ 148 0060 03248101 		lw	s0,24(sp)
+ 149              		.cfi_restore 8
+ 150 0064 13010102 		addi	sp,sp,32
+ 151              		.cfi_def_cfa_offset 0
+ 152 0068 67800000 		jr	ra
+ 153              		.cfi_endproc
+ 154              	.LFE4:
+ 156              		.section	.text.v_Flash_Get_Discovery_Params,"ax",@progbits
+ 157              		.align	2
+ 158              		.globl	v_Flash_Get_Discovery_Params
+ 160              	v_Flash_Get_Discovery_Params:
+ 161              	.LFB5:
+  58:../src/flash.c **** 
+  59:../src/flash.c **** void v_Flash_Get_Discovery_Params(void *params)
+  60:../src/flash.c **** {
+ 162              		.loc 1 60 1 is_stmt 1
+ 163              		.cfi_startproc
+ 164              	.LVL7:
+  61:../src/flash.c ****   // @todo - not sure about this, need to research
+  62:../src/flash.c **** }
+ 165              		.loc 1 62 1
+ 166 0000 67800000 		ret
+ 167              		.cfi_endproc
+ 168              	.LFE5:
+ 170              		.section	.text.u8_Flash_Read,"ax",@progbits
+ 171              		.align	2
+ 172              		.globl	u8_Flash_Read
+ 174              	u8_Flash_Read:
+ 175              	.LFB6:
+  63:../src/flash.c **** uint8_t u8_Flash_Read( uint32_t u32_Address, uint32_t u32_Count, void *buffer )
+  64:../src/flash.c **** {
+ 176              		.loc 1 64 1
+ 177              		.cfi_startproc
+ 178              	.LVL8:
+  65:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 179              		.loc 1 65 5
+  64:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 180              		.loc 1 64 1 is_stmt 0
+ 181 0000 130101FE 		addi	sp,sp,-32
+ 182              		.cfi_def_cfa_offset 32
+  66:../src/flash.c **** 
+  67:../src/flash.c ****     command_buf[1] = (u32_Address >> 16u) & 0xFFu;
+ 183              		.loc 1 67 35
+ 184 0004 93570501 		srli	a5,a0,16
+ 185              		.loc 1 67 20
+ 186 0008 A302F100 		sb	a5,5(sp)
+  68:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 187              		.loc 1 68 20
+ 188 000c 93178500 		slli	a5,a0,8
+ 189 0010 13150501 		slli	a0,a0,16
+ 190              	.LVL9:
+ 191 0014 13550501 		srli	a0,a0,16
+ 192 0018 13558500 		srli	a0,a0,8
+ 193 001c 33E5A700 		or	a0,a5,a0
+  69:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+  70:../src/flash.c ****     command_buf[0] = FLASH_READ;
+  71:../src/flash.c **** 
+  72:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 4, buffer, u32_Count );
+ 194              		.loc 1 72 5
+ 195 0020 13970501 		slli	a4,a1,16
+  68:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 196              		.loc 1 68 20
+ 197 0024 2313A100 		sh	a0,6(sp)
+  70:../src/flash.c **** 
+ 198              		.loc 1 70 20
+ 199 0028 93073000 		li	a5,3
+ 200              		.loc 1 72 5
+ 201 002c 93060600 		mv	a3,a2
+ 202 0030 93054100 		addi	a1,sp,4
+ 203              	.LVL10:
+ 204 0034 17050000 		lla	a0,.LANCHOR0
+ 204      13050500 
+ 205 003c 13570701 		srli	a4,a4,16
+ 206 0040 13064000 		li	a2,4
+ 207              	.LVL11:
+  64:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 208              		.loc 1 64 1
+ 209 0044 232E1100 		sw	ra,28(sp)
+ 210              		.cfi_offset 1, -4
+  65:../src/flash.c **** 
+ 211              		.loc 1 65 13
+ 212 0048 23240100 		sw	zero,8(sp)
+ 213 004c 23160100 		sh	zero,12(sp)
+  67:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 214              		.loc 1 67 5 is_stmt 1
+  68:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 215              		.loc 1 68 5
+  69:../src/flash.c ****     command_buf[0] = FLASH_READ;
+ 216              		.loc 1 69 5
+  70:../src/flash.c **** 
+ 217              		.loc 1 70 5
+  70:../src/flash.c **** 
+ 218              		.loc 1 70 20 is_stmt 0
+ 219 0050 2302F100 		sb	a5,4(sp)
+ 220              		.loc 1 72 5 is_stmt 1
+ 221 0054 97000000 		call	SPI_transfer_block
+ 221      E7800000 
+ 222              	.LVL12:
+  73:../src/flash.c **** 
+  74:../src/flash.c ****     return 0;
+ 223              		.loc 1 74 5
+  75:../src/flash.c **** }
+ 224              		.loc 1 75 1 is_stmt 0
+ 225 005c 8320C101 		lw	ra,28(sp)
+ 226              		.cfi_restore 1
+ 227 0060 13050000 		li	a0,0
+ 228 0064 13010102 		addi	sp,sp,32
+ 229              		.cfi_def_cfa_offset 0
+ 230 0068 67800000 		jr	ra
+ 231              		.cfi_endproc
+ 232              	.LFE6:
+ 234              		.section	.text.u32_Read_JEDEC_ID,"ax",@progbits
+ 235              		.align	2
+ 236              		.globl	u32_Read_JEDEC_ID
+ 238              	u32_Read_JEDEC_ID:
+ 239              	.LFB7:
+  76:../src/flash.c **** 
+  77:../src/flash.c **** uint32_t u32_Read_JEDEC_ID( void )
+  78:../src/flash.c **** {
+ 240              		.loc 1 78 1 is_stmt 1
+ 241              		.cfi_startproc
+  79:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_JREAD };
+ 242              		.loc 1 79 5
+  78:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_JREAD };
+ 243              		.loc 1 78 1 is_stmt 0
+ 244 0000 130101FE 		addi	sp,sp,-32
+ 245              		.cfi_def_cfa_offset 32
+ 246              		.loc 1 79 13
+ 247 0004 9307F0F9 		li	a5,-97
+  80:../src/flash.c ****     uint8_t u8_Buf[3];
+  81:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, u8_Buf, 3 );
+ 248              		.loc 1 81 5
+ 249 0008 9306C100 		addi	a3,sp,12
+ 250 000c 93058100 		addi	a1,sp,8
+ 251 0010 17050000 		lla	a0,.LANCHOR0
+ 251      13050500 
+ 252 0018 13073000 		li	a4,3
+ 253 001c 13061000 		li	a2,1
+  78:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_JREAD };
+ 254              		.loc 1 78 1
+ 255 0020 232E1100 		sw	ra,28(sp)
+ 256              		.cfi_offset 1, -4
+  79:../src/flash.c ****     uint8_t u8_Buf[3];
+ 257              		.loc 1 79 13
+ 258 0024 2304F100 		sb	a5,8(sp)
+  80:../src/flash.c ****     uint8_t u8_Buf[3];
+ 259              		.loc 1 80 5 is_stmt 1
+ 260              		.loc 1 81 5
+ 261 0028 97000000 		call	SPI_transfer_block
+ 261      E7800000 
+ 262              	.LVL13:
+  82:../src/flash.c ****     return (uint32_t)u8_Buf[2] << 16 | (uint32_t)u8_Buf[1] << 8 | (uint32_t)u8_Buf[0];
+ 263              		.loc 1 82 5
+ 264              		.loc 1 82 12 is_stmt 0
+ 265 0030 8347E100 		lbu	a5,14(sp)
+ 266              		.loc 1 82 40
+ 267 0034 0345D100 		lbu	a0,13(sp)
+  83:../src/flash.c **** }
+ 268              		.loc 1 83 1
+ 269 0038 8320C101 		lw	ra,28(sp)
+ 270              		.cfi_restore 1
+  82:../src/flash.c ****     return (uint32_t)u8_Buf[2] << 16 | (uint32_t)u8_Buf[1] << 8 | (uint32_t)u8_Buf[0];
+ 271              		.loc 1 82 32
+ 272 003c 93970701 		slli	a5,a5,16
+  82:../src/flash.c ****     return (uint32_t)u8_Buf[2] << 16 | (uint32_t)u8_Buf[1] << 8 | (uint32_t)u8_Buf[0];
+ 273              		.loc 1 82 60
+ 274 0040 13158500 		slli	a0,a0,8
+  82:../src/flash.c ****     return (uint32_t)u8_Buf[2] << 16 | (uint32_t)u8_Buf[1] << 8 | (uint32_t)u8_Buf[0];
+ 275              		.loc 1 82 38
+ 276 0044 B3E7A700 		or	a5,a5,a0
+  82:../src/flash.c ****     return (uint32_t)u8_Buf[2] << 16 | (uint32_t)u8_Buf[1] << 8 | (uint32_t)u8_Buf[0];
+ 277              		.loc 1 82 67
+ 278 0048 0345C100 		lbu	a0,12(sp)
+ 279              		.loc 1 83 1
+ 280 004c 13010102 		addi	sp,sp,32
+ 281              		.cfi_def_cfa_offset 0
+ 282 0050 33E5A700 		or	a0,a5,a0
+ 283 0054 67800000 		jr	ra
+ 284              		.cfi_endproc
+ 285              	.LFE7:
+ 287              		.section	.text.u32_Read_Config_Reg,"ax",@progbits
+ 288              		.align	2
+ 289              		.globl	u32_Read_Config_Reg
+ 291              	u32_Read_Config_Reg:
+ 292              	.LFB8:
+  84:../src/flash.c **** 
+  85:../src/flash.c **** 
+  86:../src/flash.c **** uint8_t u32_Read_Config_Reg( void )
+  87:../src/flash.c **** {
+ 293              		.loc 1 87 1 is_stmt 1
+ 294              		.cfi_startproc
+  88:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDCR };
+ 295              		.loc 1 88 5
+  87:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDCR };
+ 296              		.loc 1 87 1 is_stmt 0
+ 297 0000 130101FE 		addi	sp,sp,-32
+ 298              		.cfi_def_cfa_offset 32
+ 299              		.loc 1 88 13
+ 300 0004 93075003 		li	a5,53
+  89:../src/flash.c ****     uint8_t u8_Buf[1];
+  90:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, u8_Buf, 1 );
+ 301              		.loc 1 90 5
+ 302 0008 9306C100 		addi	a3,sp,12
+ 303 000c 93058100 		addi	a1,sp,8
+ 304 0010 17050000 		lla	a0,.LANCHOR0
+ 304      13050500 
+ 305 0018 13071000 		li	a4,1
+ 306 001c 13061000 		li	a2,1
+  87:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDCR };
+ 307              		.loc 1 87 1
+ 308 0020 232E1100 		sw	ra,28(sp)
+ 309              		.cfi_offset 1, -4
+  88:../src/flash.c ****     uint8_t u8_Buf[1];
+ 310              		.loc 1 88 13
+ 311 0024 2304F100 		sb	a5,8(sp)
+  89:../src/flash.c ****     uint8_t u8_Buf[1];
+ 312              		.loc 1 89 5 is_stmt 1
+ 313              		.loc 1 90 5
+ 314 0028 97000000 		call	SPI_transfer_block
+ 314      E7800000 
+ 315              	.LVL14:
+  91:../src/flash.c ****     return u8_Buf[0];
+ 316              		.loc 1 91 5
+  92:../src/flash.c **** }
+ 317              		.loc 1 92 1 is_stmt 0
+ 318 0030 8320C101 		lw	ra,28(sp)
+ 319              		.cfi_restore 1
+ 320 0034 0345C100 		lbu	a0,12(sp)
+ 321 0038 13010102 		addi	sp,sp,32
+ 322              		.cfi_def_cfa_offset 0
+ 323 003c 67800000 		jr	ra
+ 324              		.cfi_endproc
+ 325              	.LFE8:
+ 327              		.section	.text.u8_Read_Block_Prot_Reg,"ax",@progbits
+ 328              		.align	2
+ 329              		.globl	u8_Read_Block_Prot_Reg
+ 331              	u8_Read_Block_Prot_Reg:
+ 332              	.LFB9:
+  93:../src/flash.c **** 
+  94:../src/flash.c **** uint8_t u8_Read_Block_Prot_Reg( void )
+  95:../src/flash.c **** {
+ 333              		.loc 1 95 1 is_stmt 1
+ 334              		.cfi_startproc
+  96:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RBPR };
+ 335              		.loc 1 96 5
+  95:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RBPR };
+ 336              		.loc 1 95 1 is_stmt 0
+ 337 0000 130101FE 		addi	sp,sp,-32
+ 338              		.cfi_def_cfa_offset 32
+ 339              		.loc 1 96 13
+ 340 0004 93072007 		li	a5,114
+  97:../src/flash.c ****     uint8_t u8_Buf[1];
+  98:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, u8_Buf, 1 );
+ 341              		.loc 1 98 5
+ 342 0008 9306C100 		addi	a3,sp,12
+ 343 000c 93058100 		addi	a1,sp,8
+ 344 0010 17050000 		lla	a0,.LANCHOR0
+ 344      13050500 
+ 345 0018 13071000 		li	a4,1
+ 346 001c 13061000 		li	a2,1
+  95:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RBPR };
+ 347              		.loc 1 95 1
+ 348 0020 232E1100 		sw	ra,28(sp)
+ 349              		.cfi_offset 1, -4
+  96:../src/flash.c ****     uint8_t u8_Buf[1];
+ 350              		.loc 1 96 13
+ 351 0024 2304F100 		sb	a5,8(sp)
+  97:../src/flash.c ****     uint8_t u8_Buf[1];
+ 352              		.loc 1 97 5 is_stmt 1
+ 353              		.loc 1 98 5
+ 354 0028 97000000 		call	SPI_transfer_block
+ 354      E7800000 
+ 355              	.LVL15:
+  99:../src/flash.c ****     return u8_Buf[0];
+ 356              		.loc 1 99 5
+ 100:../src/flash.c **** }
+ 357              		.loc 1 100 1 is_stmt 0
+ 358 0030 8320C101 		lw	ra,28(sp)
+ 359              		.cfi_restore 1
+ 360 0034 0345C100 		lbu	a0,12(sp)
+ 361 0038 13010102 		addi	sp,sp,32
+ 362              		.cfi_def_cfa_offset 0
+ 363 003c 67800000 		jr	ra
+ 364              		.cfi_endproc
+ 365              	.LFE9:
+ 367              		.section	.text.v_Flash_Read_Status,"ax",@progbits
+ 368              		.align	2
+ 369              		.globl	v_Flash_Read_Status
+ 371              	v_Flash_Read_Status:
+ 372              	.LFB14:
+ 101:../src/flash.c **** 
+ 102:../src/flash.c **** void v_Global_Flash_Unlock( void )
+ 103:../src/flash.c **** {
+ 104:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_ULBPR };
+ 105:../src/flash.c **** 
+ 106:../src/flash.c ****     v_Set_Write_Enable();
+ 107:../src/flash.c ****     v_Wait_For_Write_Enable();
+ 108:../src/flash.c **** 
+ 109:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, (void*)0, 0 );
+ 110:../src/flash.c **** }
+ 111:../src/flash.c **** 
+ 112:../src/flash.c **** void  v_Flash_Sector_Erase( uint32_t u32_Address )
+ 113:../src/flash.c **** {
+ 114:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 115:../src/flash.c **** 
+ 116:../src/flash.c ****     command_buf[0] = FLASH_SE;
+ 117:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 118:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 119:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 120:../src/flash.c **** 
+ 121:../src/flash.c ****     v_Set_Write_Enable();
+ 122:../src/flash.c **** 
+ 123:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 4, (void *)0, 0 );
+ 124:../src/flash.c **** 
+ 125:../src/flash.c ****     v_Wait_For_Not_Busy();
+ 126:../src/flash.c **** }
+ 127:../src/flash.c **** 
+ 128:../src/flash.c **** void v_Flash_Block_Erase( uint32_t u32_Address )
+ 129:../src/flash.c **** {
+ 130:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 131:../src/flash.c **** 
+ 132:../src/flash.c ****     command_buf[0] = FLASH_BE;
+ 133:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 134:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 135:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 136:../src/flash.c **** 
+ 137:../src/flash.c ****     v_Set_Write_Enable();
+ 138:../src/flash.c **** 
+ 139:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 4, (void *)0, 0 );
+ 140:../src/flash.c **** 
+ 141:../src/flash.c ****     v_Wait_For_Not_Busy();
+ 142:../src/flash.c **** 
+ 143:../src/flash.c **** }
+ 144:../src/flash.c **** 
+ 145:../src/flash.c **** uint8_t u8_Flash_Page_Program( uint32_t u32_Page_Address, void *buffer, uint16_t u16_Count ) // Use
+ 146:../src/flash.c **** {
+ 147:../src/flash.c ****     uint8_t command_buf[256] __attribute__ ((aligned (4))) = {0}; // @todo check necessary buffer s
+ 148:../src/flash.c **** 
+ 149:../src/flash.c ****      uint8_t flag_status_reg;
+ 150:../src/flash.c **** 
+ 151:../src/flash.c ****     /*execute Write enable command again for writing the data*/
+ 152:../src/flash.c ****     command_buf[0] = FLASH_WREN;
+ 153:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, buffer, 0 );
+ 154:../src/flash.c **** 
+ 155:../src/flash.c ****     v_Wait_For_Write_Enable();
+ 156:../src/flash.c ****     v_Wait_For_Not_Busy();
+ 157:../src/flash.c **** 
+ 158:../src/flash.c ****     /*This command works for all modes. No Dummy cycles*/
+ 159:../src/flash.c ****     /*now program the sector. This will set the desired bits to 0.*/
+ 160:../src/flash.c **** 
+ 161:../src/flash.c ****     command_buf[0] = FLASH_PP;
+ 162:../src/flash.c ****     command_buf[1] = (u32_Page_Address >> 16) & 0xFFu;
+ 163:../src/flash.c ****     command_buf[2] = (u32_Page_Address >> 8) & 0xFFu;
+ 164:../src/flash.c ****     command_buf[3] = u32_Page_Address & 0xFFu;
+ 165:../src/flash.c **** 
+ 166:../src/flash.c ****     // Copy transmit data into same buffer as command
+ 167:../src/flash.c ****     memcpy( command_buf + 4, buffer, u16_Count);
+ 168:../src/flash.c **** 
+ 169:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, u16_Count+4, (void *)0, 0 );
+ 170:../src/flash.c **** 
+ 171:../src/flash.c ****     v_Wait_For_Not_Busy();
+ 172:../src/flash.c **** 
+ 173:../src/flash.c ****     return flag_status_reg;
+ 174:../src/flash.c **** }
+ 175:../src/flash.c **** 
+ 176:../src/flash.c **** 
+ 177:../src/flash.c **** void v_Flash_Read_Status( uint8_t *u8_Status )
+ 178:../src/flash.c **** {
+ 373              		.loc 1 178 1 is_stmt 1
+ 374              		.cfi_startproc
+ 375              	.LVL16:
+ 179:../src/flash.c ****     const uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDSR };
+ 376              		.loc 1 179 5
+ 178:../src/flash.c ****     const uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDSR };
+ 377              		.loc 1 178 1 is_stmt 0
+ 378 0000 130101FE 		addi	sp,sp,-32
+ 379              		.cfi_def_cfa_offset 32
+ 380              		.loc 1 179 19
+ 381 0004 93075000 		li	a5,5
+ 180:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, u8_Status, 1 );
+ 382              		.loc 1 180 5
+ 383 0008 93060500 		mv	a3,a0
+ 384 000c 9305C100 		addi	a1,sp,12
+ 385 0010 13071000 		li	a4,1
+ 386 0014 13061000 		li	a2,1
+ 387 0018 17050000 		lla	a0,.LANCHOR0
+ 387      13050500 
+ 388              	.LVL17:
+ 178:../src/flash.c ****     const uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDSR };
+ 389              		.loc 1 178 1
+ 390 0020 232E1100 		sw	ra,28(sp)
+ 391              		.cfi_offset 1, -4
+ 179:../src/flash.c ****     const uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_RDSR };
+ 392              		.loc 1 179 19
+ 393 0024 2306F100 		sb	a5,12(sp)
+ 394              		.loc 1 180 5 is_stmt 1
+ 395 0028 97000000 		call	SPI_transfer_block
+ 395      E7800000 
+ 396              	.LVL18:
+ 181:../src/flash.c **** }
+ 397              		.loc 1 181 1 is_stmt 0
+ 398 0030 8320C101 		lw	ra,28(sp)
+ 399              		.cfi_restore 1
+ 400 0034 13010102 		addi	sp,sp,32
+ 401              		.cfi_def_cfa_offset 0
+ 402 0038 67800000 		jr	ra
+ 403              		.cfi_endproc
+ 404              	.LFE14:
+ 406              		.section	.text.v_Wait_For_Write_Enable,"ax",@progbits
+ 407              		.align	2
+ 409              	v_Wait_For_Write_Enable:
+ 410              	.LFB15:
+ 182:../src/flash.c **** 
+ 183:../src/flash.c **** static void v_Wait_For_Write_Enable(void)
+ 184:../src/flash.c **** {
+ 411              		.loc 1 184 1 is_stmt 1
+ 412              		.cfi_startproc
+ 185:../src/flash.c ****     uint8_t status_reg = 0;
+ 413              		.loc 1 185 5
+ 184:../src/flash.c ****     uint8_t status_reg = 0;
+ 414              		.loc 1 184 1 is_stmt 0
+ 415 0000 130101FE 		addi	sp,sp,-32
+ 416              		.cfi_def_cfa_offset 32
+ 417 0004 232E1100 		sw	ra,28(sp)
+ 418              		.cfi_offset 1, -4
+ 419              		.loc 1 185 13
+ 420 0008 A3070100 		sb	zero,15(sp)
+ 421              	.L19:
+ 186:../src/flash.c ****     do{
+ 422              		.loc 1 186 5 is_stmt 1 discriminator 1
+ 187:../src/flash.c ****         v_Flash_Read_Status( &status_reg);
+ 423              		.loc 1 187 9 discriminator 1
+ 424 000c 1305F100 		addi	a0,sp,15
+ 425 0010 97000000 		call	v_Flash_Read_Status
+ 425      E7800000 
+ 426              	.LVL19:
+ 188:../src/flash.c ****     }while ( (STATUS_WEL & status_reg) == 0 );
+ 427              		.loc 1 188 40 is_stmt 0 discriminator 1
+ 428 0018 8347F100 		lbu	a5,15(sp)
+ 429              		.loc 1 188 5 discriminator 1
+ 430 001c 93F72700 		andi	a5,a5,2
+ 431 0020 E38607FE 		beq	a5,zero,.L19
+ 189:../src/flash.c **** }
+ 432              		.loc 1 189 1
+ 433 0024 8320C101 		lw	ra,28(sp)
+ 434              		.cfi_restore 1
+ 435 0028 13010102 		addi	sp,sp,32
+ 436              		.cfi_def_cfa_offset 0
+ 437 002c 67800000 		jr	ra
+ 438              		.cfi_endproc
+ 439              	.LFE15:
+ 441              		.section	.text.v_Global_Flash_Unlock,"ax",@progbits
+ 442              		.align	2
+ 443              		.globl	v_Global_Flash_Unlock
+ 445              	v_Global_Flash_Unlock:
+ 446              	.LFB10:
+ 103:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_ULBPR };
+ 447              		.loc 1 103 1 is_stmt 1
+ 448              		.cfi_startproc
+ 104:../src/flash.c **** 
+ 449              		.loc 1 104 5
+ 103:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_ULBPR };
+ 450              		.loc 1 103 1 is_stmt 0
+ 451 0000 130101FE 		addi	sp,sp,-32
+ 452              		.cfi_def_cfa_offset 32
+ 104:../src/flash.c **** 
+ 453              		.loc 1 104 13
+ 454 0004 930780F9 		li	a5,-104
+ 103:../src/flash.c ****     uint8_t command_buf[1] __attribute__ ((aligned (4))) = { FLASH_ULBPR };
+ 455              		.loc 1 103 1
+ 456 0008 232E1100 		sw	ra,28(sp)
+ 457              		.cfi_offset 1, -4
+ 104:../src/flash.c **** 
+ 458              		.loc 1 104 13
+ 459 000c 2306F100 		sb	a5,12(sp)
+ 106:../src/flash.c ****     v_Wait_For_Write_Enable();
+ 460              		.loc 1 106 5 is_stmt 1
+ 461 0010 97000000 		call	v_Set_Write_Enable
+ 461      E7800000 
+ 462              	.LVL20:
+ 107:../src/flash.c **** 
+ 463              		.loc 1 107 5
+ 464 0018 97000000 		call	v_Wait_For_Write_Enable
+ 464      E7800000 
+ 465              	.LVL21:
+ 109:../src/flash.c **** }
+ 466              		.loc 1 109 5
+ 467 0020 9305C100 		addi	a1,sp,12
+ 468 0024 13070000 		li	a4,0
+ 469 0028 93060000 		li	a3,0
+ 470 002c 13061000 		li	a2,1
+ 471 0030 17050000 		lla	a0,.LANCHOR0
+ 471      13050500 
+ 472 0038 97000000 		call	SPI_transfer_block
+ 472      E7800000 
+ 473              	.LVL22:
+ 110:../src/flash.c **** 
+ 474              		.loc 1 110 1 is_stmt 0
+ 475 0040 8320C101 		lw	ra,28(sp)
+ 476              		.cfi_restore 1
+ 477 0044 13010102 		addi	sp,sp,32
+ 478              		.cfi_def_cfa_offset 0
+ 479 0048 67800000 		jr	ra
+ 480              		.cfi_endproc
+ 481              	.LFE10:
+ 483              		.section	.text.v_Wait_For_Not_Busy,"ax",@progbits
+ 484              		.align	2
+ 486              	v_Wait_For_Not_Busy:
+ 487              	.LFB16:
+ 190:../src/flash.c **** 
+ 191:../src/flash.c **** /*Make sure that the erase operation is complete. i.e. wait for  write enable bit to go 0*/
+ 192:../src/flash.c **** static void v_Wait_For_Not_Busy(void)
+ 193:../src/flash.c **** {
+ 488              		.loc 1 193 1 is_stmt 1
+ 489              		.cfi_startproc
+ 194:../src/flash.c ****     uint8_t status_reg = 0;
+ 490              		.loc 1 194 5
+ 193:../src/flash.c ****     uint8_t status_reg = 0;
+ 491              		.loc 1 193 1 is_stmt 0
+ 492 0000 130101FE 		addi	sp,sp,-32
+ 493              		.cfi_def_cfa_offset 32
+ 494 0004 232E1100 		sw	ra,28(sp)
+ 495              		.cfi_offset 1, -4
+ 496              		.loc 1 194 13
+ 497 0008 A3070100 		sb	zero,15(sp)
+ 498              	.L26:
+ 195:../src/flash.c ****     do{
+ 499              		.loc 1 195 5 is_stmt 1 discriminator 1
+ 196:../src/flash.c ****         v_Flash_Read_Status( &status_reg );
+ 500              		.loc 1 196 9 discriminator 1
+ 501 000c 1305F100 		addi	a0,sp,15
+ 502 0010 97000000 		call	v_Flash_Read_Status
+ 502      E7800000 
+ 503              	.LVL23:
+ 197:../src/flash.c ****     }while ( STATUS_BUSY & status_reg );
+ 504              		.loc 1 197 14 is_stmt 0 discriminator 1
+ 505 0018 8347F100 		lbu	a5,15(sp)
+ 506              		.loc 1 197 5 discriminator 1
+ 507 001c 93F71700 		andi	a5,a5,1
+ 508 0020 E39607FE 		bne	a5,zero,.L26
+ 198:../src/flash.c **** }
+ 509              		.loc 1 198 1
+ 510 0024 8320C101 		lw	ra,28(sp)
+ 511              		.cfi_restore 1
+ 512 0028 13010102 		addi	sp,sp,32
+ 513              		.cfi_def_cfa_offset 0
+ 514 002c 67800000 		jr	ra
+ 515              		.cfi_endproc
+ 516              	.LFE16:
+ 518              		.section	.text.v_Flash_Sector_Erase,"ax",@progbits
+ 519              		.align	2
+ 520              		.globl	v_Flash_Sector_Erase
+ 522              	v_Flash_Sector_Erase:
+ 523              	.LFB11:
+ 113:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 524              		.loc 1 113 1 is_stmt 1
+ 525              		.cfi_startproc
+ 526              	.LVL24:
+ 114:../src/flash.c **** 
+ 527              		.loc 1 114 5
+ 113:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 528              		.loc 1 113 1 is_stmt 0
+ 529 0000 130101FE 		addi	sp,sp,-32
+ 530              		.cfi_def_cfa_offset 32
+ 116:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 531              		.loc 1 116 20
+ 532 0004 93070002 		li	a5,32
+ 533 0008 2302F100 		sb	a5,4(sp)
+ 117:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 534              		.loc 1 117 35
+ 535 000c 93570501 		srli	a5,a0,16
+ 117:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 536              		.loc 1 117 20
+ 537 0010 A302F100 		sb	a5,5(sp)
+ 118:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 538              		.loc 1 118 20
+ 539 0014 93178500 		slli	a5,a0,8
+ 540 0018 13150501 		slli	a0,a0,16
+ 541              	.LVL25:
+ 542 001c 13550501 		srli	a0,a0,16
+ 543 0020 13558500 		srli	a0,a0,8
+ 544 0024 33E5A700 		or	a0,a5,a0
+ 113:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 545              		.loc 1 113 1
+ 546 0028 232E1100 		sw	ra,28(sp)
+ 547              		.cfi_offset 1, -4
+ 118:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 548              		.loc 1 118 20
+ 549 002c 2313A100 		sh	a0,6(sp)
+ 114:../src/flash.c **** 
+ 550              		.loc 1 114 13
+ 551 0030 23240100 		sw	zero,8(sp)
+ 552 0034 23160100 		sh	zero,12(sp)
+ 116:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 553              		.loc 1 116 5 is_stmt 1
+ 117:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 554              		.loc 1 117 5
+ 118:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 555              		.loc 1 118 5
+ 119:../src/flash.c **** 
+ 556              		.loc 1 119 5
+ 121:../src/flash.c **** 
+ 557              		.loc 1 121 5
+ 558 0038 97000000 		call	v_Set_Write_Enable
+ 558      E7800000 
+ 559              	.LVL26:
+ 123:../src/flash.c **** 
+ 560              		.loc 1 123 5
+ 561 0040 93054100 		addi	a1,sp,4
+ 562 0044 13070000 		li	a4,0
+ 563 0048 93060000 		li	a3,0
+ 564 004c 13064000 		li	a2,4
+ 565 0050 17050000 		lla	a0,.LANCHOR0
+ 565      13050500 
+ 566 0058 97000000 		call	SPI_transfer_block
+ 566      E7800000 
+ 567              	.LVL27:
+ 125:../src/flash.c **** }
+ 568              		.loc 1 125 5
+ 569 0060 97000000 		call	v_Wait_For_Not_Busy
+ 569      E7800000 
+ 570              	.LVL28:
+ 126:../src/flash.c **** 
+ 571              		.loc 1 126 1 is_stmt 0
+ 572 0068 8320C101 		lw	ra,28(sp)
+ 573              		.cfi_restore 1
+ 574 006c 13010102 		addi	sp,sp,32
+ 575              		.cfi_def_cfa_offset 0
+ 576 0070 67800000 		jr	ra
+ 577              		.cfi_endproc
+ 578              	.LFE11:
+ 580              		.section	.text.v_Flash_Block_Erase,"ax",@progbits
+ 581              		.align	2
+ 582              		.globl	v_Flash_Block_Erase
+ 584              	v_Flash_Block_Erase:
+ 585              	.LFB12:
+ 129:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 586              		.loc 1 129 1 is_stmt 1
+ 587              		.cfi_startproc
+ 588              	.LVL29:
+ 130:../src/flash.c **** 
+ 589              		.loc 1 130 5
+ 129:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 590              		.loc 1 129 1 is_stmt 0
+ 591 0000 130101FE 		addi	sp,sp,-32
+ 592              		.cfi_def_cfa_offset 32
+ 132:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 593              		.loc 1 132 20
+ 594 0004 930780FD 		li	a5,-40
+ 595 0008 2302F100 		sb	a5,4(sp)
+ 133:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 596              		.loc 1 133 35
+ 597 000c 93570501 		srli	a5,a0,16
+ 133:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 598              		.loc 1 133 20
+ 599 0010 A302F100 		sb	a5,5(sp)
+ 134:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 600              		.loc 1 134 20
+ 601 0014 93178500 		slli	a5,a0,8
+ 602 0018 13150501 		slli	a0,a0,16
+ 603              	.LVL30:
+ 604 001c 13550501 		srli	a0,a0,16
+ 605 0020 13558500 		srli	a0,a0,8
+ 606 0024 33E5A700 		or	a0,a5,a0
+ 129:../src/flash.c ****     uint8_t command_buf[10] __attribute__ ((aligned (4))) = {0};
+ 607              		.loc 1 129 1
+ 608 0028 232E1100 		sw	ra,28(sp)
+ 609              		.cfi_offset 1, -4
+ 134:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 610              		.loc 1 134 20
+ 611 002c 2313A100 		sh	a0,6(sp)
+ 130:../src/flash.c **** 
+ 612              		.loc 1 130 13
+ 613 0030 23240100 		sw	zero,8(sp)
+ 614 0034 23160100 		sh	zero,12(sp)
+ 132:../src/flash.c ****     command_buf[1] = (u32_Address >> 16) & 0xFFu;
+ 615              		.loc 1 132 5 is_stmt 1
+ 133:../src/flash.c ****     command_buf[2] = (u32_Address >> 8u) & 0xFFu;
+ 616              		.loc 1 133 5
+ 134:../src/flash.c ****     command_buf[3] = u32_Address & 0xFFu;
+ 617              		.loc 1 134 5
+ 135:../src/flash.c **** 
+ 618              		.loc 1 135 5
+ 137:../src/flash.c **** 
+ 619              		.loc 1 137 5
+ 620 0038 97000000 		call	v_Set_Write_Enable
+ 620      E7800000 
+ 621              	.LVL31:
+ 139:../src/flash.c **** 
+ 622              		.loc 1 139 5
+ 623 0040 93054100 		addi	a1,sp,4
+ 624 0044 13070000 		li	a4,0
+ 625 0048 93060000 		li	a3,0
+ 626 004c 13064000 		li	a2,4
+ 627 0050 17050000 		lla	a0,.LANCHOR0
+ 627      13050500 
+ 628 0058 97000000 		call	SPI_transfer_block
+ 628      E7800000 
+ 629              	.LVL32:
+ 141:../src/flash.c **** 
+ 630              		.loc 1 141 5
+ 631 0060 97000000 		call	v_Wait_For_Not_Busy
+ 631      E7800000 
+ 632              	.LVL33:
+ 143:../src/flash.c **** 
+ 633              		.loc 1 143 1 is_stmt 0
+ 634 0068 8320C101 		lw	ra,28(sp)
+ 635              		.cfi_restore 1
+ 636 006c 13010102 		addi	sp,sp,32
+ 637              		.cfi_def_cfa_offset 0
+ 638 0070 67800000 		jr	ra
+ 639              		.cfi_endproc
+ 640              	.LFE12:
+ 642              		.section	.text.u8_Flash_Page_Program,"ax",@progbits
+ 643              		.align	2
+ 644              		.globl	u8_Flash_Page_Program
+ 646              	u8_Flash_Page_Program:
+ 647              	.LFB13:
+ 146:../src/flash.c ****     uint8_t command_buf[256] __attribute__ ((aligned (4))) = {0}; // @todo check necessary buffer s
+ 648              		.loc 1 146 1 is_stmt 1
+ 649              		.cfi_startproc
+ 650              	.LVL34:
+ 147:../src/flash.c **** 
+ 651              		.loc 1 147 5
+ 146:../src/flash.c ****     uint8_t command_buf[256] __attribute__ ((aligned (4))) = {0}; // @todo check necessary buffer s
+ 652              		.loc 1 146 1 is_stmt 0
+ 653 0000 130101EE 		addi	sp,sp,-288
+ 654              		.cfi_def_cfa_offset 288
+ 655 0004 232C8110 		sw	s0,280(sp)
+ 656 0008 232A9110 		sw	s1,276(sp)
+ 657 000c 23263111 		sw	s3,268(sp)
+ 658              		.cfi_offset 8, -8
+ 659              		.cfi_offset 9, -12
+ 660              		.cfi_offset 19, -20
+ 661 0010 13040500 		mv	s0,a0
+ 662 0014 93890500 		mv	s3,a1
+ 663 0018 93040600 		mv	s1,a2
+ 147:../src/flash.c **** 
+ 664              		.loc 1 147 13
+ 665 001c 93050000 		li	a1,0
+ 666              	.LVL35:
+ 667 0020 13060010 		li	a2,256
+ 668              	.LVL36:
+ 669 0024 13050100 		mv	a0,sp
+ 670              	.LVL37:
+ 146:../src/flash.c ****     uint8_t command_buf[256] __attribute__ ((aligned (4))) = {0}; // @todo check necessary buffer s
+ 671              		.loc 1 146 1
+ 672 0028 232E1110 		sw	ra,284(sp)
+ 673 002c 23282111 		sw	s2,272(sp)
+ 674              		.cfi_offset 1, -4
+ 675              		.cfi_offset 18, -16
+ 147:../src/flash.c **** 
+ 676              		.loc 1 147 13
+ 677 0030 97000000 		call	memset
+ 677      E7800000 
+ 678              	.LVL38:
+ 149:../src/flash.c **** 
+ 679              		.loc 1 149 6 is_stmt 1
+ 152:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, buffer, 0 );
+ 680              		.loc 1 152 5
+ 153:../src/flash.c **** 
+ 681              		.loc 1 153 5 is_stmt 0
+ 682 0038 17090000 		lla	s2,.LANCHOR0
+ 682      13090900 
+ 683 0040 93860900 		mv	a3,s3
+ 152:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, buffer, 0 );
+ 684              		.loc 1 152 20
+ 685 0044 93076000 		li	a5,6
+ 153:../src/flash.c **** 
+ 686              		.loc 1 153 5
+ 687 0048 13070000 		li	a4,0
+ 688 004c 93050100 		mv	a1,sp
+ 689 0050 13050900 		mv	a0,s2
+ 690 0054 13061000 		li	a2,1
+ 152:../src/flash.c ****     SPI_transfer_block( &flash_spi, command_buf, 1, buffer, 0 );
+ 691              		.loc 1 152 20
+ 692 0058 2300F100 		sb	a5,0(sp)
+ 153:../src/flash.c **** 
+ 693              		.loc 1 153 5 is_stmt 1
+ 694 005c 97000000 		call	SPI_transfer_block
+ 694      E7800000 
+ 695              	.LVL39:
+ 155:../src/flash.c ****     v_Wait_For_Not_Busy();
+ 696              		.loc 1 155 5
+ 697 0064 97000000 		call	v_Wait_For_Write_Enable
+ 697      E7800000 
+ 698              	.LVL40:
+ 156:../src/flash.c **** 
+ 699              		.loc 1 156 5
+ 700 006c 97000000 		call	v_Wait_For_Not_Busy
+ 700      E7800000 
+ 701              	.LVL41:
+ 161:../src/flash.c ****     command_buf[1] = (u32_Page_Address >> 16) & 0xFFu;
+ 702              		.loc 1 161 5
+ 161:../src/flash.c ****     command_buf[1] = (u32_Page_Address >> 16) & 0xFFu;
+ 703              		.loc 1 161 20 is_stmt 0
+ 704 0074 93072000 		li	a5,2
+ 705 0078 2300F100 		sb	a5,0(sp)
+ 162:../src/flash.c ****     command_buf[2] = (u32_Page_Address >> 8) & 0xFFu;
+ 706              		.loc 1 162 5 is_stmt 1
+ 162:../src/flash.c ****     command_buf[2] = (u32_Page_Address >> 8) & 0xFFu;
+ 707              		.loc 1 162 40 is_stmt 0
+ 708 007c 93570401 		srli	a5,s0,16
+ 162:../src/flash.c ****     command_buf[2] = (u32_Page_Address >> 8) & 0xFFu;
+ 709              		.loc 1 162 20
+ 710 0080 A300F100 		sb	a5,1(sp)
+ 163:../src/flash.c ****     command_buf[3] = u32_Page_Address & 0xFFu;
+ 711              		.loc 1 163 5 is_stmt 1
+ 164:../src/flash.c **** 
+ 712              		.loc 1 164 5
+ 163:../src/flash.c ****     command_buf[3] = u32_Page_Address & 0xFFu;
+ 713              		.loc 1 163 20 is_stmt 0
+ 714 0084 93178400 		slli	a5,s0,8
+ 715 0088 13140401 		slli	s0,s0,16
+ 716              	.LVL42:
+ 717 008c 13540401 		srli	s0,s0,16
+ 718 0090 13548400 		srli	s0,s0,8
+ 719 0094 33E48700 		or	s0,a5,s0
+ 167:../src/flash.c **** 
+ 720              		.loc 1 167 5
+ 721 0098 13860400 		mv	a2,s1
+ 722 009c 93850900 		mv	a1,s3
+ 723 00a0 13054100 		addi	a0,sp,4
+ 163:../src/flash.c ****     command_buf[3] = u32_Page_Address & 0xFFu;
+ 724              		.loc 1 163 20
+ 725 00a4 23118100 		sh	s0,2(sp)
+ 167:../src/flash.c **** 
+ 726              		.loc 1 167 5 is_stmt 1
+ 727 00a8 97000000 		call	memcpy
+ 727      E7800000 
+ 728              	.LVL43:
+ 169:../src/flash.c **** 
+ 729              		.loc 1 169 5
+ 730 00b0 13864400 		addi	a2,s1,4
+ 731 00b4 13160601 		slli	a2,a2,16
+ 732 00b8 13050900 		mv	a0,s2
+ 733 00bc 93050100 		mv	a1,sp
+ 734 00c0 13070000 		li	a4,0
+ 735 00c4 93060000 		li	a3,0
+ 736 00c8 13560601 		srli	a2,a2,16
+ 737 00cc 97000000 		call	SPI_transfer_block
+ 737      E7800000 
+ 738              	.LVL44:
+ 171:../src/flash.c **** 
+ 739              		.loc 1 171 5
+ 740 00d4 97000000 		call	v_Wait_For_Not_Busy
+ 740      E7800000 
+ 741              	.LVL45:
+ 173:../src/flash.c **** }
+ 742              		.loc 1 173 5
+ 174:../src/flash.c **** 
+ 743              		.loc 1 174 1 is_stmt 0
+ 744 00dc 8320C111 		lw	ra,284(sp)
+ 745              		.cfi_restore 1
+ 746 00e0 03248111 		lw	s0,280(sp)
+ 747              		.cfi_restore 8
+ 748 00e4 83244111 		lw	s1,276(sp)
+ 749              		.cfi_restore 9
+ 750 00e8 03290111 		lw	s2,272(sp)
+ 751              		.cfi_restore 18
+ 752 00ec 8329C110 		lw	s3,268(sp)
+ 753              		.cfi_restore 19
+ 754              	.LVL46:
+ 755 00f0 13050000 		li	a0,0
+ 756 00f4 13010112 		addi	sp,sp,288
+ 757              		.cfi_def_cfa_offset 0
+ 758 00f8 67800000 		jr	ra
+ 759              		.cfi_endproc
+ 760              	.LFE13:
+ 762              		.section	.text.u32_Get_64K_Block_Base,"ax",@progbits
+ 763              		.align	2
+ 764              		.globl	u32_Get_64K_Block_Base
+ 766              	u32_Get_64K_Block_Base:
+ 767              	.LFB17:
+ 199:../src/flash.c **** 
+ 200:../src/flash.c **** uint32_t u32_Get_64K_Block_Base( uint8_t u8_Sector )
+ 201:../src/flash.c **** {
+ 768              		.loc 1 201 1 is_stmt 1
+ 769              		.cfi_startproc
+ 770              	.LVL47:
+ 202:../src/flash.c ****     assert(u8_Sector < N_64K_SECTORS );
+ 771              		.loc 1 202 5
+ 772 0000 9307D007 		li	a5,125
+ 773 0004 63F8A702 		bleu	a0,a5,.L36
+ 201:../src/flash.c ****     assert(u8_Sector < N_64K_SECTORS );
+ 774              		.loc 1 201 1 is_stmt 0 discriminator 1
+ 775 0008 130101FF 		addi	sp,sp,-16
+ 776              		.cfi_def_cfa_offset 16
+ 777              		.loc 1 202 5 discriminator 1
+ 778 000c 97060000 		lla	a3,.LC0
+ 778      93860600 
+ 779 0014 17060000 		lla	a2,.LANCHOR1
+ 779      13060600 
+ 780 001c 9305A00C 		li	a1,202
+ 781 0020 17050000 		lla	a0,.LC1
+ 781      13050500 
+ 782              	.LVL48:
+ 201:../src/flash.c ****     assert(u8_Sector < N_64K_SECTORS );
+ 783              		.loc 1 201 1 discriminator 1
+ 784 0028 23261100 		sw	ra,12(sp)
+ 785              		.cfi_offset 1, -4
+ 786              		.loc 1 202 5 discriminator 1
+ 787 002c 97000000 		call	__assert_func
+ 787      E7800000 
+ 788              	.LVL49:
+ 789              	.L36:
+ 790              		.cfi_def_cfa_offset 0
+ 791              		.cfi_restore 1
+ 203:../src/flash.c ****     return BASE_64K_ADDRESS * (uint32_t)u8_Sector * SIZE_64K_SECTOR;
+ 792              		.loc 1 203 5 is_stmt 1
+ 204:../src/flash.c **** }
+ 793              		.loc 1 204 1 is_stmt 0
+ 794 0034 13050000 		li	a0,0
+ 795              	.LVL50:
+ 796 0038 67800000 		ret
+ 797              		.cfi_endproc
+ 798              	.LFE17:
+ 800              		.section	.text.u32_Get_32K_Sector_Base,"ax",@progbits
+ 801              		.align	2
+ 802              		.globl	u32_Get_32K_Sector_Base
+ 804              	u32_Get_32K_Sector_Base:
+ 805              	.LFB18:
+ 205:../src/flash.c **** 
+ 206:../src/flash.c **** uint32_t u32_Get_32K_Sector_Base( uint8_t u8_Sector )
+ 207:../src/flash.c **** {
+ 806              		.loc 1 207 1 is_stmt 1
+ 807              		.cfi_startproc
+ 808              	.LVL51:
+ 208:../src/flash.c ****     assert(u8_Sector < N_32K_SECTORS );
+ 809              		.loc 1 208 5
+ 810 0000 93071000 		li	a5,1
+ 811 0004 63F8A702 		bleu	a0,a5,.L41
+ 207:../src/flash.c ****     assert(u8_Sector < N_32K_SECTORS );
+ 812              		.loc 1 207 1 is_stmt 0 discriminator 1
+ 813 0008 130101FF 		addi	sp,sp,-16
+ 814              		.cfi_def_cfa_offset 16
+ 815              		.loc 1 208 5 discriminator 1
+ 816 000c 97060000 		lla	a3,.LC2
+ 816      93860600 
+ 817 0014 17060000 		lla	a2,.LANCHOR2
+ 817      13060600 
+ 818 001c 9305000D 		li	a1,208
+ 819 0020 17050000 		lla	a0,.LC1
+ 819      13050500 
+ 820              	.LVL52:
+ 207:../src/flash.c ****     assert(u8_Sector < N_32K_SECTORS );
+ 821              		.loc 1 207 1 discriminator 1
+ 822 0028 23261100 		sw	ra,12(sp)
+ 823              		.cfi_offset 1, -4
+ 824              		.loc 1 208 5 discriminator 1
+ 825 002c 97000000 		call	__assert_func
+ 825      E7800000 
+ 826              	.LVL53:
+ 827              	.L41:
+ 828              		.cfi_def_cfa_offset 0
+ 829              		.cfi_restore 1
+ 209:../src/flash.c ****     return BASE_32K_ADDRESS * (uint32_t)u8_Sector * SIZE_32K_SECTOR;
+ 830              		.loc 1 209 5 is_stmt 1
+ 210:../src/flash.c **** }
+ 831              		.loc 1 210 1 is_stmt 0
+ 832 0034 1315E501 		slli	a0,a0,30
+ 833              	.LVL54:
+ 834 0038 67800000 		ret
+ 835              		.cfi_endproc
+ 836              	.LFE18:
+ 838              		.section	.text.u32_Get_8K_Sector_Base,"ax",@progbits
+ 839              		.align	2
+ 840              		.globl	u32_Get_8K_Sector_Base
+ 842              	u32_Get_8K_Sector_Base:
+ 843              	.LFB19:
+ 211:../src/flash.c **** 
+ 212:../src/flash.c **** uint32_t u32_Get_8K_Sector_Base( uint8_t u8_Sector )
+ 213:../src/flash.c **** {
+ 844              		.loc 1 213 1 is_stmt 1
+ 845              		.cfi_startproc
+ 846              	.LVL55:
+ 214:../src/flash.c ****     assert(u8_Sector < N_8K_SECTORS );
+ 847              		.loc 1 214 5
+ 848 0000 93073000 		li	a5,3
+ 849 0004 63F8A702 		bleu	a0,a5,.L46
+ 213:../src/flash.c ****     assert(u8_Sector < N_8K_SECTORS );
+ 850              		.loc 1 213 1 is_stmt 0 discriminator 1
+ 851 0008 130101FF 		addi	sp,sp,-16
+ 852              		.cfi_def_cfa_offset 16
+ 853              		.loc 1 214 5 discriminator 1
+ 854 000c 97060000 		lla	a3,.LC3
+ 854      93860600 
+ 855 0014 17060000 		lla	a2,.LANCHOR3
+ 855      13060600 
+ 856 001c 9305600D 		li	a1,214
+ 857 0020 17050000 		lla	a0,.LC1
+ 857      13050500 
+ 858              	.LVL56:
+ 213:../src/flash.c ****     assert(u8_Sector < N_8K_SECTORS );
+ 859              		.loc 1 213 1 discriminator 1
+ 860 0028 23261100 		sw	ra,12(sp)
+ 861              		.cfi_offset 1, -4
+ 862              		.loc 1 214 5 discriminator 1
+ 863 002c 97000000 		call	__assert_func
+ 863      E7800000 
+ 864              	.LVL57:
+ 865              	.L46:
+ 866              		.cfi_def_cfa_offset 0
+ 867              		.cfi_restore 1
+ 215:../src/flash.c ****     return BASE_8K_ADDRESS * (uint32_t)u8_Sector * SIZE_8K_SECTOR;
+ 868              		.loc 1 215 5 is_stmt 1
+ 216:../src/flash.c **** }
+ 869              		.loc 1 216 1 is_stmt 0
+ 870 0034 13050000 		li	a0,0
+ 871              	.LVL58:
+ 872 0038 67800000 		ret
+ 873              		.cfi_endproc
+ 874              	.LFE19:
+ 876              		.section	.bss.flash_spi,"aw",@nobits
+ 877              		.align	2
+ 878              		.set	.LANCHOR0,. + 0
+ 881              	flash_spi:
+ 882 0000 00000000 		.zero	76
+ 882      00000000 
+ 882      00000000 
+ 882      00000000 
+ 882      00000000 
+ 883              		.section	.rodata.__func__.2270,"a"
+ 884              		.align	2
+ 885              		.set	.LANCHOR1,. + 0
+ 888              	__func__.2270:
+ 889 0000 7533325F 		.string	"u32_Get_64K_Block_Base"
+ 889      4765745F 
+ 889      36344B5F 
+ 889      426C6F63 
+ 889      6B5F4261 
+ 890              		.section	.rodata.__func__.2274,"a"
+ 891              		.align	2
+ 892              		.set	.LANCHOR2,. + 0
+ 895              	__func__.2274:
+ 896 0000 7533325F 		.string	"u32_Get_32K_Sector_Base"
+ 896      4765745F 
+ 896      33324B5F 
+ 896      53656374 
+ 896      6F725F42 
+ 897              		.section	.rodata.__func__.2278,"a"
+ 898              		.align	2
+ 899              		.set	.LANCHOR3,. + 0
+ 902              	__func__.2278:
+ 903 0000 7533325F 		.string	"u32_Get_8K_Sector_Base"
+ 903      4765745F 
+ 903      384B5F53 
+ 903      6563746F 
+ 903      725F4261 
+ 904              		.section	.rodata.u32_Get_32K_Sector_Base.str1.4,"aMS",@progbits,1
+ 905              		.align	2
+ 906              	.LC2:
+ 907 0000 75385F53 		.string	"u8_Sector < N_32K_SECTORS"
+ 907      6563746F 
+ 907      72203C20 
+ 907      4E5F3332 
+ 907      4B5F5345 
+ 908              		.section	.rodata.u32_Get_64K_Block_Base.str1.4,"aMS",@progbits,1
+ 909              		.align	2
+ 910              	.LC0:
+ 911 0000 75385F53 		.string	"u8_Sector < N_64K_SECTORS"
+ 911      6563746F 
+ 911      72203C20 
+ 911      4E5F3634 
+ 911      4B5F5345 
+ 912 001a 0000     		.zero	2
+ 913              	.LC1:
+ 914 001c 2E2E2F73 		.string	"../src/flash.c"
+ 914      72632F66 
+ 914      6C617368 
+ 914      2E6300
+ 915              		.section	.rodata.u32_Get_8K_Sector_Base.str1.4,"aMS",@progbits,1
+ 916              		.align	2
+ 917              	.LC3:
+ 918 0000 75385F53 		.string	"u8_Sector < N_8K_SECTORS"
+ 918      6563746F 
+ 918      72203C20 
+ 918      4E5F384B 
+ 918      5F534543 
+ 919              		.text
+ 920              	.Letext0:
+ 921              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 922              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 923              		.file 4 "/home/iboard/farsight/farsight-riscv-toolchain/lib/gcc/riscv64-unknown-elf/8.3.0/include/
+ 924              		.file 5 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_types.h"
+ 925              		.file 6 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/reent.h"
+ 926              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/lock.h"
+ 927              		.file 8 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 928              		.file 9 "/home/iboard/farsight/avtemp/Camera/include/core_spi.h"
+ 929              		.file 10 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/assert.h"
+ 930              		.file 11 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 flash.c
+<<<<<<< HEAD
+     /tmp/ccaL0ISQ.s:12     .text.v_Set_Write_Enable:0000000000000000 v_Set_Write_Enable
+     /tmp/ccaL0ISQ.s:16     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:17     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:18     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:19     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:20     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:21     .text.v_Set_Write_Enable:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:23     .text.v_Set_Write_Enable:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:25     .text.v_Set_Write_Enable:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:31     .text.v_Set_Write_Enable:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:32     .text.v_Set_Write_Enable:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:34     .text.v_Set_Write_Enable:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:36     .text.v_Set_Write_Enable:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:39     .text.v_Set_Write_Enable:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:40     .text.v_Set_Write_Enable:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:42     .text.v_Set_Write_Enable:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:44     .text.v_Set_Write_Enable:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:51     .text.v_Init_Flash:0000000000000000 v_Init_Flash
+     /tmp/ccaL0ISQ.s:54     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:55     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:56     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:57     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:58     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:59     .text.v_Init_Flash:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:61     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:63     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:68     .text.v_Init_Flash:000000000000001c .L0 
+     /tmp/ccaL0ISQ.s:69     .text.v_Init_Flash:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:71     .text.v_Init_Flash:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:74     .text.v_Init_Flash:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:78     .text.v_Init_Flash:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:80     .text.v_Init_Flash:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:81     .text.v_Init_Flash:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:83     .text.v_Init_Flash:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:85     .text.v_Init_Flash:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:87     .text.v_Init_Flash:0000000000000044 .L0 
+     /tmp/ccaL0ISQ.s:88     .text.v_Init_Flash:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:90     .text.v_Init_Flash:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:92     .text.v_Init_Flash:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:99     .text.v_Flash_Reset:0000000000000000 v_Flash_Reset
+     /tmp/ccaL0ISQ.s:102    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:103    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:105    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:106    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:107    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:108    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:109    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:110    .text.v_Flash_Reset:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:113    .text.v_Flash_Reset:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:114    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:116    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:118    .text.v_Flash_Reset:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:120    .text.v_Flash_Reset:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:121    .text.v_Flash_Reset:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:123    .text.v_Flash_Reset:000000000000001c .L0 
+     /tmp/ccaL0ISQ.s:125    .text.v_Flash_Reset:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:130    .text.v_Flash_Reset:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:131    .text.v_Flash_Reset:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:133    .text.v_Flash_Reset:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:135    .text.v_Flash_Reset:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:138    .text.v_Flash_Reset:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:146    .text.v_Flash_Reset:000000000000005c .L0 
+     /tmp/ccaL0ISQ.s:147    .text.v_Flash_Reset:0000000000000060 .L0 
+     /tmp/ccaL0ISQ.s:149    .text.v_Flash_Reset:0000000000000064 .L0 
+     /tmp/ccaL0ISQ.s:151    .text.v_Flash_Reset:0000000000000068 .L0 
+     /tmp/ccaL0ISQ.s:153    .text.v_Flash_Reset:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:160    .text.v_Flash_Get_Discovery_Params:0000000000000000 v_Flash_Get_Discovery_Params
+     /tmp/ccaL0ISQ.s:163    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:165    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:166    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:167    .text.v_Flash_Get_Discovery_Params:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:174    .text.u8_Flash_Read:0000000000000000 u8_Flash_Read
+     /tmp/ccaL0ISQ.s:177    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:179    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:180    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:181    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:182    .text.u8_Flash_Read:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:184    .text.u8_Flash_Read:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:186    .text.u8_Flash_Read:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:188    .text.u8_Flash_Read:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:195    .text.u8_Flash_Read:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:197    .text.u8_Flash_Read:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:199    .text.u8_Flash_Read:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:201    .text.u8_Flash_Read:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:209    .text.u8_Flash_Read:0000000000000044 .L0 
+     /tmp/ccaL0ISQ.s:210    .text.u8_Flash_Read:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:212    .text.u8_Flash_Read:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:215    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:216    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:217    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:218    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:219    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:221    .text.u8_Flash_Read:0000000000000054 .L0 
+     /tmp/ccaL0ISQ.s:224    .text.u8_Flash_Read:000000000000005c .L0 
+     /tmp/ccaL0ISQ.s:225    .text.u8_Flash_Read:000000000000005c .L0 
+     /tmp/ccaL0ISQ.s:226    .text.u8_Flash_Read:0000000000000060 .L0 
+     /tmp/ccaL0ISQ.s:229    .text.u8_Flash_Read:0000000000000068 .L0 
+     /tmp/ccaL0ISQ.s:231    .text.u8_Flash_Read:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:238    .text.u32_Read_JEDEC_ID:0000000000000000 u32_Read_JEDEC_ID
+     /tmp/ccaL0ISQ.s:241    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:242    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:243    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:244    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:245    .text.u32_Read_JEDEC_ID:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:247    .text.u32_Read_JEDEC_ID:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:249    .text.u32_Read_JEDEC_ID:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:255    .text.u32_Read_JEDEC_ID:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:256    .text.u32_Read_JEDEC_ID:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:258    .text.u32_Read_JEDEC_ID:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:260    .text.u32_Read_JEDEC_ID:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:261    .text.u32_Read_JEDEC_ID:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:264    .text.u32_Read_JEDEC_ID:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:265    .text.u32_Read_JEDEC_ID:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:267    .text.u32_Read_JEDEC_ID:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:269    .text.u32_Read_JEDEC_ID:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:270    .text.u32_Read_JEDEC_ID:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:272    .text.u32_Read_JEDEC_ID:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:274    .text.u32_Read_JEDEC_ID:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:276    .text.u32_Read_JEDEC_ID:0000000000000044 .L0 
+     /tmp/ccaL0ISQ.s:278    .text.u32_Read_JEDEC_ID:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:280    .text.u32_Read_JEDEC_ID:000000000000004c .L0 
+     /tmp/ccaL0ISQ.s:281    .text.u32_Read_JEDEC_ID:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:284    .text.u32_Read_JEDEC_ID:0000000000000058 .L0 
+     /tmp/ccaL0ISQ.s:291    .text.u32_Read_Config_Reg:0000000000000000 u32_Read_Config_Reg
+     /tmp/ccaL0ISQ.s:294    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:295    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:296    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:297    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:298    .text.u32_Read_Config_Reg:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:300    .text.u32_Read_Config_Reg:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:302    .text.u32_Read_Config_Reg:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:308    .text.u32_Read_Config_Reg:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:309    .text.u32_Read_Config_Reg:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:311    .text.u32_Read_Config_Reg:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:313    .text.u32_Read_Config_Reg:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:314    .text.u32_Read_Config_Reg:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:317    .text.u32_Read_Config_Reg:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:318    .text.u32_Read_Config_Reg:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:319    .text.u32_Read_Config_Reg:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:322    .text.u32_Read_Config_Reg:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:324    .text.u32_Read_Config_Reg:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:331    .text.u8_Read_Block_Prot_Reg:0000000000000000 u8_Read_Block_Prot_Reg
+     /tmp/ccaL0ISQ.s:334    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:335    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:336    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:337    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:338    .text.u8_Read_Block_Prot_Reg:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:340    .text.u8_Read_Block_Prot_Reg:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:342    .text.u8_Read_Block_Prot_Reg:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:348    .text.u8_Read_Block_Prot_Reg:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:349    .text.u8_Read_Block_Prot_Reg:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:351    .text.u8_Read_Block_Prot_Reg:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:353    .text.u8_Read_Block_Prot_Reg:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:354    .text.u8_Read_Block_Prot_Reg:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:357    .text.u8_Read_Block_Prot_Reg:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:358    .text.u8_Read_Block_Prot_Reg:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:359    .text.u8_Read_Block_Prot_Reg:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:362    .text.u8_Read_Block_Prot_Reg:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:364    .text.u8_Read_Block_Prot_Reg:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:371    .text.v_Flash_Read_Status:0000000000000000 v_Flash_Read_Status
+     /tmp/ccaL0ISQ.s:374    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:376    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:377    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:378    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:379    .text.v_Flash_Read_Status:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:381    .text.v_Flash_Read_Status:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:383    .text.v_Flash_Read_Status:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:390    .text.v_Flash_Read_Status:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:391    .text.v_Flash_Read_Status:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:393    .text.v_Flash_Read_Status:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:395    .text.v_Flash_Read_Status:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:398    .text.v_Flash_Read_Status:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:399    .text.v_Flash_Read_Status:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:401    .text.v_Flash_Read_Status:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:403    .text.v_Flash_Read_Status:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:409    .text.v_Wait_For_Write_Enable:0000000000000000 v_Wait_For_Write_Enable
+     /tmp/ccaL0ISQ.s:412    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:413    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:414    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:415    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:416    .text.v_Wait_For_Write_Enable:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:418    .text.v_Wait_For_Write_Enable:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:420    .text.v_Wait_For_Write_Enable:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:423    .text.v_Wait_For_Write_Enable:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:424    .text.v_Wait_For_Write_Enable:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:428    .text.v_Wait_For_Write_Enable:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:430    .text.v_Wait_For_Write_Enable:000000000000001c .L0 
+     /tmp/ccaL0ISQ.s:433    .text.v_Wait_For_Write_Enable:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:434    .text.v_Wait_For_Write_Enable:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:436    .text.v_Wait_For_Write_Enable:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:438    .text.v_Wait_For_Write_Enable:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:445    .text.v_Global_Flash_Unlock:0000000000000000 v_Global_Flash_Unlock
+     /tmp/ccaL0ISQ.s:448    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:449    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:450    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:451    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:452    .text.v_Global_Flash_Unlock:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:454    .text.v_Global_Flash_Unlock:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:456    .text.v_Global_Flash_Unlock:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:457    .text.v_Global_Flash_Unlock:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:459    .text.v_Global_Flash_Unlock:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:461    .text.v_Global_Flash_Unlock:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:464    .text.v_Global_Flash_Unlock:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:467    .text.v_Global_Flash_Unlock:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:475    .text.v_Global_Flash_Unlock:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:476    .text.v_Global_Flash_Unlock:0000000000000044 .L0 
+     /tmp/ccaL0ISQ.s:478    .text.v_Global_Flash_Unlock:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:480    .text.v_Global_Flash_Unlock:000000000000004c .L0 
+     /tmp/ccaL0ISQ.s:486    .text.v_Wait_For_Not_Busy:0000000000000000 v_Wait_For_Not_Busy
+     /tmp/ccaL0ISQ.s:489    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:490    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:491    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:492    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:493    .text.v_Wait_For_Not_Busy:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:495    .text.v_Wait_For_Not_Busy:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:497    .text.v_Wait_For_Not_Busy:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:500    .text.v_Wait_For_Not_Busy:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:501    .text.v_Wait_For_Not_Busy:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:505    .text.v_Wait_For_Not_Busy:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:507    .text.v_Wait_For_Not_Busy:000000000000001c .L0 
+     /tmp/ccaL0ISQ.s:510    .text.v_Wait_For_Not_Busy:0000000000000024 .L0 
+     /tmp/ccaL0ISQ.s:511    .text.v_Wait_For_Not_Busy:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:513    .text.v_Wait_For_Not_Busy:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:515    .text.v_Wait_For_Not_Busy:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:522    .text.v_Flash_Sector_Erase:0000000000000000 v_Flash_Sector_Erase
+     /tmp/ccaL0ISQ.s:525    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:527    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:528    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:529    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:530    .text.v_Flash_Sector_Erase:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:532    .text.v_Flash_Sector_Erase:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:535    .text.v_Flash_Sector_Erase:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:537    .text.v_Flash_Sector_Erase:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:539    .text.v_Flash_Sector_Erase:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:546    .text.v_Flash_Sector_Erase:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:547    .text.v_Flash_Sector_Erase:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:549    .text.v_Flash_Sector_Erase:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:551    .text.v_Flash_Sector_Erase:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:554    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:555    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:556    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:557    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:558    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:561    .text.v_Flash_Sector_Erase:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:569    .text.v_Flash_Sector_Erase:0000000000000060 .L0 
+     /tmp/ccaL0ISQ.s:572    .text.v_Flash_Sector_Erase:0000000000000068 .L0 
+     /tmp/ccaL0ISQ.s:573    .text.v_Flash_Sector_Erase:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:575    .text.v_Flash_Sector_Erase:0000000000000070 .L0 
+     /tmp/ccaL0ISQ.s:577    .text.v_Flash_Sector_Erase:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:584    .text.v_Flash_Block_Erase:0000000000000000 v_Flash_Block_Erase
+     /tmp/ccaL0ISQ.s:587    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:589    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:590    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:591    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:592    .text.v_Flash_Block_Erase:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:594    .text.v_Flash_Block_Erase:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:597    .text.v_Flash_Block_Erase:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:599    .text.v_Flash_Block_Erase:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:601    .text.v_Flash_Block_Erase:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:608    .text.v_Flash_Block_Erase:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:609    .text.v_Flash_Block_Erase:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:611    .text.v_Flash_Block_Erase:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:613    .text.v_Flash_Block_Erase:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:616    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:617    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:618    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:619    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:620    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:623    .text.v_Flash_Block_Erase:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:631    .text.v_Flash_Block_Erase:0000000000000060 .L0 
+     /tmp/ccaL0ISQ.s:634    .text.v_Flash_Block_Erase:0000000000000068 .L0 
+     /tmp/ccaL0ISQ.s:635    .text.v_Flash_Block_Erase:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:637    .text.v_Flash_Block_Erase:0000000000000070 .L0 
+     /tmp/ccaL0ISQ.s:639    .text.v_Flash_Block_Erase:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:646    .text.u8_Flash_Page_Program:0000000000000000 u8_Flash_Page_Program
+     /tmp/ccaL0ISQ.s:649    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:651    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:652    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:653    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:654    .text.u8_Flash_Page_Program:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:658    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:659    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:660    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:665    .text.u8_Flash_Page_Program:000000000000001c .L0 
+     /tmp/ccaL0ISQ.s:672    .text.u8_Flash_Page_Program:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:674    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:675    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:677    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:680    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:681    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:682    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:685    .text.u8_Flash_Page_Program:0000000000000044 .L0 
+     /tmp/ccaL0ISQ.s:687    .text.u8_Flash_Page_Program:0000000000000048 .L0 
+     /tmp/ccaL0ISQ.s:692    .text.u8_Flash_Page_Program:0000000000000058 .L0 
+     /tmp/ccaL0ISQ.s:694    .text.u8_Flash_Page_Program:000000000000005c .L0 
+     /tmp/ccaL0ISQ.s:697    .text.u8_Flash_Page_Program:0000000000000064 .L0 
+     /tmp/ccaL0ISQ.s:700    .text.u8_Flash_Page_Program:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:703    .text.u8_Flash_Page_Program:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:704    .text.u8_Flash_Page_Program:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:707    .text.u8_Flash_Page_Program:000000000000007c .L0 
+     /tmp/ccaL0ISQ.s:708    .text.u8_Flash_Page_Program:000000000000007c .L0 
+     /tmp/ccaL0ISQ.s:710    .text.u8_Flash_Page_Program:0000000000000080 .L0 
+     /tmp/ccaL0ISQ.s:712    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccaL0ISQ.s:713    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccaL0ISQ.s:714    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccaL0ISQ.s:721    .text.u8_Flash_Page_Program:0000000000000098 .L0 
+     /tmp/ccaL0ISQ.s:725    .text.u8_Flash_Page_Program:00000000000000a4 .L0 
+     /tmp/ccaL0ISQ.s:727    .text.u8_Flash_Page_Program:00000000000000a8 .L0 
+     /tmp/ccaL0ISQ.s:730    .text.u8_Flash_Page_Program:00000000000000b0 .L0 
+     /tmp/ccaL0ISQ.s:740    .text.u8_Flash_Page_Program:00000000000000d4 .L0 
+     /tmp/ccaL0ISQ.s:743    .text.u8_Flash_Page_Program:00000000000000dc .L0 
+     /tmp/ccaL0ISQ.s:744    .text.u8_Flash_Page_Program:00000000000000dc .L0 
+     /tmp/ccaL0ISQ.s:745    .text.u8_Flash_Page_Program:00000000000000e0 .L0 
+     /tmp/ccaL0ISQ.s:747    .text.u8_Flash_Page_Program:00000000000000e4 .L0 
+     /tmp/ccaL0ISQ.s:749    .text.u8_Flash_Page_Program:00000000000000e8 .L0 
+     /tmp/ccaL0ISQ.s:751    .text.u8_Flash_Page_Program:00000000000000ec .L0 
+     /tmp/ccaL0ISQ.s:753    .text.u8_Flash_Page_Program:00000000000000f0 .L0 
+     /tmp/ccaL0ISQ.s:757    .text.u8_Flash_Page_Program:00000000000000f8 .L0 
+     /tmp/ccaL0ISQ.s:759    .text.u8_Flash_Page_Program:00000000000000fc .L0 
+     /tmp/ccaL0ISQ.s:766    .text.u32_Get_64K_Block_Base:0000000000000000 u32_Get_64K_Block_Base
+     /tmp/ccaL0ISQ.s:769    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:771    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:772    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:775    .text.u32_Get_64K_Block_Base:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:776    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:778    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:784    .text.u32_Get_64K_Block_Base:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:785    .text.u32_Get_64K_Block_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:787    .text.u32_Get_64K_Block_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:790    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:791    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:793    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:794    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:797    .text.u32_Get_64K_Block_Base:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:804    .text.u32_Get_32K_Sector_Base:0000000000000000 u32_Get_32K_Sector_Base
+     /tmp/ccaL0ISQ.s:807    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:809    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:810    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:813    .text.u32_Get_32K_Sector_Base:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:814    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:816    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:822    .text.u32_Get_32K_Sector_Base:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:823    .text.u32_Get_32K_Sector_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:825    .text.u32_Get_32K_Sector_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:828    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:829    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:831    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:832    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:835    .text.u32_Get_32K_Sector_Base:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:842    .text.u32_Get_8K_Sector_Base:0000000000000000 u32_Get_8K_Sector_Base
+     /tmp/ccaL0ISQ.s:845    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:847    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:848    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:851    .text.u32_Get_8K_Sector_Base:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:852    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:854    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:860    .text.u32_Get_8K_Sector_Base:0000000000000028 .L0 
+     /tmp/ccaL0ISQ.s:861    .text.u32_Get_8K_Sector_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:863    .text.u32_Get_8K_Sector_Base:000000000000002c .L0 
+     /tmp/ccaL0ISQ.s:866    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:867    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:869    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:870    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:873    .text.u32_Get_8K_Sector_Base:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:878    .bss.flash_spi:0000000000000000 .LANCHOR0
+     /tmp/ccaL0ISQ.s:881    .bss.flash_spi:0000000000000000 flash_spi
+     /tmp/ccaL0ISQ.s:885    .rodata.__func__.2270:0000000000000000 .LANCHOR1
+     /tmp/ccaL0ISQ.s:888    .rodata.__func__.2270:0000000000000000 __func__.2270
+     /tmp/ccaL0ISQ.s:892    .rodata.__func__.2274:0000000000000000 .LANCHOR2
+     /tmp/ccaL0ISQ.s:895    .rodata.__func__.2274:0000000000000000 __func__.2274
+     /tmp/ccaL0ISQ.s:899    .rodata.__func__.2278:0000000000000000 .LANCHOR3
+     /tmp/ccaL0ISQ.s:902    .rodata.__func__.2278:0000000000000000 __func__.2278
+     /tmp/ccaL0ISQ.s:47     .text.v_Set_Write_Enable:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:95     .text.v_Init_Flash:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:156    .text.v_Flash_Reset:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:170    .text.v_Flash_Get_Discovery_Params:0000000000000004 .L0 
+     /tmp/ccaL0ISQ.s:234    .text.u8_Flash_Read:000000000000006c .L0 
+     /tmp/ccaL0ISQ.s:287    .text.u32_Read_JEDEC_ID:0000000000000058 .L0 
+     /tmp/ccaL0ISQ.s:327    .text.u32_Read_Config_Reg:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:367    .text.u8_Read_Block_Prot_Reg:0000000000000040 .L0 
+     /tmp/ccaL0ISQ.s:406    .text.v_Flash_Read_Status:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:441    .text.v_Wait_For_Write_Enable:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:483    .text.v_Global_Flash_Unlock:000000000000004c .L0 
+     /tmp/ccaL0ISQ.s:518    .text.v_Wait_For_Not_Busy:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:580    .text.v_Flash_Sector_Erase:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:642    .text.v_Flash_Block_Erase:0000000000000074 .L0 
+     /tmp/ccaL0ISQ.s:762    .text.u8_Flash_Page_Program:00000000000000fc .L0 
+     /tmp/ccaL0ISQ.s:800    .text.u32_Get_64K_Block_Base:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:838    .text.u32_Get_32K_Sector_Base:000000000000003c .L0 
+     /tmp/ccaL0ISQ.s:876    .text.u32_Get_8K_Sector_Base:000000000000003c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccaL0ISQ.s:29     .text.v_Set_Write_Enable:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:63     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccaL0ISQ.s:116    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:204    .text.u8_Flash_Read:0000000000000034 .L0 
+     /tmp/ccaL0ISQ.s:251    .text.u32_Read_JEDEC_ID:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:304    .text.u32_Read_Config_Reg:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:344    .text.u8_Read_Block_Prot_Reg:0000000000000010 .L0 
+     /tmp/ccaL0ISQ.s:387    .text.v_Flash_Read_Status:0000000000000018 .L0 
+     /tmp/ccaL0ISQ.s:421    .text.v_Wait_For_Write_Enable:000000000000000c .L19
+     /tmp/ccaL0ISQ.s:471    .text.v_Global_Flash_Unlock:0000000000000030 .L0 
+     /tmp/ccaL0ISQ.s:498    .text.v_Wait_For_Not_Busy:000000000000000c .L26
+     /tmp/ccaL0ISQ.s:565    .text.v_Flash_Sector_Erase:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:627    .text.v_Flash_Block_Erase:0000000000000050 .L0 
+     /tmp/ccaL0ISQ.s:682    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccaL0ISQ.s:910    .rodata.u32_Get_64K_Block_Base.str1.4:0000000000000000 .LC0
+     /tmp/ccaL0ISQ.s:778    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:779    .text.u32_Get_64K_Block_Base:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:913    .rodata.u32_Get_64K_Block_Base.str1.4:000000000000001c .LC1
+     /tmp/ccaL0ISQ.s:781    .text.u32_Get_64K_Block_Base:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:789    .text.u32_Get_64K_Block_Base:0000000000000034 .L36
+     /tmp/ccaL0ISQ.s:906    .rodata.u32_Get_32K_Sector_Base.str1.4:0000000000000000 .LC2
+     /tmp/ccaL0ISQ.s:816    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:817    .text.u32_Get_32K_Sector_Base:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:819    .text.u32_Get_32K_Sector_Base:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:827    .text.u32_Get_32K_Sector_Base:0000000000000034 .L41
+     /tmp/ccaL0ISQ.s:917    .rodata.u32_Get_8K_Sector_Base.str1.4:0000000000000000 .LC3
+     /tmp/ccaL0ISQ.s:854    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccaL0ISQ.s:855    .text.u32_Get_8K_Sector_Base:0000000000000014 .L0 
+     /tmp/ccaL0ISQ.s:857    .text.u32_Get_8K_Sector_Base:0000000000000020 .L0 
+     /tmp/ccaL0ISQ.s:865    .text.u32_Get_8K_Sector_Base:0000000000000034 .L46
+     /tmp/ccaL0ISQ.s:3691   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccaL0ISQ.s:5163   .debug_str:000000000000097d .LASF214
+     /tmp/ccaL0ISQ.s:4961   .debug_str:00000000000004d2 .LASF215
+     /tmp/ccaL0ISQ.s:4867   .debug_str:0000000000000283 .LASF216
+     /tmp/ccaL0ISQ.s:4721   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccaL0ISQ.s:4761   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccaL0ISQ.s:4817   .debug_str:000000000000016a .LASF0
+     /tmp/ccaL0ISQ.s:4773   .debug_str:0000000000000030 .LASF3
+     /tmp/ccaL0ISQ.s:5029   .debug_str:0000000000000696 .LASF1
+     /tmp/ccaL0ISQ.s:5041   .debug_str:00000000000006dd .LASF2
+     /tmp/ccaL0ISQ.s:5113   .debug_str:0000000000000848 .LASF4
+     /tmp/ccaL0ISQ.s:4931   .debug_str:000000000000042a .LASF5
+     /tmp/ccaL0ISQ.s:4839   .debug_str:00000000000001e6 .LASF6
+     /tmp/ccaL0ISQ.s:4883   .debug_str:0000000000000308 .LASF7
+     /tmp/ccaL0ISQ.s:4921   .debug_str:00000000000003ed .LASF8
+     /tmp/ccaL0ISQ.s:4815   .debug_str:000000000000015c .LASF9
+     /tmp/ccaL0ISQ.s:4791   .debug_str:00000000000000a9 .LASF10
+     /tmp/ccaL0ISQ.s:4911   .debug_str:00000000000003ba .LASF11
+     /tmp/ccaL0ISQ.s:5165   .debug_str:0000000000000a43 .LASF12
+     /tmp/ccaL0ISQ.s:4853   .debug_str:000000000000022f .LASF13
+     /tmp/ccaL0ISQ.s:5091   .debug_str:00000000000007c9 .LASF14
+     /tmp/ccaL0ISQ.s:4979   .debug_str:000000000000054e .LASF15
+     /tmp/ccaL0ISQ.s:4949   .debug_str:0000000000000491 .LASF16
+     /tmp/ccaL0ISQ.s:5005   .debug_str:00000000000005f6 .LASF17
+     /tmp/ccaL0ISQ.s:5099   .debug_str:00000000000007fb .LASF18
+     /tmp/ccaL0ISQ.s:4925   .debug_str:0000000000000405 .LASF19
+     /tmp/ccaL0ISQ.s:4943   .debug_str:000000000000047c .LASF20
+     /tmp/ccaL0ISQ.s:4915   .debug_str:00000000000003d6 .LASF21
+     /tmp/ccaL0ISQ.s:5087   .debug_str:00000000000007ba .LASF22
+     /tmp/ccaL0ISQ.s:5129   .debug_str:00000000000008b0 .LASF23
+     /tmp/ccaL0ISQ.s:5053   .debug_str:000000000000070f .LASF24
+     /tmp/ccaL0ISQ.s:5137   .debug_str:00000000000008db .LASF25
+     /tmp/ccaL0ISQ.s:4947   .debug_str:0000000000000489 .LASF26
+     /tmp/ccaL0ISQ.s:5089   .debug_str:00000000000007c2 .LASF124
+     /tmp/ccaL0ISQ.s:4889   .debug_str:0000000000000328 .LASF27
+     /tmp/ccaL0ISQ.s:4893   .debug_str:0000000000000339 .LASF32
+     /tmp/ccaL0ISQ.s:5125   .debug_str:000000000000089d .LASF28
+     /tmp/ccaL0ISQ.s:5081   .debug_str:00000000000007a5 .LASF29
+     /tmp/ccaL0ISQ.s:4885   .debug_str:0000000000000313 .LASF30
+     /tmp/ccaL0ISQ.s:5157   .debug_str:0000000000000968 .LASF31
+     /tmp/ccaL0ISQ.s:4905   .debug_str:0000000000000391 .LASF33
+     /tmp/ccaL0ISQ.s:4811   .debug_str:0000000000000149 .LASF34
+     /tmp/ccaL0ISQ.s:5109   .debug_str:000000000000082d .LASF35
+     /tmp/ccaL0ISQ.s:4827   .debug_str:00000000000001a9 .LASF36
+     /tmp/ccaL0ISQ.s:5195   .debug_str:0000000000000af0 .LASF37
+     /tmp/ccaL0ISQ.s:4995   .debug_str:00000000000005b5 .LASF38
+     /tmp/ccaL0ISQ.s:4967   .debug_str:00000000000004f3 .LASF39
+     /tmp/ccaL0ISQ.s:5159   .debug_str:000000000000096d .LASF40
+     /tmp/ccaL0ISQ.s:5043   .debug_str:00000000000006e7 .LASF41
+     /tmp/ccaL0ISQ.s:5181   .debug_str:0000000000000aa6 .LASF42
+     /tmp/ccaL0ISQ.s:4833   .debug_str:00000000000001c8 .LASF43
+     /tmp/ccaL0ISQ.s:4877   .debug_str:00000000000002f1 .LASF44
+     /tmp/ccaL0ISQ.s:4763   .debug_str:0000000000000000 .LASF45
+     /tmp/ccaL0ISQ.s:5131   .debug_str:00000000000008b8 .LASF46
+     /tmp/ccaL0ISQ.s:4843   .debug_str:00000000000001f6 .LASF47
+     /tmp/ccaL0ISQ.s:4999   .debug_str:00000000000005cb .LASF48
+     /tmp/ccaL0ISQ.s:5071   .debug_str:0000000000000766 .LASF49
+     /tmp/ccaL0ISQ.s:4881   .debug_str:0000000000000303 .LASF50
+     /tmp/ccaL0ISQ.s:5047   .debug_str:00000000000006fb .LASF51
+     /tmp/ccaL0ISQ.s:4823   .debug_str:0000000000000192 .LASF52
+     /tmp/ccaL0ISQ.s:4765   .debug_str:000000000000000c .LASF53
+     /tmp/ccaL0ISQ.s:5055   .debug_str:000000000000071a .LASF54
+     /tmp/ccaL0ISQ.s:4841   .debug_str:00000000000001ef .LASF55
+     /tmp/ccaL0ISQ.s:4923   .debug_str:00000000000003ff .LASF56
+     /tmp/ccaL0ISQ.s:4793   .debug_str:00000000000000c0 .LASF57
+     /tmp/ccaL0ISQ.s:4835   .debug_str:00000000000001d6 .LASF58
+     /tmp/ccaL0ISQ.s:4899   .debug_str:000000000000036d .LASF59
+     /tmp/ccaL0ISQ.s:4965   .debug_str:00000000000004ec .LASF60
+     /tmp/ccaL0ISQ.s:5093   .debug_str:00000000000007d2 .LASF61
+     /tmp/ccaL0ISQ.s:5185   .debug_str:0000000000000ac0 .LASF62
+     /tmp/ccaL0ISQ.s:4821   .debug_str:000000000000018c .LASF63
+     /tmp/ccaL0ISQ.s:5177   .debug_str:0000000000000a98 .LASF64
+     /tmp/ccaL0ISQ.s:4847   .debug_str:0000000000000205 .LASF65
+     /tmp/ccaL0ISQ.s:4859   .debug_str:0000000000000257 .LASF66
+     /tmp/ccaL0ISQ.s:4779   .debug_str:0000000000000057 .LASF67
+     /tmp/ccaL0ISQ.s:4957   .debug_str:00000000000004c4 .LASF68
+     /tmp/ccaL0ISQ.s:5059   .debug_str:0000000000000729 .LASF69
+     /tmp/ccaL0ISQ.s:4959   .debug_str:00000000000004ca .LASF70
+     /tmp/ccaL0ISQ.s:5083   .debug_str:00000000000007ad .LASF71
+     /tmp/ccaL0ISQ.s:5101   .debug_str:0000000000000803 .LASF72
+     /tmp/ccaL0ISQ.s:4845   .debug_str:00000000000001fe .LASF73
+     /tmp/ccaL0ISQ.s:4917   .debug_str:00000000000003dd .LASF74
+     /tmp/ccaL0ISQ.s:4891   .debug_str:0000000000000331 .LASF75
+     /tmp/ccaL0ISQ.s:5069   .debug_str:0000000000000761 .LASF76
+     /tmp/ccaL0ISQ.s:4771   .debug_str:0000000000000025 .LASF77
+     /tmp/ccaL0ISQ.s:5079   .debug_str:000000000000078c .LASF78
+     /tmp/ccaL0ISQ.s:5075   .debug_str:000000000000077a .LASF79
+     /tmp/ccaL0ISQ.s:5003   .debug_str:00000000000005eb .LASF80
+     /tmp/ccaL0ISQ.s:5077   .debug_str:0000000000000782 .LASF81
+     /tmp/ccaL0ISQ.s:4941   .debug_str:0000000000000474 .LASF82
+     /tmp/ccaL0ISQ.s:4901   .debug_str:0000000000000373 .LASF83
+     /tmp/ccaL0ISQ.s:5191   .debug_str:0000000000000ada .LASF84
+     /tmp/ccaL0ISQ.s:5009   .debug_str:0000000000000609 .LASF85
+     /tmp/ccaL0ISQ.s:4919   .debug_str:00000000000003e5 .LASF86
+     /tmp/ccaL0ISQ.s:4857   .debug_str:000000000000024f .LASF87
+     /tmp/ccaL0ISQ.s:5033   .debug_str:00000000000006b7 .LASF88
+     /tmp/ccaL0ISQ.s:4935   .debug_str:0000000000000452 .LASF89
+     /tmp/ccaL0ISQ.s:5171   .debug_str:0000000000000a63 .LASF90
+     /tmp/ccaL0ISQ.s:4837   .debug_str:00000000000001de .LASF91
+     /tmp/ccaL0ISQ.s:4831   .debug_str:00000000000001c3 .LASF92
+     /tmp/ccaL0ISQ.s:5103   .debug_str:000000000000080a .LASF93
+     /tmp/ccaL0ISQ.s:5051   .debug_str:0000000000000708 .LASF94
+     /tmp/ccaL0ISQ.s:5161   .debug_str:0000000000000977 .LASF95
+     /tmp/ccaL0ISQ.s:4927   .debug_str:000000000000040e .LASF96
+     /tmp/ccaL0ISQ.s:5049   .debug_str:0000000000000702 .LASF97
+     /tmp/ccaL0ISQ.s:4769   .debug_str:000000000000001d .LASF98
+     /tmp/ccaL0ISQ.s:5085   .debug_str:00000000000007b4 .LASF99
+     /tmp/ccaL0ISQ.s:5121   .debug_str:0000000000000882 .LASF100
+     /tmp/ccaL0ISQ.s:5133   .debug_str:00000000000008c1 .LASF101
+     /tmp/ccaL0ISQ.s:5149   .debug_str:0000000000000931 .LASF102
+     /tmp/ccaL0ISQ.s:5127   .debug_str:00000000000008a3 .LASF103
+     /tmp/ccaL0ISQ.s:4939   .debug_str:0000000000000467 .LASF104
+     /tmp/ccaL0ISQ.s:5183   .debug_str:0000000000000ab1 .LASF105
+     /tmp/ccaL0ISQ.s:4895   .debug_str:0000000000000341 .LASF106
+     /tmp/ccaL0ISQ.s:5061   .debug_str:0000000000000732 .LASF107
+     /tmp/ccaL0ISQ.s:5187   .debug_str:0000000000000ac7 .LASF108
+     /tmp/ccaL0ISQ.s:5067   .debug_str:0000000000000754 .LASF109
+     /tmp/ccaL0ISQ.s:5189   .debug_str:0000000000000acc .LASF110
+     /tmp/ccaL0ISQ.s:5015   .debug_str:0000000000000630 .LASF111
+     /tmp/ccaL0ISQ.s:5167   .debug_str:0000000000000a4b .LASF112
+     /tmp/ccaL0ISQ.s:4937   .debug_str:000000000000045b .LASF113
+     /tmp/ccaL0ISQ.s:5139   .debug_str:00000000000008e3 .LASF114
+     /tmp/ccaL0ISQ.s:4873   .debug_str:00000000000002d7 .LASF115
+     /tmp/ccaL0ISQ.s:4805   .debug_str:0000000000000126 .LASF116
+     /tmp/ccaL0ISQ.s:4869   .debug_str:00000000000002ba .LASF117
+     /tmp/ccaL0ISQ.s:4783   .debug_str:0000000000000069 .LASF118
+     /tmp/ccaL0ISQ.s:4787   .debug_str:0000000000000087 .LASF119
+     /tmp/ccaL0ISQ.s:5039   .debug_str:00000000000006d4 .LASF120
+     /tmp/ccaL0ISQ.s:4991   .debug_str:00000000000005a2 .LASF121
+     /tmp/ccaL0ISQ.s:4973   .debug_str:000000000000051e .LASF122
+     /tmp/ccaL0ISQ.s:5179   .debug_str:0000000000000a9e .LASF123
+     /tmp/ccaL0ISQ.s:4797   .debug_str:00000000000000e0 .LASF125
+     /tmp/ccaL0ISQ.s:5097   .debug_str:00000000000007ef .LASF126
+     /tmp/ccaL0ISQ.s:5141   .debug_str:00000000000008f0 .LASF127
+     /tmp/ccaL0ISQ.s:4809   .debug_str:0000000000000142 .LASF128
+     /tmp/ccaL0ISQ.s:5073   .debug_str:000000000000076b .LASF129
+     /tmp/ccaL0ISQ.s:4953   .debug_str:00000000000004a6 .LASF130
+     /tmp/ccaL0ISQ.s:4879   .debug_str:00000000000002f9 .LASF131
+     /tmp/ccaL0ISQ.s:5013   .debug_str:0000000000000627 .LASF132
+     /tmp/ccaL0ISQ.s:5019   .debug_str:0000000000000652 .LASF133
+     /tmp/ccaL0ISQ.s:4951   .debug_str:0000000000000498 .LASF134
+     /tmp/ccaL0ISQ.s:4807   .debug_str:0000000000000135 .LASF135
+     /tmp/ccaL0ISQ.s:4785   .debug_str:0000000000000078 .LASF136
+     /tmp/ccaL0ISQ.s:4887   .debug_str:0000000000000319 .LASF137
+     /tmp/ccaL0ISQ.s:4825   .debug_str:0000000000000198 .LASF138
+     /tmp/ccaL0ISQ.s:5153   .debug_str:000000000000094f .LASF139
+     /tmp/ccaL0ISQ.s:4989   .debug_str:0000000000000599 .LASF140
+     /tmp/ccaL0ISQ.s:4907   .debug_str:0000000000000396 .LASF141
+     /tmp/ccaL0ISQ.s:5065   .debug_str:0000000000000746 .LASF142
+     /tmp/ccaL0ISQ.s:5155   .debug_str:000000000000095b .LASF143
+     /tmp/ccaL0ISQ.s:5151   .debug_str:000000000000093e .LASF144
+     /tmp/ccaL0ISQ.s:4913   .debug_str:00000000000003c7 .LASF145
+     /tmp/ccaL0ISQ.s:4801   .debug_str:00000000000000f5 .LASF146
+     /tmp/ccaL0ISQ.s:5143   .debug_str:0000000000000903 .LASF147
+     /tmp/ccaL0ISQ.s:4963   .debug_str:00000000000004e1 .LASF148
+     /tmp/ccaL0ISQ.s:4983   .debug_str:000000000000056b .LASF149
+     /tmp/ccaL0ISQ.s:5175   .debug_str:0000000000000a7b .LASF150
+     /tmp/ccaL0ISQ.s:4855   .debug_str:0000000000000238 .LASF151
+     /tmp/ccaL0ISQ.s:4795   .debug_str:00000000000000c9 .LASF152
+     /tmp/ccaL0ISQ.s:5173   .debug_str:0000000000000a6d .LASF162
+     /tmp/ccaL0ISQ.s:4861   .debug_str:000000000000025f .LASF153
+     /tmp/ccaL0ISQ.s:4863   .debug_str:000000000000026b .LASF154
+     /tmp/ccaL0ISQ.s:4865   .debug_str:0000000000000277 .LASF155
+     /tmp/ccaL0ISQ.s:5035   .debug_str:00000000000006bc .LASF156
+     /tmp/ccaL0ISQ.s:5037   .debug_str:00000000000006c8 .LASF157
+     /tmp/ccaL0ISQ.s:4871   .debug_str:00000000000002cb .LASF158
+     /tmp/ccaL0ISQ.s:4781   .debug_str:000000000000005d .LASF159
+     /tmp/ccaL0ISQ.s:4875   .debug_str:00000000000002e5 .LASF160
+     /tmp/ccaL0ISQ.s:4933   .debug_str:000000000000043d .LASF161
+     /tmp/ccaL0ISQ.s:5021   .debug_str:0000000000000662 .LASF163
+     /tmp/ccaL0ISQ.s:4909   .debug_str:00000000000003a6 .LASF164
+     /tmp/ccaL0ISQ.s:5135   .debug_str:00000000000008c6 .LASF165
+     /tmp/ccaL0ISQ.s:4929   .debug_str:0000000000000415 .LASF166
+     /tmp/ccaL0ISQ.s:4981   .debug_str:000000000000055a .LASF167
+     /tmp/ccaL0ISQ.s:4775   .debug_str:000000000000003a .LASF173
+     /tmp/ccaL0ISQ.s:5095   .debug_str:00000000000007d8 .LASF168
+     /tmp/ccaL0ISQ.s:843    .text.u32_Get_8K_Sector_Base:0000000000000000 .LFB19
+     /tmp/ccaL0ISQ.s:874    .text.u32_Get_8K_Sector_Base:000000000000003c .LFE19
+     /tmp/ccaL0ISQ.s:5045   .debug_str:00000000000006f1 .LASF170
+     /tmp/ccaL0ISQ.s:4457   .debug_loc:0000000000000000 .LLST11
+     /tmp/ccaL0ISQ.s:5063   .debug_str:000000000000073d .LASF171
+     /tmp/ccaL0ISQ.s:864    .text.u32_Get_8K_Sector_Base:0000000000000034 .LVL57
+     /tmp/ccaL0ISQ.s:5117   .debug_str:0000000000000863 .LASF169
+     /tmp/ccaL0ISQ.s:805    .text.u32_Get_32K_Sector_Base:0000000000000000 .LFB18
+     /tmp/ccaL0ISQ.s:836    .text.u32_Get_32K_Sector_Base:000000000000003c .LFE18
+     /tmp/ccaL0ISQ.s:4482   .debug_loc:000000000000003a .LLST10
+     /tmp/ccaL0ISQ.s:826    .text.u32_Get_32K_Sector_Base:0000000000000034 .LVL53
+     /tmp/ccaL0ISQ.s:4971   .debug_str:0000000000000507 .LASF172
+     /tmp/ccaL0ISQ.s:767    .text.u32_Get_64K_Block_Base:0000000000000000 .LFB17
+     /tmp/ccaL0ISQ.s:798    .text.u32_Get_64K_Block_Base:000000000000003c .LFE17
+     /tmp/ccaL0ISQ.s:4507   .debug_loc:0000000000000074 .LLST9
+     /tmp/ccaL0ISQ.s:788    .text.u32_Get_64K_Block_Base:0000000000000034 .LVL49
+     /tmp/ccaL0ISQ.s:4903   .debug_str:000000000000037d .LASF175
+     /tmp/ccaL0ISQ.s:487    .text.v_Wait_For_Not_Busy:0000000000000000 .LFB16
+     /tmp/ccaL0ISQ.s:516    .text.v_Wait_For_Not_Busy:0000000000000030 .LFE16
+     /tmp/ccaL0ISQ.s:4767   .debug_str:0000000000000012 .LASF174
+     /tmp/ccaL0ISQ.s:503    .text.v_Wait_For_Not_Busy:0000000000000018 .LVL23
+     /tmp/ccaL0ISQ.s:5001   .debug_str:00000000000005d3 .LASF176
+     /tmp/ccaL0ISQ.s:410    .text.v_Wait_For_Write_Enable:0000000000000000 .LFB15
+     /tmp/ccaL0ISQ.s:439    .text.v_Wait_For_Write_Enable:0000000000000030 .LFE15
+     /tmp/ccaL0ISQ.s:426    .text.v_Wait_For_Write_Enable:0000000000000018 .LVL19
+     /tmp/ccaL0ISQ.s:5011   .debug_str:0000000000000613 .LASF183
+     /tmp/ccaL0ISQ.s:372    .text.v_Flash_Read_Status:0000000000000000 .LFB14
+     /tmp/ccaL0ISQ.s:404    .text.v_Flash_Read_Status:000000000000003c .LFE14
+     /tmp/ccaL0ISQ.s:4799   .debug_str:00000000000000eb .LASF177
+     /tmp/ccaL0ISQ.s:4532   .debug_loc:00000000000000ae .LLST3
+     /tmp/ccaL0ISQ.s:5025   .debug_str:000000000000067c .LASF178
+     /tmp/ccaL0ISQ.s:396    .text.v_Flash_Read_Status:0000000000000030 .LVL18
+     /tmp/ccaL0ISQ.s:4819   .debug_str:0000000000000176 .LASF179
+     /tmp/ccaL0ISQ.s:647    .text.u8_Flash_Page_Program:0000000000000000 .LFB13
+     /tmp/ccaL0ISQ.s:760    .text.u8_Flash_Page_Program:00000000000000fc .LFE13
+     /tmp/ccaL0ISQ.s:5193   .debug_str:0000000000000adf .LASF180
+     /tmp/ccaL0ISQ.s:4550   .debug_loc:00000000000000da .LLST6
+     /tmp/ccaL0ISQ.s:5119   .debug_str:000000000000087b .LASF181
+     /tmp/ccaL0ISQ.s:4568   .debug_loc:0000000000000106 .LLST7
+     /tmp/ccaL0ISQ.s:4813   .debug_str:0000000000000152 .LASF182
+     /tmp/ccaL0ISQ.s:4586   .debug_loc:0000000000000132 .LLST8
+     /tmp/ccaL0ISQ.s:4829   .debug_str:00000000000001b3 .LASF199
+     /tmp/ccaL0ISQ.s:678    .text.u8_Flash_Page_Program:0000000000000038 .LVL38
+     /tmp/ccaL0ISQ.s:695    .text.u8_Flash_Page_Program:0000000000000064 .LVL39
+     /tmp/ccaL0ISQ.s:698    .text.u8_Flash_Page_Program:000000000000006c .LVL40
+     /tmp/ccaL0ISQ.s:701    .text.u8_Flash_Page_Program:0000000000000074 .LVL41
+     /tmp/ccaL0ISQ.s:728    .text.u8_Flash_Page_Program:00000000000000b0 .LVL43
+     /tmp/ccaL0ISQ.s:738    .text.u8_Flash_Page_Program:00000000000000d4 .LVL44
+     /tmp/ccaL0ISQ.s:741    .text.u8_Flash_Page_Program:00000000000000dc .LVL45
+     /tmp/ccaL0ISQ.s:5017   .debug_str:000000000000063e .LASF184
+     /tmp/ccaL0ISQ.s:585    .text.v_Flash_Block_Erase:0000000000000000 .LFB12
+     /tmp/ccaL0ISQ.s:640    .text.v_Flash_Block_Erase:0000000000000074 .LFE12
+     /tmp/ccaL0ISQ.s:4993   .debug_str:00000000000005a9 .LASF185
+     /tmp/ccaL0ISQ.s:4600   .debug_loc:0000000000000153 .LLST5
+     /tmp/ccaL0ISQ.s:621    .text.v_Flash_Block_Erase:0000000000000040 .LVL31
+     /tmp/ccaL0ISQ.s:629    .text.v_Flash_Block_Erase:0000000000000060 .LVL32
+     /tmp/ccaL0ISQ.s:632    .text.v_Flash_Block_Erase:0000000000000068 .LVL33
+     /tmp/ccaL0ISQ.s:4987   .debug_str:0000000000000584 .LASF186
+     /tmp/ccaL0ISQ.s:523    .text.v_Flash_Sector_Erase:0000000000000000 .LFB11
+     /tmp/ccaL0ISQ.s:578    .text.v_Flash_Sector_Erase:0000000000000074 .LFE11
+     /tmp/ccaL0ISQ.s:4614   .debug_loc:0000000000000174 .LLST4
+     /tmp/ccaL0ISQ.s:559    .text.v_Flash_Sector_Erase:0000000000000040 .LVL26
+     /tmp/ccaL0ISQ.s:567    .text.v_Flash_Sector_Erase:0000000000000060 .LVL27
+     /tmp/ccaL0ISQ.s:570    .text.v_Flash_Sector_Erase:0000000000000068 .LVL28
+     /tmp/ccaL0ISQ.s:5145   .debug_str:0000000000000914 .LASF187
+     /tmp/ccaL0ISQ.s:446    .text.v_Global_Flash_Unlock:0000000000000000 .LFB10
+     /tmp/ccaL0ISQ.s:481    .text.v_Global_Flash_Unlock:000000000000004c .LFE10
+     /tmp/ccaL0ISQ.s:462    .text.v_Global_Flash_Unlock:0000000000000018 .LVL20
+     /tmp/ccaL0ISQ.s:465    .text.v_Global_Flash_Unlock:0000000000000020 .LVL21
+     /tmp/ccaL0ISQ.s:473    .text.v_Global_Flash_Unlock:0000000000000040 .LVL22
+     /tmp/ccaL0ISQ.s:4975   .debug_str:0000000000000527 .LASF188
+     /tmp/ccaL0ISQ.s:332    .text.u8_Read_Block_Prot_Reg:0000000000000000 .LFB9
+     /tmp/ccaL0ISQ.s:365    .text.u8_Read_Block_Prot_Reg:0000000000000040 .LFE9
+     /tmp/ccaL0ISQ.s:5023   .debug_str:0000000000000675 .LASF189
+     /tmp/ccaL0ISQ.s:355    .text.u8_Read_Block_Prot_Reg:0000000000000030 .LVL15
+     /tmp/ccaL0ISQ.s:5105   .debug_str:000000000000080f .LASF190
+     /tmp/ccaL0ISQ.s:292    .text.u32_Read_Config_Reg:0000000000000000 .LFB8
+     /tmp/ccaL0ISQ.s:325    .text.u32_Read_Config_Reg:0000000000000040 .LFE8
+     /tmp/ccaL0ISQ.s:315    .text.u32_Read_Config_Reg:0000000000000030 .LVL14
+     /tmp/ccaL0ISQ.s:5111   .debug_str:0000000000000836 .LASF191
+     /tmp/ccaL0ISQ.s:239    .text.u32_Read_JEDEC_ID:0000000000000000 .LFB7
+     /tmp/ccaL0ISQ.s:285    .text.u32_Read_JEDEC_ID:0000000000000058 .LFE7
+     /tmp/ccaL0ISQ.s:262    .text.u32_Read_JEDEC_ID:0000000000000030 .LVL13
+     /tmp/ccaL0ISQ.s:5169   .debug_str:0000000000000a55 .LASF192
+     /tmp/ccaL0ISQ.s:175    .text.u8_Flash_Read:0000000000000000 .LFB6
+     /tmp/ccaL0ISQ.s:232    .text.u8_Flash_Read:000000000000006c .LFE6
+     /tmp/ccaL0ISQ.s:4628   .debug_loc:0000000000000195 .LLST0
+     /tmp/ccaL0ISQ.s:4969   .debug_str:00000000000004fd .LASF193
+     /tmp/ccaL0ISQ.s:4642   .debug_loc:00000000000001b6 .LLST1
+     /tmp/ccaL0ISQ.s:4656   .debug_loc:00000000000001d7 .LLST2
+     /tmp/ccaL0ISQ.s:222    .text.u8_Flash_Read:000000000000005c .LVL12
+     /tmp/ccaL0ISQ.s:4897   .debug_str:0000000000000350 .LASF194
+     /tmp/ccaL0ISQ.s:161    .text.v_Flash_Get_Discovery_Params:0000000000000000 .LFB5
+     /tmp/ccaL0ISQ.s:168    .text.v_Flash_Get_Discovery_Params:0000000000000004 .LFE5
+     /tmp/ccaL0ISQ.s:5057   .debug_str:0000000000000722 .LASF195
+     /tmp/ccaL0ISQ.s:4849   .debug_str:000000000000020e .LASF196
+     /tmp/ccaL0ISQ.s:100    .text.v_Flash_Reset:0000000000000000 .LFB4
+     /tmp/ccaL0ISQ.s:154    .text.v_Flash_Reset:000000000000006c .LFE4
+     /tmp/ccaL0ISQ.s:5115   .debug_str:0000000000000853 .LASF197
+     /tmp/ccaL0ISQ.s:5107   .debug_str:0000000000000823 .LASF198
+     /tmp/ccaL0ISQ.s:5007   .debug_str:00000000000005fd .LASF200
+     /tmp/ccaL0ISQ.s:4777   .debug_str:0000000000000044 .LASF201
+     /tmp/ccaL0ISQ.s:4977   .debug_str:000000000000053e .LASF202
+     /tmp/ccaL0ISQ.s:136    .text.v_Flash_Reset:0000000000000040 .LVL5
+     /tmp/ccaL0ISQ.s:144    .text.v_Flash_Reset:000000000000005c .LVL6
+     /tmp/ccaL0ISQ.s:4997   .debug_str:00000000000005be .LASF203
+     /tmp/ccaL0ISQ.s:52     .text.v_Init_Flash:0000000000000000 .LFB3
+     /tmp/ccaL0ISQ.s:93     .text.v_Init_Flash:0000000000000050 .LFE3
+     /tmp/ccaL0ISQ.s:72     .text.v_Init_Flash:0000000000000028 .LVL1
+     /tmp/ccaL0ISQ.s:76     .text.v_Init_Flash:0000000000000034 .LVL2
+     /tmp/ccaL0ISQ.s:91     .text.v_Init_Flash:0000000000000050 .LVL3
+     /tmp/ccaL0ISQ.s:4851   .debug_str:000000000000021c .LASF204
+     /tmp/ccaL0ISQ.s:13     .text.v_Set_Write_Enable:0000000000000000 .LFB2
+     /tmp/ccaL0ISQ.s:45     .text.v_Set_Write_Enable:000000000000003c .LFE2
+     /tmp/ccaL0ISQ.s:37     .text.v_Set_Write_Enable:0000000000000030 .LVL0
+     /tmp/ccaL0ISQ.s:5027   .debug_str:0000000000000688 .LASF205
+     /tmp/ccaL0ISQ.s:5031   .debug_str:00000000000006a4 .LASF206
+     /tmp/ccaL0ISQ.s:5147   .debug_str:000000000000092a .LASF207
+     /tmp/ccaL0ISQ.s:4789   .debug_str:0000000000000098 .LASF209
+     /tmp/ccaL0ISQ.s:4945   .debug_str:0000000000000482 .LASF208
+     /tmp/ccaL0ISQ.s:4955   .debug_str:00000000000004b3 .LASF210
+     /tmp/ccaL0ISQ.s:4985   .debug_str:000000000000057b .LASF211
+     /tmp/ccaL0ISQ.s:4803   .debug_str:000000000000010c .LASF212
+     /tmp/ccaL0ISQ.s:5123   .debug_str:0000000000000888 .LASF213
+     /tmp/ccaL0ISQ.s:846    .text.u32_Get_8K_Sector_Base:0000000000000000 .LVL55
+     /tmp/ccaL0ISQ.s:858    .text.u32_Get_8K_Sector_Base:0000000000000028 .LVL56
+     /tmp/ccaL0ISQ.s:871    .text.u32_Get_8K_Sector_Base:0000000000000038 .LVL58
+     /tmp/ccaL0ISQ.s:808    .text.u32_Get_32K_Sector_Base:0000000000000000 .LVL51
+     /tmp/ccaL0ISQ.s:820    .text.u32_Get_32K_Sector_Base:0000000000000028 .LVL52
+     /tmp/ccaL0ISQ.s:833    .text.u32_Get_32K_Sector_Base:0000000000000038 .LVL54
+     /tmp/ccaL0ISQ.s:770    .text.u32_Get_64K_Block_Base:0000000000000000 .LVL47
+     /tmp/ccaL0ISQ.s:782    .text.u32_Get_64K_Block_Base:0000000000000028 .LVL48
+     /tmp/ccaL0ISQ.s:795    .text.u32_Get_64K_Block_Base:0000000000000038 .LVL50
+     /tmp/ccaL0ISQ.s:375    .text.v_Flash_Read_Status:0000000000000000 .LVL16
+     /tmp/ccaL0ISQ.s:388    .text.v_Flash_Read_Status:0000000000000020 .LVL17
+     /tmp/ccaL0ISQ.s:650    .text.u8_Flash_Page_Program:0000000000000000 .LVL34
+     /tmp/ccaL0ISQ.s:670    .text.u8_Flash_Page_Program:0000000000000028 .LVL37
+     /tmp/ccaL0ISQ.s:716    .text.u8_Flash_Page_Program:000000000000008c .LVL42
+     /tmp/ccaL0ISQ.s:666    .text.u8_Flash_Page_Program:0000000000000020 .LVL35
+     /tmp/ccaL0ISQ.s:754    .text.u8_Flash_Page_Program:00000000000000f0 .LVL46
+     /tmp/ccaL0ISQ.s:668    .text.u8_Flash_Page_Program:0000000000000024 .LVL36
+     /tmp/ccaL0ISQ.s:588    .text.v_Flash_Block_Erase:0000000000000000 .LVL29
+     /tmp/ccaL0ISQ.s:603    .text.v_Flash_Block_Erase:000000000000001c .LVL30
+     /tmp/ccaL0ISQ.s:526    .text.v_Flash_Sector_Erase:0000000000000000 .LVL24
+     /tmp/ccaL0ISQ.s:541    .text.v_Flash_Sector_Erase:000000000000001c .LVL25
+     /tmp/ccaL0ISQ.s:178    .text.u8_Flash_Read:0000000000000000 .LVL8
+     /tmp/ccaL0ISQ.s:190    .text.u8_Flash_Read:0000000000000014 .LVL9
+     /tmp/ccaL0ISQ.s:203    .text.u8_Flash_Read:0000000000000034 .LVL10
+     /tmp/ccaL0ISQ.s:207    .text.u8_Flash_Read:0000000000000044 .LVL11
+     /tmp/ccaL0ISQ.s:932    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccpYVCur.s:12     .text.v_Set_Write_Enable:0000000000000000 v_Set_Write_Enable
+     /tmp/ccpYVCur.s:16     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:17     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:18     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:19     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:20     .text.v_Set_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:21     .text.v_Set_Write_Enable:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:23     .text.v_Set_Write_Enable:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:25     .text.v_Set_Write_Enable:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:31     .text.v_Set_Write_Enable:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:32     .text.v_Set_Write_Enable:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:34     .text.v_Set_Write_Enable:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:36     .text.v_Set_Write_Enable:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:39     .text.v_Set_Write_Enable:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:40     .text.v_Set_Write_Enable:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:42     .text.v_Set_Write_Enable:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:44     .text.v_Set_Write_Enable:000000000000003c .L0 
+     /tmp/ccpYVCur.s:51     .text.v_Init_Flash:0000000000000000 v_Init_Flash
+     /tmp/ccpYVCur.s:54     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:55     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:56     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:57     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:58     .text.v_Init_Flash:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:59     .text.v_Init_Flash:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:61     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:63     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:68     .text.v_Init_Flash:000000000000001c .L0 
+     /tmp/ccpYVCur.s:69     .text.v_Init_Flash:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:71     .text.v_Init_Flash:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:74     .text.v_Init_Flash:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:78     .text.v_Init_Flash:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:80     .text.v_Init_Flash:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:81     .text.v_Init_Flash:000000000000003c .L0 
+     /tmp/ccpYVCur.s:83     .text.v_Init_Flash:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:85     .text.v_Init_Flash:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:87     .text.v_Init_Flash:0000000000000044 .L0 
+     /tmp/ccpYVCur.s:88     .text.v_Init_Flash:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:90     .text.v_Init_Flash:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:92     .text.v_Init_Flash:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:99     .text.v_Flash_Reset:0000000000000000 v_Flash_Reset
+     /tmp/ccpYVCur.s:102    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:103    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:105    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:106    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:107    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:108    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:109    .text.v_Flash_Reset:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:110    .text.v_Flash_Reset:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:113    .text.v_Flash_Reset:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:114    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccpYVCur.s:116    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccpYVCur.s:118    .text.v_Flash_Reset:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:120    .text.v_Flash_Reset:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:121    .text.v_Flash_Reset:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:123    .text.v_Flash_Reset:000000000000001c .L0 
+     /tmp/ccpYVCur.s:125    .text.v_Flash_Reset:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:130    .text.v_Flash_Reset:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:131    .text.v_Flash_Reset:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:133    .text.v_Flash_Reset:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:135    .text.v_Flash_Reset:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:138    .text.v_Flash_Reset:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:146    .text.v_Flash_Reset:000000000000005c .L0 
+     /tmp/ccpYVCur.s:147    .text.v_Flash_Reset:0000000000000060 .L0 
+     /tmp/ccpYVCur.s:149    .text.v_Flash_Reset:0000000000000064 .L0 
+     /tmp/ccpYVCur.s:151    .text.v_Flash_Reset:0000000000000068 .L0 
+     /tmp/ccpYVCur.s:153    .text.v_Flash_Reset:000000000000006c .L0 
+     /tmp/ccpYVCur.s:160    .text.v_Flash_Get_Discovery_Params:0000000000000000 v_Flash_Get_Discovery_Params
+     /tmp/ccpYVCur.s:163    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:165    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:166    .text.v_Flash_Get_Discovery_Params:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:167    .text.v_Flash_Get_Discovery_Params:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:174    .text.u8_Flash_Read:0000000000000000 u8_Flash_Read
+     /tmp/ccpYVCur.s:177    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:179    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:180    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:181    .text.u8_Flash_Read:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:182    .text.u8_Flash_Read:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:184    .text.u8_Flash_Read:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:186    .text.u8_Flash_Read:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:188    .text.u8_Flash_Read:000000000000000c .L0 
+     /tmp/ccpYVCur.s:195    .text.u8_Flash_Read:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:197    .text.u8_Flash_Read:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:199    .text.u8_Flash_Read:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:201    .text.u8_Flash_Read:000000000000002c .L0 
+     /tmp/ccpYVCur.s:209    .text.u8_Flash_Read:0000000000000044 .L0 
+     /tmp/ccpYVCur.s:210    .text.u8_Flash_Read:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:212    .text.u8_Flash_Read:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:215    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:216    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:217    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:218    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:219    .text.u8_Flash_Read:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:221    .text.u8_Flash_Read:0000000000000054 .L0 
+     /tmp/ccpYVCur.s:224    .text.u8_Flash_Read:000000000000005c .L0 
+     /tmp/ccpYVCur.s:225    .text.u8_Flash_Read:000000000000005c .L0 
+     /tmp/ccpYVCur.s:226    .text.u8_Flash_Read:0000000000000060 .L0 
+     /tmp/ccpYVCur.s:229    .text.u8_Flash_Read:0000000000000068 .L0 
+     /tmp/ccpYVCur.s:231    .text.u8_Flash_Read:000000000000006c .L0 
+     /tmp/ccpYVCur.s:238    .text.u32_Read_JEDEC_ID:0000000000000000 u32_Read_JEDEC_ID
+     /tmp/ccpYVCur.s:241    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:242    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:243    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:244    .text.u32_Read_JEDEC_ID:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:245    .text.u32_Read_JEDEC_ID:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:247    .text.u32_Read_JEDEC_ID:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:249    .text.u32_Read_JEDEC_ID:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:255    .text.u32_Read_JEDEC_ID:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:256    .text.u32_Read_JEDEC_ID:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:258    .text.u32_Read_JEDEC_ID:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:260    .text.u32_Read_JEDEC_ID:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:261    .text.u32_Read_JEDEC_ID:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:264    .text.u32_Read_JEDEC_ID:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:265    .text.u32_Read_JEDEC_ID:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:267    .text.u32_Read_JEDEC_ID:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:269    .text.u32_Read_JEDEC_ID:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:270    .text.u32_Read_JEDEC_ID:000000000000003c .L0 
+     /tmp/ccpYVCur.s:272    .text.u32_Read_JEDEC_ID:000000000000003c .L0 
+     /tmp/ccpYVCur.s:274    .text.u32_Read_JEDEC_ID:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:276    .text.u32_Read_JEDEC_ID:0000000000000044 .L0 
+     /tmp/ccpYVCur.s:278    .text.u32_Read_JEDEC_ID:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:280    .text.u32_Read_JEDEC_ID:000000000000004c .L0 
+     /tmp/ccpYVCur.s:281    .text.u32_Read_JEDEC_ID:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:284    .text.u32_Read_JEDEC_ID:0000000000000058 .L0 
+     /tmp/ccpYVCur.s:291    .text.u32_Read_Config_Reg:0000000000000000 u32_Read_Config_Reg
+     /tmp/ccpYVCur.s:294    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:295    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:296    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:297    .text.u32_Read_Config_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:298    .text.u32_Read_Config_Reg:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:300    .text.u32_Read_Config_Reg:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:302    .text.u32_Read_Config_Reg:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:308    .text.u32_Read_Config_Reg:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:309    .text.u32_Read_Config_Reg:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:311    .text.u32_Read_Config_Reg:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:313    .text.u32_Read_Config_Reg:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:314    .text.u32_Read_Config_Reg:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:317    .text.u32_Read_Config_Reg:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:318    .text.u32_Read_Config_Reg:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:319    .text.u32_Read_Config_Reg:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:322    .text.u32_Read_Config_Reg:000000000000003c .L0 
+     /tmp/ccpYVCur.s:324    .text.u32_Read_Config_Reg:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:331    .text.u8_Read_Block_Prot_Reg:0000000000000000 u8_Read_Block_Prot_Reg
+     /tmp/ccpYVCur.s:334    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:335    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:336    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:337    .text.u8_Read_Block_Prot_Reg:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:338    .text.u8_Read_Block_Prot_Reg:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:340    .text.u8_Read_Block_Prot_Reg:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:342    .text.u8_Read_Block_Prot_Reg:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:348    .text.u8_Read_Block_Prot_Reg:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:349    .text.u8_Read_Block_Prot_Reg:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:351    .text.u8_Read_Block_Prot_Reg:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:353    .text.u8_Read_Block_Prot_Reg:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:354    .text.u8_Read_Block_Prot_Reg:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:357    .text.u8_Read_Block_Prot_Reg:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:358    .text.u8_Read_Block_Prot_Reg:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:359    .text.u8_Read_Block_Prot_Reg:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:362    .text.u8_Read_Block_Prot_Reg:000000000000003c .L0 
+     /tmp/ccpYVCur.s:364    .text.u8_Read_Block_Prot_Reg:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:371    .text.v_Flash_Read_Status:0000000000000000 v_Flash_Read_Status
+     /tmp/ccpYVCur.s:374    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:376    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:377    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:378    .text.v_Flash_Read_Status:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:379    .text.v_Flash_Read_Status:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:381    .text.v_Flash_Read_Status:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:383    .text.v_Flash_Read_Status:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:390    .text.v_Flash_Read_Status:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:391    .text.v_Flash_Read_Status:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:393    .text.v_Flash_Read_Status:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:395    .text.v_Flash_Read_Status:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:398    .text.v_Flash_Read_Status:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:399    .text.v_Flash_Read_Status:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:401    .text.v_Flash_Read_Status:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:403    .text.v_Flash_Read_Status:000000000000003c .L0 
+     /tmp/ccpYVCur.s:409    .text.v_Wait_For_Write_Enable:0000000000000000 v_Wait_For_Write_Enable
+     /tmp/ccpYVCur.s:412    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:413    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:414    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:415    .text.v_Wait_For_Write_Enable:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:416    .text.v_Wait_For_Write_Enable:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:418    .text.v_Wait_For_Write_Enable:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:420    .text.v_Wait_For_Write_Enable:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:423    .text.v_Wait_For_Write_Enable:000000000000000c .L0 
+     /tmp/ccpYVCur.s:424    .text.v_Wait_For_Write_Enable:000000000000000c .L0 
+     /tmp/ccpYVCur.s:428    .text.v_Wait_For_Write_Enable:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:430    .text.v_Wait_For_Write_Enable:000000000000001c .L0 
+     /tmp/ccpYVCur.s:433    .text.v_Wait_For_Write_Enable:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:434    .text.v_Wait_For_Write_Enable:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:436    .text.v_Wait_For_Write_Enable:000000000000002c .L0 
+     /tmp/ccpYVCur.s:438    .text.v_Wait_For_Write_Enable:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:445    .text.v_Global_Flash_Unlock:0000000000000000 v_Global_Flash_Unlock
+     /tmp/ccpYVCur.s:448    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:449    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:450    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:451    .text.v_Global_Flash_Unlock:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:452    .text.v_Global_Flash_Unlock:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:454    .text.v_Global_Flash_Unlock:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:456    .text.v_Global_Flash_Unlock:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:457    .text.v_Global_Flash_Unlock:000000000000000c .L0 
+     /tmp/ccpYVCur.s:459    .text.v_Global_Flash_Unlock:000000000000000c .L0 
+     /tmp/ccpYVCur.s:461    .text.v_Global_Flash_Unlock:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:464    .text.v_Global_Flash_Unlock:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:467    .text.v_Global_Flash_Unlock:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:475    .text.v_Global_Flash_Unlock:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:476    .text.v_Global_Flash_Unlock:0000000000000044 .L0 
+     /tmp/ccpYVCur.s:478    .text.v_Global_Flash_Unlock:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:480    .text.v_Global_Flash_Unlock:000000000000004c .L0 
+     /tmp/ccpYVCur.s:486    .text.v_Wait_For_Not_Busy:0000000000000000 v_Wait_For_Not_Busy
+     /tmp/ccpYVCur.s:489    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:490    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:491    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:492    .text.v_Wait_For_Not_Busy:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:493    .text.v_Wait_For_Not_Busy:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:495    .text.v_Wait_For_Not_Busy:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:497    .text.v_Wait_For_Not_Busy:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:500    .text.v_Wait_For_Not_Busy:000000000000000c .L0 
+     /tmp/ccpYVCur.s:501    .text.v_Wait_For_Not_Busy:000000000000000c .L0 
+     /tmp/ccpYVCur.s:505    .text.v_Wait_For_Not_Busy:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:507    .text.v_Wait_For_Not_Busy:000000000000001c .L0 
+     /tmp/ccpYVCur.s:510    .text.v_Wait_For_Not_Busy:0000000000000024 .L0 
+     /tmp/ccpYVCur.s:511    .text.v_Wait_For_Not_Busy:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:513    .text.v_Wait_For_Not_Busy:000000000000002c .L0 
+     /tmp/ccpYVCur.s:515    .text.v_Wait_For_Not_Busy:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:522    .text.v_Flash_Sector_Erase:0000000000000000 v_Flash_Sector_Erase
+     /tmp/ccpYVCur.s:525    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:527    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:528    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:529    .text.v_Flash_Sector_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:530    .text.v_Flash_Sector_Erase:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:532    .text.v_Flash_Sector_Erase:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:535    .text.v_Flash_Sector_Erase:000000000000000c .L0 
+     /tmp/ccpYVCur.s:537    .text.v_Flash_Sector_Erase:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:539    .text.v_Flash_Sector_Erase:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:546    .text.v_Flash_Sector_Erase:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:547    .text.v_Flash_Sector_Erase:000000000000002c .L0 
+     /tmp/ccpYVCur.s:549    .text.v_Flash_Sector_Erase:000000000000002c .L0 
+     /tmp/ccpYVCur.s:551    .text.v_Flash_Sector_Erase:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:554    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:555    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:556    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:557    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:558    .text.v_Flash_Sector_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:561    .text.v_Flash_Sector_Erase:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:569    .text.v_Flash_Sector_Erase:0000000000000060 .L0 
+     /tmp/ccpYVCur.s:572    .text.v_Flash_Sector_Erase:0000000000000068 .L0 
+     /tmp/ccpYVCur.s:573    .text.v_Flash_Sector_Erase:000000000000006c .L0 
+     /tmp/ccpYVCur.s:575    .text.v_Flash_Sector_Erase:0000000000000070 .L0 
+     /tmp/ccpYVCur.s:577    .text.v_Flash_Sector_Erase:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:584    .text.v_Flash_Block_Erase:0000000000000000 v_Flash_Block_Erase
+     /tmp/ccpYVCur.s:587    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:589    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:590    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:591    .text.v_Flash_Block_Erase:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:592    .text.v_Flash_Block_Erase:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:594    .text.v_Flash_Block_Erase:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:597    .text.v_Flash_Block_Erase:000000000000000c .L0 
+     /tmp/ccpYVCur.s:599    .text.v_Flash_Block_Erase:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:601    .text.v_Flash_Block_Erase:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:608    .text.v_Flash_Block_Erase:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:609    .text.v_Flash_Block_Erase:000000000000002c .L0 
+     /tmp/ccpYVCur.s:611    .text.v_Flash_Block_Erase:000000000000002c .L0 
+     /tmp/ccpYVCur.s:613    .text.v_Flash_Block_Erase:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:616    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:617    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:618    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:619    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:620    .text.v_Flash_Block_Erase:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:623    .text.v_Flash_Block_Erase:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:631    .text.v_Flash_Block_Erase:0000000000000060 .L0 
+     /tmp/ccpYVCur.s:634    .text.v_Flash_Block_Erase:0000000000000068 .L0 
+     /tmp/ccpYVCur.s:635    .text.v_Flash_Block_Erase:000000000000006c .L0 
+     /tmp/ccpYVCur.s:637    .text.v_Flash_Block_Erase:0000000000000070 .L0 
+     /tmp/ccpYVCur.s:639    .text.v_Flash_Block_Erase:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:646    .text.u8_Flash_Page_Program:0000000000000000 u8_Flash_Page_Program
+     /tmp/ccpYVCur.s:649    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:651    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:652    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:653    .text.u8_Flash_Page_Program:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:654    .text.u8_Flash_Page_Program:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:658    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:659    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:660    .text.u8_Flash_Page_Program:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:665    .text.u8_Flash_Page_Program:000000000000001c .L0 
+     /tmp/ccpYVCur.s:672    .text.u8_Flash_Page_Program:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:674    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:675    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:677    .text.u8_Flash_Page_Program:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:680    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:681    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:682    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:685    .text.u8_Flash_Page_Program:0000000000000044 .L0 
+     /tmp/ccpYVCur.s:687    .text.u8_Flash_Page_Program:0000000000000048 .L0 
+     /tmp/ccpYVCur.s:692    .text.u8_Flash_Page_Program:0000000000000058 .L0 
+     /tmp/ccpYVCur.s:694    .text.u8_Flash_Page_Program:000000000000005c .L0 
+     /tmp/ccpYVCur.s:697    .text.u8_Flash_Page_Program:0000000000000064 .L0 
+     /tmp/ccpYVCur.s:700    .text.u8_Flash_Page_Program:000000000000006c .L0 
+     /tmp/ccpYVCur.s:703    .text.u8_Flash_Page_Program:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:704    .text.u8_Flash_Page_Program:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:707    .text.u8_Flash_Page_Program:000000000000007c .L0 
+     /tmp/ccpYVCur.s:708    .text.u8_Flash_Page_Program:000000000000007c .L0 
+     /tmp/ccpYVCur.s:710    .text.u8_Flash_Page_Program:0000000000000080 .L0 
+     /tmp/ccpYVCur.s:712    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccpYVCur.s:713    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccpYVCur.s:714    .text.u8_Flash_Page_Program:0000000000000084 .L0 
+     /tmp/ccpYVCur.s:721    .text.u8_Flash_Page_Program:0000000000000098 .L0 
+     /tmp/ccpYVCur.s:725    .text.u8_Flash_Page_Program:00000000000000a4 .L0 
+     /tmp/ccpYVCur.s:727    .text.u8_Flash_Page_Program:00000000000000a8 .L0 
+     /tmp/ccpYVCur.s:730    .text.u8_Flash_Page_Program:00000000000000b0 .L0 
+     /tmp/ccpYVCur.s:740    .text.u8_Flash_Page_Program:00000000000000d4 .L0 
+     /tmp/ccpYVCur.s:743    .text.u8_Flash_Page_Program:00000000000000dc .L0 
+     /tmp/ccpYVCur.s:744    .text.u8_Flash_Page_Program:00000000000000dc .L0 
+     /tmp/ccpYVCur.s:745    .text.u8_Flash_Page_Program:00000000000000e0 .L0 
+     /tmp/ccpYVCur.s:747    .text.u8_Flash_Page_Program:00000000000000e4 .L0 
+     /tmp/ccpYVCur.s:749    .text.u8_Flash_Page_Program:00000000000000e8 .L0 
+     /tmp/ccpYVCur.s:751    .text.u8_Flash_Page_Program:00000000000000ec .L0 
+     /tmp/ccpYVCur.s:753    .text.u8_Flash_Page_Program:00000000000000f0 .L0 
+     /tmp/ccpYVCur.s:757    .text.u8_Flash_Page_Program:00000000000000f8 .L0 
+     /tmp/ccpYVCur.s:759    .text.u8_Flash_Page_Program:00000000000000fc .L0 
+     /tmp/ccpYVCur.s:766    .text.u32_Get_64K_Block_Base:0000000000000000 u32_Get_64K_Block_Base
+     /tmp/ccpYVCur.s:769    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:771    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:772    .text.u32_Get_64K_Block_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:775    .text.u32_Get_64K_Block_Base:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:776    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:778    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:784    .text.u32_Get_64K_Block_Base:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:785    .text.u32_Get_64K_Block_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:787    .text.u32_Get_64K_Block_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:790    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:791    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:793    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:794    .text.u32_Get_64K_Block_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:797    .text.u32_Get_64K_Block_Base:000000000000003c .L0 
+     /tmp/ccpYVCur.s:804    .text.u32_Get_32K_Sector_Base:0000000000000000 u32_Get_32K_Sector_Base
+     /tmp/ccpYVCur.s:807    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:809    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:810    .text.u32_Get_32K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:813    .text.u32_Get_32K_Sector_Base:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:814    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:816    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:822    .text.u32_Get_32K_Sector_Base:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:823    .text.u32_Get_32K_Sector_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:825    .text.u32_Get_32K_Sector_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:828    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:829    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:831    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:832    .text.u32_Get_32K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:835    .text.u32_Get_32K_Sector_Base:000000000000003c .L0 
+     /tmp/ccpYVCur.s:842    .text.u32_Get_8K_Sector_Base:0000000000000000 u32_Get_8K_Sector_Base
+     /tmp/ccpYVCur.s:845    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:847    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:848    .text.u32_Get_8K_Sector_Base:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:851    .text.u32_Get_8K_Sector_Base:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:852    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:854    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:860    .text.u32_Get_8K_Sector_Base:0000000000000028 .L0 
+     /tmp/ccpYVCur.s:861    .text.u32_Get_8K_Sector_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:863    .text.u32_Get_8K_Sector_Base:000000000000002c .L0 
+     /tmp/ccpYVCur.s:866    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:867    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:869    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:870    .text.u32_Get_8K_Sector_Base:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:873    .text.u32_Get_8K_Sector_Base:000000000000003c .L0 
+     /tmp/ccpYVCur.s:878    .bss.flash_spi:0000000000000000 .LANCHOR0
+     /tmp/ccpYVCur.s:881    .bss.flash_spi:0000000000000000 flash_spi
+     /tmp/ccpYVCur.s:885    .rodata.__func__.2270:0000000000000000 .LANCHOR1
+     /tmp/ccpYVCur.s:888    .rodata.__func__.2270:0000000000000000 __func__.2270
+     /tmp/ccpYVCur.s:892    .rodata.__func__.2274:0000000000000000 .LANCHOR2
+     /tmp/ccpYVCur.s:895    .rodata.__func__.2274:0000000000000000 __func__.2274
+     /tmp/ccpYVCur.s:899    .rodata.__func__.2278:0000000000000000 .LANCHOR3
+     /tmp/ccpYVCur.s:902    .rodata.__func__.2278:0000000000000000 __func__.2278
+     /tmp/ccpYVCur.s:47     .text.v_Set_Write_Enable:000000000000003c .L0 
+     /tmp/ccpYVCur.s:95     .text.v_Init_Flash:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:156    .text.v_Flash_Reset:000000000000006c .L0 
+     /tmp/ccpYVCur.s:170    .text.v_Flash_Get_Discovery_Params:0000000000000004 .L0 
+     /tmp/ccpYVCur.s:234    .text.u8_Flash_Read:000000000000006c .L0 
+     /tmp/ccpYVCur.s:287    .text.u32_Read_JEDEC_ID:0000000000000058 .L0 
+     /tmp/ccpYVCur.s:327    .text.u32_Read_Config_Reg:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:367    .text.u8_Read_Block_Prot_Reg:0000000000000040 .L0 
+     /tmp/ccpYVCur.s:406    .text.v_Flash_Read_Status:000000000000003c .L0 
+     /tmp/ccpYVCur.s:441    .text.v_Wait_For_Write_Enable:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:483    .text.v_Global_Flash_Unlock:000000000000004c .L0 
+     /tmp/ccpYVCur.s:518    .text.v_Wait_For_Not_Busy:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:580    .text.v_Flash_Sector_Erase:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:642    .text.v_Flash_Block_Erase:0000000000000074 .L0 
+     /tmp/ccpYVCur.s:762    .text.u8_Flash_Page_Program:00000000000000fc .L0 
+     /tmp/ccpYVCur.s:800    .text.u32_Get_64K_Block_Base:000000000000003c .L0 
+     /tmp/ccpYVCur.s:838    .text.u32_Get_32K_Sector_Base:000000000000003c .L0 
+     /tmp/ccpYVCur.s:876    .text.u32_Get_8K_Sector_Base:000000000000003c .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccpYVCur.s:29     .text.v_Set_Write_Enable:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:63     .text.v_Init_Flash:0000000000000008 .L0 
+     /tmp/ccpYVCur.s:116    .text.v_Flash_Reset:000000000000000c .L0 
+     /tmp/ccpYVCur.s:204    .text.u8_Flash_Read:0000000000000034 .L0 
+     /tmp/ccpYVCur.s:251    .text.u32_Read_JEDEC_ID:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:304    .text.u32_Read_Config_Reg:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:344    .text.u8_Read_Block_Prot_Reg:0000000000000010 .L0 
+     /tmp/ccpYVCur.s:387    .text.v_Flash_Read_Status:0000000000000018 .L0 
+     /tmp/ccpYVCur.s:421    .text.v_Wait_For_Write_Enable:000000000000000c .L19
+     /tmp/ccpYVCur.s:471    .text.v_Global_Flash_Unlock:0000000000000030 .L0 
+     /tmp/ccpYVCur.s:498    .text.v_Wait_For_Not_Busy:000000000000000c .L26
+     /tmp/ccpYVCur.s:565    .text.v_Flash_Sector_Erase:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:627    .text.v_Flash_Block_Erase:0000000000000050 .L0 
+     /tmp/ccpYVCur.s:682    .text.u8_Flash_Page_Program:0000000000000038 .L0 
+     /tmp/ccpYVCur.s:910    .rodata.u32_Get_64K_Block_Base.str1.4:0000000000000000 .LC0
+     /tmp/ccpYVCur.s:778    .text.u32_Get_64K_Block_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:779    .text.u32_Get_64K_Block_Base:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:913    .rodata.u32_Get_64K_Block_Base.str1.4:000000000000001c .LC1
+     /tmp/ccpYVCur.s:781    .text.u32_Get_64K_Block_Base:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:789    .text.u32_Get_64K_Block_Base:0000000000000034 .L36
+     /tmp/ccpYVCur.s:906    .rodata.u32_Get_32K_Sector_Base.str1.4:0000000000000000 .LC2
+     /tmp/ccpYVCur.s:816    .text.u32_Get_32K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:817    .text.u32_Get_32K_Sector_Base:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:819    .text.u32_Get_32K_Sector_Base:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:827    .text.u32_Get_32K_Sector_Base:0000000000000034 .L41
+     /tmp/ccpYVCur.s:917    .rodata.u32_Get_8K_Sector_Base.str1.4:0000000000000000 .LC3
+     /tmp/ccpYVCur.s:854    .text.u32_Get_8K_Sector_Base:000000000000000c .L0 
+     /tmp/ccpYVCur.s:855    .text.u32_Get_8K_Sector_Base:0000000000000014 .L0 
+     /tmp/ccpYVCur.s:857    .text.u32_Get_8K_Sector_Base:0000000000000020 .L0 
+     /tmp/ccpYVCur.s:865    .text.u32_Get_8K_Sector_Base:0000000000000034 .L46
+     /tmp/ccpYVCur.s:3691   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccpYVCur.s:5163   .debug_str:000000000000097d .LASF214
+     /tmp/ccpYVCur.s:4961   .debug_str:00000000000004d2 .LASF215
+     /tmp/ccpYVCur.s:4867   .debug_str:0000000000000283 .LASF216
+     /tmp/ccpYVCur.s:4721   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccpYVCur.s:4761   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccpYVCur.s:4817   .debug_str:000000000000016a .LASF0
+     /tmp/ccpYVCur.s:4773   .debug_str:0000000000000030 .LASF3
+     /tmp/ccpYVCur.s:5029   .debug_str:0000000000000696 .LASF1
+     /tmp/ccpYVCur.s:5041   .debug_str:00000000000006dd .LASF2
+     /tmp/ccpYVCur.s:5113   .debug_str:0000000000000848 .LASF4
+     /tmp/ccpYVCur.s:4931   .debug_str:000000000000042a .LASF5
+     /tmp/ccpYVCur.s:4839   .debug_str:00000000000001e6 .LASF6
+     /tmp/ccpYVCur.s:4883   .debug_str:0000000000000308 .LASF7
+     /tmp/ccpYVCur.s:4921   .debug_str:00000000000003ed .LASF8
+     /tmp/ccpYVCur.s:4815   .debug_str:000000000000015c .LASF9
+     /tmp/ccpYVCur.s:4791   .debug_str:00000000000000a9 .LASF10
+     /tmp/ccpYVCur.s:4911   .debug_str:00000000000003ba .LASF11
+     /tmp/ccpYVCur.s:5165   .debug_str:0000000000000a43 .LASF12
+     /tmp/ccpYVCur.s:4853   .debug_str:000000000000022f .LASF13
+     /tmp/ccpYVCur.s:5091   .debug_str:00000000000007c9 .LASF14
+     /tmp/ccpYVCur.s:4979   .debug_str:000000000000054e .LASF15
+     /tmp/ccpYVCur.s:4949   .debug_str:0000000000000491 .LASF16
+     /tmp/ccpYVCur.s:5005   .debug_str:00000000000005f6 .LASF17
+     /tmp/ccpYVCur.s:5099   .debug_str:00000000000007fb .LASF18
+     /tmp/ccpYVCur.s:4925   .debug_str:0000000000000405 .LASF19
+     /tmp/ccpYVCur.s:4943   .debug_str:000000000000047c .LASF20
+     /tmp/ccpYVCur.s:4915   .debug_str:00000000000003d6 .LASF21
+     /tmp/ccpYVCur.s:5087   .debug_str:00000000000007ba .LASF22
+     /tmp/ccpYVCur.s:5129   .debug_str:00000000000008b0 .LASF23
+     /tmp/ccpYVCur.s:5053   .debug_str:000000000000070f .LASF24
+     /tmp/ccpYVCur.s:5137   .debug_str:00000000000008db .LASF25
+     /tmp/ccpYVCur.s:4947   .debug_str:0000000000000489 .LASF26
+     /tmp/ccpYVCur.s:5089   .debug_str:00000000000007c2 .LASF124
+     /tmp/ccpYVCur.s:4889   .debug_str:0000000000000328 .LASF27
+     /tmp/ccpYVCur.s:4893   .debug_str:0000000000000339 .LASF32
+     /tmp/ccpYVCur.s:5125   .debug_str:000000000000089d .LASF28
+     /tmp/ccpYVCur.s:5081   .debug_str:00000000000007a5 .LASF29
+     /tmp/ccpYVCur.s:4885   .debug_str:0000000000000313 .LASF30
+     /tmp/ccpYVCur.s:5157   .debug_str:0000000000000968 .LASF31
+     /tmp/ccpYVCur.s:4905   .debug_str:0000000000000391 .LASF33
+     /tmp/ccpYVCur.s:4811   .debug_str:0000000000000149 .LASF34
+     /tmp/ccpYVCur.s:5109   .debug_str:000000000000082d .LASF35
+     /tmp/ccpYVCur.s:4827   .debug_str:00000000000001a9 .LASF36
+     /tmp/ccpYVCur.s:5195   .debug_str:0000000000000af0 .LASF37
+     /tmp/ccpYVCur.s:4995   .debug_str:00000000000005b5 .LASF38
+     /tmp/ccpYVCur.s:4967   .debug_str:00000000000004f3 .LASF39
+     /tmp/ccpYVCur.s:5159   .debug_str:000000000000096d .LASF40
+     /tmp/ccpYVCur.s:5043   .debug_str:00000000000006e7 .LASF41
+     /tmp/ccpYVCur.s:5181   .debug_str:0000000000000aa6 .LASF42
+     /tmp/ccpYVCur.s:4833   .debug_str:00000000000001c8 .LASF43
+     /tmp/ccpYVCur.s:4877   .debug_str:00000000000002f1 .LASF44
+     /tmp/ccpYVCur.s:4763   .debug_str:0000000000000000 .LASF45
+     /tmp/ccpYVCur.s:5131   .debug_str:00000000000008b8 .LASF46
+     /tmp/ccpYVCur.s:4843   .debug_str:00000000000001f6 .LASF47
+     /tmp/ccpYVCur.s:4999   .debug_str:00000000000005cb .LASF48
+     /tmp/ccpYVCur.s:5071   .debug_str:0000000000000766 .LASF49
+     /tmp/ccpYVCur.s:4881   .debug_str:0000000000000303 .LASF50
+     /tmp/ccpYVCur.s:5047   .debug_str:00000000000006fb .LASF51
+     /tmp/ccpYVCur.s:4823   .debug_str:0000000000000192 .LASF52
+     /tmp/ccpYVCur.s:4765   .debug_str:000000000000000c .LASF53
+     /tmp/ccpYVCur.s:5055   .debug_str:000000000000071a .LASF54
+     /tmp/ccpYVCur.s:4841   .debug_str:00000000000001ef .LASF55
+     /tmp/ccpYVCur.s:4923   .debug_str:00000000000003ff .LASF56
+     /tmp/ccpYVCur.s:4793   .debug_str:00000000000000c0 .LASF57
+     /tmp/ccpYVCur.s:4835   .debug_str:00000000000001d6 .LASF58
+     /tmp/ccpYVCur.s:4899   .debug_str:000000000000036d .LASF59
+     /tmp/ccpYVCur.s:4965   .debug_str:00000000000004ec .LASF60
+     /tmp/ccpYVCur.s:5093   .debug_str:00000000000007d2 .LASF61
+     /tmp/ccpYVCur.s:5185   .debug_str:0000000000000ac0 .LASF62
+     /tmp/ccpYVCur.s:4821   .debug_str:000000000000018c .LASF63
+     /tmp/ccpYVCur.s:5177   .debug_str:0000000000000a98 .LASF64
+     /tmp/ccpYVCur.s:4847   .debug_str:0000000000000205 .LASF65
+     /tmp/ccpYVCur.s:4859   .debug_str:0000000000000257 .LASF66
+     /tmp/ccpYVCur.s:4779   .debug_str:0000000000000057 .LASF67
+     /tmp/ccpYVCur.s:4957   .debug_str:00000000000004c4 .LASF68
+     /tmp/ccpYVCur.s:5059   .debug_str:0000000000000729 .LASF69
+     /tmp/ccpYVCur.s:4959   .debug_str:00000000000004ca .LASF70
+     /tmp/ccpYVCur.s:5083   .debug_str:00000000000007ad .LASF71
+     /tmp/ccpYVCur.s:5101   .debug_str:0000000000000803 .LASF72
+     /tmp/ccpYVCur.s:4845   .debug_str:00000000000001fe .LASF73
+     /tmp/ccpYVCur.s:4917   .debug_str:00000000000003dd .LASF74
+     /tmp/ccpYVCur.s:4891   .debug_str:0000000000000331 .LASF75
+     /tmp/ccpYVCur.s:5069   .debug_str:0000000000000761 .LASF76
+     /tmp/ccpYVCur.s:4771   .debug_str:0000000000000025 .LASF77
+     /tmp/ccpYVCur.s:5079   .debug_str:000000000000078c .LASF78
+     /tmp/ccpYVCur.s:5075   .debug_str:000000000000077a .LASF79
+     /tmp/ccpYVCur.s:5003   .debug_str:00000000000005eb .LASF80
+     /tmp/ccpYVCur.s:5077   .debug_str:0000000000000782 .LASF81
+     /tmp/ccpYVCur.s:4941   .debug_str:0000000000000474 .LASF82
+     /tmp/ccpYVCur.s:4901   .debug_str:0000000000000373 .LASF83
+     /tmp/ccpYVCur.s:5191   .debug_str:0000000000000ada .LASF84
+     /tmp/ccpYVCur.s:5009   .debug_str:0000000000000609 .LASF85
+     /tmp/ccpYVCur.s:4919   .debug_str:00000000000003e5 .LASF86
+     /tmp/ccpYVCur.s:4857   .debug_str:000000000000024f .LASF87
+     /tmp/ccpYVCur.s:5033   .debug_str:00000000000006b7 .LASF88
+     /tmp/ccpYVCur.s:4935   .debug_str:0000000000000452 .LASF89
+     /tmp/ccpYVCur.s:5171   .debug_str:0000000000000a63 .LASF90
+     /tmp/ccpYVCur.s:4837   .debug_str:00000000000001de .LASF91
+     /tmp/ccpYVCur.s:4831   .debug_str:00000000000001c3 .LASF92
+     /tmp/ccpYVCur.s:5103   .debug_str:000000000000080a .LASF93
+     /tmp/ccpYVCur.s:5051   .debug_str:0000000000000708 .LASF94
+     /tmp/ccpYVCur.s:5161   .debug_str:0000000000000977 .LASF95
+     /tmp/ccpYVCur.s:4927   .debug_str:000000000000040e .LASF96
+     /tmp/ccpYVCur.s:5049   .debug_str:0000000000000702 .LASF97
+     /tmp/ccpYVCur.s:4769   .debug_str:000000000000001d .LASF98
+     /tmp/ccpYVCur.s:5085   .debug_str:00000000000007b4 .LASF99
+     /tmp/ccpYVCur.s:5121   .debug_str:0000000000000882 .LASF100
+     /tmp/ccpYVCur.s:5133   .debug_str:00000000000008c1 .LASF101
+     /tmp/ccpYVCur.s:5149   .debug_str:0000000000000931 .LASF102
+     /tmp/ccpYVCur.s:5127   .debug_str:00000000000008a3 .LASF103
+     /tmp/ccpYVCur.s:4939   .debug_str:0000000000000467 .LASF104
+     /tmp/ccpYVCur.s:5183   .debug_str:0000000000000ab1 .LASF105
+     /tmp/ccpYVCur.s:4895   .debug_str:0000000000000341 .LASF106
+     /tmp/ccpYVCur.s:5061   .debug_str:0000000000000732 .LASF107
+     /tmp/ccpYVCur.s:5187   .debug_str:0000000000000ac7 .LASF108
+     /tmp/ccpYVCur.s:5067   .debug_str:0000000000000754 .LASF109
+     /tmp/ccpYVCur.s:5189   .debug_str:0000000000000acc .LASF110
+     /tmp/ccpYVCur.s:5015   .debug_str:0000000000000630 .LASF111
+     /tmp/ccpYVCur.s:5167   .debug_str:0000000000000a4b .LASF112
+     /tmp/ccpYVCur.s:4937   .debug_str:000000000000045b .LASF113
+     /tmp/ccpYVCur.s:5139   .debug_str:00000000000008e3 .LASF114
+     /tmp/ccpYVCur.s:4873   .debug_str:00000000000002d7 .LASF115
+     /tmp/ccpYVCur.s:4805   .debug_str:0000000000000126 .LASF116
+     /tmp/ccpYVCur.s:4869   .debug_str:00000000000002ba .LASF117
+     /tmp/ccpYVCur.s:4783   .debug_str:0000000000000069 .LASF118
+     /tmp/ccpYVCur.s:4787   .debug_str:0000000000000087 .LASF119
+     /tmp/ccpYVCur.s:5039   .debug_str:00000000000006d4 .LASF120
+     /tmp/ccpYVCur.s:4991   .debug_str:00000000000005a2 .LASF121
+     /tmp/ccpYVCur.s:4973   .debug_str:000000000000051e .LASF122
+     /tmp/ccpYVCur.s:5179   .debug_str:0000000000000a9e .LASF123
+     /tmp/ccpYVCur.s:4797   .debug_str:00000000000000e0 .LASF125
+     /tmp/ccpYVCur.s:5097   .debug_str:00000000000007ef .LASF126
+     /tmp/ccpYVCur.s:5141   .debug_str:00000000000008f0 .LASF127
+     /tmp/ccpYVCur.s:4809   .debug_str:0000000000000142 .LASF128
+     /tmp/ccpYVCur.s:5073   .debug_str:000000000000076b .LASF129
+     /tmp/ccpYVCur.s:4953   .debug_str:00000000000004a6 .LASF130
+     /tmp/ccpYVCur.s:4879   .debug_str:00000000000002f9 .LASF131
+     /tmp/ccpYVCur.s:5013   .debug_str:0000000000000627 .LASF132
+     /tmp/ccpYVCur.s:5019   .debug_str:0000000000000652 .LASF133
+     /tmp/ccpYVCur.s:4951   .debug_str:0000000000000498 .LASF134
+     /tmp/ccpYVCur.s:4807   .debug_str:0000000000000135 .LASF135
+     /tmp/ccpYVCur.s:4785   .debug_str:0000000000000078 .LASF136
+     /tmp/ccpYVCur.s:4887   .debug_str:0000000000000319 .LASF137
+     /tmp/ccpYVCur.s:4825   .debug_str:0000000000000198 .LASF138
+     /tmp/ccpYVCur.s:5153   .debug_str:000000000000094f .LASF139
+     /tmp/ccpYVCur.s:4989   .debug_str:0000000000000599 .LASF140
+     /tmp/ccpYVCur.s:4907   .debug_str:0000000000000396 .LASF141
+     /tmp/ccpYVCur.s:5065   .debug_str:0000000000000746 .LASF142
+     /tmp/ccpYVCur.s:5155   .debug_str:000000000000095b .LASF143
+     /tmp/ccpYVCur.s:5151   .debug_str:000000000000093e .LASF144
+     /tmp/ccpYVCur.s:4913   .debug_str:00000000000003c7 .LASF145
+     /tmp/ccpYVCur.s:4801   .debug_str:00000000000000f5 .LASF146
+     /tmp/ccpYVCur.s:5143   .debug_str:0000000000000903 .LASF147
+     /tmp/ccpYVCur.s:4963   .debug_str:00000000000004e1 .LASF148
+     /tmp/ccpYVCur.s:4983   .debug_str:000000000000056b .LASF149
+     /tmp/ccpYVCur.s:5175   .debug_str:0000000000000a7b .LASF150
+     /tmp/ccpYVCur.s:4855   .debug_str:0000000000000238 .LASF151
+     /tmp/ccpYVCur.s:4795   .debug_str:00000000000000c9 .LASF152
+     /tmp/ccpYVCur.s:5173   .debug_str:0000000000000a6d .LASF162
+     /tmp/ccpYVCur.s:4861   .debug_str:000000000000025f .LASF153
+     /tmp/ccpYVCur.s:4863   .debug_str:000000000000026b .LASF154
+     /tmp/ccpYVCur.s:4865   .debug_str:0000000000000277 .LASF155
+     /tmp/ccpYVCur.s:5035   .debug_str:00000000000006bc .LASF156
+     /tmp/ccpYVCur.s:5037   .debug_str:00000000000006c8 .LASF157
+     /tmp/ccpYVCur.s:4871   .debug_str:00000000000002cb .LASF158
+     /tmp/ccpYVCur.s:4781   .debug_str:000000000000005d .LASF159
+     /tmp/ccpYVCur.s:4875   .debug_str:00000000000002e5 .LASF160
+     /tmp/ccpYVCur.s:4933   .debug_str:000000000000043d .LASF161
+     /tmp/ccpYVCur.s:5021   .debug_str:0000000000000662 .LASF163
+     /tmp/ccpYVCur.s:4909   .debug_str:00000000000003a6 .LASF164
+     /tmp/ccpYVCur.s:5135   .debug_str:00000000000008c6 .LASF165
+     /tmp/ccpYVCur.s:4929   .debug_str:0000000000000415 .LASF166
+     /tmp/ccpYVCur.s:4981   .debug_str:000000000000055a .LASF167
+     /tmp/ccpYVCur.s:4775   .debug_str:000000000000003a .LASF173
+     /tmp/ccpYVCur.s:5095   .debug_str:00000000000007d8 .LASF168
+     /tmp/ccpYVCur.s:843    .text.u32_Get_8K_Sector_Base:0000000000000000 .LFB19
+     /tmp/ccpYVCur.s:874    .text.u32_Get_8K_Sector_Base:000000000000003c .LFE19
+     /tmp/ccpYVCur.s:5045   .debug_str:00000000000006f1 .LASF170
+     /tmp/ccpYVCur.s:4457   .debug_loc:0000000000000000 .LLST11
+     /tmp/ccpYVCur.s:5063   .debug_str:000000000000073d .LASF171
+     /tmp/ccpYVCur.s:864    .text.u32_Get_8K_Sector_Base:0000000000000034 .LVL57
+     /tmp/ccpYVCur.s:5117   .debug_str:0000000000000863 .LASF169
+     /tmp/ccpYVCur.s:805    .text.u32_Get_32K_Sector_Base:0000000000000000 .LFB18
+     /tmp/ccpYVCur.s:836    .text.u32_Get_32K_Sector_Base:000000000000003c .LFE18
+     /tmp/ccpYVCur.s:4482   .debug_loc:000000000000003a .LLST10
+     /tmp/ccpYVCur.s:826    .text.u32_Get_32K_Sector_Base:0000000000000034 .LVL53
+     /tmp/ccpYVCur.s:4971   .debug_str:0000000000000507 .LASF172
+     /tmp/ccpYVCur.s:767    .text.u32_Get_64K_Block_Base:0000000000000000 .LFB17
+     /tmp/ccpYVCur.s:798    .text.u32_Get_64K_Block_Base:000000000000003c .LFE17
+     /tmp/ccpYVCur.s:4507   .debug_loc:0000000000000074 .LLST9
+     /tmp/ccpYVCur.s:788    .text.u32_Get_64K_Block_Base:0000000000000034 .LVL49
+     /tmp/ccpYVCur.s:4903   .debug_str:000000000000037d .LASF175
+     /tmp/ccpYVCur.s:487    .text.v_Wait_For_Not_Busy:0000000000000000 .LFB16
+     /tmp/ccpYVCur.s:516    .text.v_Wait_For_Not_Busy:0000000000000030 .LFE16
+     /tmp/ccpYVCur.s:4767   .debug_str:0000000000000012 .LASF174
+     /tmp/ccpYVCur.s:503    .text.v_Wait_For_Not_Busy:0000000000000018 .LVL23
+     /tmp/ccpYVCur.s:5001   .debug_str:00000000000005d3 .LASF176
+     /tmp/ccpYVCur.s:410    .text.v_Wait_For_Write_Enable:0000000000000000 .LFB15
+     /tmp/ccpYVCur.s:439    .text.v_Wait_For_Write_Enable:0000000000000030 .LFE15
+     /tmp/ccpYVCur.s:426    .text.v_Wait_For_Write_Enable:0000000000000018 .LVL19
+     /tmp/ccpYVCur.s:5011   .debug_str:0000000000000613 .LASF183
+     /tmp/ccpYVCur.s:372    .text.v_Flash_Read_Status:0000000000000000 .LFB14
+     /tmp/ccpYVCur.s:404    .text.v_Flash_Read_Status:000000000000003c .LFE14
+     /tmp/ccpYVCur.s:4799   .debug_str:00000000000000eb .LASF177
+     /tmp/ccpYVCur.s:4532   .debug_loc:00000000000000ae .LLST3
+     /tmp/ccpYVCur.s:5025   .debug_str:000000000000067c .LASF178
+     /tmp/ccpYVCur.s:396    .text.v_Flash_Read_Status:0000000000000030 .LVL18
+     /tmp/ccpYVCur.s:4819   .debug_str:0000000000000176 .LASF179
+     /tmp/ccpYVCur.s:647    .text.u8_Flash_Page_Program:0000000000000000 .LFB13
+     /tmp/ccpYVCur.s:760    .text.u8_Flash_Page_Program:00000000000000fc .LFE13
+     /tmp/ccpYVCur.s:5193   .debug_str:0000000000000adf .LASF180
+     /tmp/ccpYVCur.s:4550   .debug_loc:00000000000000da .LLST6
+     /tmp/ccpYVCur.s:5119   .debug_str:000000000000087b .LASF181
+     /tmp/ccpYVCur.s:4568   .debug_loc:0000000000000106 .LLST7
+     /tmp/ccpYVCur.s:4813   .debug_str:0000000000000152 .LASF182
+     /tmp/ccpYVCur.s:4586   .debug_loc:0000000000000132 .LLST8
+     /tmp/ccpYVCur.s:4829   .debug_str:00000000000001b3 .LASF199
+     /tmp/ccpYVCur.s:678    .text.u8_Flash_Page_Program:0000000000000038 .LVL38
+     /tmp/ccpYVCur.s:695    .text.u8_Flash_Page_Program:0000000000000064 .LVL39
+     /tmp/ccpYVCur.s:698    .text.u8_Flash_Page_Program:000000000000006c .LVL40
+     /tmp/ccpYVCur.s:701    .text.u8_Flash_Page_Program:0000000000000074 .LVL41
+     /tmp/ccpYVCur.s:728    .text.u8_Flash_Page_Program:00000000000000b0 .LVL43
+     /tmp/ccpYVCur.s:738    .text.u8_Flash_Page_Program:00000000000000d4 .LVL44
+     /tmp/ccpYVCur.s:741    .text.u8_Flash_Page_Program:00000000000000dc .LVL45
+     /tmp/ccpYVCur.s:5017   .debug_str:000000000000063e .LASF184
+     /tmp/ccpYVCur.s:585    .text.v_Flash_Block_Erase:0000000000000000 .LFB12
+     /tmp/ccpYVCur.s:640    .text.v_Flash_Block_Erase:0000000000000074 .LFE12
+     /tmp/ccpYVCur.s:4993   .debug_str:00000000000005a9 .LASF185
+     /tmp/ccpYVCur.s:4600   .debug_loc:0000000000000153 .LLST5
+     /tmp/ccpYVCur.s:621    .text.v_Flash_Block_Erase:0000000000000040 .LVL31
+     /tmp/ccpYVCur.s:629    .text.v_Flash_Block_Erase:0000000000000060 .LVL32
+     /tmp/ccpYVCur.s:632    .text.v_Flash_Block_Erase:0000000000000068 .LVL33
+     /tmp/ccpYVCur.s:4987   .debug_str:0000000000000584 .LASF186
+     /tmp/ccpYVCur.s:523    .text.v_Flash_Sector_Erase:0000000000000000 .LFB11
+     /tmp/ccpYVCur.s:578    .text.v_Flash_Sector_Erase:0000000000000074 .LFE11
+     /tmp/ccpYVCur.s:4614   .debug_loc:0000000000000174 .LLST4
+     /tmp/ccpYVCur.s:559    .text.v_Flash_Sector_Erase:0000000000000040 .LVL26
+     /tmp/ccpYVCur.s:567    .text.v_Flash_Sector_Erase:0000000000000060 .LVL27
+     /tmp/ccpYVCur.s:570    .text.v_Flash_Sector_Erase:0000000000000068 .LVL28
+     /tmp/ccpYVCur.s:5145   .debug_str:0000000000000914 .LASF187
+     /tmp/ccpYVCur.s:446    .text.v_Global_Flash_Unlock:0000000000000000 .LFB10
+     /tmp/ccpYVCur.s:481    .text.v_Global_Flash_Unlock:000000000000004c .LFE10
+     /tmp/ccpYVCur.s:462    .text.v_Global_Flash_Unlock:0000000000000018 .LVL20
+     /tmp/ccpYVCur.s:465    .text.v_Global_Flash_Unlock:0000000000000020 .LVL21
+     /tmp/ccpYVCur.s:473    .text.v_Global_Flash_Unlock:0000000000000040 .LVL22
+     /tmp/ccpYVCur.s:4975   .debug_str:0000000000000527 .LASF188
+     /tmp/ccpYVCur.s:332    .text.u8_Read_Block_Prot_Reg:0000000000000000 .LFB9
+     /tmp/ccpYVCur.s:365    .text.u8_Read_Block_Prot_Reg:0000000000000040 .LFE9
+     /tmp/ccpYVCur.s:5023   .debug_str:0000000000000675 .LASF189
+     /tmp/ccpYVCur.s:355    .text.u8_Read_Block_Prot_Reg:0000000000000030 .LVL15
+     /tmp/ccpYVCur.s:5105   .debug_str:000000000000080f .LASF190
+     /tmp/ccpYVCur.s:292    .text.u32_Read_Config_Reg:0000000000000000 .LFB8
+     /tmp/ccpYVCur.s:325    .text.u32_Read_Config_Reg:0000000000000040 .LFE8
+     /tmp/ccpYVCur.s:315    .text.u32_Read_Config_Reg:0000000000000030 .LVL14
+     /tmp/ccpYVCur.s:5111   .debug_str:0000000000000836 .LASF191
+     /tmp/ccpYVCur.s:239    .text.u32_Read_JEDEC_ID:0000000000000000 .LFB7
+     /tmp/ccpYVCur.s:285    .text.u32_Read_JEDEC_ID:0000000000000058 .LFE7
+     /tmp/ccpYVCur.s:262    .text.u32_Read_JEDEC_ID:0000000000000030 .LVL13
+     /tmp/ccpYVCur.s:5169   .debug_str:0000000000000a55 .LASF192
+     /tmp/ccpYVCur.s:175    .text.u8_Flash_Read:0000000000000000 .LFB6
+     /tmp/ccpYVCur.s:232    .text.u8_Flash_Read:000000000000006c .LFE6
+     /tmp/ccpYVCur.s:4628   .debug_loc:0000000000000195 .LLST0
+     /tmp/ccpYVCur.s:4969   .debug_str:00000000000004fd .LASF193
+     /tmp/ccpYVCur.s:4642   .debug_loc:00000000000001b6 .LLST1
+     /tmp/ccpYVCur.s:4656   .debug_loc:00000000000001d7 .LLST2
+     /tmp/ccpYVCur.s:222    .text.u8_Flash_Read:000000000000005c .LVL12
+     /tmp/ccpYVCur.s:4897   .debug_str:0000000000000350 .LASF194
+     /tmp/ccpYVCur.s:161    .text.v_Flash_Get_Discovery_Params:0000000000000000 .LFB5
+     /tmp/ccpYVCur.s:168    .text.v_Flash_Get_Discovery_Params:0000000000000004 .LFE5
+     /tmp/ccpYVCur.s:5057   .debug_str:0000000000000722 .LASF195
+     /tmp/ccpYVCur.s:4849   .debug_str:000000000000020e .LASF196
+     /tmp/ccpYVCur.s:100    .text.v_Flash_Reset:0000000000000000 .LFB4
+     /tmp/ccpYVCur.s:154    .text.v_Flash_Reset:000000000000006c .LFE4
+     /tmp/ccpYVCur.s:5115   .debug_str:0000000000000853 .LASF197
+     /tmp/ccpYVCur.s:5107   .debug_str:0000000000000823 .LASF198
+     /tmp/ccpYVCur.s:5007   .debug_str:00000000000005fd .LASF200
+     /tmp/ccpYVCur.s:4777   .debug_str:0000000000000044 .LASF201
+     /tmp/ccpYVCur.s:4977   .debug_str:000000000000053e .LASF202
+     /tmp/ccpYVCur.s:136    .text.v_Flash_Reset:0000000000000040 .LVL5
+     /tmp/ccpYVCur.s:144    .text.v_Flash_Reset:000000000000005c .LVL6
+     /tmp/ccpYVCur.s:4997   .debug_str:00000000000005be .LASF203
+     /tmp/ccpYVCur.s:52     .text.v_Init_Flash:0000000000000000 .LFB3
+     /tmp/ccpYVCur.s:93     .text.v_Init_Flash:0000000000000050 .LFE3
+     /tmp/ccpYVCur.s:72     .text.v_Init_Flash:0000000000000028 .LVL1
+     /tmp/ccpYVCur.s:76     .text.v_Init_Flash:0000000000000034 .LVL2
+     /tmp/ccpYVCur.s:91     .text.v_Init_Flash:0000000000000050 .LVL3
+     /tmp/ccpYVCur.s:4851   .debug_str:000000000000021c .LASF204
+     /tmp/ccpYVCur.s:13     .text.v_Set_Write_Enable:0000000000000000 .LFB2
+     /tmp/ccpYVCur.s:45     .text.v_Set_Write_Enable:000000000000003c .LFE2
+     /tmp/ccpYVCur.s:37     .text.v_Set_Write_Enable:0000000000000030 .LVL0
+     /tmp/ccpYVCur.s:5027   .debug_str:0000000000000688 .LASF205
+     /tmp/ccpYVCur.s:5031   .debug_str:00000000000006a4 .LASF206
+     /tmp/ccpYVCur.s:5147   .debug_str:000000000000092a .LASF207
+     /tmp/ccpYVCur.s:4789   .debug_str:0000000000000098 .LASF209
+     /tmp/ccpYVCur.s:4945   .debug_str:0000000000000482 .LASF208
+     /tmp/ccpYVCur.s:4955   .debug_str:00000000000004b3 .LASF210
+     /tmp/ccpYVCur.s:4985   .debug_str:000000000000057b .LASF211
+     /tmp/ccpYVCur.s:4803   .debug_str:000000000000010c .LASF212
+     /tmp/ccpYVCur.s:5123   .debug_str:0000000000000888 .LASF213
+     /tmp/ccpYVCur.s:846    .text.u32_Get_8K_Sector_Base:0000000000000000 .LVL55
+     /tmp/ccpYVCur.s:858    .text.u32_Get_8K_Sector_Base:0000000000000028 .LVL56
+     /tmp/ccpYVCur.s:871    .text.u32_Get_8K_Sector_Base:0000000000000038 .LVL58
+     /tmp/ccpYVCur.s:808    .text.u32_Get_32K_Sector_Base:0000000000000000 .LVL51
+     /tmp/ccpYVCur.s:820    .text.u32_Get_32K_Sector_Base:0000000000000028 .LVL52
+     /tmp/ccpYVCur.s:833    .text.u32_Get_32K_Sector_Base:0000000000000038 .LVL54
+     /tmp/ccpYVCur.s:770    .text.u32_Get_64K_Block_Base:0000000000000000 .LVL47
+     /tmp/ccpYVCur.s:782    .text.u32_Get_64K_Block_Base:0000000000000028 .LVL48
+     /tmp/ccpYVCur.s:795    .text.u32_Get_64K_Block_Base:0000000000000038 .LVL50
+     /tmp/ccpYVCur.s:375    .text.v_Flash_Read_Status:0000000000000000 .LVL16
+     /tmp/ccpYVCur.s:388    .text.v_Flash_Read_Status:0000000000000020 .LVL17
+     /tmp/ccpYVCur.s:650    .text.u8_Flash_Page_Program:0000000000000000 .LVL34
+     /tmp/ccpYVCur.s:670    .text.u8_Flash_Page_Program:0000000000000028 .LVL37
+     /tmp/ccpYVCur.s:716    .text.u8_Flash_Page_Program:000000000000008c .LVL42
+     /tmp/ccpYVCur.s:666    .text.u8_Flash_Page_Program:0000000000000020 .LVL35
+     /tmp/ccpYVCur.s:754    .text.u8_Flash_Page_Program:00000000000000f0 .LVL46
+     /tmp/ccpYVCur.s:668    .text.u8_Flash_Page_Program:0000000000000024 .LVL36
+     /tmp/ccpYVCur.s:588    .text.v_Flash_Block_Erase:0000000000000000 .LVL29
+     /tmp/ccpYVCur.s:603    .text.v_Flash_Block_Erase:000000000000001c .LVL30
+     /tmp/ccpYVCur.s:526    .text.v_Flash_Sector_Erase:0000000000000000 .LVL24
+     /tmp/ccpYVCur.s:541    .text.v_Flash_Sector_Erase:000000000000001c .LVL25
+     /tmp/ccpYVCur.s:178    .text.u8_Flash_Read:0000000000000000 .LVL8
+     /tmp/ccpYVCur.s:190    .text.u8_Flash_Read:0000000000000014 .LVL9
+     /tmp/ccpYVCur.s:203    .text.u8_Flash_Read:0000000000000034 .LVL10
+     /tmp/ccpYVCur.s:207    .text.u8_Flash_Read:0000000000000044 .LVL11
+     /tmp/ccpYVCur.s:932    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+SPI_transfer_block
+SPI_init
+SPI_configure_master_mode
+SPI_set_slave_select
+memset
+memcpy
+__assert_func

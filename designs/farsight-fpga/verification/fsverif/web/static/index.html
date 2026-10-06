@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fsverif</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<aside id="sidebar">
+  <div class="brand">fsverif</div>
+  <div class="brandsub"></div>
+  <nav id="nav"></nav>
+  <button id="search-open" class="ghost">Search <kbd>/</kbd></button>
+  <div class="hint">Every identifier is a link</div>
+</aside>
+<main>
+  <header id="topbar">
+    <div class="titles"><div id="title"></div><div id="subtitle"></div></div>
+    <div class="status"><div id="phase"></div><div id="bar"><div id="bar-fill"></div></div></div>
+    <button id="console-toggle">Console</button>
+    <div class="runwrap">
+      <button id="run" class="primary">Run</button>
+      <div id="runmenu" class="menu hidden">
+        <button data-run="suite">Run the whole suite, with coverage</button>
+        <button data-run="failing">Rerun modules with failures</button>
+        <button data-run="selected">Run the module of the selected test</button>
+        <button data-run="fast">Run the fast checks (no simulator)</button>
+        <hr>
+        <button data-run="nocov">Run the whole suite without coverage (faster)</button>
+        <button data-run="report">Rebuild the coverage report</button>
+      </div>
+    </div>
+  </header>
+  <section id="page"></section>
+  <section id="console" class="hidden">
+    <div class="console-bar">
+      <select id="console-source"></select>
+      <span id="console-note" class="faint"></span>
+      <button id="console-close" class="ghost" title="Close">✕</button>
+    </div>
+    <pre id="console-text"></pre>
+  </section>
+</main>
+<div id="palette" class="hidden">
+  <div class="palette-box">
+    <input id="palette-input" placeholder="Jump to a test, requirement, finding or page" autocomplete="off">
+    <div id="palette-list"></div>
+  </div>
+</div>
+<div id="toast" class="hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

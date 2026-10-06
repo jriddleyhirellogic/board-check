@@ -1,0 +1,188 @@
+# ------------------------------------------------------------------------------
+# Description : Constraint pinout map
+# Target Device : A3PE3000L-FG484M
+# Origin Date : 08-26-2025 17:44:50
+# Originator : Chase Whyte
+#
+# ------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# PGOOD
+# ------------------------------------------------------------------------------
+set_io {fpga_pgood_1v0} -pinname "C4" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr16_pgood_0v6} -pinname "C7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr16_pgood_1v2} -pinname "D8" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr16_pgood_2v5} -pinname "E7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_pgood_2v2} -pinname "F8" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth2_pgood_2v5a} -pinname "E21" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth2_pgood_1v0a} -pinname "E22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eps_efuse_pgood} -pinname "F20" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth2_pgood_1v0} -pinname "G20" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth1_pgood_2v5a} -pinname "G21" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth2_pgood_3v3} -pinname "G22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth1_pgood_1v0a} -pinname "J19" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {lvdt_pgood} -pinname "K20" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth1_pgood_1v0} -pinname "K21" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {eth1_pgood_3v3} -pinname "K22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr8_pgood_2v5} -pinname "M21" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {stepper_sec_pgood} -pinname "M22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {stepper_pri_pgood} -pinname "R17" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr8_pgood_0v6} -pinname "T18" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr8_pgood_1v2} -pinname "U19" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {lvds_pgood} -pinname "V22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_3v3_b5} -pinname "AA13" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_3v3_b4} -pinname "AB5" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_1v25a} -pinname "M2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_1v0a} -pinname "R4" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_pgood_1v8} -pinname "C2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_pgood_3v3} -pinname "F2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_pgood_2v9} -pinname "G2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_pgood_4v0} -pinname "H1" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_pgood_3v0} -pinname "H7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_pgood_1v1} -pinname "J7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_2v5a} -pinname "K7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_1v8} -pinname "L6" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_pgood_1v8_imx} -pinname "L8" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_status_to_pf} -pinname "R1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_status_to_pf} -pinname "W1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr8_status_to_pf} -pinname "U4" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_status_to_pf} -pinname "T2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_status_to_pf} -pinname "V5" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {lvdt_status_to_pf} -pinname "AA5" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {lvds_status_to_pf} -pinname "W6" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_pri_status_to_pf} -pinname "T1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_sec_status_to_pf} -pinname "P1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {pf_status_to_pf} -pinname "V1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {step_down_status_to_pf} -pinname "Y3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {pa3_status_to_pf} -pinname "AA4" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+
+# ------------------------------------------------------------------------------
+# PA3 TO PF MISC
+# ------------------------------------------------------------------------------
+set_io {ddr8_failure_metadata[0]} -pinname "W7" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr8_failure_metadata[1]} -pinname "AB10" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_failure_metadata[0]} -pinname "AA10" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_failure_metadata[1]} -pinname "W8" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_failure_metadata[0]} -pinname "V8" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_failure_metadata[1]} -pinname "R2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_failure_metadata[2]} -pinname "P2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_failure_metadata[0]} -pinname "P3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_failure_metadata[1]} -pinname "U1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_failure_metadata[2]} -pinname "Y4" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_pri_failure_metadata} -pinname "W3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_sec_failure_metadata} -pinname "V4" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {lvdt_failure_metadata}	-pinname "U2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_failure_metadata[0]} -pinname "U5" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_failure_metadata[1]} -pinname "W5" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_failure_metadata[2]} -pinname "W2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+
+# ------------------------------------------------------------------------------
+# nFAULT
+# ------------------------------------------------------------------------------
+set_io {stepper_pri_nfault} -pinname "M17" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr8_nfault_1v2} -pinname "M19" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr8_nfault_2v5} -pinname "M20" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {stepper_sec_nfault} -pinname "N22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr16_nfault_2v5} -pinname "D2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {ddr16_nfault_1v2} -pinname "D3" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {fpga_nfault_1v0} -pinname "E2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {imx_nfault_1v1} -pinname "H2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_nfault_4v0} -pinname "J2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_nfault_3v0} -pinname "L2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {step_down_nfault_2v2} -pinname "L3" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+
+# ------------------------------------------------------------------------------
+# SUPPLY ENABLE
+# ------------------------------------------------------------------------------
+set_io {fpga_en_1v0} -pinname "A9" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_en_1v2} -pinname "B3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_en_1v8} -pinname "B6" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_en_2v5a} -pinname "C20" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_en_1v0a} -pinname "C21" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_en_1v0} -pinname "D20" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth2_en_3v3} -pinname "D22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_en_2v5a} -pinname "F21" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_en_1v0a} -pinname "F22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_en_1v0} -pinname "H22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {eth1_en_3v3} -pinname "J21" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {lvdt_en} -pinname "J22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_pri_en} -pinname "M16" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr8_en_0v6} -pinname "N18" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr8_en_1v2} -pinname "N19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {stepper_sec_en} -pinname "W22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr8_en_2v5} -pinname "Y20" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {lvds_en} -pinname "Y21" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_3v3_b5} -pinname "AB14" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_1v8_imx} -pinname "L1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_3v3_b4} -pinname "N1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_1v0a} -pinname "N2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_en_3v3} -pinname "T4" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_en_2v9} -pinname "U3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_1v25a} -pinname "Y2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_en_0v6} -pinname "D1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {ddr16_en_2v5} -pinname "E1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {step_down_en_2v2} -pinname "F1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {step_down_en_3v0} -pinname "G1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {step_down_en_4v0} -pinname "H6" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {imx_en_1v1} -pinname "J1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_2v5a} -pinname "K1" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+set_io {fpga_en_1v8} -pinname "K2" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "DOWN" -out_drive 2
+
+# ------------------------------------------------------------------------------
+# RS422 TTL
+# ------------------------------------------------------------------------------
+set_io {rs422_ttl_bus_to_farsight_pf} -pinname "AA14" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {rs422_ttl_farsight_to_bus_pf} -pinname "W15" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {rs422_ttl_bus_to_farsight_pa3} -pinname "Y6" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+set_io {rs422_ttl_farsight_to_bus_pa3} -pinname "AA15" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+
+
+# ------------------------------------------------------------------------------
+# FARSIGHT IMX SHORTING
+# ------------------------------------------------------------------------------
+set_io {imx_nshort_1v1} -pinname "C3" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "UP" -out_drive 2
+set_io {imx_nshort_1v8} -pinname "A8" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "UP" -out_drive 2
+
+# ------------------------------------------------------------------------------
+# PA3_RESET
+# ------------------------------------------------------------------------------
+set_io {arstn} -pinname "P22" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "UP"
+
+# ------------------------------------------------------------------------------
+# CLOCK INPUT
+# ------------------------------------------------------------------------------
+set_io {clk} -pinname "L4" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "NONE"
+
+# ------------------------------------------------------------------------------
+# HEARTBEAT
+# ------------------------------------------------------------------------------
+set_io {heartbeat} -pinname "A5" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+
+# ------------------------------------------------------------------------------
+# SW ENABLE
+# ------------------------------------------------------------------------------
+set_io {eth1_ctrl} -pinname "AB7" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+set_io {eth2_ctrl} -pinname "AB9" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+set_io {stepper_pri_ctrl} -pinname "AA8" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+set_io {stepper_sec_ctrl} -pinname "AB6" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+set_io {lvdt_ctrl} -pinname "AA3" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+set_io {imx_ctrl} -pinname "V2" -iostd "LVCMOS33" -fixed "true" -direction "INPUT" -RES_PULL "DOWN"
+
+# ------------------------------------------------------------------------------
+# PA3 TO PF MISC
+# ------------------------------------------------------------------------------
+#set_io {fw_version[0]} -pinname "" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 8
+set_io {fw_version[1]} -pinname "AB8" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 8
+#set_io {fw_version[2]} -pinname "" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 8
+
+# ------------------------------------------------------------------------------
+# DEBUG
+# ------------------------------------------------------------------------------
+set_io {debug[0]} -pinname "L22" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[1]} -pinname "L21" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[2]} -pinname "K19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[3]} -pinname "H19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[4]} -pinname "G19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[5]} -pinname "F19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2
+set_io {debug[6]} -pinname "E19" -iostd "LVCMOS33" -fixed "true" -direction "OUTPUT" -RES_PULL "NONE" -out_drive 2

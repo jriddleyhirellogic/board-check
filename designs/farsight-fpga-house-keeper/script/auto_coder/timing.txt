@@ -1,0 +1,80 @@
+###############################################################################
+#  POWER SEQUENCING TIMING
+#
+#  ALL VALUES ARE IN MICROSECONDS (us).
+#
+#      1 ms  =        1000
+#     25 ms  =       25000
+#    100 ms  =      100000
+#    200 ms  =      200000
+#      1 s   =     1000000
+#
+#  You may write big numbers with underscores or commas if it helps you read
+#  them: 200000, 200_000 and 200,000 all mean the same thing.
+###############################################################################
+
+# STEP DOWN
+STEP_DOWN_2V2_WAIT_TIME  = 25000
+STEP_DOWN_3V0_WAIT_TIME  = 25000
+STEP_DOWN_4V0_WAIT_TIME  = 25000
+STEP_DOWN_RETRY_TIME     = 200000
+
+# DDR8
+DDR8_2V5_WAIT_TIME       = 25000
+DDR8_1V2_WAIT_TIME       = 25000
+DDR8_0V6_WAIT_TIME       = 25000
+DDR8_RETRY_TIME          = 200000
+
+# DDR16
+DDR16_2V5_WAIT_TIME      = 25000
+DDR16_1V2_WAIT_TIME      = 25000
+DDR16_0V6_WAIT_TIME      = 25000
+DDR16_RETRY_TIME         = 200000
+
+# FPGA
+FPGA_1V0_WAIT_TIME       = 25000
+FPGA_1V0A_WAIT_TIME      = 25000
+FPGA_1V25A_WAIT_TIME     = 25000
+FPGA_1V8_WAIT_TIME       = 25000
+FPGA_1V8_IMX_WAIT_TIME   = 25000
+FPGA_2V5A_WAIT_TIME      = 25000
+FPGA_3V3_B4_WAIT_TIME    = 25000
+FPGA_3V3_B5_WAIT_TIME    = 25000
+FPGA_RETRY_TIME          = 200000
+
+# LVDS
+LVDS_WAIT_TIME           = 25000
+LVDS_RETRY_TIME          = 200000
+
+# LVDT
+LVDT_WAIT_TIME           = 25000
+LVDT_RETRY_TIME          = 200000
+
+# ETH1
+ETH1_1V0_WAIT_TIME       = 25000
+ETH1_1V0A_WAIT_TIME      = 25000
+ETH1_2V5A_WAIT_TIME      = 25000
+ETH1_3V3_WAIT_TIME       = 25000
+ETH1_RETRY_TIME          = 200000
+
+# ETH2
+ETH2_1V0_WAIT_TIME       = 25000
+ETH2_1V0A_WAIT_TIME      = 25000
+ETH2_2V5A_WAIT_TIME      = 25000
+ETH2_3V3_WAIT_TIME       = 25000
+ETH2_RETRY_TIME          = 200000
+
+# STEPPER PRI
+STEPPER_PRI_WAIT_TIME    = 25000
+STEPPER_PRI_RETRY_TIME   = 200000
+
+# STEPPER SEC
+STEPPER_SEC_WAIT_TIME    = 25000
+STEPPER_SEC_RETRY_TIME   = 200000
+
+# IMX
+IMX_1V1_WAIT_TIME        = 25000
+IMX_1V8_WAIT_TIME        = 25000
+IMX_2V9_WAIT_TIME        = 25000
+IMX_3V3_WAIT_TIME        = 25000
+IMX_RETRY_TIME           = 200000

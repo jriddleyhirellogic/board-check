@@ -1,0 +1,359 @@
+\doxysection{src/\+hal/\+hal\+\_\+uart16550.c File Reference}
+\hypertarget{hal__uart16550_8c}{}\label{hal__uart16550_8c}\index{src/hal/hal\_uart16550.c@{src/hal/hal\_uart16550.c}}
+{\ttfamily \+\#include "{}hal\+\_\+uart16550.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal.\+h"{}}\newline
+{\ttfamily \+\#include "{}hw\+\_\+reg\+\_\+access.\+h"{}}\newline
+Include dependency graph for hal\+\_\+uart16550.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{hal__uart16550_8c_ae153850ba5080b00de3a5fd02cfdf3c2}{v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Divisor}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint16\+\_\+t u16\+\_\+\+Divisor)
+\begin{DoxyCompactList}\small\item\em Sets the the baud rate Baud rate = PCLK/\+(16 \texorpdfstring{$\ast$}{*} divisor) Example -\/ for 115200, PCLK = 50 MHz Divisor = 27 Error is 0.\+4\%. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{hal__uart16550_8c_a17b3f1dddb9c94f3f67bb09e601b4331}{v\+\_\+\+Init\+\_\+\+UART\+\_\+\+Line}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+Line\+\_\+\+Params)
+\item 
+static void \doxymbox{\hyperlink{hal__uart16550_8c_a2e7e4362c57e2c52eb54b7114c1dd102}{v\+\_\+\+Init\+\_\+\+FIFOs}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Reset and initialize transmit and receive fifos. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{hal__uart16550_8c_ab539fa225eba0f9d37b9badceaad5379}{v\+\_\+\+Set\+\_\+\+Modem\+\_\+\+Ctrl}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+void \doxymbox{\hyperlink{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2}{v\+\_\+\+Init\+\_\+\+UART}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Initializes 16550 type uart Initialization includes baud rate, line mode and fifos. \end{DoxyCompactList}\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8c_acabccf5837375760e553b7452f3e1b1c}{u8\+\_\+\+Get\+\_\+\+UART\+\_\+\+Rx\+\_\+\+Data}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Wrapper function to retrieve single byte from receive fifo. \end{DoxyCompactList}\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8c_a181108f466028ba716b53993ea0bdc87}{b\+\_\+\+Is\+\_\+\+Tx\+\_\+\+Hold\+\_\+\+Reg\+\_\+\+Empty}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\begin{DoxyCompactList}\small\item\em Test if tx holding register is empty. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8c_ad3e97d745edb6a2e2ba3c74b7c31ad25}{v\+\_\+\+Write\+\_\+\+UART\+\_\+\+Tx\+\_\+\+Data}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+Data)
+\begin{DoxyCompactList}\small\item\em Write single byte to tx fifo. \end{DoxyCompactList}\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8c_a329438ecc710ef49b37f5f56e56cfbde}{u8\+\_\+\+Get\+\_\+\+Modem\+\_\+\+Status}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8c_aac5c419038bb196768ff8755cdb9431a}{u8\+\_\+\+Get\+\_\+\+Interrupt\+\_\+\+Cause}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+\doxymbox{\hyperlink{hal__uart16550_8c_a36f229bbda63818246ec86181b1fdd42}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}} ((unused))
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{hal__uart16550_8c_a5bd249a324832f64ff82c58c90162ba7}{u8\+\_\+\+Get\+\_\+\+Line\+\_\+\+Status}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance)
+\item 
+void \doxymbox{\hyperlink{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc}{v\+\_\+\+Enable\+\_\+\+UART\+\_\+\+IRQ}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+IRQ)
+\begin{DoxyCompactList}\small\item\em Enables the interrupt at the uart. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2}{v\+\_\+\+Disable\+\_\+\+UART\+\_\+\+IRQ}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+IRQ)
+\begin{DoxyCompactList}\small\item\em Disables the interrupt at the uart. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__uart16550_8c_aa07804c6e655083fe3448c6272527ad1}{v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Scratch}} (\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+instance, uint8\+\_\+t u8\+\_\+\+Value)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{hal__uart16550_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal__uart16550_8c_a36f229bbda63818246ec86181b1fdd42}\index{hal\_uart16550.c@{hal\_uart16550.c}!\_\_attribute\_\_@{\_\_attribute\_\_}}
+\index{\_\_attribute\_\_@{\_\_attribute\_\_}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{\_\_attribute\_\_()}{\_\_attribute\_\_()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a36f229bbda63818246ec86181b1fdd42} 
+\+\_\+\+\_\+attribute\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{(unused)}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00091}{91}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8c_a181108f466028ba716b53993ea0bdc87}\index{hal\_uart16550.c@{hal\_uart16550.c}!b\_Is\_Tx\_Hold\_Reg\_Empty@{b\_Is\_Tx\_Hold\_Reg\_Empty}}
+\index{b\_Is\_Tx\_Hold\_Reg\_Empty@{b\_Is\_Tx\_Hold\_Reg\_Empty}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{b\_Is\_Tx\_Hold\_Reg\_Empty()}{b\_Is\_Tx\_Hold\_Reg\_Empty()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a181108f466028ba716b53993ea0bdc87} 
+uint8\+\_\+t b\+\_\+\+Is\+\_\+\+Tx\+\_\+\+Hold\+\_\+\+Reg\+\_\+\+Empty (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Test if tx holding register is empty. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 if empty, 0 if contains data 
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00062}{62}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8c_aac5c419038bb196768ff8755cdb9431a}\index{hal\_uart16550.c@{hal\_uart16550.c}!u8\_Get\_Interrupt\_Cause@{u8\_Get\_Interrupt\_Cause}}
+\index{u8\_Get\_Interrupt\_Cause@{u8\_Get\_Interrupt\_Cause}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Interrupt\_Cause()}{u8\_Get\_Interrupt\_Cause()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_aac5c419038bb196768ff8755cdb9431a} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Interrupt\+\_\+\+Cause (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00085}{85}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_aac5c419038bb196768ff8755cdb9431a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a5bd249a324832f64ff82c58c90162ba7}\index{hal\_uart16550.c@{hal\_uart16550.c}!u8\_Get\_Line\_Status@{u8\_Get\_Line\_Status}}
+\index{u8\_Get\_Line\_Status@{u8\_Get\_Line\_Status}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Line\_Status()}{u8\_Get\_Line\_Status()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a5bd249a324832f64ff82c58c90162ba7} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Line\+\_\+\+Status (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00096}{96}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_a5bd249a324832f64ff82c58c90162ba7_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a329438ecc710ef49b37f5f56e56cfbde}\index{hal\_uart16550.c@{hal\_uart16550.c}!u8\_Get\_Modem\_Status@{u8\_Get\_Modem\_Status}}
+\index{u8\_Get\_Modem\_Status@{u8\_Get\_Modem\_Status}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_Modem\_Status()}{u8\_Get\_Modem\_Status()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a329438ecc710ef49b37f5f56e56cfbde} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+Modem\+\_\+\+Status (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00080}{80}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8c_acabccf5837375760e553b7452f3e1b1c}\index{hal\_uart16550.c@{hal\_uart16550.c}!u8\_Get\_UART\_Rx\_Data@{u8\_Get\_UART\_Rx\_Data}}
+\index{u8\_Get\_UART\_Rx\_Data@{u8\_Get\_UART\_Rx\_Data}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Get\_UART\_Rx\_Data()}{u8\_Get\_UART\_Rx\_Data()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_acabccf5837375760e553b7452f3e1b1c} 
+uint8\+\_\+t u8\+\_\+\+Get\+\_\+\+UART\+\_\+\+Rx\+\_\+\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Wrapper function to retrieve single byte from receive fifo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & uart instance \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_acabccf5837375760e553b7452f3e1b1c_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Disable\_UART\_IRQ@{v\_Disable\_UART\_IRQ}}
+\index{v\_Disable\_UART\_IRQ@{v\_Disable\_UART\_IRQ}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Disable\_UART\_IRQ()}{v\_Disable\_UART\_IRQ()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2} 
+void v\+\_\+\+Disable\+\_\+\+UART\+\_\+\+IRQ (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+IRQ}{}\end{DoxyParamCaption})}
+
+
+
+Disables the interrupt at the uart. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+IRQ} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00120}{120}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_a6f5128136142e2d898cb3d7f89e19af2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Enable\_UART\_IRQ@{v\_Enable\_UART\_IRQ}}
+\index{v\_Enable\_UART\_IRQ@{v\_Enable\_UART\_IRQ}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Enable\_UART\_IRQ()}{v\_Enable\_UART\_IRQ()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc} 
+void v\+\_\+\+Enable\+\_\+\+UART\+\_\+\+IRQ (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+IRQ}{}\end{DoxyParamCaption})}
+
+
+
+Enables the interrupt at the uart. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+IRQ} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00107}{107}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_a8a280e557dd9d4cb9663fb98ca1d3fbc_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a2e7e4362c57e2c52eb54b7114c1dd102}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Init\_FIFOs@{v\_Init\_FIFOs}}
+\index{v\_Init\_FIFOs@{v\_Init\_FIFOs}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_FIFOs()}{v\_Init\_FIFOs()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a2e7e4362c57e2c52eb54b7114c1dd102} 
+void v\+\_\+\+Init\+\_\+\+FIFOs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Reset and initialize transmit and receive fifos. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00049}{49}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_a2e7e4362c57e2c52eb54b7114c1dd102_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Init\_UART@{v\_Init\_UART}}
+\index{v\_Init\_UART@{v\_Init\_UART}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_UART()}{v\_Init\_UART()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2} 
+void v\+\_\+\+Init\+\_\+\+UART (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})}
+
+
+
+Initializes 16550 type uart Initialization includes baud rate, line mode and fifos. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & Pointer to particular instance \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=310pt]{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_abcf6680f5e761a60054c5cdb5688b8d2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_a17b3f1dddb9c94f3f67bb09e601b4331}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Init\_UART\_Line@{v\_Init\_UART\_Line}}
+\index{v\_Init\_UART\_Line@{v\_Init\_UART\_Line}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_UART\_Line()}{v\_Init\_UART\_Line()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_a17b3f1dddb9c94f3f67bb09e601b4331} 
+void v\+\_\+\+Init\+\_\+\+UART\+\_\+\+Line (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Line\+\_\+\+Params}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00127}{127}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_a17b3f1dddb9c94f3f67bb09e601b4331_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_ab539fa225eba0f9d37b9badceaad5379}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Set\_Modem\_Ctrl@{v\_Set\_Modem\_Ctrl}}
+\index{v\_Set\_Modem\_Ctrl@{v\_Set\_Modem\_Ctrl}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Modem\_Ctrl()}{v\_Set\_Modem\_Ctrl()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_ab539fa225eba0f9d37b9badceaad5379} 
+void v\+\_\+\+Set\+\_\+\+Modem\+\_\+\+Ctrl (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{hal__uart16550_8c_ae153850ba5080b00de3a5fd02cfdf3c2}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Set\_UART\_Divisor@{v\_Set\_UART\_Divisor}}
+\index{v\_Set\_UART\_Divisor@{v\_Set\_UART\_Divisor}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_UART\_Divisor()}{v\_Set\_UART\_Divisor()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_ae153850ba5080b00de3a5fd02cfdf3c2} 
+void v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Divisor (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint16\+\_\+t}]{u16\+\_\+\+Divisor}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the the baud rate Baud rate = PCLK/\+(16 \texorpdfstring{$\ast$}{*} divisor) Example -\/ for 115200, PCLK = 50 MHz Divisor = 27 Error is 0.\+4\%. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u16\+\_\+\+Divisor} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00140}{140}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_ae153850ba5080b00de3a5fd02cfdf3c2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__uart16550_8c_aa07804c6e655083fe3448c6272527ad1}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Set\_UART\_Scratch@{v\_Set\_UART\_Scratch}}
+\index{v\_Set\_UART\_Scratch@{v\_Set\_UART\_Scratch}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_UART\_Scratch()}{v\_Set\_UART\_Scratch()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_aa07804c6e655083fe3448c6272527ad1} 
+void v\+\_\+\+Set\+\_\+\+UART\+\_\+\+Scratch (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Value}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00166}{166}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+\Hypertarget{hal__uart16550_8c_ad3e97d745edb6a2e2ba3c74b7c31ad25}\index{hal\_uart16550.c@{hal\_uart16550.c}!v\_Write\_UART\_Tx\_Data@{v\_Write\_UART\_Tx\_Data}}
+\index{v\_Write\_UART\_Tx\_Data@{v\_Write\_UART\_Tx\_Data}!hal\_uart16550.c@{hal\_uart16550.c}}
+\doxysubsubsection{\texorpdfstring{v\_Write\_UART\_Tx\_Data()}{v\_Write\_UART\_Tx\_Data()}}
+{\footnotesize\ttfamily \label{hal__uart16550_8c_ad3e97d745edb6a2e2ba3c74b7c31ad25} 
+void v\+\_\+\+Write\+\_\+\+UART\+\_\+\+Tx\+\_\+\+Data (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structUART__16550__Instance__t}{UART\+\_\+16550\+\_\+\+Instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+instance}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Data}{}\end{DoxyParamCaption})}
+
+
+
+Write single byte to tx fifo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em this\+\_\+instance} & \\
+\hline
+{\em u8\+\_\+\+Data} & Byte to write to fifo \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__uart16550_8c_source_l00074}{74}} of file \doxymbox{\hyperlink{hal__uart16550_8c_source}{hal\+\_\+uart16550.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__uart16550_8c_ad3e97d745edb6a2e2ba3c74b7c31ad25_icgraph}
+\end{center}
+\end{figure}

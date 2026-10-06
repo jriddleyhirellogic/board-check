@@ -1,0 +1,160 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+path\+\_\+planner.h File Reference}
+\hypertarget{path__planner_8h}{}\label{path__planner_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/path\_planner.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/path\_planner.h}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+Include dependency graph for path\+\_\+planner.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{path__planner_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{structMotion__Params__t}{Motion\+\_\+\+Params\+\_\+t}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_ab5447b269d1d7832732e39002874ae0f}{BASE\+\_\+\+VEL}}~0.\+1f
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_a3fa2d9e8a3ff5bc7ac576fda26265b44}{ACCELERATION}}~1
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\+\_\+V}}~600
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_a4984fd061a61ac75f177729a16e7d734}{MIN\+\_\+V}}~-\/\doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\+\_\+V}}
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_ae8c27334c18855214ac07ef45e87f671}{DEADBAND\+\_\+\+MICRONS}}~1
+\item 
+\+\#define \doxymbox{\hyperlink{path__planner_8h_aa329e335f7c32e33fd0a09709769fe23}{DB\+\_\+\+HYST}}~3
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{path__planner_8h_af59c10bbadd690729a6d1997cee0ea22}{v\+\_\+\+Init\+\_\+\+Path\+\_\+\+Planner}} (int32\+\_\+t i32\+\_\+\+Start, int32\+\_\+t i32\+\_\+\+Final)
+\item 
+int32\+\_\+t \doxymbox{\hyperlink{path__planner_8h_ab28519f073499801bfbd9bde2aaafaa2}{i32\+\_\+\+\_\+\+Update\+\_\+\+Path\+\_\+\+SM}} ()
+\item 
+void \doxymbox{\hyperlink{path__planner_8h_a794af90614053846b1535622ff70960c}{v\+\_\+\+Reset\+\_\+\+Path}} (void)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{path__planner_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{path__planner_8h_a3fa2d9e8a3ff5bc7ac576fda26265b44}\index{path\_planner.h@{path\_planner.h}!ACCELERATION@{ACCELERATION}}
+\index{ACCELERATION@{ACCELERATION}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{ACCELERATION}{ACCELERATION}}
+{\footnotesize\ttfamily \label{path__planner_8h_a3fa2d9e8a3ff5bc7ac576fda26265b44} 
+\+\#define ACCELERATION~1}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00016}{16}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+\Hypertarget{path__planner_8h_ab5447b269d1d7832732e39002874ae0f}\index{path\_planner.h@{path\_planner.h}!BASE\_VEL@{BASE\_VEL}}
+\index{BASE\_VEL@{BASE\_VEL}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{BASE\_VEL}{BASE\_VEL}}
+{\footnotesize\ttfamily \label{path__planner_8h_ab5447b269d1d7832732e39002874ae0f} 
+\+\#define BASE\+\_\+\+VEL~0.\+1f}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00013}{13}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+\Hypertarget{path__planner_8h_aa329e335f7c32e33fd0a09709769fe23}\index{path\_planner.h@{path\_planner.h}!DB\_HYST@{DB\_HYST}}
+\index{DB\_HYST@{DB\_HYST}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{DB\_HYST}{DB\_HYST}}
+{\footnotesize\ttfamily \label{path__planner_8h_aa329e335f7c32e33fd0a09709769fe23} 
+\+\#define DB\+\_\+\+HYST~3}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00020}{20}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+\Hypertarget{path__planner_8h_ae8c27334c18855214ac07ef45e87f671}\index{path\_planner.h@{path\_planner.h}!DEADBAND\_MICRONS@{DEADBAND\_MICRONS}}
+\index{DEADBAND\_MICRONS@{DEADBAND\_MICRONS}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{DEADBAND\_MICRONS}{DEADBAND\_MICRONS}}
+{\footnotesize\ttfamily \label{path__planner_8h_ae8c27334c18855214ac07ef45e87f671} 
+\+\#define DEADBAND\+\_\+\+MICRONS~1}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00019}{19}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+\Hypertarget{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}\index{path\_planner.h@{path\_planner.h}!MAX\_V@{MAX\_V}}
+\index{MAX\_V@{MAX\_V}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{MAX\_V}{MAX\_V}}
+{\footnotesize\ttfamily \label{path__planner_8h_a2000cd4951968cc02f632c54eb27e362} 
+\+\#define MAX\+\_\+V~600}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00017}{17}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+\Hypertarget{path__planner_8h_a4984fd061a61ac75f177729a16e7d734}\index{path\_planner.h@{path\_planner.h}!MIN\_V@{MIN\_V}}
+\index{MIN\_V@{MIN\_V}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{MIN\_V}{MIN\_V}}
+{\footnotesize\ttfamily \label{path__planner_8h_a4984fd061a61ac75f177729a16e7d734} 
+\+\#define MIN\+\_\+V~-\/\doxymbox{\hyperlink{path__planner_8h_a2000cd4951968cc02f632c54eb27e362}{MAX\+\_\+V}}}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8h_source_l00018}{18}} of file \doxymbox{\hyperlink{path__planner_8h_source}{path\+\_\+planner.\+h}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{path__planner_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{path__planner_8h_ab28519f073499801bfbd9bde2aaafaa2}\index{path\_planner.h@{path\_planner.h}!i32\_\_Update\_Path\_SM@{i32\_\_Update\_Path\_SM}}
+\index{i32\_\_Update\_Path\_SM@{i32\_\_Update\_Path\_SM}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{i32\_\_Update\_Path\_SM()}{i32\_\_Update\_Path\_SM()}}
+{\footnotesize\ttfamily \label{path__planner_8h_ab28519f073499801bfbd9bde2aaafaa2} 
+int32\+\_\+t i32\+\_\+\+\_\+\+Update\+\_\+\+Path\+\_\+\+SM (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00078}{78}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8h_ab28519f073499801bfbd9bde2aaafaa2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{path__planner_8h_af59c10bbadd690729a6d1997cee0ea22}\index{path\_planner.h@{path\_planner.h}!v\_Init\_Path\_Planner@{v\_Init\_Path\_Planner}}
+\index{v\_Init\_Path\_Planner@{v\_Init\_Path\_Planner}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Path\_Planner()}{v\_Init\_Path\_Planner()}}
+{\footnotesize\ttfamily \label{path__planner_8h_af59c10bbadd690729a6d1997cee0ea22} 
+void v\+\_\+\+Init\+\_\+\+Path\+\_\+\+Planner (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{i32\+\_\+\+Start}{, }\item[{int32\+\_\+t}]{i32\+\_\+\+Final}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00064}{64}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{path__planner_8h_af59c10bbadd690729a6d1997cee0ea22_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{path__planner_8h_a794af90614053846b1535622ff70960c}\index{path\_planner.h@{path\_planner.h}!v\_Reset\_Path@{v\_Reset\_Path}}
+\index{v\_Reset\_Path@{v\_Reset\_Path}!path\_planner.h@{path\_planner.h}}
+\doxysubsubsection{\texorpdfstring{v\_Reset\_Path()}{v\_Reset\_Path()}}
+{\footnotesize\ttfamily \label{path__planner_8h_a794af90614053846b1535622ff70960c} 
+void v\+\_\+\+Reset\+\_\+\+Path (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{path__planner_8c_source_l00177}{177}} of file \doxymbox{\hyperlink{path__planner_8c_source}{path\+\_\+planner.\+c}}.
+

@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['saved_5fstate_0',['saved_state',['../structContext__t.html#a99038b3ed7d0053e4e1c58cbe18462bc',1,'Context_t']]],
+  ['serial_5fcomm_5fqueue_1',['Serial_Comm_Queue',['../serial__comm_8c.html#a7598e7612b6cba608f362dee22869d92',1,'serial_comm.c']]],
+  ['serial_5fcomm_5fuart_2',['Serial_Comm_UART',['../hw__init_8c.html#a14cf53d0f88309cc19cd375e9d85b0a8',1,'hw_init.c']]],
+  ['serial_5fmsg_3',['serial_msg',['../unionEvent__t.html#a4306ba444726f2e614dd9222c2638adc',1,'Event_t']]],
+  ['serial_5ftimer_5finstance_4',['Serial_Timer_Instance',['../hw__init_8c.html#a4c428904cc5dd691463b7ce810696a37',1,'hw_init.c']]],
+  ['sig_5',['sig',['../structEvent__Msg__Test__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Event_Msg_Test_t::sig'],['../structEvent__Serial__Msg__Test__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Event_Serial_Msg_Test_t::sig'],['../structCommand__Msg__Test__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Command_Msg_Test_t::sig'],['../structEvent__Msg__No__Data__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Event_Msg_No_Data_t::sig'],['../structEvent__Mode__Set__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Event_Mode_Set_t::sig'],['../structEvent__Msg__Position__t.html#a4df35076881d8d9a55c56ba5a26857ae',1,'Event_Msg_Position_t::sig']]],
+  ['slave_5frx_5fbuffer_6',['slave_rx_buffer',['../structspi__instance.html#a0632d3b1b398cb254c7340c6cd6c8553',1,'spi_instance']]],
+  ['slave_5frx_5fidx_7',['slave_rx_idx',['../structspi__instance.html#a349458d6856b919a4108fd3c94271127',1,'spi_instance']]],
+  ['slave_5frx_5fsize_8',['slave_rx_size',['../structspi__instance.html#a30db5d3af574b806028259d52041774d',1,'spi_instance']]],
+  ['slave_5ftx_5fbuffer_9',['slave_tx_buffer',['../structspi__instance.html#a2875f77b7f664a267d56731f25cb29b6',1,'spi_instance']]],
+  ['slave_5ftx_5fframe_10',['slave_tx_frame',['../structspi__instance.html#a223ec6f1329510bc15d6140e98dee7a3',1,'spi_instance']]],
+  ['slave_5ftx_5fframe_5fhandler_11',['slave_tx_frame_handler',['../structspi__instance.html#a0b0e308873d136aff81aa4aed3b5244b',1,'spi_instance']]],
+  ['slave_5ftx_5fidx_12',['slave_tx_idx',['../structspi__instance.html#a3c0b5fac4860a27aa7100a1c996e78a5',1,'spi_instance']]],
+  ['slave_5ftx_5fsize_13',['slave_tx_size',['../structspi__instance.html#a1d5dc578a8806564b4f8282c461160c2',1,'spi_instance']]],
+  ['slave_5fxfer_5fmode_14',['slave_xfer_mode',['../structspi__instance.html#a684269632332b8741b72987a23b2163f',1,'spi_instance']]],
+  ['soft_5freg_15',['soft_reg',['../structOPSRV__Type.html#a1967092efbc87854fa474d01122082d5',1,'OPSRV_Type']]],
+  ['sp_16',['sp',['../portContext_8h.html#ac848690e1c985db6afea8cab68f2e9c3',1,'portContext.h']]],
+  ['state_17',['state',['../structPID__Log__Info__t.html#a89f234133d3efe315836311cbf21c64b',1,'PID_Log_Info_t']]],
+  ['station_5faddress_5fhigher_5freg_18',['station_address_higher_reg',['../structeth__core__regs__t.html#a07334ecf0214b59a7bf8ed3604d36a8d',1,'eth_core_regs_t']]],
+  ['station_5faddress_5flower_5freg_19',['station_address_lower_reg',['../structeth__core__regs__t.html#a45dc061547f45765bd471f2933a731ff',1,'eth_core_regs_t']]],
+  ['step_5fspeed_20',['STEP_SPEED',['../Zero__Coarse__State_8c.html#ad19fe0902aaf959014591e6d09aebe5b',1,'STEP_SPEED:&#160;Zero_Coarse_State.c'],['../Zero__Fine__State_8c.html#ad19fe0902aaf959014591e6d09aebe5b',1,'STEP_SPEED:&#160;Zero_Fine_State.c']]],
+  ['stepper_5f1_21',['Stepper_1',['../hw__init_8c.html#ad82818481f92c54df3faae5eebd66108',1,'hw_init.c']]],
+  ['system_5fqueue_22',['System_Queue',['../system_8c.html#a3c6f61cbf2913714d99f0b192f9c9c23',1,'system.c']]]
+];

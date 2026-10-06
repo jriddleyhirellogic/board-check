@@ -1,0 +1,82 @@
+\doxysection{src/\+\+Focus\+\_\+\+States/\+\+Zero\+\_\+\+Fine\+\_\+\+State.c File Reference}
+\hypertarget{Zero__Fine__State_8c}{}\label{Zero__Fine__State_8c}\index{src/Focus\_States/Zero\_Fine\_State.c@{src/Focus\_States/Zero\_Fine\_State.c}}
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus\+\_\+states.\+h$>$}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+stepper.\+h"{}}\newline
+{\ttfamily \+\#include "{}debug\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc\+\_\+math.\+h"{}}\newline
+Include dependency graph for Zero\+\_\+\+Fine\+\_\+\+State.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Zero__Fine__State_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{Zero__Fine__State_8c_a9382102fd7505778233d51f0e60d982a}{Zero\+\_\+\+Fine\+\_\+\+State}} (\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static const uint32\+\_\+t \doxymbox{\hyperlink{Zero__Fine__State_8c_ad19fe0902aaf959014591e6d09aebe5b}{STEP\+\_\+\+SPEED}} = 5
+\item 
+static int32\+\_\+t \doxymbox{\hyperlink{Zero__Fine__State_8c_afca152bbae48c0f441f5f2c9c9069833}{i32\+\_\+\+Original\+\_\+\+Direction}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{Zero__Fine__State_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{Zero__Fine__State_8c_a9382102fd7505778233d51f0e60d982a}\index{Zero\_Fine\_State.c@{Zero\_Fine\_State.c}!Zero\_Fine\_State@{Zero\_Fine\_State}}
+\index{Zero\_Fine\_State@{Zero\_Fine\_State}!Zero\_Fine\_State.c@{Zero\_Fine\_State.c}}
+\doxysubsubsection{\texorpdfstring{Zero\_Fine\_State()}{Zero\_Fine\_State()}}
+{\footnotesize\ttfamily \label{Zero__Fine__State_8c_a9382102fd7505778233d51f0e60d982a} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Zero\+\_\+\+Fine\+\_\+\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structContext__t}{Context\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{Zero__Fine__State_8c_source_l00034}{34}} of file \doxymbox{\hyperlink{Zero__Fine__State_8c_source}{Zero\+\_\+\+Fine\+\_\+\+State.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Zero__Fine__State_8c_a9382102fd7505778233d51f0e60d982a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Zero__Fine__State_8c_a9382102fd7505778233d51f0e60d982a_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{Zero__Fine__State_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{Zero__Fine__State_8c_afca152bbae48c0f441f5f2c9c9069833}\index{Zero\_Fine\_State.c@{Zero\_Fine\_State.c}!i32\_Original\_Direction@{i32\_Original\_Direction}}
+\index{i32\_Original\_Direction@{i32\_Original\_Direction}!Zero\_Fine\_State.c@{Zero\_Fine\_State.c}}
+\doxysubsubsection{\texorpdfstring{i32\_Original\_Direction}{i32\_Original\_Direction}}
+{\footnotesize\ttfamily \label{Zero__Fine__State_8c_afca152bbae48c0f441f5f2c9c9069833} 
+int32\+\_\+t i32\+\_\+\+Original\+\_\+\+Direction\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{Zero__Fine__State_8c_source_l00032}{32}} of file \doxymbox{\hyperlink{Zero__Fine__State_8c_source}{Zero\+\_\+\+Fine\+\_\+\+State.\+c}}.
+
+\Hypertarget{Zero__Fine__State_8c_ad19fe0902aaf959014591e6d09aebe5b}\index{Zero\_Fine\_State.c@{Zero\_Fine\_State.c}!STEP\_SPEED@{STEP\_SPEED}}
+\index{STEP\_SPEED@{STEP\_SPEED}!Zero\_Fine\_State.c@{Zero\_Fine\_State.c}}
+\doxysubsubsection{\texorpdfstring{STEP\_SPEED}{STEP\_SPEED}}
+{\footnotesize\ttfamily \label{Zero__Fine__State_8c_ad19fe0902aaf959014591e6d09aebe5b} 
+const uint32\+\_\+t STEP\+\_\+\+SPEED = 5\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{Zero__Fine__State_8c_source_l00030}{30}} of file \doxymbox{\hyperlink{Zero__Fine__State_8c_source}{Zero\+\_\+\+Fine\+\_\+\+State.\+c}}.
+

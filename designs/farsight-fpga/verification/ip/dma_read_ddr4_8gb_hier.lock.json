@@ -1,0 +1,8 @@
+{
+  "core_id": "SmartDesign:dma_read_ddr4_8gb_hier",
+  "definition_digest": "81d49715739161dc318722b874208886390639984c54f61367a0f43224232b00",
+  "generated": "2026-09-25T22:24:17Z",
+  "libero": "Libero_SoC_v2024.1",
+  "name": "dma_read_ddr4_8gb_hier",
+  "sources_digest": "c22f95c54dd1581670b6834afc1cbbbdcb7bdb02fb593e862432599250ff9e74"
+}

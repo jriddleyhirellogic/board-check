@@ -1,0 +1,535 @@
+/*
+ * @file      pa3_health_monitor_io_tst_tb.sv
+ * @copyright Copyright (c) 2025 Turion Space. All rights reserved.
+ * @author    Chase Whyte (cwhyte@turionspace.com)
+ * @date      08/14/2025
+ * 
+ * @brief     Short description of what this module does.
+ * 
+ * @section changelog
+ * - 08/14/2025: Chase Whyte - Initial implementation
+ * 
+ */
+module pa3_health_monitor_io_tst_tb (
+
+);
+`timescale 1ns / 100ps
+
+localparam CLOCK_PERIOD = 20ns;
+localparam RETRY_TIME = CLOCK_PERIOD*25;
+localparam WT = 2000;
+localparam NUM_PWR_SRCS = 33;
+localparam NUM_PWR_REGIONS = 11;
+localparam logic [NUM_PWR_SRCS-1:0][1:0] retry_counts = {
+    2'd2,   //imx 3v3 = 60k
+    2'd0,   //imx 2v9 = 16k
+    2'd0,   //imx 1v8 = 20k
+    2'd1,   //imx 1v1 = 48k
+    2'd3,   //lvdt = 80k
+    2'd2,   //stepper sec = 69k
+    2'd1,   //stepper pri = 40k
+    2'd0,   //eth2 = 84k
+    2'd0,   //eth2 = 84k
+    2'd2,   //eth2 = 84k
+    2'd1,   //eth2 = 84k
+    2'd2,   //eth1 = 40k
+    2'd0,   //eth1 = 40k
+    2'd0,   //eth1 = 40k
+    2'd1,   //eth1 = 40k
+    2'd0,   //lvds = 20k
+    2'd0,   //fpga = 51k
+    2'd1,   //fpga = 51k
+    2'd0,   //fpga = 51k
+    2'd0,   //fpga = 51k
+    2'd2,   //fpga = 51k
+    2'd0,   //fpga = 51k
+    2'd0,   //fpga = 51k
+    2'd0,   //fpga = 51k
+    2'd1,   //ddr16 0v6 = 40k
+    2'd2,   //ddr16 1v2 = 60k
+    2'd0,   //ddr16 2v5 = 20k
+    2'd0,   //ddr8 0v6 = 54k
+    2'd1,   //ddr8 1v2 = 57k
+    2'd2,   //ddr8 2v5 = 72k
+    2'd1,    //step down = 40k
+    2'd2,    //step down = 40k
+    2'd0    //step down = 40k
+};
+
+
+logic      clk = '0;
+logic      ddr16_nfault_2v5 = '1;
+logic      ddr16_nfault_1v2 = '1;
+logic      ddr16_pgood_2v5;
+logic      ddr16_pgood_1v2;
+logic      ddr16_pgood_0v6;
+logic      ddr8_nfault_2v5 = '1;
+logic      ddr8_nfault_1v2 = '1;
+logic      ddr8_pgood_2v5;
+logic      ddr8_pgood_1v2;
+logic      ddr8_pgood_0v6;
+logic      eth1_ctrl = '0;
+logic      eth1_pgood_1v0;
+logic      eth1_pgood_1v0a;
+logic      eth1_pgood_2v5a;
+logic      eth1_pgood_3v3;
+logic      eth2_ctrl = '0;
+logic      eth2_pgood_1v0;
+logic      eth2_pgood_1v0a;
+logic      eth2_pgood_2v5a;
+logic      eth2_pgood_3v3;
+logic      fpga_nfault_1v0 = '1;
+logic      fpga_pgood_1v0;
+logic      fpga_pgood_1v0a;
+logic      fpga_pgood_1v25a;
+logic      fpga_pgood_1v8;
+logic      fpga_pgood_1v8_imx;
+logic      fpga_pgood_2v5a;
+logic      fpga_pgood_3v3_b4;
+logic      fpga_pgood_3v3_b5;
+logic      imx_ctrl = '0;
+logic      imx_nfault_1v1 = '1;
+logic      imx_pgood_1v1;
+logic      imx_pgood_1v8;
+logic      imx_pgood_2v9;
+logic      imx_pgood_3v3;
+logic      lvdt_ctrl = '0;
+logic      lvdt_pgood;
+logic      lvds_ctrl = '0;
+logic      lvds_pgood;
+logic      step_down_nfault_2v2 = '1;
+logic      step_down_nfault_3v0 = '1;
+logic      step_down_nfault_4v0 = '1;
+logic      step_down_pgood_2v2;
+logic      step_down_pgood_3v0;
+logic      step_down_pgood_4v0;
+logic      arstn = '0;
+logic      stepper_pri_ctrl = '0;
+logic      stepper_pri_nfault = '1;
+logic      stepper_pri_pgood;
+logic      stepper_sec_ctrl = '0;
+logic      stepper_sec_nfault = '1;
+logic      stepper_sec_pgood;
+logic [1:0] ddr8_failure_metadata;
+logic [1:0] ddr16_failure_metadata;
+logic [2:0] eth1_failure_metadata;
+logic [2:0] eth2_failure_metadata;
+logic stepper_pri_failure_metadata;
+logic stepper_sec_failure_metadata;
+logic lvdt_failure_metadata;
+logic [2:0] imx_failure_metadata;
+
+logic       ddr16_en_2v5;
+logic       ddr16_en_1v2;
+logic       ddr16_en_0v6;
+logic       ddr8_en_2v5;
+logic       ddr8_en_1v2;
+logic       ddr8_en_0v6;
+logic       ddr16_status_to_pf;
+logic       ddr8_status_to_pf;
+logic       eth1_en_1v0;
+logic       eth1_en_1v0a;
+logic       eth1_en_2v5a;
+logic       eth1_en_3v3;
+logic       eth1_status_to_pf;
+logic       eth2_en_1v0;
+logic       eth2_en_1v0a;
+logic       eth2_en_2v5a;
+logic       eth2_en_3v3;
+logic       eth2_status_to_pf;
+logic       fpga_en_1v0;
+logic       fpga_en_1v0a;
+logic       fpga_en_1v25a;
+logic       fpga_en_1v8;
+logic       fpga_en_1v8_imx;
+logic       fpga_en_2v5a;
+logic       fpga_en_3v3_b4;
+logic       fpga_en_3v3_b5;
+logic [2:0] fw_version;
+logic       imx_en_1v1;
+logic       imx_en_1v8;
+logic       imx_en_2v9;
+logic       imx_en_3v3;
+logic       imx_status_to_pf;
+logic       lvds_status_to_pf;
+logic       lvdt_en;
+logic       lvdt_status_to_pf;
+logic       lvds_en;
+logic       step_down_en_2v2;
+logic       step_down_en_3v0;
+logic       step_down_en_4v0;
+logic       stepper_pri_en;
+logic       stepper_pri_status_to_pf;
+logic       stepper_sec_en;
+logic       stepper_sec_status_to_pf;
+logic       imx_nshort_1v1;
+logic       imx_nshort_1v8;
+logic [6:0] debug;
+logic       pa3_status_to_pf;
+logic       heartbeat; 
+logic       pf_status_to_pf;
+logic       step_down_status_to_pf;
+logic       rstn;
+
+logic [2:0]    ddr16_en;
+//logic [2:0]    ddr16_pgood;
+logic [1:0]    ddr16_nfault;
+logic [2:0]    ddr8_en;
+//logic [2:0]    ddr8_pgood;
+logic [1:0]    ddr8_nfault;   
+logic [3:0]    imx_en;
+//logic [3:0]    imx_pgood;
+logic          imx_nfault;
+logic [1:0]    imx_nshort;
+logic [2:0]    step_down_en;
+//logic [2:0]    step_down_pgood;
+logic [2:0]    step_down_nfault;
+logic [7:0]    fpga_en;
+//logic [7:0]    fpga_pgood;
+logic          fpga_nfault;
+logic [3:0]    eth1_en;
+//logic [3:0]    eth1_pgood;
+logic [3:0]    eth2_en;
+//logic [3:0]    eth2_pgood;
+logic       rs422_ttl_farsight_to_bus_pa3;
+logic       rs422_ttl_bus_to_farsight_pa3 = '1;
+logic       rs422_ttl_farsight_to_bus_pf = '1;
+logic       rs422_ttl_bus_to_farsight_pf;
+logic [NUM_PWR_SRCS-1:0] pgood_sigs;
+logic [NUM_PWR_SRCS-1:0] enable_sigs;
+logic [NUM_PWR_SRCS-1:0] inject_pgood = '1;
+logic [NUM_PWR_SRCS-1:0][31:0] rise_times;
+
+logic fpga_ping = 1'b0;
+logic eps_efuse_pgood = 1'b1;
+logic [7:0] data_from_farsight;
+logic       rx_data_ready;
+logic [NUM_PWR_REGIONS-1:0] boot_done;
+
+
+
+`define sm_path pa3_top_i.health_monitor_io_0.health_monitor_i
+int test_num = 0;
+
+top #(   
+    .WAIT_TIME_MULT_FACTOR(3)
+) pa3_top_i (.*);
+
+
+
+initial begin
+    force pa3_top_i.health_monitor_io_0.health_monitor_i.step_down_start_boot = '1;
+end
+initial begin
+    for(int j = 0; j < NUM_PWR_SRCS; j++) begin
+        rise_times[j] = $urandom_range(1,WT);
+    end
+end
+
+assign ddr16_en         = {ddr16_en_0v6, ddr16_en_1v2, ddr16_en_2v5};
+assign ddr16_nfault     = {ddr16_nfault_1v2, ddr16_nfault_2v5};
+assign ddr8_en          = {ddr8_en_0v6, ddr8_en_1v2, ddr8_en_2v5};
+assign ddr8_nfault      = {ddr8_nfault_1v2, ddr8_nfault_2v5};
+assign imx_en           = {imx_en_3v3, imx_en_2v9, imx_en_1v8, imx_en_1v1};
+assign imx_nfault       = imx_nfault_1v1;
+assign step_down_en     = {step_down_en_4v0, step_down_en_3v0, step_down_en_2v2};
+assign step_down_nfault = {step_down_nfault_4v0, step_down_nfault_3v0, step_down_nfault_2v2};
+assign fpga_en          = {fpga_en_3v3_b5, fpga_en_3v3_b4, fpga_en_2v5a, fpga_en_1v8_imx, 
+                           fpga_en_1v8, fpga_en_1v25a, fpga_en_1v0a, fpga_en_1v0};
+assign fpga_nfault      = fpga_nfault_1v0;
+assign eth1_en          = {eth1_en_3v3, eth1_en_2v5a, eth1_en_1v0a, eth1_en_1v0};
+assign eth2_en          = {eth2_en_3v3, eth2_en_2v5a, eth2_en_1v0a, eth2_en_1v0};
+assign imx_nshort       = {imx_nshort_1v8, imx_nshort_1v1};
+
+assign pf_status = {
+    imx_status_to_pf,
+    lvdt_status_to_pf,
+    stepper_sec_status_to_pf,
+    stepper_pri_status_to_pf,
+    eth2_status_to_pf,
+    eth1_status_to_pf,
+    lvds_status_to_pf,
+    ddr16_status_to_pf,
+    ddr8_status_to_pf
+};
+
+assign enable_sigs = {
+    imx_en,
+    lvdt_en,
+    stepper_sec_en,
+    stepper_pri_en,
+    eth2_en,
+    eth1_en,
+    lvds_en,
+    fpga_en,
+    ddr16_en,
+    ddr8_en,
+    step_down_en
+};
+
+assign {
+    {imx_pgood_3v3, imx_pgood_2v9, imx_pgood_1v8, imx_pgood_1v1},
+    lvdt_pgood,
+    stepper_sec_pgood,
+    stepper_pri_pgood,
+    {eth2_pgood_3v3, eth2_pgood_2v5a, eth2_pgood_1v0a, eth2_pgood_1v0},
+    {eth1_pgood_3v3, eth1_pgood_2v5a, eth1_pgood_1v0a, eth1_pgood_1v0},
+    lvds_pgood,
+    {fpga_pgood_3v3_b5, fpga_pgood_3v3_b4, fpga_pgood_2v5a, fpga_pgood_1v8_imx, 
+                           fpga_pgood_1v8, fpga_pgood_1v25a, fpga_pgood_1v0a, fpga_pgood_1v0},
+    {ddr16_pgood_0v6, ddr16_pgood_1v2, ddr16_pgood_2v5},
+    {ddr8_pgood_0v6, ddr8_pgood_1v2, ddr8_pgood_2v5},
+    {step_down_pgood_4v0, step_down_pgood_3v0, step_down_pgood_2v2}
+} = pgood_sigs;
+
+assign boot_done = {
+    `sm_path.imx_boot_done,
+    `sm_path.lvdt_boot_done,
+    `sm_path.stepper_sec_boot_done,
+    `sm_path.stepper_pri_boot_done,
+    `sm_path.eth2_boot_done,
+    `sm_path.eth1_boot_done,
+    `sm_path.lvds_boot_done,
+    `sm_path.fpga_boot_done,
+    `sm_path.ddr16_boot_done,
+    `sm_path.ddr8_boot_done,
+    `sm_path.step_down_boot_done
+};
+assign rstn = pa3_top_i.health_monitor_io_0.rstn;
+
+localparam IMX_BOOT_33_NUM = 32;
+localparam IMX_BOOT_29_NUM = 31;
+localparam IMX_BOOT_18_NUM = 30;
+localparam IMX_BOOT_11_NUM = 29;
+localparam LVDT_BOOT       = 28;
+localparam STEPPER_SEC_NUM = 27;
+localparam STEPPER_PRI_NUM = 26;
+localparam ETH2_NUM3       = 25;
+localparam ETH2_NUM2       = 24;
+localparam ETH2_NUM1       = 23;
+localparam ETH2_NUM0       = 22;
+localparam ETH1_NUM3       = 21;
+localparam ETH1_NUM2       = 20;
+localparam ETH1_NUM1       = 19;
+localparam ETH1_NUM0       = 18;
+localparam LVDS_NUM        = 17;
+localparam FPGA_NUM7       = 16;
+localparam FPGA_NUM6       = 15;
+localparam FPGA_NUM5       = 14;
+localparam FPGA_NUM4       = 13;
+localparam FPGA_NUM3       = 12;
+localparam FPGA_NUM2       = 11;
+localparam FPGA_NUM1       = 10;
+localparam FPGA_NUM0       = 9;
+localparam DDR16_NUM2      = 8;
+localparam DDR16_NUM1      = 7;
+localparam DDR16_NUM0      = 6;
+localparam DDR8_NUM2       = 5;
+localparam DDR8_NUM1       = 4;
+localparam DDR8_NUM0       = 3;
+localparam STEP_DOWN_NUM2  = 2;
+localparam STEP_DOWN_NUM1  = 1;
+localparam STEP_DOWN_NUM0  = 0;
+
+
+
+always #(CLOCK_PERIOD/2) clk = ~clk;
+
+initial begin
+    forever begin
+        repeat(10_000) @(posedge clk);
+        fpga_ping = (test_num != 4);
+        repeat(10) @(posedge clk);
+        fpga_ping = 1'b0;
+    end
+end
+
+assert property (@(posedge clk) (pgood_sigs[16:9] != '1) |-> pf_status == '0) else $display("pf_status: %h is not equal to pgood_sigs: %h", pf_status, pgood_sigs[16:9] );
+//step down conv
+assert property (@(posedge clk) enable_sigs[1] |-> enable_sigs[0]);
+assert property (@(posedge clk) enable_sigs[2] |-> enable_sigs[1]);
+//ddr8
+assert property (@(posedge clk) enable_sigs[4] |-> enable_sigs[3]);
+assert property (@(posedge clk) enable_sigs[5] |-> enable_sigs[4]);
+//ddr16
+assert property (@(posedge clk) enable_sigs[7] |-> enable_sigs[6]);
+assert property (@(posedge clk) enable_sigs[8] |-> enable_sigs[7]);
+//fpga
+assert property (@(posedge clk) enable_sigs[10] |-> enable_sigs[9]);
+assert property (@(posedge clk) enable_sigs[11] |-> enable_sigs[10]);
+assert property (@(posedge clk) enable_sigs[12] |-> enable_sigs[11]);
+assert property (@(posedge clk) enable_sigs[13] |-> enable_sigs[12]);
+assert property (@(posedge clk) enable_sigs[14] |-> enable_sigs[13]);
+assert property (@(posedge clk) enable_sigs[15] |-> enable_sigs[14]);
+assert property (@(posedge clk) enable_sigs[16] |-> enable_sigs[15]);
+//eth1
+assert property (@(posedge clk) enable_sigs[19] |-> enable_sigs[18]);
+assert property (@(posedge clk) enable_sigs[20] |-> enable_sigs[19]);
+assert property (@(posedge clk) enable_sigs[21] |-> enable_sigs[20]);
+//eth2
+assert property (@(posedge clk) enable_sigs[23] |-> enable_sigs[22]);
+assert property (@(posedge clk) enable_sigs[24] |-> enable_sigs[23]);
+assert property (@(posedge clk) enable_sigs[25] |-> enable_sigs[24]);
+//imx
+assert property (@(posedge clk) enable_sigs[30] |-> enable_sigs[29]);
+assert property (@(posedge clk) enable_sigs[31] |-> enable_sigs[30]);
+assert property (@(posedge clk) enable_sigs[32] |-> enable_sigs[31]);
+
+/*
+initial begin
+    #40ns;
+    inject_pgood = '1;
+    rstn = 1'b1;
+    test_num = REG_NUM0;
+    if(test_num >= REG_NUM0 && test_num <= IMX_BOOT_33_NUM && test_num != STEPPER_SEC_NUM) begin
+        inject_pgood[test_num] = '0;
+        wait(`sm_path.boot_done[test_num]);
+        assert(`sm_path.boot_failed[test_num]);
+        repeat(1) @(posedge clk);
+        if(crash_on_fail[test_num]) begin
+            assert(enable_sigs == '0);
+            $stop;
+        end
+        else begin
+            wait(`sm_path.boot_done[17]);
+        end
+        
+
+    end
+    if(test_num == STEPPER_SEC_NUM) begin
+        inject_pgood[STEPPER_SEC_NUM:STEPPER_PRI_NUM] = '0;
+        wait(`sm_path.lpm_boot_done);
+        repeat(1) @(posedge clk);
+        assert(enable_sigs[28:26] == '0);
+    end
+end
+
+
+
+initial begin
+    $display("starting sim");
+    wait(`sm_path.lpm_boot_done);
+    @(posedge clk);
+    #1ns;
+    imx_pwr_toggle = 1'b0;
+    wait(`sm_path.boot_done[17] == '1);
+    #1ns;
+    imx_pwr_toggle = 1'b1;
+    wait(`sm_path.boot_done[14] == '0);
+    boot_down_cmd = '1;
+    wait(pgood_sigs == '0);
+    $stop;
+end
+*/
+
+genvar i;
+generate
+for(i = 0; i < NUM_PWR_SRCS; i++) begin
+    drive_pgood_nfault drive_pgood_nfault_i (
+        .clk,
+        .rstn,
+        .enable(enable_sigs[i]),
+        .inject_pgood(inject_pgood[i]),
+        .boot_done(boot_done[i]),
+        .rise_time(rise_times[i]),
+        .retry_count(retry_counts[i]),
+        .pgood(pgood_sigs[i])
+    );
+end
+endgenerate
+
+logic oen = '1;
+
+UART0 UART0_0(
+    // Inputs
+    .BIT8        ( '1 ),
+    .CLK         ( clk ),
+    .CSN         ( '0 ),
+    .ODD_N_EVEN  ( '0 ),
+    .OEN         ( oen ),
+    .PARITY_EN   ( '0 ),
+    .RESET_N     ( rstn ),
+    .RX          ( rs422_ttl_farsight_to_bus_pa3 ),
+    .WEN         ( '1 ),
+    .BAUD_VAL    ( 32'd26 ),
+    .DATA_IN     ( '0 ),
+    // Outputs
+    .OVERFLOW    ( overflow ),
+    .PARITY_ERR  ( par_err ),
+    .RXRDY       ( rx_data_ready ),
+    .TX          (  ),
+    .TXRDY       (  ),
+    .FRAMING_ERR (  ),
+    .DATA_OUT    ( data_from_farsight ) 
+);
+
+initial begin
+    forever begin
+        wait(rx_data_ready);
+        @(posedge clk);
+        oen = '0;
+        @(posedge clk);
+        oen = '1;
+        @(posedge clk);
+        @(posedge clk);
+        @(posedge clk);
+    end
+end
+initial begin
+    $display("starting sim");
+    #60ns;
+    arstn = 1'b1;
+    test_num = 5;
+    //wait(health_monitor_io_i.pa3_hw_test_i.test_num == 'd47);
+    
+    if(test_num == 0) begin
+        wait(`sm_path.fpga_boot_done);
+        lvds_ctrl = '1;
+        imx_ctrl = '1;
+        wait(`sm_path.imx_boot_done && `sm_path.lvds_boot_done);
+        repeat(10010) @(posedge clk);
+    end
+    else if(test_num == 1) begin
+        inject_pgood[0] = '0;
+        wait(`sm_path.step_down_boot_done);
+        repeat(50_000) @(posedge clk);
+    end
+    else if(test_num == 2) begin
+        wait(`sm_path.fpga_boot_done);
+        stepper_pri_ctrl = '1;
+        stepper_sec_ctrl = '1;
+        wait(`sm_path.stepper_pri_boot_done);
+        eps_efuse_pgood = '0;
+        wait(boot_done == '0);
+    end
+    else if(test_num == 3) begin
+        wait(`sm_path.fpga_boot_done);
+        eth1_ctrl = '1;
+        wait(`sm_path.eth1_boot_done);
+        inject_pgood[21] = '0;
+        wait(!`sm_path.eth1_boot_done);
+        eth1_ctrl = '0;
+        inject_pgood[21] = '1;
+        repeat(1) @(posedge clk);
+        eth1_ctrl = '1;
+        wait(!`sm_path.eth1_boot_done);
+
+    end
+    else if(test_num == 5) begin
+        force pa3_top_i.health_monitor_io_0.uart_ctrl_i.fail_broadcast_cntr = '1;
+        wait(`sm_path.fpga_boot_done);
+        inject_pgood[8] = '0;
+        
+        wait(pa3_top_i.health_monitor_io_0.uart_ctrl_i.uart_state == 'd10);
+        repeat(2_000_000) @(posedge clk);
+    end
+    else if(test_num == 6) begin
+        wait(`sm_path.fpga_boot_done);
+        step_down_nfault_2v2 = '0;
+        repeat(10_000) @(posedge clk);
+
+    end
+
+    //$stop;
+end
+endmodule

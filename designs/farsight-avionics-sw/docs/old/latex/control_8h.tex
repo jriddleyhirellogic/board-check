@@ -1,0 +1,86 @@
+\doxysection{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+control.h File Reference}
+\hypertarget{control_8h}{}\label{control_8h}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/control.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/control.h}}
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}timers.\+h"{}}\newline
+{\ttfamily \+\#include "{}events.\+h"{}}\newline
+Include dependency graph for control.\+h:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{control_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{control_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{control_8h_a3855a6684263a0db0ac48251f2f23e12}{v\+\_\+\+Control\+\_\+\+Task}} (void \texorpdfstring{$\ast$}{*}pv\+Parameters)
+\item 
+void \doxymbox{\hyperlink{control_8h_a6a745dec0048a514ed4e31aaf714fefb}{v\+\_\+\+Post\+\_\+\+Control\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{control_8h_ad72c82a5d43d2103a828ce2b185b7ff2}{v\+\_\+\+Post\+\_\+\+Control\+\_\+\+Event\+\_\+\+ISR}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+void \doxymbox{\hyperlink{control_8h_a2adc452a87fea5abd763419f5c0bb8fe}{v\+\_\+\+Start\+\_\+\+Control\+\_\+\+Timer}} (\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}} ticks)
+\item 
+void \doxymbox{\hyperlink{control_8h_a594ba520fc50764eb5b4c63b8078d0d3}{v\+\_\+\+Stop\+\_\+\+Control\+\_\+\+Timer}} (void)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{control_8h_ad8e07a7a6068315f36c3131a88a164fd}{b\+\_\+\+Is\+\_\+\+Idle}} (void)
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{control_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{control_8h_ad8e07a7a6068315f36c3131a88a164fd}\index{control.h@{control.h}!b\_Is\_Idle@{b\_Is\_Idle}}
+\index{b\_Is\_Idle@{b\_Is\_Idle}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{b\_Is\_Idle()}{b\_Is\_Idle()}}
+{\footnotesize\ttfamily \label{control_8h_ad8e07a7a6068315f36c3131a88a164fd} 
+uint8\+\_\+t b\+\_\+\+Is\+\_\+\+Idle (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{focus_8c_source_l00103}{103}} of file \doxymbox{\hyperlink{focus_8c_source}{focus.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{control_8h_ad8e07a7a6068315f36c3131a88a164fd_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{control_8h_a3855a6684263a0db0ac48251f2f23e12}\index{control.h@{control.h}!v\_Control\_Task@{v\_Control\_Task}}
+\index{v\_Control\_Task@{v\_Control\_Task}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{v\_Control\_Task()}{v\_Control\_Task()}}
+{\footnotesize\ttfamily \label{control_8h_a3855a6684263a0db0ac48251f2f23e12} 
+void v\+\_\+\+Control\+\_\+\+Task (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{pv\+Parameters}{}\end{DoxyParamCaption})}
+
+\Hypertarget{control_8h_a6a745dec0048a514ed4e31aaf714fefb}\index{control.h@{control.h}!v\_Post\_Control\_Event@{v\_Post\_Control\_Event}}
+\index{v\_Post\_Control\_Event@{v\_Post\_Control\_Event}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Control\_Event()}{v\_Post\_Control\_Event()}}
+{\footnotesize\ttfamily \label{control_8h_a6a745dec0048a514ed4e31aaf714fefb} 
+void v\+\_\+\+Post\+\_\+\+Control\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+\Hypertarget{control_8h_ad72c82a5d43d2103a828ce2b185b7ff2}\index{control.h@{control.h}!v\_Post\_Control\_Event\_ISR@{v\_Post\_Control\_Event\_ISR}}
+\index{v\_Post\_Control\_Event\_ISR@{v\_Post\_Control\_Event\_ISR}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_Control\_Event\_ISR()}{v\_Post\_Control\_Event\_ISR()}}
+{\footnotesize\ttfamily \label{control_8h_ad72c82a5d43d2103a828ce2b185b7ff2} 
+void v\+\_\+\+Post\+\_\+\+Control\+\_\+\+Event\+\_\+\+ISR (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+\Hypertarget{control_8h_a2adc452a87fea5abd763419f5c0bb8fe}\index{control.h@{control.h}!v\_Start\_Control\_Timer@{v\_Start\_Control\_Timer}}
+\index{v\_Start\_Control\_Timer@{v\_Start\_Control\_Timer}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{v\_Start\_Control\_Timer()}{v\_Start\_Control\_Timer()}}
+{\footnotesize\ttfamily \label{control_8h_a2adc452a87fea5abd763419f5c0bb8fe} 
+void v\+\_\+\+Start\+\_\+\+Control\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{Tick\+Type\+\_\+t}}}]{ticks}{}\end{DoxyParamCaption})}
+
+\Hypertarget{control_8h_a594ba520fc50764eb5b4c63b8078d0d3}\index{control.h@{control.h}!v\_Stop\_Control\_Timer@{v\_Stop\_Control\_Timer}}
+\index{v\_Stop\_Control\_Timer@{v\_Stop\_Control\_Timer}!control.h@{control.h}}
+\doxysubsubsection{\texorpdfstring{v\_Stop\_Control\_Timer()}{v\_Stop\_Control\_Timer()}}
+{\footnotesize\ttfamily \label{control_8h_a594ba520fc50764eb5b4c63b8078d0d3} 
+void v\+\_\+\+Stop\+\_\+\+Control\+\_\+\+Timer (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+

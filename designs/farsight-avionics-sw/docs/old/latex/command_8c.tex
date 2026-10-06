@@ -1,0 +1,281 @@
+\doxysection{src/\+command.c File Reference}
+\hypertarget{command_8c}{}\label{command_8c}\index{src/command.c@{src/command.c}}
+{\ttfamily \+\#include $<$stdint.\+h$>$}\newline
+{\ttfamily \+\#include $<$string.\+h$>$}\newline
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include $<$focus.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}event\+\_\+groups.\+h"{}}\newline
+{\ttfamily \+\#include "{}queue.\+h"{}}\newline
+{\ttfamily \+\#include "{}hal\+\_\+uart16550.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+comm.\+h"{}}\newline
+{\ttfamily \+\#include "{}lvdt.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}config.\+h"{}}\newline
+{\ttfamily \+\#include "{}serial\+\_\+sm.\+h"{}}\newline
+{\ttfamily \+\#include "{}events.\+h"{}}\newline
+{\ttfamily \+\#include "{}command.\+h"{}}\newline
+{\ttfamily \+\#include "{}status.\+h"{}}\newline
+{\ttfamily \+\#include "{}system.\+h"{}}\newline
+{\ttfamily \+\#include "{}crc.\+h"{}}\newline
+{\ttfamily \+\#include "{}register.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+task.\+h"{}}\newline
+{\ttfamily \+\#include "{}version.\+h"{}}\newline
+Include dependency graph for command.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{command_8c_ad470d09621057ac09162e6b612639834}{v\+\_\+\+Init\+\_\+\+Response}} (\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+\+Header, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer)
+\begin{DoxyCompactList}\small\item\em Initializes the response to a TMTC packet The sync code is prepended and the header information is copied from the request as a default. Finally, the response length in the header is initialized -\/ this may increase as data is added. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{command_8c_a8a688ac5ae8ecf6d692b794e5ca7784d}{v\+\_\+\+Add\+\_\+\+Response\+\_\+\+Data}} (void \texorpdfstring{$\ast$}{*}p\+\_\+\+Data, uint8\+\_\+t u8\+\_\+\+Data\+\_\+\+Size, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer)
+\item 
+static void \doxymbox{\hyperlink{command_8c_ab2dc43435e6d4e5f789284ae20814567}{v\+\_\+\+Finalize\+\_\+\+Msg}} (uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+u8\+\_\+\+Response\+\_\+\+Length)
+\begin{DoxyCompactList}\small\item\em Finalize the response packet by adding data count and CRC check. \end{DoxyCompactList}\item 
+static void \doxymbox{\hyperlink{command_8c_a63bc1f8c576b30cc60439a5d088e2eb8}{v\+\_\+\+Set\+\_\+\+Error\+\_\+\+Code}} (uint8\+\_\+t u8\+\_\+\+Error, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer)
+\item 
+static void \doxymbox{\hyperlink{command_8c_add74fb10deac718e24a895aa671ffb17}{v\+\_\+\+Set\+\_\+\+Sequence}} (uint8\+\_\+t u8\+\_\+\+Sequence, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer)
+\item 
+void \doxymbox{\hyperlink{command_8c_a94661f9573c10f09b10a904516eda998}{v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event}} (\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{command_8c_a935c0986319ad5e2a18b69782d7ebda2}{u8\+\_\+\+Calculate\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns}} (uint32\+\_\+t u32\+\_\+\+Raw\+\_\+\+Pos, int32\+\_\+t \texorpdfstring{$\ast$}{*}i32\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{command_8c_a6e59c976789aaef6bf12f1c18be6e97a}{Execute\+\_\+\+Command}} (\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}p\+\_\+\+Header, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+u8\+\_\+\+Data, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+\+Response\+\_\+\+Buffer, uint8\+\_\+t \texorpdfstring{$\ast$}{*}p\+\_\+u8\+\_\+\+Response\+\_\+\+Length)
+\begin{DoxyCompactList}\small\item\em Executes a TMTC command This executes the command and constructs a response packet to be sent through the serial port. The opcode is extracted from the header information and is used to signal a task through the message queue. The response packet header defaults to that of the request packet. Errors in the response packet only indicate the correctness of the request, as some take a long time to execute. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{command_8c_a36f229bbda63818246ec86181b1fdd42}{\+\_\+\+\_\+attribute\+\_\+\+\_\+}} ((unused))
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static uint8\+\_\+t \doxymbox{\hyperlink{command_8c_a81bd11a017cf07a8601ea7a875738256}{u8\+\_\+\+Response\+\_\+\+Length}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{command_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{command_8c_a36f229bbda63818246ec86181b1fdd42}\index{command.c@{command.c}!\_\_attribute\_\_@{\_\_attribute\_\_}}
+\index{\_\_attribute\_\_@{\_\_attribute\_\_}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{\_\_attribute\_\_()}{\_\_attribute\_\_()}}
+{\footnotesize\ttfamily \label{command_8c_a36f229bbda63818246ec86181b1fdd42} 
+\+\_\+\+\_\+attribute\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{(unused)}]{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00275}{275}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+\Hypertarget{command_8c_a6e59c976789aaef6bf12f1c18be6e97a}\index{command.c@{command.c}!Execute\_Command@{Execute\_Command}}
+\index{Execute\_Command@{Execute\_Command}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{Execute\_Command()}{Execute\_Command()}}
+{\footnotesize\ttfamily \label{command_8c_a6e59c976789aaef6bf12f1c18be6e97a} 
+uint8\+\_\+t Execute\+\_\+\+Command (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Header}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+u8\+\_\+\+Data}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+u8\+\_\+\+Response\+\_\+\+Length}{}\end{DoxyParamCaption})}
+
+
+
+Executes a TMTC command This executes the command and constructs a response packet to be sent through the serial port. The opcode is extracted from the header information and is used to signal a task through the message queue. The response packet header defaults to that of the request packet. Errors in the response packet only indicate the correctness of the request, as some take a long time to execute. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Header} & Pointer to header structure. This contains the opcode, error code and sequence number \\
+\hline
+{\em p\+\_\+u8\+\_\+\+Data} & Pointer to the data portion of the received TMTC request packet \\
+\hline
+{\em p\+\_\+\+Response\+\_\+\+Buffer} & Pointer to buffer where response packet is constructed. \\
+\hline
+{\em p\+\_\+u8\+\_\+\+Response\+\_\+\+Length} & Pointer to length of response packet \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00054}{54}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a6e59c976789aaef6bf12f1c18be6e97a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a6e59c976789aaef6bf12f1c18be6e97a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_a935c0986319ad5e2a18b69782d7ebda2}\index{command.c@{command.c}!u8\_Calculate\_Focus\_Distance\_microns@{u8\_Calculate\_Focus\_Distance\_microns}}
+\index{u8\_Calculate\_Focus\_Distance\_microns@{u8\_Calculate\_Focus\_Distance\_microns}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Calculate\_Focus\_Distance\_microns()}{u8\_Calculate\_Focus\_Distance\_microns()}}
+{\footnotesize\ttfamily \label{command_8c_a935c0986319ad5e2a18b69782d7ebda2} 
+uint8\+\_\+t u8\+\_\+\+Calculate\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{u32\+\_\+\+Raw\+\_\+\+Pos}{, }\item[{int32\+\_\+t \texorpdfstring{$\ast$}{*}}]{i32\+\_\+\+Focus\+\_\+\+Distance\+\_\+microns}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera_8c_source_l00323}{323}} of file \doxymbox{\hyperlink{camera_8c_source}{camera.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a935c0986319ad5e2a18b69782d7ebda2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_a8a688ac5ae8ecf6d692b794e5ca7784d}\index{command.c@{command.c}!v\_Add\_Response\_Data@{v\_Add\_Response\_Data}}
+\index{v\_Add\_Response\_Data@{v\_Add\_Response\_Data}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Add\_Response\_Data()}{v\_Add\_Response\_Data()}}
+{\footnotesize\ttfamily \label{command_8c_a8a688ac5ae8ecf6d692b794e5ca7784d} 
+void v\+\_\+\+Add\+\_\+\+Response\+\_\+\+Data (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Data}{, }\item[{uint8\+\_\+t}]{u8\+\_\+\+Data\+\_\+\+Size}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00281}{281}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=303pt]{command_8c_a8a688ac5ae8ecf6d692b794e5ca7784d_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a8a688ac5ae8ecf6d692b794e5ca7784d_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_ab2dc43435e6d4e5f789284ae20814567}\index{command.c@{command.c}!v\_Finalize\_Msg@{v\_Finalize\_Msg}}
+\index{v\_Finalize\_Msg@{v\_Finalize\_Msg}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Finalize\_Msg()}{v\_Finalize\_Msg()}}
+{\footnotesize\ttfamily \label{command_8c_ab2dc43435e6d4e5f789284ae20814567} 
+void v\+\_\+\+Finalize\+\_\+\+Msg (\begin{DoxyParamCaption}\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+u8\+\_\+\+Response\+\_\+\+Length}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Finalize the response packet by adding data count and CRC check. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Response\+\_\+\+Buffer} & Buffer used to send response \\
+\hline
+{\em p\+\_\+u8\+\_\+\+Response\+\_\+\+Length} & Total length of packet -\/ used by serial driver. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00293}{293}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=238pt]{command_8c_ab2dc43435e6d4e5f789284ae20814567_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_ab2dc43435e6d4e5f789284ae20814567_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_ad470d09621057ac09162e6b612639834}\index{command.c@{command.c}!v\_Init\_Response@{v\_Init\_Response}}
+\index{v\_Init\_Response@{v\_Init\_Response}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_Response()}{v\_Init\_Response()}}
+{\footnotesize\ttfamily \label{command_8c_ad470d09621057ac09162e6b612639834} 
+void v\+\_\+\+Init\+\_\+\+Response (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{structSerial__Msg__Header__t}{Serial\+\_\+\+Msg\+\_\+\+Header\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Header}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Initializes the response to a TMTC packet The sync code is prepended and the header information is copied from the request as a default. Finally, the response length in the header is initialized -\/ this may increase as data is added. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+\_\+\+Header} & Pointer to header information \\
+\hline
+{\em p\+\_\+\+Response\+\_\+\+Buffer} & Pointer to data buffer to be used for the response. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00248}{248}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=269pt]{command_8c_ad470d09621057ac09162e6b612639834_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_ad470d09621057ac09162e6b612639834_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_a94661f9573c10f09b10a904516eda998}\index{command.c@{command.c}!v\_Post\_System\_Event@{v\_Post\_System\_Event}}
+\index{v\_Post\_System\_Event@{v\_Post\_System\_Event}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Post\_System\_Event()}{v\_Post\_System\_Event()}}
+{\footnotesize\ttfamily \label{command_8c_a94661f9573c10f09b10a904516eda998} 
+void v\+\_\+\+Post\+\_\+\+System\+\_\+\+Event (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{system_8c_source_l00085}{85}} of file \doxymbox{\hyperlink{system_8c_source}{system.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a94661f9573c10f09b10a904516eda998_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_a63bc1f8c576b30cc60439a5d088e2eb8}\index{command.c@{command.c}!v\_Set\_Error\_Code@{v\_Set\_Error\_Code}}
+\index{v\_Set\_Error\_Code@{v\_Set\_Error\_Code}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Error\_Code()}{v\_Set\_Error\_Code()}}
+{\footnotesize\ttfamily \label{command_8c_a63bc1f8c576b30cc60439a5d088e2eb8} 
+void v\+\_\+\+Set\+\_\+\+Error\+\_\+\+Code (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Error}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00269}{269}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{command_8c_a63bc1f8c576b30cc60439a5d088e2eb8_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{command_8c_add74fb10deac718e24a895aa671ffb17}\index{command.c@{command.c}!v\_Set\_Sequence@{v\_Set\_Sequence}}
+\index{v\_Set\_Sequence@{v\_Set\_Sequence}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Sequence()}{v\_Set\_Sequence()}}
+{\footnotesize\ttfamily \label{command_8c_add74fb10deac718e24a895aa671ffb17} 
+void v\+\_\+\+Set\+\_\+\+Sequence (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{u8\+\_\+\+Sequence}{, }\item[{uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{p\+\_\+\+Response\+\_\+\+Buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+\label{doc-var-members}
+\Hypertarget{command_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{command_8c_a81bd11a017cf07a8601ea7a875738256}\index{command.c@{command.c}!u8\_Response\_Length@{u8\_Response\_Length}}
+\index{u8\_Response\_Length@{u8\_Response\_Length}!command.c@{command.c}}
+\doxysubsubsection{\texorpdfstring{u8\_Response\_Length}{u8\_Response\_Length}}
+{\footnotesize\ttfamily \label{command_8c_a81bd11a017cf07a8601ea7a875738256} 
+uint8\+\_\+t u8\+\_\+\+Response\+\_\+\+Length\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{command_8c_source_l00237}{237}} of file \doxymbox{\hyperlink{command_8c_source}{command.\+c}}.
+

@@ -1,0 +1,69 @@
+\doxysection{hal\+\_\+pwm.\+c}
+\hypertarget{hal__pwm_8c_source}{}\label{hal__pwm_8c_source}\index{src/hal/hal\_pwm.c@{src/hal/hal\_pwm.c}}
+\doxymbox{\hyperlink{hal__pwm_8c}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00002}00002\ \textcolor{comment}{\ *\ pwm.c}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Sep\ 29,\ 2025}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00007}00007\ \textcolor{preprocessor}{\#include\ <assert.h>}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hal_8h}{hal.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00009}00009\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{hw__reg__access_8h}{hw\_reg\_access.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}pwm.h"{}}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00018}\doxymbox{\hyperlink{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf}{00018}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf}{v\_Init\_PWM}}(\ PWM\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ PWM\_Init\_t\ *init)}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00019}00019\ \{}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00020}00020\ \ \ \ \ \textcolor{comment}{//\ Set\ base\ address}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00021}00021\ \ \ \ \ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address\ =\ init-\/>u32\_Base\_Address;}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00023}00023\ \ \ \ \ \textcolor{comment}{//\ Start\ with\ PWM\ disabled}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00024}00024\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM\_ENABLE\_0\_7,\ 0);}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00026}00026\ \ \ \ \ \textcolor{comment}{//\ Prescaler}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00027}00027\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PRESCALE,\ init-\/>u16\_Prescale\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00029}00029\ \ \ \ \ \textcolor{comment}{//\ Period\ -\/\ in\ cycles\ of\ clk/prescale\ value}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00030}00030\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PERIOD,\ init-\/>u16\_Period\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ Posedge}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//HAL\_set\_16bit\_reg(\ instance-\/>u32\_Base\_Address,\ PWM1\_POSEDGE,\ init-\/>u16\_Posedge\ );}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ Negedge}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00036}00036\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM1\_NEGEDGE,\ init-\/>u16\_Negedge\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00038}00038\ \ \ \ \ \textcolor{comment}{//\ Enable\ channel\ 0}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00039}00039\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM\_ENABLE\_0\_7,\ 1\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00041}00041\ \}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00051}\doxymbox{\hyperlink{hal__pwm_8c_a5f84ab265b34f1a9198b96455a8fa0ba}{00051}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__pwm_8c_a5f84ab265b34f1a9198b96455a8fa0ba}{v\_Set\_PWM\_Duty\_Cycle}}(\ PWM\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ uint16\_t\ u16\_Duty\_Cycle\ )}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00052}00052\ \{}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00053}00053\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM1\_NEGEDGE,\ u16\_Duty\_Cycle\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00054}00054\ \}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00056}00056\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00057}00057\ \textcolor{comment}{\ *\ The\ relationship\ between\ the\ data\ duty\ cycle\ and\ the\ current\ setpoint\ is:}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00058}00058\ \textcolor{comment}{\ *\ I\_FS\ =\ (V\_Ref\ /\ K\_V)\ *\ DC\ (\%)}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00059}00059\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00060}00060\ \textcolor{comment}{\ *\ \ \ \ \ \ =>\ DC(\%)\ =\ (I\_FS(mA)\ *\ 1.32)\ /\ 3200\ (mV)}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00061}00061\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00070}\doxymbox{\hyperlink{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea}{00070}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea}{PWM\_Set\_Voltage\_mV}}(\ PWM\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ uint16\_t\ u16\_V\_Set\_mV\ )}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00071}00071\ \{}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00072}00072\ \ \ \ \ uint32\_t\ u32\_Temp;}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00073}00073\ \ \ \ \ uint16\_t\ u16\_DC\_Setpoint;}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00077}00077\ \ \ \ \ u32\_Temp\ =\ COUNT\_PER\_MV\ *\ (uint32\_t)u16\_V\_Set\_mV;}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00078}00078\ \ \ \ \ u16\_DC\_Setpoint\ =\ (uint16\_t)(u32\_Temp\ >>\ 10\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00079}00079\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM1\_NEGEDGE,\ u16\_DC\_Setpoint\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00080}00080\ \}}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00089}\doxymbox{\hyperlink{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb}{00089}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb}{PWM\_Set\_Current\_mA}}(\ PWM\_Instance\_t\ *\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}},\ uint16\_t\ u16\_I\_Set\_mA\ )}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00090}00090\ \{}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00096}00096\ \ \ \ \ assert(u16\_I\_Set\_mA\ <\ I\_MAX\_MA\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00097}00097\ \ \ \ \ uint16\_t\ u16\_DC\_Setpoint\ =\ u16\_I\_Set\_mA\ *\ 27;}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00098}00098\ \ \ \ \ \doxymbox{\hyperlink{hal_8h_aa6284289d8ac485378afd4d59d00bfc4}{HAL\_set\_16bit\_reg}}(\ \doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}-\/>u32\_Base\_Address,\ PWM1\_NEGEDGE,\ u16\_DC\_Setpoint\ );}
+\DoxyCodeLine{\Hypertarget{hal__pwm_8c_source_l00099}00099\ \}}
+
+\end{DoxyCode}

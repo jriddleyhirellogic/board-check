@@ -1,0 +1,134 @@
+\doxysection{src/\+hal/\+hal\+\_\+pwm.c File Reference}
+\hypertarget{hal__pwm_8c}{}\label{hal__pwm_8c}\index{src/hal/hal\_pwm.c@{src/hal/hal\_pwm.c}}
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include "{}hal.\+h"{}}\newline
+{\ttfamily \+\#include "{}hw\+\_\+reg\+\_\+access.\+h"{}}\newline
+{\ttfamily \+\#include "{}pwm.\+h"{}}\newline
+Include dependency graph for hal\+\_\+pwm.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=302pt]{hal__pwm_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf}{v\+\_\+\+Init\+\_\+\+PWM}} (PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, PWM\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}init)
+\begin{DoxyCompactList}\small\item\em Initializes the pwm VRef generator used to set the current limit. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__pwm_8c_a5f84ab265b34f1a9198b96455a8fa0ba}{v\+\_\+\+Set\+\_\+\+PWM\+\_\+\+Duty\+\_\+\+Cycle}} (PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint16\+\_\+t u16\+\_\+\+Duty\+\_\+\+Cycle)
+\begin{DoxyCompactList}\small\item\em Sets the PWM duty cycle The PWM signal is lowpass filtered to produce a voltage which is input to the stepper controller. The output voltage is given by:\+ v\+\_\+out = V\+\_\+ref \texorpdfstring{$\ast$}{*} u16\+\_\+\+Duty\+\_\+\+Cycle/\+(2\texorpdfstring{$^\wedge$}{\string^}16-\/1). \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea}{PWM\+\_\+\+Set\+\_\+\+Voltage\+\_\+mV}} (PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint16\+\_\+t u16\+\_\+\+V\+\_\+\+Set\+\_\+mV)
+\begin{DoxyCompactList}\small\item\em Converts a desired voltage into an equivalent duty cycle. This is assuming VRef = 3200 mV. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb}{PWM\+\_\+\+Set\+\_\+\+Current\+\_\+mA}} (PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}}, uint16\+\_\+t u16\+\_\+\+I\+\_\+\+Set\+\_\+mA)
+\begin{DoxyCompactList}\small\item\em Converts a desired max current for stepper into an equivalent duty cycle. This is assuming the use of a TI DRV8434 stepper driver IC. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{hal__pwm_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb}\index{hal\_pwm.c@{hal\_pwm.c}!PWM\_Set\_Current\_mA@{PWM\_Set\_Current\_mA}}
+\index{PWM\_Set\_Current\_mA@{PWM\_Set\_Current\_mA}!hal\_pwm.c@{hal\_pwm.c}}
+\doxysubsubsection{\texorpdfstring{PWM\_Set\_Current\_mA()}{PWM\_Set\_Current\_mA()}}
+{\footnotesize\ttfamily \label{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb} 
+void PWM\+\_\+\+Set\+\_\+\+Current\+\_\+mA (\begin{DoxyParamCaption}\item[{PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint16\+\_\+t}]{u16\+\_\+\+I\+\_\+\+Set\+\_\+mA}{}\end{DoxyParamCaption})}
+
+
+
+Converts a desired max current for stepper into an equivalent duty cycle. This is assuming the use of a TI DRV8434 stepper driver IC. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & The PWM instance in use. \\
+\hline
+{\em u16\+\_\+\+I\+\_\+\+Set\+\_\+mA} & Desired max current in mA. \\
+\hline
+\end{DoxyParams}
+Count/\+2\texorpdfstring{$^\wedge$}{\string^}16 = (I\+\_\+mA \texorpdfstring{$\ast$}{*} 1.\+32)/\+\+V\+\_\+ref(mV) =\texorpdfstring{$>$}{>} Count = (I\+\_\+mA \texorpdfstring{$\ast$}{*}1.32 \texorpdfstring{$\ast$}{*} 2\texorpdfstring{$^\wedge$}{\string^}16)/\+3200 assumes Vref = 3200 mV \texorpdfstring{$\sim$}{\string~}= I\+\_\+mA \texorpdfstring{$\ast$}{*} 27
+
+Definition at line \doxymbox{\hyperlink{hal__pwm_8c_source_l00089}{89}} of file \doxymbox{\hyperlink{hal__pwm_8c_source}{hal\+\_\+pwm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__pwm_8c_a1bd4b2770c7d9121b283840c074e3bfb_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea}\index{hal\_pwm.c@{hal\_pwm.c}!PWM\_Set\_Voltage\_mV@{PWM\_Set\_Voltage\_mV}}
+\index{PWM\_Set\_Voltage\_mV@{PWM\_Set\_Voltage\_mV}!hal\_pwm.c@{hal\_pwm.c}}
+\doxysubsubsection{\texorpdfstring{PWM\_Set\_Voltage\_mV()}{PWM\_Set\_Voltage\_mV()}}
+{\footnotesize\ttfamily \label{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea} 
+void PWM\+\_\+\+Set\+\_\+\+Voltage\+\_\+mV (\begin{DoxyParamCaption}\item[{PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint16\+\_\+t}]{u16\+\_\+\+V\+\_\+\+Set\+\_\+mV}{}\end{DoxyParamCaption})}
+
+
+
+Converts a desired voltage into an equivalent duty cycle. This is assuming VRef = 3200 mV. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & PWM instance in use. \\
+\hline
+{\em u16\+\_\+\+V\+\_\+\+Set\+\_\+mV} & Desired output voltage. \\
+\hline
+\end{DoxyParams}
+PWM Count = (set\+\_\+v\+\_\+mv /\+ vref\+\_\+mv) \texorpdfstring{$\ast$}{*} max\+\_\+count = (max\+\_\+count /\+ vref\+\_\+mv) \texorpdfstring{$\ast$}{*} set\+\_\+v\+\_\+mv
+
+Definition at line \doxymbox{\hyperlink{hal__pwm_8c_source_l00070}{70}} of file \doxymbox{\hyperlink{hal__pwm_8c_source}{hal\+\_\+pwm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__pwm_8c_a32345bb30d3a55d7fedf3fb0e09945ea_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf}\index{hal\_pwm.c@{hal\_pwm.c}!v\_Init\_PWM@{v\_Init\_PWM}}
+\index{v\_Init\_PWM@{v\_Init\_PWM}!hal\_pwm.c@{hal\_pwm.c}}
+\doxysubsubsection{\texorpdfstring{v\_Init\_PWM()}{v\_Init\_PWM()}}
+{\footnotesize\ttfamily \label{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf} 
+void v\+\_\+\+Init\+\_\+\+PWM (\begin{DoxyParamCaption}\item[{PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{PWM\+\_\+\+Init\+\_\+t \texorpdfstring{$\ast$}{*}}]{init}{}\end{DoxyParamCaption})}
+
+
+
+Initializes the pwm VRef generator used to set the current limit. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & to particular PWM instance. \\
+\hline
+{\em init} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__pwm_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{hal__pwm_8c_source}{hal\+\_\+pwm.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{hal__pwm_8c_a0eff4b3947d53d75b0dfec8fcb5c3edf_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{hal__pwm_8c_a5f84ab265b34f1a9198b96455a8fa0ba}\index{hal\_pwm.c@{hal\_pwm.c}!v\_Set\_PWM\_Duty\_Cycle@{v\_Set\_PWM\_Duty\_Cycle}}
+\index{v\_Set\_PWM\_Duty\_Cycle@{v\_Set\_PWM\_Duty\_Cycle}!hal\_pwm.c@{hal\_pwm.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_PWM\_Duty\_Cycle()}{v\_Set\_PWM\_Duty\_Cycle()}}
+{\footnotesize\ttfamily \label{hal__pwm_8c_a5f84ab265b34f1a9198b96455a8fa0ba} 
+void v\+\_\+\+Set\+\_\+\+PWM\+\_\+\+Duty\+\_\+\+Cycle (\begin{DoxyParamCaption}\item[{PWM\+\_\+\+Instance\+\_\+t \texorpdfstring{$\ast$}{*}}]{instance}{, }\item[{uint16\+\_\+t}]{u16\+\_\+\+Duty\+\_\+\+Cycle}{}\end{DoxyParamCaption})}
+
+
+
+Sets the PWM duty cycle The PWM signal is lowpass filtered to produce a voltage which is input to the stepper controller. The output voltage is given by:\+ v\+\_\+out = V\+\_\+ref \texorpdfstring{$\ast$}{*} u16\+\_\+\+Duty\+\_\+\+Cycle/\+(2\texorpdfstring{$^\wedge$}{\string^}16-\/1). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxylink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}} & The actual instance of the PWM generator in case system has more than one. \\
+\hline
+{\em u16\+\_\+\+Duty\+\_\+\+Cycle} & \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \doxymbox{\hyperlink{hal__pwm_8c_source_l00051}{51}} of file \doxymbox{\hyperlink{hal__pwm_8c_source}{hal\+\_\+pwm.\+c}}.
+

@@ -1,0 +1,370 @@
+\doxysection{src/\+hal/\+core\+\_\+gpio.c File Reference}
+\hypertarget{core__gpio_8c}{}\label{core__gpio_8c}\index{src/hal/core\_gpio.c@{src/hal/core\_gpio.c}}
+{\ttfamily \+\#include "{}coregpio\+\_\+regs.\+h"{}}\newline
+{\ttfamily \+\#include "{}core\+\_\+gpio.\+h"{}}\newline
+Include dependency graph for core\+\_\+gpio.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_acfc9b47e257342b23240547957e1857c}{GPIO\+\_\+\+INT\+\_\+\+ENABLE\+\_\+\+MASK}}~(uint32\+\_\+t)0x00000008\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}{OUTPUT\+\_\+\+BUFFER\+\_\+\+ENABLE\+\_\+\+MASK}}~0x00000004\+UL
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}{NB\+\_\+\+OF\+\_\+\+GPIO}}~32
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_a2170214b07fabbdcfa3a384c27ec8fa1}{CLEAR\+\_\+\+ALL\+\_\+\+IRQ32}}~(uint32\+\_\+t)0x\+FFFFFFFF
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1}{CLEAR\+\_\+\+ALL\+\_\+\+IRQ16}}~(uint16\+\_\+t)0x\+FFFF
+\item 
+\+\#define \doxymbox{\hyperlink{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}{CLEAR\+\_\+\+ALL\+\_\+\+IRQ8}}~(uint8\+\_\+t)0x\+FF
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}} base\+\_\+addr, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}} bus\+\_\+width)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}{GPIO\+\_\+config}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, uint32\+\_\+t config)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}{GPIO\+\_\+set\+\_\+outputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, uint32\+\_\+t value)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}{GPIO\+\_\+get\+\_\+inputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}{GPIO\+\_\+get\+\_\+outputs}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}{GPIO\+\_\+set\+\_\+output}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, uint8\+\_\+t value)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}{GPIO\+\_\+drive\+\_\+inout}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}} inout\+\_\+state)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}{GPIO\+\_\+enable\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}{GPIO\+\_\+disable\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}{GPIO\+\_\+clear\+\_\+irq}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}} port\+\_\+id)
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}{GPIO\+\_\+get\+\_\+irq\+\_\+sources}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio)
+\item 
+void \doxymbox{\hyperlink{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}{GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources}} (\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}this\+\_\+gpio, uint32\+\_\+t bitmask)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{core__gpio_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1}\index{core\_gpio.c@{core\_gpio.c}!CLEAR\_ALL\_IRQ16@{CLEAR\_ALL\_IRQ16}}
+\index{CLEAR\_ALL\_IRQ16@{CLEAR\_ALL\_IRQ16}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{CLEAR\_ALL\_IRQ16}{CLEAR\_ALL\_IRQ16}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a9bb12bf6a2024b91793500d9c7bc33f1} 
+\+\#define CLEAR\+\_\+\+ALL\+\_\+\+IRQ16~(uint16\+\_\+t)0x\+FFFF}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00024}{24}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a2170214b07fabbdcfa3a384c27ec8fa1}\index{core\_gpio.c@{core\_gpio.c}!CLEAR\_ALL\_IRQ32@{CLEAR\_ALL\_IRQ32}}
+\index{CLEAR\_ALL\_IRQ32@{CLEAR\_ALL\_IRQ32}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{CLEAR\_ALL\_IRQ32}{CLEAR\_ALL\_IRQ32}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a2170214b07fabbdcfa3a384c27ec8fa1} 
+\+\#define CLEAR\+\_\+\+ALL\+\_\+\+IRQ32~(uint32\+\_\+t)0x\+FFFFFFFF}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a5507d56852517cb7c8b4396be911af06}\index{core\_gpio.c@{core\_gpio.c}!CLEAR\_ALL\_IRQ8@{CLEAR\_ALL\_IRQ8}}
+\index{CLEAR\_ALL\_IRQ8@{CLEAR\_ALL\_IRQ8}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{CLEAR\_ALL\_IRQ8}{CLEAR\_ALL\_IRQ8}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a5507d56852517cb7c8b4396be911af06} 
+\+\#define CLEAR\+\_\+\+ALL\+\_\+\+IRQ8~(uint8\+\_\+t)0x\+FF}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00025}{25}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_acfc9b47e257342b23240547957e1857c}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_INT\_ENABLE\_MASK@{GPIO\_INT\_ENABLE\_MASK}}
+\index{GPIO\_INT\_ENABLE\_MASK@{GPIO\_INT\_ENABLE\_MASK}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_INT\_ENABLE\_MASK}{GPIO\_INT\_ENABLE\_MASK}}
+{\footnotesize\ttfamily \label{core__gpio_8c_acfc9b47e257342b23240547957e1857c} 
+\+\#define GPIO\+\_\+\+INT\+\_\+\+ENABLE\+\_\+\+MASK~(uint32\+\_\+t)0x00000008\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00017}{17}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12}\index{core\_gpio.c@{core\_gpio.c}!NB\_OF\_GPIO@{NB\_OF\_GPIO}}
+\index{NB\_OF\_GPIO@{NB\_OF\_GPIO}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{NB\_OF\_GPIO}{NB\_OF\_GPIO}}
+{\footnotesize\ttfamily \label{core__gpio_8c_af2e95870dda5cd9b58034c59e7d6ef12} 
+\+\#define NB\+\_\+\+OF\+\_\+\+GPIO~32}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00021}{21}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4}\index{core\_gpio.c@{core\_gpio.c}!OUTPUT\_BUFFER\_ENABLE\_MASK@{OUTPUT\_BUFFER\_ENABLE\_MASK}}
+\index{OUTPUT\_BUFFER\_ENABLE\_MASK@{OUTPUT\_BUFFER\_ENABLE\_MASK}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{OUTPUT\_BUFFER\_ENABLE\_MASK}{OUTPUT\_BUFFER\_ENABLE\_MASK}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a0200779b06b91aca0418f99c5546f0b4} 
+\+\#define OUTPUT\+\_\+\+BUFFER\+\_\+\+ENABLE\+\_\+\+MASK~0x00000004\+UL}
+
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{core__gpio_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{core__gpio_8c_ad13782fc7894bc78e719503268eaa303}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_clear\_all\_irq\_sources@{GPIO\_clear\_all\_irq\_sources}}
+\index{GPIO\_clear\_all\_irq\_sources@{GPIO\_clear\_all\_irq\_sources}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_clear\_all\_irq\_sources()}{GPIO\_clear\_all\_irq\_sources()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_ad13782fc7894bc78e719503268eaa303} 
+void GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{uint32\+\_\+t}]{bitmask}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+clear\+\_\+all\+\_\+irq\+\_\+sources See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00507}{507}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_clear\_irq@{GPIO\_clear\_irq}}
+\index{GPIO\_clear\_irq@{GPIO\_clear\_irq}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_clear\_irq()}{GPIO\_clear\_irq()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a8d0e216d1111e88f0be93404d8e4d5e9} 
+void GPIO\+\_\+clear\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+clear\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00434}{434}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_config@{GPIO\_config}}
+\index{GPIO\_config@{GPIO\_config}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_config()}{GPIO\_config()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6} 
+void GPIO\+\_\+config (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{uint32\+\_\+t}]{config}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+config See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00079}{79}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=297pt]{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_a59c399acb6c889d5727d6109fbec85c6_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_disable\_irq@{GPIO\_disable\_irq}}
+\index{GPIO\_disable\_irq@{GPIO\_disable\_irq}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_disable\_irq()}{GPIO\_disable\_irq()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702} 
+void GPIO\+\_\+disable\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+disable\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00410}{410}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=315pt]{core__gpio_8c_aa894fa67daacfce60bdb57284cbef702_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_drive\_inout@{GPIO\_drive\_inout}}
+\index{GPIO\_drive\_inout@{GPIO\_drive\_inout}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_drive\_inout()}{GPIO\_drive\_inout()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75} 
+void GPIO\+\_\+drive\+\_\+inout (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a62e71d3b0e691a295d140618a1b8a773}{gpio\+\_\+inout\+\_\+state\+\_\+t}}}]{inout\+\_\+state}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+drive\+\_\+inout See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00332}{332}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_adcfcd396c011a447ada0c2c4d9f53d75_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_enable\_irq@{GPIO\_enable\_irq}}
+\index{GPIO\_enable\_irq@{GPIO\_enable\_irq}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_enable\_irq()}{GPIO\_enable\_irq()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e} 
+void GPIO\+\_\+enable\+\_\+irq (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+enable\+\_\+irq See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00386}{386}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=313pt]{core__gpio_8c_ad02a89beac2b9887deeae0ab68c89a0e_cgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_get\_inputs@{GPIO\_get\_inputs}}
+\index{GPIO\_get\_inputs@{GPIO\_get\_inputs}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_inputs()}{GPIO\_get\_inputs()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+inputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+get\+\_\+inputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00156}{156}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_a0a3a6a5849eef64eb395bf3a71ca8019_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_get\_irq\_sources@{GPIO\_get\_irq\_sources}}
+\index{GPIO\_get\_irq\_sources@{GPIO\_get\_irq\_sources}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_irq\_sources()}{GPIO\_get\_irq\_sources()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_aebfa145ef2e47321768e76b54ba15b80} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+irq\+\_\+sources (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+get\+\_\+irq\+\_\+sources See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00470}{470}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+\Hypertarget{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_get\_outputs@{GPIO\_get\_outputs}}
+\index{GPIO\_get\_outputs@{GPIO\_get\_outputs}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_get\_outputs()}{GPIO\_get\_outputs()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb} 
+uint32\+\_\+t GPIO\+\_\+get\+\_\+outputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+get\+\_\+outputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00193}{193}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_a16ce70d482ca3d368702e6195f0f2beb_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_init@{GPIO\_init}}
+\index{GPIO\_init@{GPIO\_init}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_init()}{GPIO\_init()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31} 
+void GPIO\+\_\+init (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\+\_\+t}}}]{base\+\_\+addr}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_a4a991e078056b9bd77abd6baee0219ff}{gpio\+\_\+apb\+\_\+width\+\_\+t}}}]{bus\+\_\+width}{}\end{DoxyParamCaption})}
+
+\doxylink{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31}{GPIO\+\_\+init()} See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=277pt]{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_a09658eeda1c1d7d30f8fc5728daeff31_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_set\_output@{GPIO\_set\_output}}
+\index{GPIO\_set\_output@{GPIO\_set\_output}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_set\_output()}{GPIO\_set\_output()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db} 
+void GPIO\+\_\+set\+\_\+output (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_afb8092fa3af2cfe73fb9d94f164653b0}{gpio\+\_\+id\+\_\+t}}}]{port\+\_\+id}{, }\item[{uint8\+\_\+t}]{value}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+set\+\_\+output See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00230}{230}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=320pt]{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_ae86e11a536ee6df1a333f41da27ff9db_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528}\index{core\_gpio.c@{core\_gpio.c}!GPIO\_set\_outputs@{GPIO\_set\_outputs}}
+\index{GPIO\_set\_outputs@{GPIO\_set\_outputs}!core\_gpio.c@{core\_gpio.c}}
+\doxysubsubsection{\texorpdfstring{GPIO\_set\_outputs()}{GPIO\_set\_outputs()}}
+{\footnotesize\ttfamily \label{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528} 
+void GPIO\+\_\+set\+\_\+outputs (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2core__gpio_8h_ab9a3f6b0d137480aec0904688cc310c2}{gpio\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{this\+\_\+gpio}{, }\item[{uint32\+\_\+t}]{value}{}\end{DoxyParamCaption})}
+
+GPIO\+\_\+set\+\_\+outputs See "{}core\+\_\+gpio.\+h"{} for details of how to use this function. \begin{Desc}
+\item[Examples]\par
+\doxymbox{\hyperlink{_2home_2iboard_2farsight_2av_board_workspace_2Camera_2include_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+av\+\_\+board\+\_\+workspace/\+\+Camera/\+include/\+core\+\_\+gpio.\+h}}, and \doxymbox{\hyperlink{_2home_2iboard_2farsight_2avtemp_2Camera_2src_2hal_2core_gpio_8h-example}{/\+home/\+iboard/\+farsight/\+avtemp/\+\+Camera/\+src/\+hal/\+core\+\_\+gpio.\+h}}.\end{Desc}
+
+
+Definition at line \doxymbox{\hyperlink{core__gpio_8c_source_l00109}{109}} of file \doxymbox{\hyperlink{core__gpio_8c_source}{core\+\_\+gpio.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=323pt]{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{core__gpio_8c_ad785f6e5808a8d13c908db4c11e60528_icgraph}
+\end{center}
+\end{figure}

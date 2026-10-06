@@ -1,0 +1,438 @@
+group_name,fpga_port_name,pin_name,mnemonic,schematic_net_name,xcvr_number,bank,io_std,used_in_fpga_design,direction_from_fpga,Clock_Conditioning,pin_type,fpga_res_pull,comment,vendor_interface_name,fpga_parameters,extra_notes
+System Clock,sys_clk_50mhz,T9,GPIO261PB4/CLKIN_W_3/CCC_SW_CLKIN_W_3,NetR345_2,NA,4,LVCMOS33,TRUE,I,CLKIN_W_3/CCC_SW_CLKIN_W_3,GPIO,Up,Single Ended Clock used for clocking fabric,,,
+Cam XCVR Ref Clock,ref_clk_148p5mhz_p,AG27,XCVR_4A_REFCLK_P,148.5MHZ_P,NA,NA,NA,TRUE,I,,XCVR,None,Differential Ref clock for XCVR Rx connected to IMX53x SLVSEC Camera (Polarity P),https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ApplicationNotes/ApplicationNotes/PolarFire_SLVS_EC_Video_Demo_AN5188.pdf,,
+Cam XCVR Ref Clock,ref_clk_148p5mhz_n,AG28,XCVR_4A_REFCLK_N,148.5MHZ_N,NA,NA,NA,TRUE,I,,XCVR,None,Differential Ref clock for XCVR Rx connected to IMX53x SLVSEC Camera (Polarity N),https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ApplicationNotes/ApplicationNotes/PolarFire_SLVS_EC_Video_Demo_AN5188.pdf,,
+Aux XCVR Ref Clock,aux_ref_clk_p,N27,XCVR_1A_REFCLK_P,AUX_REF_CLK_P,XCVR1,NA,NA,TRUE,I,,XCVR,None,External clock fed into XCVR_REF_CLK pin for testing and clock verification (SMA connector polarity P),,,
+Aux XCVR Ref Clock,aux_ref_clk_n,N28,XCVR_1A_REFCLK_N,AUX_REF_CLK_N,XCVR1,NA,NA,TRUE,I,,XCVR,None,External clock fed into XCVR_REF_CLK pin for testing and clock verification (SMA connector polarity N),,,
+PCIE x2 XCVR EXT Ref Clock,pcie_ext_ref_clk_p,W27,XCVR_0A_REFCLK_P,PCIE_REF_CLK_P,XCVR0,NA,NA,TRUE,I,,XCVR,None,,,,
+PCIE x2 XCVR EXT Ref Clock,pcie_ext_ref_clk_n,W28,XCVR_0A_REFCLK_N,PCIE_REF_CLK_N,XCVR0,NA,NA,TRUE,I,,XCVR,None,,,,
+PCIE x2 XCVR Oscillator,pcie_clk_125mhz_p,AA27,XCVR_0B_REFCLK_P,125MHZ_N,XCVR0,NA,NA,TRUE,I,,XCVR,None,"For Refclk flexibility, the PCIESS block accepts 100 MHz, 125 MHz, or 156.25 MHz input and translates for PCIe Gen1 or Gen2 speeds.",https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_PCI_Express_User_Guide_VC.pdf,,
+PCIE x2 XCVR Oscillator,pcie_clk_125mhz_n,AA28,XCVR_0B_REFCLK_N,125MHZ_P,XCVR0,NA,NA,TRUE,I,,XCVR,None,,,,
+External 10MHz Clock,ext_clk_10mhz,K2,GPIO298PB5/CCC_SW_PLL0_OUT1,10MHZ,NA,5,LVTTL,TRUE,I,,GPIO,None,Input clock 10 MHz,,,
+Reset,dev_rst_n,L15,DEVRST_N,PA3_POLARFIRE_nRESET,NA,3,LVCMOS33,TRUE,I,,DEDIO,None,"DEVRST_N or device reset is a dedicated device reset input pad, powered through the dedicated I/O bank. The DEVRST_N pad connects to the reset ports of all the hard blocks on the device through hardwired connections. The DEVRST_N assertion results in full re-initialization of the device, including the loading of user configuration data to PCIe, transceivers, and the re-initialization of fabric LSRAMs and μSRAMs.",https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_Board_Design_UG0726_V11.pdf,,
+Reset,sys_rst_n,M6,GPIO294PB5,SYS_RESET_N,NA,5,LVCMOS33,TRUE,I,,GPIO,None,FPGA Fabric external reset active low,,,
+Reset,proc_rst_n,N6,GPIO276NB5,PROC_RST_N,NA,5,LVCMOS33,TRUE,I,,GPIO,None,RISCV Processor external reset active low,,,
+JTAG,jtag_tck,J10,TCK,JTAG_PF_TCK,NA,3,NA,TRUE,I,,JTAG,None,JTAG test clock,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+JTAG,jtag_tdi,K11,TDI,JTAG_PF_TDI,NA,3,NA,TRUE,I,,JTAG,None,JTAG test data in,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+JTAG,jtag_tdo,K9,TDO,JTAG_PF_TDO,NA,3,NA,TRUE,O,,JTAG,None,JTAG test data out,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+JTAG,jtag_tms,J9,TMS,JTAG_PF_TMS,NA,3,NA,TRUE,I,,JTAG,None,JTAG test mode select,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+JTAG,jtag_trstb,N14,TRSTB,JTAG_PF_TRSTB,NA,3,NA,TRUE,I,,JTAG,None,JTAG test reset. Must be held low during device operation.,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_sck,L14,SCK,PR_SCK,NA,3,LVTTL,TRUE,IO,,DEDIO,None,PolarFire programmer SPI clock,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_ss,M14,SS,PR_SS_PF,NA,3,LVTTL,TRUE,IO,,DEDIO,None,PolarFire programmer Slave select,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_sdi,K12,SDI,PR_SDI,NA,3,LVTTL,TRUE,I,,DEDIO,None,PolarFire programmer Data input,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_sdo,K10,SDO,NetR769_1,NA,3,LVTTL,TRUE,O,,DEDIO,None,PolarFire programmer Data output,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_spi_en,L13,SPI_EN,SPI_EN,NA,3,LVCMOS33,TRUE,I,,DEDIO,None,SPI enable 0: SPI output tristated 1: Enabled Pulled up or down through a resistor or driven dynamically from an external source to enable or tristate the SPI I/O.,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+Sys Ctrl SPI,sys_ctrl_io_cfg_intf,L12,IO_CFG_INTF,IO_CFG_INTF,NA,3,LVCMOS33,TRUE,IO,,DEDIO,None,SPI I/O configuration 0: SPI slave interface 1: SPI master interface Pulled up or down through a resistor.,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/PolarFire_FPGA_and_PolarFire_SoC_FPGA_Programming_User_Guide_VB.pdf,,
+PF to PA3 Power Enable,lvds_pwr_en,AC2,GPIO198PB4/CLKIN_W_7/CCC_NW_CLKIN_W_7/CCC_NW_PLL0_OUT0,PF_TO_PA3_MISC0,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PF to PA3 Power Enable,eth1_pwr_en,AC1,GPIO199PB4/DQS,PF_TO_PA3_MISC1,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PF to PA3 Power Enable,eth2_pwr_en,AA2,GPIO226NB4,PF_TO_PA3_MISC2,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PF to PA3 Power Enable,stepper_pri_pwr_en,AB1,GPIO200NB4,PF_TO_PA3_MISC3,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PF to PA3 Power Enable,stepper_sec_pwr_en,AD1,GPIO199NB4/DQS,PF_TO_PA3_MISC4,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PF to PA3 Power Enable,lvdt_pwr_en,K5,GPIO292PB5,PA3_TO_PF_MISC16,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PF to PA3 Power Enable,cam_pwr_en,P5,GPIO277NB5/DQS,IMX_POWER_TOGGLE,NA,5,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PA3 Power Status,stepper_pri_pwr_status,R11,GPIO263NB5,STEPPER_PRI_PGOOD,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,ASIC power status pins to allow for PF to provide some type info to telemetry,,,
+PA3 Power Status,stepper_sec_pwr_status,U14,GPIO264NB5,STEPPER_SEC_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,pf_pwr_status,P3,GPIO270NB5,PF_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,step_down_pwr_status,L2,GPIO271NB5/DQS,STEP_DOWN_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,ddr16gb_pwr_status,N9,GPIO280NB5,16GB_ECC_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,ddr8gb_pwr_status,N11,GPIO281NB5,8GB_ECC_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,eth1_pwr_status,P11,GPIO282NB5,ETH1_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,eth2_pwr_status,M11,GPIO283NB5/DQS,ETH2_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,lvdt_pwr_status,L9,GPIO284NB5,LVDT_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,lvds_pwr_status,M12,GPIO285NB5,LVDS_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,pa3_pwr_status,L5,GPIO292NB5,PA3_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,cam_pwr_status,T12,GPIO265NB5/DQS,IMX_PGOOD,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,pa3_fw_version[0],E5,GPIO309NB2,PA3_TO_PF_MISC0,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,pa3_fw_version[1],C1,GPIO310PB2,PA3_TO_PF_MISC1,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 Power Status,pa3_fw_version[2],B1,GPIO310NB2,PA3_TO_PF_MISC2,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PCIE x2,pcie0_lane0_txd_p,V33,XCVR_0_TX0_P,PCIE0_TX_P,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 TX lane 0,,,
+PCIE x2,pcie0_lane0_txd_n,V34,XCVR_0_TX0_N,PCIE0_TX_N,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 TX lane 0,,,
+PCIE x2,pcie0_lane0_rxd_p,V29,XCVR_0_RX0_P,PCIE0_RX_P,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 RX lane 0,,,
+PCIE x2,pcie0_lane0_rxd_n,V30,XCVR_0_RX0_N,PCIE0_RX_N,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 RX lane 0,,,
+PCIE x2,pcie0_lane1_txd_p,Y33,XCVR_0_TX1_P,PCIE1_TX_P,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 TX lane 1,,,
+PCIE x2,pcie0_lane1_txd_n,Y34,XCVR_0_TX1_N,PCIE1_TX_N,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 TX lane 1,,,
+PCIE x2,pcie0_lane1_rxd_p,W31,XCVR_0_RX1_P,PCIE1_RX_P,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 RX lane 1,,,
+PCIE x2,pcie0_lane1_rxd_n,W32,XCVR_0_RX1_N,PCIE1_RX_N,XCVR0,NA,NA,TRUE,NA,,XCVR,None,PCIE x4 RX lane 1,,,
+PCIE x2,pcie0_perstn,R7,GPIO274PB5,PCIE_nRESET,NA,5,LVTTL,TRUE,I,,GPIO,None,PCIE x2 Reset,,,
+Camera Data Out,cam_lane0_rxd_p,AP29,XCVR_4_RX3_P,SLVS_EC_0_P,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane0_rxd_n,AP30,XCVR_4_RX3_N,SLVS_EC_0_N,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane1_rxd_p,AM29,XCVR_4_RX2_P,SLVS_EC_1_P,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane1_rxd_n,AM30,XCVR_4_RX2_N,SLVS_EC_1_N,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane2_rxd_p,AK29,XCVR_4_RX1_P,SLVS_EC_2_P,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane2_rxd_n,AK30,XCVR_4_RX1_N,SLVS_EC_2_N,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane3_rxd_p,AJ31,XCVR_4_RX0_P,SLVS_EC_3_P,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane3_rxd_n,AJ32,XCVR_4_RX0_N,SLVS_EC_3_N,XCVR4,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane4_rxd_p,AH29,XCVR_2_RX3_P,SLVS_EC_4_P,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane4_rxd_n,AH30,XCVR_2_RX3_N,SLVS_EC_4_N,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane5_rxd_p,AG31,XCVR_2_RX2_P,SLVS_EC_5_P,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane5_rxd_n,AG32,XCVR_2_RX2_N,SLVS_EC_5_N,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane6_rxd_p,AD29,XCVR_2_RX1_P,SLVS_EC_6_P,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane6_rxd_n,AD30,XCVR_2_RX1_N,SLVS_EC_6_N,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane7_rxd_p,AC31,XCVR_2_RX0_P,SLVS_EC_7_P,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Camera Data Out,cam_lane7_rxd_n,AC32,XCVR_2_RX0_N,SLVS_EC_7_N,XCVR2,NA,NA,TRUE,NA,,XCVR,None,SLVS-EC IF output (Data),https://turionspacesys.sharepoint.com/:b:/s/61500FARSIGHT/EVjHfGTGvqZLtH51yPlWZqwBFl1xhMk8QlTxNYyzEWNv_g?e=WhAur8,,
+Cam Ctrl,cam_miso,AG25,HSIO90NB1,IMX_SPI_SDO_BUF,NA,1,LVCMOS18,TRUE,O,,HSIO,None,Camera SPI communication data. FPGA in Camera out,SDO,,
+Cam Ctrl,cam_sck,AH24,HSIO92PB1/CLKIN_N_8/CCC_NE_CLKIN_N_8/CCC_NE_PLL1_OUT0,IMX_SPI_SCK,NA,1,LVCMOS18,TRUE,O,,HSIO,None,Camera SPI communication serial clock. FPGA out Camera in,SCK,,
+Cam Ctrl,cam_mosi,AH25,HSIO92NB1,IMX_SPI_SDI,NA,1,LVCMOS18,TRUE,I,,HSIO,Up,Camera SPI communication data. FPGA out Camera in,SDI,,
+Cam Ctrl,cam_xce_n,AJ24,HSIO93PB1/DQS/CCC_NE_PLL1_OUT0,IMX_SPI_XCE,NA,1,LVCMOS18,TRUE,O,,HSIO,Down,Select between SPI or I2C for Camera communication. In SPI mode it will be Camera SPI CS_n pin.,XCE,,
+Cam Ctrl,cam_xclr_n,AG22,HSIO100PB1,IMX_XCLR,NA,1,LVCMOS18,TRUE,O,,HSIO,None,Camera XCLR. Camera active low reset.,XCLR,,
+Cam Ctrl,cam_xtrig_primary,AL25,HSIO89NB1,IMX_XTRIG1,NA,1,LVCMOS18,TRUE,O,,HSIO,None,First camera trigger output from FPGA to camera sensor,XTRIG1,,
+Cam Ctrl,cam_tout_primary,AL27,HSIO84NB1,IMX_TOUT0_BUF,NA,1,LVCMOS18,TRUE,I,,HSIO,None,Camera first pulse output from camera to FPGA,TOUT0,,
+Cam Ctrl,cam_osc_en,AK23,HSIO94PB1,IMX_OSC_EN,NA,1,LVCMOS18,TRUE,O,,HSIO,None,Enable signal for Camera sensor oscilator,,,
+Cam Ctrl,cam_buff_en_n,AF22,HSIO99PB1/DQS,IMX_CONTROL_BUF_nEN,NA,1,LVCMOS18,TRUE,O,,HSIO,None,Active low. Enable for tristate buffers for cam control signals coming from and to imx sensor,,,
+RS422 UART,uart0_tx,R6,GPIO275NB5,RS422_TTL_FARSIGHT_TO_BUS_PF,NA,5,LVCMOS33,TRUE,O,,GPIO,None,,,,
+RS422 UART,uart0_rx,P13,GPIO266NB5,RS422_TTL_BUS_TO_FARSIGHT_PF,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Stepper Motor Controller 0,pri_stp_motor_m0,E7,GPIO15PB2,PRIM_M0,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Microstepping mode-setting pins. Sets the step mode, internal pulldown resistor.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_m1,C8,GPIO14NB2/DQS,PRIM_M1,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Microstepping mode-setting pins. Sets the step mode, internal pulldown resistor.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_en,A4,GPIO313NB2,PRIM_DRIVER_EN,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Logic low to disable device outputs, logic high to enable, internal pullup to DVDD. Also determines the type of OCP and OTSD response.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672
+Stepper Motor Controller 0,pri_stp_motor_decay0,C7,GPIO12PB2,PRIM_DECAY0,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Decay-mode setting pins. Sets the decay mode (see the Section 7.3.6 section),https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,,
+Stepper Motor Controller 0,pri_stp_motor_decay1,D8,GPIO14PB2/DQS,PRIM_DECAY1,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Decay-mode setting pins. Sets the decay mode (see the Section 7.3.6 section),https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,,
+Stepper Motor Controller 0,pri_stp_motor_dir,B7,GPIO12NB2,PRIM_DIR,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Direction input. Logic level sets the direction of stepping, internal pulldown resistor.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_step,B5,GPIO315PB2,PRIM_STEP,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Step input. A rising edge causes the indexer to advance one step, internal pulldown resistor.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_toff,E8,GPIO15NB2,PRIM_TOFF,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Sets the Decay mode off time during current chopping, four level pin. Also sets the ripple current in smart tune ripple control mode.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_sleep_n,A5,GPIO315NB2,PRIM_SLEEP,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Sleep mode input. Logic high to enable device, logic low to enter low-power sleep mode, internal pulldown resistor. An nSLEEP low pulse clears faults.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672
+Stepper Motor Controller 0,pri_stp_motor_fault_n,F8,GPIO9PB2/CLKIN_S_6,PRIM_nFAULT,NA,2,LVCMOS33,TRUE,I,,GPIO,None,Fault indication. Pulled logic low with fault condition, open-drain output requires an external pullup resistor.,https://www.ti.com/lit/ds/symlink/drv8434.pdf?ts=1739386432672,
+Stepper Motor Controller 0,pri_stp_motor_vref_pwm,F9,GPIO6NB2,PRIM_VREF_PWM,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_m0,G5,GPIO11PB2/CLKIN_S_7,SEC_M0,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_m1,D6,GPIO13NB2,SEC_M1,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_en,C2,GPIO312PB2/DQS,SEC_DRIVER_EN,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_decay0,C4,GPIO314NB2,SEC_DECAY0,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_decay1,F5,GPIO11NB2,SEC_DECAY1,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_dir,D5,GPIO309PB2/CLKIN_S_3/CCC_SW_CLKIN_S_3,SEC_DIR,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_step,C3,GPIO314PB2,SEC_STEP,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_toff,F4,GPIO304NB2,SEC_TOFF,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_sleep_n,E6,GPIO13PB2,SEC_SLEEP,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_fault_n,G6,GPIO10NB2/LPRB_B,SEC_nFAULT,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Stepper Motor Controller 1,sec_stp_motor_vref_pwm,G4,GPIO304PB2/CCC_SW_CLKIN_S_0,SEC_VREF_PWM,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT Analog Sig Gain Switch,lvdt_gain_switch,G1,GPIO303NB5,LVDT_GAIN_SW,NA,5,LVCMOS33,TRUE,I,,GPIO,None,LVDT analog signal for near zero measurment,,,
+LVDT SPI,lvdt_adc_spi_cs_n,F10,GPIO21NB2,LVDT_ADC_nCS,NA,2,LVCMOS33,TRUE,O,,GPIO,None,ADC reading secondary of LVDT,,,
+LVDT SPI,lvdt_adc_spi_sclk,F13,GPIO22PB2,LVDT_ADC_SCLK,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT SPI,lvdt_adc_spi_miso,F12,GPIO23PB2,LVDT_ADC_MISO,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+LVDT SPI,lvdt_adc_spi_mosi,E13,GPIO22PB2,LVDT_ADC_MOSI,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b0,C11,GPIO29PB2/CLKIN_S_9/CCC_SE_CLKIN_S_9,LVDT_DAC_B1,NA,2,LVCMOS33,TRUE,O,,GPIO,None,Bits to control LVDT dac used for synchrounous demodulation to drive LVDT primary coil,,,
+LVDT DAC,lvdt_dac_b1,A10,GPIO28NB2,LVDT_DAC_B4,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b2,B10,GPIO28PB2,LVDT_DAC_B7,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b3,C12,GPIO27NB2,LVDT_DAC_B0,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b4,D13,GPIO27PB2/CLKIN_S_8/CCC_SE_CLKIN_S_8,LVDT_DAC_B6,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b5,D11,GPIO26NB2/DQS,LVDT_DAC_B2,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b6,D10,GPIO26PB2/DQS,LVDT_DAC_B3,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+LVDT DAC,lvdt_dac_b7,A9,GPIO25NB2,LVDT_DAC_B5,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_sclk,N7,GPIO276PB5,ADC_SCLK,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_miso,M5,GPIO294NB5,ADC_MISO,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_mosi,J3,GPIO301NB5/DQS,ADC_MOSI,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs1_n,J1,GPIO299PB5/CLKIN_W_2/CCC_SW_CLKIN_W_2/CCC_SW_PLL0_OUT0,ADC_nCS_1,NA,2,LVCMOS33,TRUE,O,CCC_SE_CLKIN_S_10,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs2_n,J5,GPIO295NB5/DQS,ADC_nCS_2,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs3_n,H4,GPIO302PB5,ADC_nCS_3,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs4_n,H3,GPIO302NB5,ADC_nCS_4,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs5_n,H2,GPIO300PB5/CLKIN_W_1/CCC_SW_CLKIN_W_1,ADC_nCS_5,NA,2,LVCMOS33,TRUE,O,CCC_SE_CLKIN_S_11,GPIO,None,,,,
+Power Telemtry ADCs SPI,tlm_spi_cs6_n,H1,GPIO300NB5,ADC_nCS_6,NA,2,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 1,eth1_phy_mdc,T5,GPIO259PB4/DQS,ETH1_MDC,NA,4,LVCMOS33,TRUE,O,,GPIO,None,MDIO management data clock (MDC). Management data clock. A 0 MHz to 12.5 MHz  reference  input  is  used  to  clock serial MDIO data into and out of the PHY.,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_phy_mdio,U5,GPIO257NB4,ETH1_MDIO,NA,4,LVCMOS33,TRUE,IO,,GPIO,None,"MDIO management data Input output (MDI, MDO)",https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_phy_rst_n,V3,GPIO250PB4,ETH1_nRESET,NA,4,LVCMOS33,TRUE,O,,GPIO,None,Eth PHY Reset active low,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rxc,U10,GPIO258PB4/CLKIN_W_4/CCC_NW_CLKIN_W_4,ETH1_RX_CLK,NA,4,LVCMOS33,TRUE,I,CLKIN_W_5/CCC_NW_CLKIN_W_5,GPIO,None,RGMII receive clock,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rx_ctl,Y11,GPIO244NB4,ETH1_RX_CTL,NA,4,LVCMOS33,TRUE,I,,GPIO,None,Transmit Control To PHY. The TX_CTL signal carries: – GMII_TX_EN on the rising edge – TX_EN or GMII_TX_ER on the falling edge,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rxd[3],Y3,GPIO228PB4,ETH1_RXD3,NA,4,LVCMOS33,TRUE,I,,GPIO,None,RGMII receive data signals for the PHY to transmit byte-aligned data to the MAC,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rxd[2],AA3,GPIO226PB4,ETH1_RXD2,NA,4,LVCMOS33,TRUE,I,,GPIO,None,RGMII receive data signals for the PHY to transmit byte-aligned data to the MAC,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rxd[1],AA4,GPIO227PB4,ETH1_RXD1,NA,4,LVCMOS33,TRUE,I,,GPIO,None,RGMII receive data signals for the PHY to transmit byte-aligned data to the MAC,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_rxd[0],AA10,GPIO213PB4,ETH1_RXD0,NA,4,LVCMOS33,TRUE,I,,GPIO,None,RGMII receive data signals for the PHY to transmit byte-aligned data to the MAC,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_txc,P1,GPIO253PB4/DQS,ETH1_TX_CLK,NA,4,LVCMOS33,TRUE,O,CLKIN_W_4/CCC_NW_CLKIN_W_4,GPIO,None,RGMII transmit clock,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_tx_ctl,R3,GPIO255PB4,ETH1_TX_CTL,NA,4,LVCMOS33,TRUE,O,,GPIO,None,Receive control from PHY. The RX_CTL signal carries: – gmii_rx_dv (data valid) on the rising edge – gmii_rx_dv xor gmii_rx_er on the falling edge,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_txd[3],T3,GPIO251PB4,ETH1_TXD3,NA,4,LVCMOS33,TRUE,O,,GPIO,None,RGMII transmit data signals for the MAC to supply byte-aligned data to the PHY,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_txd[2],T4,GPIO259NB4/DQS,ETH1_TXD2,NA,4,LVCMOS33,TRUE,O,,GPIO,None,RGMII transmit data signals for the MAC to supply byte-aligned data to the PHY,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_txd[1],R1,GPIO253NB4/DQS,ETH1_TXD1,NA,4,LVCMOS33,TRUE,O,,GPIO,None,RGMII transmit data signals for the MAC to supply byte-aligned data to the PHY,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_rgmii_txd[0],R2,GPIO255NB4,ETH1_TXD0,NA,4,LVCMOS33,TRUE,O,,GPIO,None,RGMII transmit data signals for the MAC to supply byte-aligned data to the PHY,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/ip_cores/directcores/CoreTSE_HB.pdf,,https://ww1.microchip.com/downloads/aemDocuments/documents/FPGA/ProductDocuments/UserGuides/Microchip_RT_PolarFire_FPGA_User_IO_User_Guide_UG0931.pdf
+Ethernet Phy 1,eth1_stat_fastlink_fail,U2,GPIO254PB4,ETH1_FASTLINK_FAIL,NA,4,LVCMOS33,TRUE,I,,GPIO,None,Ethernet Phy Fast link failure indication signal.,,,
+Ethernet Phy 1,eth1_stat_mdint,U1,GPIO254NB4,ETH1_MDINT,NA,4,LVCMOS33,TRUE,I,,GPIO,None,Ethernet Phy Interrupt to FPGA,,,
+Ethernet Phy 1,eth1_stat_rcvrd_clk,W3,GPIO229NB4/DQS,ETH1_RCVRD_CLK,NA,4,LVCMOS33,TRUE,I,,GPIO,None,Ethernet Phy can output a clock based on the selected active media with programmable frequency. This can be used for debugging purposes.,,,
+Ethernet Phy 1,eth1_stat_clkout,V4,GPIO250NB4,ETH1_CLKOUT,NA,4,LVCMOS33,TRUE,I,,GPIO,None,Phy can output  a  clock  based  on  the  local reference  clock  with  programmable frequency. This can be used for debuging purposes.,,,
+Ethernet Phy 1,eth1_ctrl_clk_squelch_in,W5,GPIO231PB4,ETH1_CLK_SQUELCH,NA,4,LVCMOS33,TRUE,O,,GPIO,None,Input control to squelch recovered clock,,,
+Ethernet Phy 1,eth1_ctrl_comma_mode,W4,GPIO229PB4/DQS,ETH1_COMA,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_phy_mdc,AB4,GPIO201PB4,ETH2_MDC,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_phy_mdio,AC4,GPIO206NB4,ETH2_MDIO,NA,4,LVCMOS33,TRUE,IO,,GPIO,None,,,,
+Ethernet Phy 2,eth2_phy_rst_n,AB9,GPIO207PB4,ETH2_nRESET,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rxc,AD4,GPIO204PB4/CLKIN_W_6/CCC_NW_CLKIN_W_6/CCC_NW_PLL0_OUT1,ETH2_RX_CLK,NA,4,LVCMOS33,TRUE,I,CLKIN_W_6/CCC_NW_CLKIN_W_6/CCC_NW_PLL0_OUT1,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rx_ctl,AC8,GPIO205NB4/DQS,ETH2_RX_CTL,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rxd[3],AB6,GPIO203NB4,ETH2_RXD3,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rxd[2],AB7,GPIO203PB4,ETH2_RXD2,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rxd[1],AC9,GPIO205PB4/DQS/CCC_NW_PLL0_OUT0,ETH2_RXD1,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_rxd[0],AC7,GPIO202PB4,ETH2_RXD0,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_txc,W6,GPIO233PB4,ETH2_TX_CLK,NA,4,LVCMOS33,TRUE,O,CLKIN_W_7/CCC_NW_CLKIN_W_7/CCC_NW_PLL0_OUT0,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_tx_ctl,Y5,GPIO231NB4,ETH2_TX_CTL,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_txd[3],AB5,GPIO206PB4,ETH2_TXD3,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_txd[2],AB2,GPIO200PB4,ETH2_TXD2,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_txd[1],Y7,GPIO232PB4,ETH2_TXD1,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_rgmii_txd[0],Y6,GPIO233NB4,ETH2_TXD0,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_stat_fastlink_fail,AA8,GPIO207NB4,ETH2_FASTLINK_FAIL,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_stat_mdint,AA7,GPIO232NB4,ETH2_MDINT,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_stat_rcvrd_clk,AB11,GPIO210PB4,ETH2_RCVRD_CLK,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_stat_clkout,Y10,GPIO236NB4,ETH2_CLKOUT,NA,4,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Ethernet Phy 2,eth2_ctrl_clk_squelch_in,AC11,GPIO208PB4,ETH2_CLK_SQUELCH,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Ethernet Phy 2,eth2_ctrl_comma_mode,AA12,GPIO211NB4/DQS,ETH2_COMA,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Aux XCVR,xcvr1_lane0_rx_p,M29,XCVR_1_RX0_P,AUX_XCVR_RX_P,XCVR1,NA,NA,TRUE,I,,XCVR,None,"The embedded PCIe controller subsystem (PCIESS) is available only within Quad_0 ""XCVR_0"" Lanes.",,,
+Aux XCVR,xcvr1_lane0_rx_n,M30,XCVR_1_RX0_N,AUX_XCVR_RX_N,XCVR1,NA,NA,TRUE,I,,XCVR,None,Each PolarFire Transciever Quad has 4 lanes where each lane has a single Tx and Rx differential line,,,
+Aux XCVR,xcvr1_lane0_tx_p,N31,XCVR_1_TX0_P,C_AUX_XCVR_TX_P,XCVR1,NA,NA,TRUE,O,,XCVR,None,,,,
+Aux XCVR,xcvr1_lane0_tx_n,N32,XCVR_1_TX0_N,C_AUX_XCVR_TX_N,XCVR1,NA,NA,TRUE,O,,XCVR,None,,,,
+Avionics GPIO,bus_to_fav_pps,N4,GPIO272PB5,PPS,NA,5,LVTTL,TRUE,I,,GPIO,None,Connected to LVDS Quad outside of FPGA chip and receives LVTTL,,,
+Avionics GPIO,bus_to_fav_trig,N3,GPIO272NB5,TRIG,NA,5,LVTTL,TRUE,I,,GPIO,None,External trigger signal from Payload computer,,,
+Avionics GPIO,bus_to_fav_gpi,N2,GPIO268PB5,GPIN_PF,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Avionics GPIO,fav_to_bus_gpo,L4,GPIO273PB5,GPOUT,NA,5,LVCMOS33,TRUE,O,,GPIO,None,,,,
+Avionics GPIO,bus_fav_interrupt,M2,GPIO269PB5,INTERRUPT,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,,,,
+NVM QSPI,nvm_qspi_sio0,L7,GPIO296NB5,QSPI_SIO0,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,,SI/SIO0,,
+NVM QSPI,nvm_qspi_sio1,L8,GPIO296PB5,QSPI_SIO1,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,,SO/SIO1,,
+NVM QSPI,nvm_qspi_sio2,K8,GPIO297NB5,QSPI_SIO2,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,,WP_n/SIO2,,
+NVM QSPI,nvm_qspi_sio3,J8,GPIO297PB5,QSPI_SIO3,NA,5,LVCMOS33,TRUE,IO,,GPIO,None,,HOLD_n/SIO3,,
+NVM QSPI,nvm_qspi_cs_n,K3,GPIO298NB5,QSPI_CE,NA,5,LVCMOS33,TRUE,O,,GPIO,None,,CE_n,,
+NVM QSPI,nvm_qspi_sck,K7,GPIO293PB5,QSPI_SCK,NA,5,LVCMOS33,TRUE,O,,GPIO,None,,SCK,,
+PF Heartbeat LED,pf_heartbeat,Y1,GPIO230NB4,PF_HEARTBEAT,NA,4,LVCMOS33,TRUE,O,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc3,A2,GPIO311PB2,PA3_TO_PF_MISC3,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc4,A3,GPIO311NB2,PA3_TO_PF_MISC4,NA,2,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc5,R12,GPIO263PB5,PA3_TO_PF_MISC5,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc6,T14,GPIO264PB5,PA3_TO_PF_MISC6,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc7,T13,GPIO265PB5/DQS,PA3_TO_PF_MISC7,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc8,P4,GPIO270PB5,PA3_TO_PF_MISC8,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc9,L3,GPIO271PB5/DQS,PA3_TO_PF_MISC9,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc10,M9,GPIO280PB5,PA3_TO_PF_MISC10,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc11,N12,GPIO281PB5,PA3_TO_PF_MISC11,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc12,P10,GPIO282PB5,PA3_TO_PF_MISC12,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc13,M10,GPIO283PB5/DQS,PA3_TO_PF_MISC13,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc14,L10,GPIO284PB5,PA3_TO_PF_MISC14,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+PA3 to PolarFire Misc,pa3_to_pf_misc15,N13,GPIO285PB5,PA3_TO_PF_MISC15,NA,5,LVCMOS33,TRUE,I,,GPIO,None,,,,
+Debug GPIO,dbg_gpio0,AJ25,HSIO93NB1/DQS,DEBUG_GPIO0,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, R11,GPIO263NB5,,
+Debug GPIO,dbg_gpio1,AN26,HSIO88NB1,DEBUG_GPIO1,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, R12,GPIO263PB5,,
+Debug GPIO,dbg_gpio2,AM26,HSIO86NB1,DEBUG_GPIO2,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, L9,GPIO284NB5,,
+Debug GPIO,dbg_gpio3,AL26,HSIO84PB1/CCC_NE_CLKIN_N_11,DEBUG_GPIO3,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, L10,GPIO284PB5,,
+Debug GPIO,dbg_gpio4,AP27,HSIO87NB1/DQS,DEBUG_GPIO4,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, M12,GPIO285NB5,,
+Debug GPIO,dbg_gpio5,AN27,HSIO85PB1/CCC_NE_PLL0_OUT1,DEBUG_GPIO5,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, N13,GPIO285PB5,,
+Debug GPIO,dbg_gpio6,AM27,HSIO85NB1,DEBUG_GPIO6,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, L5,GPIO292NB5,,
+Debug GPIO,dbg_gpio7,AL23,HSIO95PB1,DEBUG_GPIO7,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, K5,GPIO292PB5,,
+Debug GPIO,dbg_gpio8,AL24,HSIO95NB1,DEBUG_GPIO8,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, M11,GPIO277PB5/DQS,,
+Debug GPIO,dbg_gpio9,AP24,HSIO105NB1/DQS,DEBUG_GPIO9,NA,1,LVCMOS18,TRUE,IO,,HSIO,None, M10,GPIO283PB5/DQS,,
+Debug GPIO,dbg_gpio10,AN24,HSIO103PB1,DEBUG_GPIO10,NA,1,LVCMOS18,TRUE,IO,,HSIO,None,K6,GPIO293NB5,,
+Debug GPIO,dbg_gpio11,AM25,HSIO86PB1/CCC_NE_CLKIN_N_10/CCC_NE_PLL0_OUT0,DEBUG_GPIO11,NA,1,LVCMOS18,TRUE,IO,,HSIO,None,K7,GPIO293PB5,,
+Debug GPIO,dbg_gpio12,AP25,HSIO88PB1,DEBUG_GPIO12,NA,1,LVCMOS18,TRUE,IO,,HSIO,None,M5,GPIO294NB5,,
+Debug GPIO,dbg_gpio13,AK25,HSIO89PB1,DEBUG_GPIO13,NA,1,LVCMOS18,TRUE,IO,,HSIO,None,M6,GPIO294PB5,,
+DDR4 R0 16GB ECC NW,ddr4_r0_a[0],AE5,HSIO197PB0/CCC_NW_CLKIN_N_0,DDR4_16GB_A0,NA,0,HSTL12I,TRUE,O,,HSIO,None,NORTH_NW Region,A[0],,AE5
+DDR4 R0 16GB ECC NW,ddr4_r0_a[1],AF5,HSIO197NB0,DDR4_16GB_A1,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[1],,AF5
+DDR4 R0 16GB ECC NW,ddr4_r0_ck0,AG4,HSIO194PB0/CLKIN_N_2/CCC_NW_CLKIN_N_2/CCC_NW_PLL1_OUT0,DDR4_16GB_CK_P,NA,0,HSTL12I,TRUE,O,,HSIO,None,,CK0,,AG4
+DDR4 R0 16GB ECC NW,ddr4_r0_ck0_n,AG5,HSIO194NB0,DDR4_16GB_CK_N,NA,0,HSTL12I,TRUE,O,,HSIO,None,,CK0_N,,AG5
+DDR4 R0 16GB ECC NW,ddr4_r0_a[2],AF2,HSIO193PB0/CCC_NW_PLL1_OUT1,DDR4_16GB_A2,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[2],,AF2
+DDR4 R0 16GB ECC NW,ddr4_r0_a[3],AF3,HSIO193NB0,DDR4_16GB_A3,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[3],,AF3
+DDR4 R0 16GB ECC NW,ddr4_r0_a[4],AH3,HSIO191PB0,DDR4_16GB_A4,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[4],,AH3
+DDR4 R0 16GB ECC NW,ddr4_r0_a[5],AJ3,HSIO191NB0,DDR4_16GB_A5,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[5],,AJ3
+DDR4 R0 16GB ECC NW,ddr4_r0_a[6],AH1,HSIO190PB0,DDR4_16GB_A6,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[6],,AH1
+DDR4 R0 16GB ECC NW,ddr4_r0_a[7],AH2,HSIO190NB0,DDR4_16GB_A7,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[7],,AH2
+DDR4 R0 16GB ECC NW,ddr4_r0_a[8],AK3,HSIO189PB0/DQS,DDR4_16GB_A8,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[8],,AK3
+DDR4 R0 16GB ECC NW,ddr4_r0_a[9],AL3,HSIO189NB0/DQS,DDR4_16GB_A9,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[9],,AL3
+DDR4 R0 16GB ECC NW,ddr4_r0_a[10],AJ1,HSIO188PB0,DDR4_16GB_A10,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[10],,AJ1
+DDR4 R0 16GB ECC NW,ddr4_r0_a[11],AK1,HSIO188NB0,DDR4_16GB_A11,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[11],,AK1
+DDR4 R0 16GB ECC NW,ddr4_r0_a[12],AH4,HSIO187PB0,DDR4_16GB_A12,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[12],,AH4
+DDR4 R0 16GB ECC NW,ddr4_r0_a[13],AJ4,HSIO187NB0,DDR4_16GB_A13,NA,0,HSTL12I,TRUE,O,,HSIO,None,,A[13],,AJ4
+DDR4 R0 16GB ECC NW,ddr4_r0_we_n,AK2,HSIO186PB0,DDR4_16GB_nWE,NA,0,HSTL12I,TRUE,O,,HSIO,None,,WE_N,,AK2
+DDR4 R0 16GB ECC NW,ddr4_r0_cas_n,AL2,HSIO186NB0,DDR4_16GB_nCAS,NA,0,HSTL12I,TRUE,O,,HSIO,None,,CAS_N,,AL2
+DDR4 R0 16GB ECC NW,ddr4_r0_ras_n,AD9,HSIO185PB0,DDR4_16GB_nRAS,NA,0,HSTL12I,TRUE,O,,HSIO,None,,RAS_N,,AD9
+DDR4 R0 16GB ECC NW,ddr4_r0_ba[0],AD8,HSIO185NB0,DDR4_16GB_BA0,NA,0,HSTL12I,TRUE,O,,HSIO,None,,BA[0],,AD8
+DDR4 R0 16GB ECC NW,ddr4_r0_ba[1],AD6,HSIO184PB0,DDR4_16GB_BA1,NA,0,HSTL12I,TRUE,O,,HSIO,None,,BA[1],,AD6
+DDR4 R0 16GB ECC NW,ddr4_r0_act_n,AE6,HSIO184NB0,DDR4_16GB_nACT,NA,0,HSTL12I,TRUE,O,,HSIO,None,,ACT_N,,AE6
+DDR4 R0 16GB ECC NW,ddr4_r0_bg[0],AG7,HSIO183PB0/DQS,DDR4_16GB_BG0,NA,0,HSTL12I,TRUE,O,,HSIO,None,,BG[0],,AG7
+DDR4 R0 16GB ECC NW,ddr4_r0_bg[1],AG6,HSIO183NB0/DQS,DDR4_16GB_BG1,NA,0,HSTL12I,TRUE,O,,HSIO,None,,BG[1],,AG6
+DDR4 R0 16GB ECC NW,ddr4_r0_cs_n,AF9,HSIO182PB0,DDR4_16GB_nCS,NA,0,HSTL12I,TRUE,O,,HSIO,None,,CS_N,,AF9
+DDR4 R0 16GB ECC NW,ddr4_r0_cke,AG9,HSIO182NB0,DDR4_16GB_CKE,NA,0,HSTL12I,TRUE,O,,HSIO,None,,CKE,,AG9
+DDR4 R0 16GB ECC NW,ddr4_r0_odt,AE7,HSIO181PB0,DDR4_16GB_ODT,NA,0,HSTL12I,TRUE,O,,HSIO,None,,ODT,,AE7
+DDR4 R0 16GB ECC NW,ddr4_r0_reset_n,AF7,HSIO181NB0,DDR4_16GB_nRESET,NA,0,HSTL12I,TRUE,O,,HSIO,None,,RESET_N,,AF7
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[0],AE12,HSIO179PB0,DDR4_16GB_DQ1,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[0],,AF10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[1],AF12,HSIO179NB0,DDR4_16GB_DQ3,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[1],,AE12
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[2],AG10,HSIO178PB0,DDR4_16GB_DQ4,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[2],,AE10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[3],AF10,HSIO178NB0,DDR4_16GB_DQ0,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[3],,AF12
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[0],AE13,HSIO177PB0/DQS,DDR4_16GB_DQS0_P,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS[0],,AE13
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[0],AF13,HSIO177NB0/DQS,DDR4_16GB_DQS0_N,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS_N[0],,AF13
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[4],AD10,HSIO176PB0,DDR4_16GB_DQ6,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[4],,AG10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[5],AE10,HSIO176NB0,DDR4_16GB_DQ2,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[5],,AD13
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[6],AD13,HSIO175PB0,DDR4_16GB_DQ5,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[6],,AD10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[7],AD14,HSIO175NB0,DDR4_16GB_DQ7,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[7],,AD14
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[0],AE11,HSIO174PB0,DDR4_16GB_nDM0,NA,0,POD12I,TRUE,O,,HSIO,None,,DM_N[0],,AE11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[8],AH6,HSIO173PB0,DDR4_16GB_DQ12,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[8],,AK5
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[9],AH7,HSIO173NB0,DDR4_16GB_DQ10,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[9],,AJ8
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[10],AJ9,HSIO172PB0,DDR4_16GB_DQ15,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[10],,AH7
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[11],AJ8,HSIO172NB0,DDR4_16GB_DQ9,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[11],,AK7
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[1],AJ5,HSIO171PB0/DQS,DDR4_16GB_DQS1_P,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS[1],,AJ5
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[1],AJ6,HSIO171NB0/DQS,DDR4_16GB_DQS1_N,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS_N[1],,AJ6
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[12],AH9,HSIO170NB0,DDR4_16GB_DQ13,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[12],,AH6
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[13],AK5,HSIO169PB0,DDR4_16GB_DQ8,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[13],,AH9
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[14],AK6,HSIO169NB0,DDR4_16GB_DQ14,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[14],,AK6
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[15],AK7,HSIO168PB0/CLKIN_N_5,DDR4_16GB_DQ11,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[15],,AJ9
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[1],AK8,HSIO168NB0,DDR4_16GB_nDM1,NA,0,POD12I,TRUE,O,,HSIO,None,,DM_N[1],,AK8
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[16],AM1,HSIO167PB0,DDR4_16GB_DQ16,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[16],,AM1
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[17],AM2,HSIO167NB0,DDR4_16GB_DQ18,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[17],,AP3
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[18],AN1,HSIO166PB0,DDR4_16GB_DQ20,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[18],,AM2
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[19],AN2,HSIO166NB0,DDR4_16GB_DQ22,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[19],,AP2
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[2],AL4,HSIO165PB0/DQS,DDR4_16GB_DQS2_P,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS[2],,AL4
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[2],AM4,HSIO165NB0/DQS,DDR4_16GB_DQS2_N,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQS_N[2],,AM4
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[20],AP2,HSIO164PB0,DDR4_16GB_DQ19,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[20],,AN1
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[21],AP3,HSIO164NB0,DDR4_16GB_DQ17,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[21],,AL5
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[22],AL5,HSIO163PB0,DDR4_16GB_DQ21,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[22],,AN2
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[23],AM5,HSIO163NB0,DDR4_16GB_DQ23,NA,0,POD12I,TRUE,IO,,HSIO,None,,DQ[23],,AM5
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[2],AN3,HSIO162PB0,DDR4_16GB_nDM2,NA,0,POD12I,TRUE,O,,HSIO,None,,DM_N[2],,AN3
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[24],AG11,HSIO161PB7,DDR4_16GB_DQ30,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[24],,AJ10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[25],AH11,HSIO161NB7,DDR4_16GB_DQ26,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[25],,AG12
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[26],AG12,HSIO160PB7,DDR4_16GB_DQ25,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[26],,AH11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[27],AH12,HSIO160NB7,DDR4_16GB_DQ27,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[27],,AH12
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[3],AH14,HSIO159PB7/DQS,DDR4_16GB_DQS3_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[3],,AH14
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[3],AH13,HSIO159NB7/DQS,DDR4_16GB_DQS3_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[3],,AH13
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[28],AJ10,HSIO158PB7,DDR4_16GB_DQ24,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[28],,AJ11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[29],AJ11,HSIO158NB7,DDR4_16GB_DQ28,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[29],,AJ14
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[30],AJ14,HSIO157PB7,DDR4_16GB_DQ29,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[30],,AG11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[31],AJ13,HSIO157NB7,DDR4_16GB_DQ31,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[31],,AJ13
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[3],AK13,HSIO156PB7,DDR4_16GB_nDM3,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[3],,AK13
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[32],AD15,HSIO155PB7,DDR4_16GB_DQ39,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[32],,AG14
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[33],AE15,HSIO155NB7,DDR4_16GB_DQ35,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[33],,AE17
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[34],AF14,HSIO154PB7,DDR4_16GB_DQ36,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[34],,AG15
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[35],AG14,HSIO154NB7,DDR4_16GB_DQ32,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[35],,AE15
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[4],AE16,HSIO153PB7/DQS,DDR4_16GB_DQS4_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[4],,AE16
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[4],AD16,HSIO153NB7/DQS,DDR4_16GB_DQS4_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[4],,AD16
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[36],AF15,HSIO152PB7,DDR4_16GB_DQ38,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[36],,AF14
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[37],AG15,HSIO152NB7,DDR4_16GB_DQ34,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[37],,AD17
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[38],AD17,HSIO151PB7,DDR4_16GB_DQ37,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[38],,AF15
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[39],AE17,HSIO151NB7,DDR4_16GB_DQ33,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[39],,AD15
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[4],AF17,HSIO150PB7,DDR4_16GB_nDM4,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[4],,AF17
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[40],AL7,HSIO149PB7,DDR4_16GB_DQ41,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[40],,AP5
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[41],AM7,HSIO149NB7,DDR4_16GB_DQ43,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[41],,AL7
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[42],AP4,HSIO148PB7,DDR4_16GB_DQ44,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[42],,AP6
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[43],AP5,HSIO148NB7,DDR4_16GB_DQ40,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[43],,AM7
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[5],AM6,HSIO147PB7/DQS,DDR4_16GB_DQS5_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[5],,AM6
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[5],AN7,HSIO147NB7/DQS,DDR4_16GB_DQS5_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[5],,AN7
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[44],AL8,HSIO146PB7,DDR4_16GB_DQ45,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[44],,AP4
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[45],AL9,HSIO146NB7,DDR4_16GB_DQ47,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[45],,AL8
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[46],AN6,HSIO145PB7,DDR4_16GB_DQ46,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[46],,AN6
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[47],AP6,HSIO145NB7,DDR4_16GB_DQ42,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[47],,AL9
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[5],AN8,HSIO144PB7,DDR4_16GB_nDM5,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[5],,AN8
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[48],AG17,HSIO143PB7,DDR4_16GB_DQ50,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[48],,AH17
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[49],AH16,HSIO143NB7,DDR4_16GB_DQ52,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[49],,AH18
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[50],AG19,HSIO142PB7,DDR4_16GB_DQ53,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[50],,AG17
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[51],AH19,HSIO142NB7,DDR4_16GB_DQ55,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[51],,AJ19
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[6],AK16,HSIO141PB7/DQS,DDR4_16GB_DQS6_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[6],,AK16
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[6],AJ16,HSIO141NB7/DQS,DDR4_16GB_DQS6_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[6],,AJ16
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[52],AH17,HSIO140PB7,DDR4_16GB_DQ48,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[52],,AH16
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[53],AH18,HSIO140NB7,DDR4_16GB_DQ49,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[53],,AG19
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[54],AJ18,HSIO139PB7,DDR4_16GB_DQ54,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[54],,AJ18
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[55],AJ19,HSIO139NB7,DDR4_16GB_DQ51,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[55],,AH19
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[6],AJ15,HSIO138PB7,DDR4_16GB_nDM6,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[6],,AJ15
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[56],AK10,HSIO137PB7,DDR4_16GB_DQ59,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[56],,AN9
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[57],AL10,HSIO137NB7,DDR4_16GB_DQ57,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[57],,AL10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[58],AM9,HSIO136PB7,DDR4_16GB_DQ58,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[58],,AM9
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[59],AM10,HSIO136NB7,DDR4_16GB_DQ62,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[59],,AK10
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[7],AM11,HSIO135PB7/DQS,DDR4_16GB_DQS7_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[7],,AM11
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[7],AN11,HSIO135NB7/DQS,DDR4_16GB_DQS7_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[7],,AN11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[60],AK11,HSIO134PB7,DDR4_16GB_DQ61,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[60],,AP9
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[61],AL12,HSIO134NB7,DDR4_16GB_DQ63,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[61],,AK11
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[62],AN9,HSIO133PB7,DDR4_16GB_DQ56,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[62],,AM10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[63],AP9,HSIO133NB7,DDR4_16GB_DQ60,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[63],,AL12
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[7],AP10,HSIO132PB7,DDR4_16GB_nDM7,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[7],,AP10
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[64],AC18,HSIO131PB7,DDR4_16GB_DQ64,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[64],,AC18
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[65],AD19,HSIO131NB7,DDR4_16GB_DQ66,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[65],,AD20
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[66],AF20,HSIO130PB7,DDR4_16GB_DQ67,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[66],,AD19
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[67],AG20,HSIO130NB7,DDR4_16GB_DQ71,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[67],,AF20
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs[8],AD18,HSIO129PB7/DQS,DDR4_16GB_DQS8_P,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS[8],,AD18
+DDR4 R0 16GB ECC NW,ddr4_r0_dqs_n[8],AE18,HSIO129NB7/DQS,DDR4_16GB_DQS8_N,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQS_N[8],,AE18
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[68],AE20,HSIO128PB7,DDR4_16GB_DQ69,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[68],,AF18
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[69],AD20,HSIO128NB7,DDR4_16GB_DQ65,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[69],,AE20
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[70],AF19,HSIO127PB7,DDR4_16GB_DQ70,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[70],,AF19
+DDR4 R0 16GB ECC NW,ddr4_r0_dq[71],AF18,HSIO127NB7,DDR4_16GB_DQ68,NA,7,POD12I,TRUE,IO,,HSIO,None,,DQ[71],,AG20
+DDR4 R0 16GB ECC NW,ddr4_r0_dm_n[8],AD21,HSIO126PB7,DDR4_16GB_nDM8,NA,7,POD12I,TRUE,O,,HSIO,None,,DM_N[8],,AD21
+DDR4 R0 16GB ECC NW,ddr4_r0_shield0,AD11,HSIO174NB0,GND,NA,0,SHIELD12,TRUE,O,,HSIO,None,,SHIELD0,,AD11
+DDR4 R0 16GB ECC NW,ddr4_r0_shield1,AH8,HSIO170PB0/CLKIN_N_4,GND,NA,0,SHIELD12,TRUE,O,,HSIO,None,,SHIELD1,,AH8
+DDR4 R0 16GB ECC NW,ddr4_r0_shield2,AN4,HSIO162NB0,GND,NA,0,SHIELD12,TRUE,O,,HSIO,None,,SHIELD2,,AN4
+DDR4 R0 16GB ECC NW,ddr4_r0_shield3,AK12,HSIO156NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD3,,AK12
+DDR4 R0 16GB ECC NW,ddr4_r0_shield4,AG16,HSIO150NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD4,,AG16
+DDR4 R0 16GB ECC NW,ddr4_r0_shield5,AP8,HSIO144NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD5,,AP8
+DDR4 R0 16GB ECC NW,ddr4_r0_shield6,AK15,HSIO138NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD6,,AK15
+DDR4 R0 16GB ECC NW,ddr4_r0_shield7,AP11,HSIO132NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD7,,AP11
+DDR4 R0 16GB ECC NW,ddr4_r0_shield8,AE21,HSIO126NB7,GND,NA,7,SHIELD12,TRUE,O,,HSIO,None,,SHIELD8,,AE21
+DDR4 R0 16GB ECC NW,ddr4_r0_ext_ref,AF4,HSIO196NB0,EXT_16GB_DDR4_REF,NA,7,NA,TRUE,I,,HSIO,None,Optional vref if needed. Resistor divider will be DNI otherwise,,,AF4
+DDR4 R2 8GB ECC SE,ddr4_r2_a[0],B26,HSIO83NB6,DDR4_8GB_ECC_A0,NA,6,HSTL12I,TRUE,O,,HSIO,None,NORTH_SE Region,A[0],,B26
+DDR4 R2 8GB ECC SE,ddr4_r2_a[1],C27,HSIO83PB6/CCC_SE_CLKIN_S_15,DDR4_8GB_ECC_A1,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[1],,C27
+DDR4 R2 8GB ECC SE,ddr4_r2_ck0,A25,HSIO80PB6/DQS/CCC_SE_PLL1_OUT0,DDR4_8GB_ECC_CK_P,NA,6,HSTL12I,TRUE,O,,HSIO,None,,CK0,,A25
+DDR4 R2 8GB ECC SE,ddr4_r2_ck0_n,B25,HSIO80NB6/DQS,DDR4_8GB_ECC_CK_N,NA,6,HSTL12I,TRUE,O,,HSIO,None,,CK0_N,,B25
+DDR4 R2 8GB ECC SE,ddr4_r2_a[2],C26,HSIO82NB6,DDR4_8GB_ECC_A2,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[2],,C26
+DDR4 R2 8GB ECC SE,ddr4_r2_a[3],D25,HSIO82PB6/CCC_SE_PLL1_OUT1,DDR4_8GB_ECC_A3,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[3],,D25
+DDR4 R2 8GB ECC SE,ddr4_r2_a[4],C24,HSIO79NB6,DDR4_8GB_ECC_A4,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[4],,C24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[5],D24,HSIO79PB6,DDR4_8GB_ECC_A5,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[5],,D24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[6],A24,HSIO78NB6,DDR4_8GB_ECC_A6,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[6],,A24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[7],B24,HSIO78PB6,DDR4_8GB_ECC_A7,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[7],,B24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[8],F22,HSIO76NB6,DDR4_8GB_ECC_A8,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[8],,F22
+DDR4 R2 8GB ECC SE,ddr4_r2_a[9],G22,HSIO76PB6/CCC_SE_PLL0_OUT1,DDR4_8GB_ECC_A9,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[9],,G22
+DDR4 R2 8GB ECC SE,ddr4_r2_a[10],F24,HSIO74NB6/DQS,DDR4_8GB_ECC_A10,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[10],,F24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[11],F23,HSIO74PB6/DQS/CCC_SE_PLL0_OUT0,DDR4_8GB_ECC_A11,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[11],,F23
+DDR4 R2 8GB ECC SE,ddr4_r2_a[12],H24,HSIO73NB6,DDR4_8GB_ECC_A12,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[12],,H24
+DDR4 R2 8GB ECC SE,ddr4_r2_a[13],G24,HSIO73PB6,DDR4_8GB_ECC_A13,NA,6,HSTL12I,TRUE,O,,HSIO,None,,A[13],,G24
+DDR4 R2 8GB ECC SE,ddr4_r2_we_n,H22,HSIO72NB6,DDR4_8GB_ECC_nWE,NA,6,HSTL12I,TRUE,O,,HSIO,None,,WE_N,,H22
+DDR4 R2 8GB ECC SE,ddr4_r2_cas_n,H23,HSIO72PB6,DDR4_8GB_ECC_nCAS,NA,6,HSTL12I,TRUE,O,,HSIO,None,,CAS_N,,H23
+DDR4 R2 8GB ECC SE,ddr4_r2_ras_n,K25,HSIO71NB6,DDR4_8GB_ECC_nRAS,NA,6,HSTL12I,TRUE,O,,HSIO,None,,RAS_N,,K25
+DDR4 R2 8GB ECC SE,ddr4_r2_ba[0],J25,HSIO71PB6,DDR4_8GB_ECC_BA0,NA,6,HSTL12I,TRUE,O,,HSIO,None,,BA[0],,J25
+DDR4 R2 8GB ECC SE,ddr4_r2_ba[1],L24,HSIO70NB6,DDR4_8GB_ECC_BA1,NA,6,HSTL12I,TRUE,O,,HSIO,None,,BA[1],,L24
+DDR4 R2 8GB ECC SE,ddr4_r2_act_n,L25,HSIO70PB6,DDR4_8GB_ECC_nACT,NA,6,HSTL12I,TRUE,O,,HSIO,None,,ACT_N,,L25
+DDR4 R2 8GB ECC SE,ddr4_r2_bg[0],J24,HSIO69NB6,DDR4_8GB_ECC_BG0,NA,6,HSTL12I,TRUE,O,,HSIO,None,,BG[0],,J24
+DDR4 R2 8GB ECC SE,ddr4_r2_bg[1],J23,HSIO69PB6,DDR4_8GB_ECC_BG1,NA,6,HSTL12I,TRUE,O,,HSIO,None,,BG[1],,J23
+DDR4 R2 8GB ECC SE,ddr4_r2_cs_n,M23,HSIO68NB6/DQS,DDR4_8GB_ECC_nCS,NA,6,HSTL12I,TRUE,O,,HSIO,None,,CS_N,,M23
+DDR4 R2 8GB ECC SE,ddr4_r2_cke,M22,HSIO68PB6/DQS,DDR4_8GB_ECC_CKE,NA,6,HSTL12I,TRUE,O,,HSIO,None,,CKE,,M22
+DDR4 R2 8GB ECC SE,ddr4_r2_odt,L22,HSIO67NB6,DDR4_8GB_ECC_ODT,NA,6,HSTL12I,TRUE,O,,HSIO,None,,ODT,,L22
+DDR4 R2 8GB ECC SE,ddr4_r2_reset_n,K22,HSIO67PB6,DDR4_8GB_ECC_nRESET,NA,6,HSTL12I,TRUE,O,,HSIO,None,,RESET_N,,K22
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[0],A23,HSIO65NB6,DDR4_8GB_ECC_DQ4,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[0],,C23
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[1],A22,HSIO65PB6,DDR4_8GB_ECC_DQ3,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[1],,E22
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[2],C23,HSIO64NB6,DDR4_8GB_ECC_DQ0,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[2],,D23
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[3],D23,HSIO64PB6,DDR4_8GB_ECC_DQ2,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[3],,A22
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs[0],C22,HSIO62PB6/DQS,DDR4_8GB_ECC_DQS0_P,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS[0],,C22
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs_n[0],B22,HSIO62NB6/DQS,DDR4_8GB_ECC_DQS0_N,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS_N[0],,B22
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[4],E23,HSIO63NB6,DDR4_8GB_ECC_DQ6,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[4],,A23
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[5],E22,HSIO63PB6,DDR4_8GB_ECC_DQ1,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[5],,B21
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[6],B21,HSIO61NB6,DDR4_8GB_ECC_DQ5,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[6],,E23
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[7],C21,HSIO61PB6,DDR4_8GB_ECC_DQ7,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[7],,C21
+DDR4 R2 8GB ECC SE,ddr4_r2_dm_n[0],D21,HSIO60NB6,DDR4_8GB_ECC_nDM0,NA,6,POD12I,TRUE,O,,HSIO,None,,DM_N[0],,D21
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[8],A20,HSIO59NB6,DDR4_8GB_ECC_DQ8,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[8],,A20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[9],B20,HSIO59PB6,DDR4_8GB_ECC_DQ12,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[9],,B17
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[10],A19,HSIO58NB6,DDR4_8GB_ECC_DQ10,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[10],,A19
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[11],B19,HSIO58PB6,DDR4_8GB_ECC_DQ14,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[11],,C19
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs[1],A17,HSIO56PB6/DQS,DDR4_8GB_ECC_DQS1_P,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS[1],,A17
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs_n[1],A18,HSIO56NB6/DQS,DDR4_8GB_ECC_DQS1_N,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS_N[1],,A18
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[12],C19,HSIO57NB6,DDR4_8GB_ECC_DQ11,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[12],,B20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[13],C18,HSIO57PB6,DDR4_8GB_ECC_DQ15,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[13],,C17
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[14],B17,HSIO55NB6,DDR4_8GB_ECC_DQ9,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[14],,B19
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[15],C17,HSIO55PB6,DDR4_8GB_ECC_DQ13,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[15],,C18
+DDR4 R2 8GB ECC SE,ddr4_r2_dm_n[1],D20,HSIO54NB6,DDR4_8GB_ECC_nDM1,NA,6,POD12I,TRUE,O,,HSIO,None,,DM_N[1],,D20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[16],G21,HSIO53NB6,DDR4_8GB_ECC_DQ16,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[16],,G21
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[17],G20,HSIO53PB6,DDR4_8GB_ECC_DQ17,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[17],,G20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[18],L20,HSIO52NB6,DDR4_8GB_ECC_DQ20,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[18],,K20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[19],K20,HSIO52PB6,DDR4_8GB_ECC_DQ18,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[19],,H18
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs[2],J21,HSIO50PB6/DQS,DDR4_8GB_ECC_DQS2_P,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS[2],,J21
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs_n[2],K21,HSIO50NB6/DQS,DDR4_8GB_ECC_DQS2_N,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS_N[2],,K21
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[20],G19,HSIO51NB6,DDR4_8GB_ECC_DQ22,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[20],,L20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[21],H19,HSIO51PB6,DDR4_8GB_ECC_DQ21,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[21],,H19
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[22],G17,HSIO49NB6,DDR4_8GB_ECC_DQ23,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[22],,G19
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[23],H18,HSIO49PB6,DDR4_8GB_ECC_DQ19,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[23],,G17
+DDR4 R2 8GB ECC SE,ddr4_r2_dm_n[2],H21,HSIO48NB6,DDR4_8GB_ECC_nDM2,NA,6,POD12I,TRUE,O,,HSIO,None,,DM_N[2],,H21
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[24],A15,HSIO47NB6,DDR4_8GB_ECC_DQ26,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[24],,C16
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[25],B15,HSIO47PB6,DDR4_8GB_ECC_DQ30,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[25],,B12
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[26],B16,HSIO46NB6,DDR4_8GB_ECC_DQ28,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[26],,A15
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[27],C16,HSIO46PB6,DDR4_8GB_ECC_DQ24,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[27],,C14
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs[3],A13,HSIO44PB6/DQS,DDR4_8GB_ECC_DQS3_P,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS[3],,A13
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs_n[3],A14,HSIO44NB6/DQS,DDR4_8GB_ECC_DQS3_N,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS_N[3],,A14
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[28],B14,HSIO45NB6,DDR4_8GB_ECC_DQ31,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[28],,B16
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[29],C14,HSIO45PB6,DDR4_8GB_ECC_DQ27,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[29],,A12
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[30],A12,HSIO43NB6,DDR4_8GB_ECC_DQ29,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[30],,B15
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[31],B12,HSIO43PB6,DDR4_8GB_ECC_DQ25,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[31],,B14
+DDR4 R2 8GB ECC SE,ddr4_r2_dm_n[3],C13,HSIO42NB6,DDR4_8GB_ECC_nDM3,NA,6,POD12I,TRUE,O,,HSIO,None,,DM_N[3],,C13
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[32],F17,HSIO41NB6,DDR4_8GB_ECC_DQ34,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[32],,F20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[33],E17,HSIO41PB6,DDR4_8GB_ECC_DQ38,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[33],,E15
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[34],E20,HSIO40NB6,DDR4_8GB_ECC_DQ36,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[34],,F17
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[35],F20,HSIO40PB6,DDR4_8GB_ECC_DQ32,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[35],,E16
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs[4],D18,HSIO38PB6/DQS,DDR4_8GB_ECC_DQS4_P,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS[4],,D18
+DDR4 R2 8GB ECC SE,ddr4_r2_dqs_n[4],E18,HSIO38NB6/DQS,DDR4_8GB_ECC_DQS4_N,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQS_N[4],,E18
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[36],D16,HSIO39NB6,DDR4_8GB_ECC_DQ39,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[36],,E20
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[37],E16,HSIO39PB6,DDR4_8GB_ECC_DQ35,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[37],,D15
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[38],D15,HSIO37NB6,DDR4_8GB_ECC_DQ37,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[38],,E17
+DDR4 R2 8GB ECC SE,ddr4_r2_dq[39],E15,HSIO37PB6,DDR4_8GB_ECC_DQ33,NA,6,POD12I,TRUE,IO,,HSIO,None,,DQ[39],,D16
+DDR4 R2 8GB ECC SE,ddr4_r2_dm_n[4],F19,HSIO36NB6,DDR4_8GB_ECC_nDM4,NA,6,POD12I,TRUE,O,,HSIO,None,,DM_N[4],,F19
+DDR4 R2 8GB ECC SE,ddr4_r2_shield0,E21,HSIO60PB6,GND,NA,6,SHIELD12,TRUE,O,,HSIO,None,,SHIELD0,,E21
+DDR4 R2 8GB ECC SE,ddr4_r2_shield1,D19,HSIO54PB6,GND,NA,6,SHIELD12,TRUE,O,,HSIO,None,,SHIELD1,,D19
+DDR4 R2 8GB ECC SE,ddr4_r2_shield2,J20,HSIO48PB6,GND,NA,6,SHIELD12,TRUE,O,,HSIO,None,,SHIELD2,,J20
+DDR4 R2 8GB ECC SE,ddr4_r2_shield3,D14,HSIO42PB6,GND,NA,6,SHIELD12,TRUE,O,,HSIO,None,,SHIELD3,,D14
+DDR4 R2 8GB ECC SE,ddr4_r2_shield4,F18,HSIO36PB6,GND,NA,6,SHIELD12,TRUE,O,,HSIO,None,,SHIELD4,,F18
+DDR4 R2 8GB ECC SE,ddr4_r2_ext_ref,B27,HSIO81NB6,EXT_8GB_DDR4_REF,NA,6,NA,TRUE,I,,HSIO,None,Optional vref if needed. Resistor divider will be DNI otherwise,,,B27

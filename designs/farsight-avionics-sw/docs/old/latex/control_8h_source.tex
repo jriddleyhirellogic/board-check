@@ -1,0 +1,28 @@
+\doxysection{control.\+h}
+\hypertarget{control_8h_source}{}\label{control_8h_source}\index{/home/iboard/farsight/av\_board\_workspace/Camera/include/control.h@{/home/iboard/farsight/av\_board\_workspace/Camera/include/control.h}}
+\doxymbox{\hyperlink{control_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00001}00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00002}00002\ \textcolor{comment}{\ *\ control.h}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00004}00004\ \textcolor{comment}{\ *\ \ Created\ on:\ Oct\ 17,\ 2025}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00005}00005\ \textcolor{comment}{\ *\ \ \ \ \ \ Author:\ iboard}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00006}00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00008}00008\ \textcolor{preprocessor}{\#ifndef\ CONTROL\_H\_}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00009}00009\ \textcolor{preprocessor}{\#define\ CONTROL\_H\_}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00010}00010\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{FreeRTOS_8h}{FreeRTOS.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00011}00011\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{timers_8h}{timers.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00012}00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{events_8h}{events.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00014}\doxymbox{\hyperlink{control_8h_a3855a6684263a0db0ac48251f2f23e12}{00014}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{control_8h_a3855a6684263a0db0ac48251f2f23e12}{v\_Control\_Task}}(\textcolor{keywordtype}{void}\ *pvParameters);}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00015}\doxymbox{\hyperlink{control_8h_a6a745dec0048a514ed4e31aaf714fefb}{00015}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{control_8h_a6a745dec0048a514ed4e31aaf714fefb}{v\_Post\_Control\_Event}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ );}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00016}\doxymbox{\hyperlink{control_8h_ad72c82a5d43d2103a828ce2b185b7ff2}{00016}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{control_8h_ad72c82a5d43d2103a828ce2b185b7ff2}{v\_Post\_Control\_Event\_ISR}}(\ \doxymbox{\hyperlink{unionEvent__t}{Event\_t}}\ *event\ );}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00017}\doxymbox{\hyperlink{control_8h_a2adc452a87fea5abd763419f5c0bb8fe}{00017}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{control_8h_a2adc452a87fea5abd763419f5c0bb8fe}{v\_Start\_Control\_Timer}}(\ \doxymbox{\hyperlink{portmacro_8h_a3bd418c085056e3407a4c4f172780055}{TickType\_t}}\ ticks);}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00018}\doxymbox{\hyperlink{control_8h_a594ba520fc50764eb5b4c63b8078d0d3}{00018}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{control_8h_a594ba520fc50764eb5b4c63b8078d0d3}{v\_Stop\_Control\_Timer}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00019}00019\ uint8\_t\ \doxymbox{\hyperlink{control_8h_ad8e07a7a6068315f36c3131a88a164fd}{b\_Is\_Idle}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{control_8h_source_l00022}00022\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ CONTROL\_H\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

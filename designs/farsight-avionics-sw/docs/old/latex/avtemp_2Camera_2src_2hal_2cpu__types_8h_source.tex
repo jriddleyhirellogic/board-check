@@ -1,0 +1,47 @@
+\doxysection{cpu\+\_\+types.\+h}
+\hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source}{}\label{avtemp_2Camera_2src_2hal_2cpu__types_8h_source}\index{src/hal/cpu\_types.h@{src/hal/cpu\_types.h}}
+\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00002}00002\ \textcolor{comment}{\ *\ Copyright\ 2019-\/2022\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00006}00006\ \textcolor{comment}{\ *\ @file\ cpu\_types.h}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00007}00007\ \textcolor{comment}{\ *\ @author\ Microchip\ FPGA\ Embedded\ Systems\ Solutions}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00008}00008\ \textcolor{comment}{\ *\ @brief\ Type\ definitions\ which\ can\ be\ \ commonly\ used\ by\ the\ fabric-\/ip\ drivers.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00009}00009\ \textcolor{comment}{\ *\ }}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00010}00010\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00011}00011\ \textcolor{preprocessor}{\#ifndef\ \_\_CPU\_TYPES\_H}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00012}00012\ \textcolor{preprocessor}{\#define\ \_\_CPU\_TYPES\_H\ \ \ 1}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00014}00014\ \textcolor{preprocessor}{\#include\ <stdint.h>}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00016}00016\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00017}00017\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00018}00018\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00020}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{00020}}\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a7c94ea6f8948649f8d181ae55911eeaf}{size\_t}};}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00022}00022\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00023}00023\ \textcolor{comment}{\ *\ addr\_t:\ address\ type.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00024}00024\ \textcolor{comment}{\ *\ Used\ to\ specify\ the\ address\ of\ peripherals\ present\ in\ the\ processor's\ memory}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00025}00025\ \textcolor{comment}{\ *\ map.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00026}00026\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00027}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{00027}}\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a67dc2e2e5507d5a38167bfd489239068}{addr\_t}};}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00029}00029\ \textcolor{comment}{/*-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00030}00030\ \textcolor{comment}{\ *\ psr\_t:\ processor\ state\ register.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00031}00031\ \textcolor{comment}{\ *\ Used\ by\ HAL\_disable\_interrupts()\ and\ HAL\_restore\_interrupts()\ to\ store\ the}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00032}00032\ \textcolor{comment}{\ *\ processor's\ state\ between\ disabling\ and\ restoring\ interrupts.}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00033}00033\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00034}\doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{00034}}\ \textcolor{keyword}{typedef}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{avtemp_2Camera_2src_2hal_2cpu__types_8h_a4ad122ac0cc92fb7c17bebd947f8cbf2}{psr\_t}};}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00036}00036\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00037}00037\ \}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00038}00038\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00040}00040\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ CPU\_TYPES\_H\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{avtemp_2Camera_2src_2hal_2cpu__types_8h_source_l00041}00041\ }
+
+\end{DoxyCode}

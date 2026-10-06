@@ -1,0 +1,149 @@
+/*
+ * camera.h
+ *
+ *  Created on: Dec 4, 2025
+ *      Author: iboard
+ */
+
+#ifndef CAMERA_H_
+#define CAMERA_H_
+
+#include "core_gpio.h"
+#include "core_spi.h"
+#include "misc_math.h"
+
+typedef enum
+{
+    CAMERA_DEPTH_EIGHT_BITS,
+    CAMERA_DEPTH_TEN_BITS,
+    CAMERA_DEPTH_TWELVE_BITS
+}Camera_Bit_Depth_t;
+
+#include "eth.h"
+
+typedef struct
+{
+    uint16_t dst_port;
+    uint16_t src_port;
+    uint32_t dst_ip;
+    uint32_t src_ip;
+    uint16_t dst_mac_msb;
+    uint32_t dst_mac_lsb;
+    uint16_t src_mac_msb;
+    uint32_t src_mac_lsb;
+}Network_Addresses_t;
+
+typedef struct
+{
+    gpio_instance_t pwr_ctrl;
+    gpio_instance_t pwr_stat;
+    gpio_instance_t eth1_ctrl;
+    gpio_instance_t eth1_stat;
+    gpio_instance_t cam_ctrl;
+    gpio_instance_t cam_stat;
+    //gpio_instance_t cam_mux;
+    gpio_instance_t dbg_ctrl;
+    gpio_instance_t eth_pcie_mux;
+    gpio_instance_t ddr4_16gb_async_rst;
+    gpio_instance_t ddr4_8gb_async_rst;
+//    gpio_instance_t pps_clk;
+    spi_instance_t  spi;
+    eth_core_regs_t eth_core_1_regs;
+    Network_Addresses_t addresses;
+}Camera_Instance_t;
+
+#define SPI_FIFO_DEPTH 32
+
+// Total number of lines per frame
+#define LINES_PER_FRAME 4581
+
+// 106 + 1 = 107 beats of 512
+// 107 * 512 = 54784 bits = 6848 bytes
+#define HORIZ_WIDTH_BYTE 6784
+
+// ceil(4512*12)/256 for 8GB DDR4
+#define HORIZ_WIDTH_BEAT_8GB 212
+
+// ceil(4512*12)/512 for 16GB DDR4
+#define HORIZ_WIDTH_BEAT_16GB 106
+
+#define ETH1_DST_PORT     0x8931
+#define ETH1_SRC_PORT     0x04D2
+#define ETH1_DST_IP       IP_TO_U32(10,101,48,53)
+#define ETH1_SRC_IP       IP_TO_U32(10,101,48,192)
+
+#ifdef TURION
+#pragma GCC warning  "Default network addresses are set up for testing at Turion"
+#define ETH1_DST_MAC_MSB  0x902e
+#define ETH1_DST_MAC_LSB  0x16d7da08
+#else
+#pragma GCC warning  "Network addresses are set up for Quartus"
+#define ETH1_DST_MAC_MSB  0xc4cb
+#define ETH1_DST_MAC_LSB  0xe13a62b8
+#endif
+
+#define ETH1_SRC_MAC_MSB  0x0004
+#define ETH1_SRC_MAC_LSB  0xA3123456
+
+#define XTRIG_LOW_TIME_USEC 1000
+#define FRAME_CAPTURE_TIME_USEC 20000
+#define DDR4_8GB_FRAME_CAPTURE_AMOUNT 256
+#define DDR4_16GB_FRAME_CAPTURE_AMOUNT 512
+#define TOTAL_FRAME_CAPTURE_AMOUNT  (DDR4_16GB_FRAME_CAPTURE_AMOUNT + DDR4_8GB_FRAME_CAPTURE_AMOUNT)
+
+void v_Init_Camera( Camera_Instance_t *instance );
+void init_eth1(eth_core_regs_t *p_eth_core_1_regs );
+void configure_udp1(void);
+void configure_udp(uint32_t base_addr,
+                   uint16_t dst_port,
+                   uint16_t src_port,
+                   uint32_t dst_ip,
+                   uint32_t src_ip,
+                   uint16_t dst_mac_msb,
+                   uint32_t dst_mac_lsb,
+                   uint16_t src_mac_msb,
+                   uint32_t src_mac_lsb);
+
+void configure_dma_write(uint32_t base_addr, uint32_t h_size_byte);
+void configure_udp_dmactrl(uint32_t base_addr,
+                           uint32_t v_size_line,
+                           uint32_t h_size_byte,
+                           uint32_t h_size_beat);
+void cam_reset(Camera_Instance_t *instance);
+void init_slvsec( Camera_Instance_t *camera_instance);
+void configure_trig1(void);
+void configure_trig(uint32_t base_addr,
+                    uint32_t xtrig_low_time,
+                    uint32_t frame_capture_time,
+                    uint32_t frame_capture_amount,
+                    uint32_t xtrig_src_sel,
+                    uint32_t scheduler_time_sec,
+                    uint32_t scheduler_time_msec);
+void set_read_mux(uint32_t base_addr, uint32_t sel);
+void v_Enable_Camera_Power(Camera_Instance_t *instance, uint8_t b_Enable );
+void set_standby_and_master_mode(uint8_t sel);
+void v_Reset_Camera_Buffer(void);
+void xfer_frame_via_udp(uint32_t base_addr, uint32_t frame_index);
+void get_metadata(uint32_t base_addr, uint32_t frame_index, uint32_t *metadata_out);
+void trig_capture(void);
+void reset_udp_dmactrl(uint32_t base_addr);
+void v_Clear_Read_Req( uint32_t u32_Base_Address );
+void test_udp_dbg(uint32_t pkt_delay_usec, uint32_t test_len_msec);
+void update_network_addresses(void);
+void cam_mux_clear(void);
+void reset_dma_write(uint32_t base_addr);
+uint8_t read_cam_temp(void);
+uint32_t read_fpga_temp(void);
+<<<<<<< HEAD
+void v_Enable_Camera_IRQ(uint8_t b_Enable);
+void v_Set_Capture_Timing( uint32_t  u32_Xtrig_Low_Time,  uint32_t u32_Frame_Capture_Time );
+void v_Set_Scheduler_Time( uint32_t u32_Time_Sec, uint32_t u32_Time_msec );
+void v_Set_Capture_Amount(uint32_t u32_Frame_Capture_Amount);
+=======
+uint32_t check_fault(void);
+void clear_fault(void);
+void v_DDR4_Async_Reset(Camera_Instance_t *instance);
+>>>>>>> steven
+
+
+#endif /* CAMERA_H_ */

@@ -1,0 +1,103 @@
+/*
+ * command.h
+ *
+ *  Created on: Oct 8, 2025
+ *      Author: iboard
+ */
+
+#ifndef COMMAND_H_
+#define COMMAND_H_
+
+/**
+ * @enum Serial_Function_Code_t
+ * @brief Opcodes used by TMTC commands
+ */
+typedef enum
+{
+    // Values are from the ICD
+    GET_VERSION_SYS_CMD = 0x00,   /**< Get HW and SW version info */
+    SET_MODE_SYS_CMD = 0x01,      /**< Put camera in indicated mode */
+    RESET_SYS_CMD = 0x02,         /**< Do system reset */
+    REG_READ_SYS_CMD = 0x03,      /**< Read register */
+    REG_WRITE_SYS_CMD = 0x04,     /**< Write register */
+    SET_TIME_SYS_CMD = 0x05,      /**< Set time at the next PPS edge */
+    START_ACQ_SYS_CMD = 0x06,     /**< Take picture */
+    STOP_ACQ_SYS_CMD = 0x07,      /**< Halt picture taking */
+    FOCUS_SYS_CMD = 0x08,         /**< Move focus mechanism to indicated position */
+    HALT_FOCUS_SYS_CMD = 0x09,    /**< Stop focus operation in progress */
+    XFER_BUFF_SYS_CMD = 0x0A,     /**< Transfer image buffer */
+    RESET_BUFF_SYS_CMD = 0x0B,    /**< Reset pointers and dma in image buffers */
+    GET_INFO_SYS_CMD = 0x0C,      /**< Get system information */
+    CONF_EVENT_LOG_SYS_CMD = 0x0D,/**< CONF_EVENT_LOG_SYS_CMD */
+    EN_TL_CHAN_LOG_SYS_CMD = 0x0E,/**< EN_TL_CHAN_LOG_SYS_CMD */
+    XFER_LOG_SYS_CMD = 0x0F,      /**< XFER_LOG_SYS_CMD */
+    RESET_FRAME_INDEX_CMD,
+
+    // User defined, for debug and integration
+    ECHO_FUNCTION = 25,           /**< Reflects received data for testing TMTC interface */
+    GET_STATUS_FUNCTION,          /**< Get focus position, velocity and fault state */
+    SET_VREF_FUNCTION,            /**< Set the overcurrent voltage reference in focus mechanism */
+    SET_POSITION,                 /**< Go to indicated position */
+    SET_CONTROL_OUTPUTS_FUNCTION, /**< Set control outputs on focus mechanism */
+    ZERO_FUNCTION,                /**< Zero (home) the focus mechanism */
+    SET_LVDT_OFFSET_FUNCTION,     /**< Set offset (microns) between LVVDT electrical zero and mech zero */
+    GET_POSITION_FUNCTION,        /**< Get the current position indicated by LVDT*/
+    RESET_FUNCTION,               /**< Do system reset */
+    GET_PROJECTION,               /**< GET_PROJECTION */
+    RUN_UDP_TEST,                  /**<Test UDP link */
+    UPDATE_NET_ADDRESS,
+    GET_TLM_READING,
+
+    // Functions to read and write flash memory
+    FLASH_ERASE_SECTOR,
+    FLASH_ERASE_BLOCK,
+    WRITE_FLASH_PAGE,
+    READ_FLASH,
+    RESET_FLASH,
+
+    // Misc
+    GET_CAMERA_TEMP,
+    GET_FPGA_TEMP,
+    GET_CAMERA_STATE,
+<<<<<<< HEAD
+    SET_PPS_DELAY
+=======
+    GET_METADATA                  /**< Get image frame metadata (returned on UART) */
+>>>>>>> steven
+}Serial_Function_Code_t;
+
+typedef enum
+{
+    OK,
+    MALFORMED_PACKET,
+    UNIMPLEMENTED
+}Command_Exec_Status_t;
+
+// Field definitions for command messages
+// First three fields must be the same as they overlay
+
+typedef struct
+{
+    uint8_t u8_Sync;
+    uint8_t u8_Function;
+    uint8_t u8_Data_Count;
+}Generic_Packet_t;
+
+typedef struct
+{
+    uint8_t u8_Sync;
+    uint8_t u8_Function;
+    uint8_t u8_Data_Count;
+    uint8_t u8_Data;
+}Echo_Packet_t;
+
+uint8_t Execute_Command( Serial_Msg_Header_t *p_Header,
+                         uint8_t *p_u8_Data,
+                         uint8_t *p_Response_Buffer,
+                         uint8_t *p_u8_Response_Length );
+
+void v_Send_Metadata_Response( uint32_t *p_Metadata, uint8_t u8_Word_Count );
+
+
+
+#endif /* COMMAND_H_ */

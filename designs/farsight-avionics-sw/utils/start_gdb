@@ -1,0 +1,1 @@
+riscv64-unknown-elf-gdb -ex "target extended-remote localhost:3333" -ex "set mem inaccessible-by-default off" -ex "set arch riscv:rv32" -ex "load" executable/Camera.elf

@@ -1,0 +1,121 @@
+\doxysection{src/\+\+Camera\+States/\+camera\+\_\+armed\+\_\+state.c File Reference}
+\hypertarget{camera__armed__state_8c}{}\label{camera__armed__state_8c}\index{src/CameraStates/camera\_armed\_state.c@{src/CameraStates/camera\_armed\_state.c}}
+{\ttfamily \+\#include "{}camera.\+h"{}}\newline
+{\ttfamily \+\#include "{}cam\+\_\+trig.\+h"{}}\newline
+{\ttfamily \+\#include "{}mem\+\_\+map.\+h"{}}\newline
+{\ttfamily \+\#include "{}errors.\+h"{}}\newline
+{\ttfamily \+\#include "{}register.\+h"{}}\newline
+{\ttfamily \+\#include "{}states.\+h"{}}\newline
+{\ttfamily \+\#include "{}camera\+\_\+states.\+h"{}}\newline
+{\ttfamily \+\#include "{}misc.\+h"{}}\newline
+Include dependency graph for camera\+\_\+armed\+\_\+state.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__armed__state_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{camera__armed__state_8c_a424c9c648f67179c1029febde6fb127c}{XTRIG\+\_\+\+LOW\+\_\+\+TIME\+\_\+\+USEC}}~1000
+\item 
+\+\#define \doxymbox{\hyperlink{camera__armed__state_8c_ab4ce93706d3c1dbe7fd5042aa02ee2ff}{FRAME\+\_\+\+CAPTURE\+\_\+\+TIME\+\_\+\+USEC}}~20000
+\item 
+\+\#define \doxymbox{\hyperlink{camera__armed__state_8c_abf54e7dfff7857af99e7f2e6b1996adf}{DDR4\+\_\+8\+GB\+\_\+\+FRAME\+\_\+\+CAPTURE\+\_\+\+AMOUNT}}~256
+\item 
+\+\#define \doxymbox{\hyperlink{camera__armed__state_8c_a9cf251175ffc68b03a3749e1a2e5ff9b}{DDR4\+\_\+16\+GB\+\_\+\+FRAME\+\_\+\+CAPTURE\+\_\+\+AMOUNT}}~512
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} \doxymbox{\hyperlink{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca}{Camera\+\_\+\+Armed\+\_\+\+State}} (Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}context, \doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}event)
+\begin{DoxyCompactList}\small\item\em Armed state The trigger is configured on entry and is ready to capture an image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{camera__armed__state_8c_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{camera__armed__state_8c_a9cf251175ffc68b03a3749e1a2e5ff9b}\index{camera\_armed\_state.c@{camera\_armed\_state.c}!DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT@{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT}}
+\index{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT@{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT}!camera\_armed\_state.c@{camera\_armed\_state.c}}
+\doxysubsubsection{\texorpdfstring{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT}{DDR4\_16GB\_FRAME\_CAPTURE\_AMOUNT}}
+{\footnotesize\ttfamily \label{camera__armed__state_8c_a9cf251175ffc68b03a3749e1a2e5ff9b} 
+\+\#define DDR4\+\_\+16\+GB\+\_\+\+FRAME\+\_\+\+CAPTURE\+\_\+\+AMOUNT~512}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__armed__state_8c_source_l00020}{20}} of file \doxymbox{\hyperlink{camera__armed__state_8c_source}{camera\+\_\+armed\+\_\+state.\+c}}.
+
+\Hypertarget{camera__armed__state_8c_abf54e7dfff7857af99e7f2e6b1996adf}\index{camera\_armed\_state.c@{camera\_armed\_state.c}!DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT@{DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT}}
+\index{DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT@{DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT}!camera\_armed\_state.c@{camera\_armed\_state.c}}
+\doxysubsubsection{\texorpdfstring{DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT}{DDR4\_8GB\_FRAME\_CAPTURE\_AMOUNT}}
+{\footnotesize\ttfamily \label{camera__armed__state_8c_abf54e7dfff7857af99e7f2e6b1996adf} 
+\+\#define DDR4\+\_\+8\+GB\+\_\+\+FRAME\+\_\+\+CAPTURE\+\_\+\+AMOUNT~256}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__armed__state_8c_source_l00019}{19}} of file \doxymbox{\hyperlink{camera__armed__state_8c_source}{camera\+\_\+armed\+\_\+state.\+c}}.
+
+\Hypertarget{camera__armed__state_8c_ab4ce93706d3c1dbe7fd5042aa02ee2ff}\index{camera\_armed\_state.c@{camera\_armed\_state.c}!FRAME\_CAPTURE\_TIME\_USEC@{FRAME\_CAPTURE\_TIME\_USEC}}
+\index{FRAME\_CAPTURE\_TIME\_USEC@{FRAME\_CAPTURE\_TIME\_USEC}!camera\_armed\_state.c@{camera\_armed\_state.c}}
+\doxysubsubsection{\texorpdfstring{FRAME\_CAPTURE\_TIME\_USEC}{FRAME\_CAPTURE\_TIME\_USEC}}
+{\footnotesize\ttfamily \label{camera__armed__state_8c_ab4ce93706d3c1dbe7fd5042aa02ee2ff} 
+\+\#define FRAME\+\_\+\+CAPTURE\+\_\+\+TIME\+\_\+\+USEC~20000}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__armed__state_8c_source_l00018}{18}} of file \doxymbox{\hyperlink{camera__armed__state_8c_source}{camera\+\_\+armed\+\_\+state.\+c}}.
+
+\Hypertarget{camera__armed__state_8c_a424c9c648f67179c1029febde6fb127c}\index{camera\_armed\_state.c@{camera\_armed\_state.c}!XTRIG\_LOW\_TIME\_USEC@{XTRIG\_LOW\_TIME\_USEC}}
+\index{XTRIG\_LOW\_TIME\_USEC@{XTRIG\_LOW\_TIME\_USEC}!camera\_armed\_state.c@{camera\_armed\_state.c}}
+\doxysubsubsection{\texorpdfstring{XTRIG\_LOW\_TIME\_USEC}{XTRIG\_LOW\_TIME\_USEC}}
+{\footnotesize\ttfamily \label{camera__armed__state_8c_a424c9c648f67179c1029febde6fb127c} 
+\+\#define XTRIG\+\_\+\+LOW\+\_\+\+TIME\+\_\+\+USEC~1000}
+
+
+
+Definition at line \doxymbox{\hyperlink{camera__armed__state_8c_source_l00017}{17}} of file \doxymbox{\hyperlink{camera__armed__state_8c_source}{camera\+\_\+armed\+\_\+state.\+c}}.
+
+
+
+\label{doc-func-members}
+\Hypertarget{camera__armed__state_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca}\index{camera\_armed\_state.c@{camera\_armed\_state.c}!Camera\_Armed\_State@{Camera\_Armed\_State}}
+\index{Camera\_Armed\_State@{Camera\_Armed\_State}!camera\_armed\_state.c@{camera\_armed\_state.c}}
+\doxysubsubsection{\texorpdfstring{Camera\_Armed\_State()}{Camera\_Armed\_State()}}
+{\footnotesize\ttfamily \label{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca} 
+\doxymbox{\hyperlink{states_8h_ae59b824a04335e8ee9c2f5a8bdca6dbd}{State\+\_\+t}} Camera\+\_\+\+Armed\+\_\+\+State (\begin{DoxyParamCaption}\item[{Camera\+\_\+\+Context\+\_\+t \texorpdfstring{$\ast$}{*}}]{context}{, }\item[{\doxymbox{\hyperlink{unionEvent__t}{Event\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{event}{}\end{DoxyParamCaption})}
+
+
+
+Armed state The trigger is configured on entry and is ready to capture an image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em context} & \\
+\hline
+{\em event} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \doxymbox{\hyperlink{camera__armed__state_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{camera__armed__state_8c_source}{camera\+\_\+armed\+\_\+state.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{camera__armed__state_8c_ab78d9385cfd0dd6ceb5d2312aa03ecca_icgraph}
+\end{center}
+\end{figure}

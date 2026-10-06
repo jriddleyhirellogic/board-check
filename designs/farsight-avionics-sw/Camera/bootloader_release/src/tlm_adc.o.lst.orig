@@ -1,0 +1,1003 @@
+   1              		.file	"tlm_adc.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_Init_TLM,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_Init_TLM
+  13              	v_Init_TLM:
+  14              	.LFB0:
+  15              		.file 1 "../src/tlm_adc.c"
+   1:../src/tlm_adc.c **** /*
+   2:../src/tlm_adc.c ****  * tlm_adc.c
+   3:../src/tlm_adc.c ****  *
+   4:../src/tlm_adc.c ****  *  Created on: Mar 25, 2026
+   5:../src/tlm_adc.c ****  *      Author: iboard
+   6:../src/tlm_adc.c ****  */
+   7:../src/tlm_adc.c **** 
+   8:../src/tlm_adc.c **** #include <assert.h>
+   9:../src/tlm_adc.c **** #include "core_spi.h"
+  10:../src/tlm_adc.c **** #include "mem_map.h"
+  11:../src/tlm_adc.c **** 
+  12:../src/tlm_adc.c **** #include "tlm_adc.h"
+  13:../src/tlm_adc.c **** 
+  14:../src/tlm_adc.c **** // Voltage (mV) = Vref * raw_count / 2^12 + offset
+  15:../src/tlm_adc.c **** 
+  16:../src/tlm_adc.c **** static const Sensor_t Sensor[NUMBER_TLM_SENSORS] =
+  17:../src/tlm_adc.c **** {
+  18:../src/tlm_adc.c ****     /*1V5_ASIC_ISENSE*/  {IN0, CS_1},
+  19:../src/tlm_adc.c ****     /*1V5_ASIC */        {IN1, CS_1},
+  20:../src/tlm_adc.c ****     /*10V0_SENSE*/       {IN2, CS_1},
+  21:../src/tlm_adc.c ****     /*3V3_RH*/           {IN3, CS_1},
+  22:../src/tlm_adc.c ****     /*1V1_IMX_ISENSE*/   {IN4, CS_1},
+  23:../src/tlm_adc.c ****     /*28V0_EPS*/         {IN5, CS_1},
+  24:../src/tlm_adc.c ****     /*6V0_REG*/          {IN6, CS_1},
+  25:../src/tlm_adc.c ****     /*6V0_REG_ISENSE*/   {IN7, CS_1},
+  26:../src/tlm_adc.c ****     /*4V0_REG_ISENSE*/   {IN0, CS_2},
+  27:../src/tlm_adc.c ****     /*2V2_REG_ISENSE*/   {IN1, CS_2},
+  28:../src/tlm_adc.c ****     /*1V0_FPGA_ISENSE*/  {IN2, CS_2},
+  29:../src/tlm_adc.c ****     /*1V2_16GB_ISENSE*/  {IN3, CS_2},
+  30:../src/tlm_adc.c ****     /*2V5_16GB_ISENSE*/  {IN4, CS_2},
+  31:../src/tlm_adc.c ****     /*1V0A_ETH2*/        {IN5, CS_2},
+  32:../src/tlm_adc.c ****     /*2V5A_ETH2*/        {IN6, CS_2},
+  33:../src/tlm_adc.c ****     /*3V3_ASIC*/         {IN7, CS_2},
+  34:../src/tlm_adc.c ****     /*3V0_REG_ISENSE*/   {IN0, CS_3},
+  35:../src/tlm_adc.c ****     /*2V5_16GB*/         {IN1, CS_3},
+  36:../src/tlm_adc.c ****     /*1V2_16GB*/         {IN2, CS_3},
+  37:../src/tlm_adc.c ****     /*0V6_VTT_16GB*/     {IN3, CS_3},
+  38:../src/tlm_adc.c ****     /*1V0_FPGA*/         {IN4, CS_3},
+  39:../src/tlm_adc.c ****     /*2V5A_ETH1*/        {IN5, CS_3},
+  40:../src/tlm_adc.c ****     /*1V0_ETH2*/         {IN6, CS_3},
+  41:../src/tlm_adc.c ****     /*3V3_ETH2*/         {IN7, CS_3},
+  42:../src/tlm_adc.c ****     /*2V2_REG*/          {IN0, CS_4},
+  43:../src/tlm_adc.c ****     /*3V0_REG*/          {IN1, CS_4},
+  44:../src/tlm_adc.c ****     /*4V0_REG*/          {IN2, CS_4},
+  45:../src/tlm_adc.c ****     /*1V1_IMX*/          {IN3, CS_4},
+  46:../src/tlm_adc.c ****     /*1V8_IMX*/          {IN4, CS_4},
+  47:../src/tlm_adc.c ****     /*3V3_ETH1*/         {IN5, CS_4},
+  48:../src/tlm_adc.c ****     /*1V0_ETH1*/         {IN6, CS_4},
+  49:../src/tlm_adc.c ****     /*1V0A_ETH1*/        {IN7, CS_4},
+  50:../src/tlm_adc.c ****     /*3V3_IMX_SNS*/      {IN0, CS_5},
+  51:../src/tlm_adc.c ****     /*2V9_IMX_SNS*/      {IN1, CS_5},
+  52:../src/tlm_adc.c ****     /*1V0A_FPGA*/        {IN2, CS_5},
+  53:../src/tlm_adc.c ****     /*1V25A_FPGA*/       {IN3, CS_5},
+  54:../src/tlm_adc.c ****     /*2V5A_FPGA*/        {IN4, CS_5},
+  55:../src/tlm_adc.c ****     /*1V2_8GB*/          {IN5, CS_5},
+  56:../src/tlm_adc.c ****     /*3V3_MISC*/         {IN6, CS_5},
+  57:../src/tlm_adc.c ****     /*15V0_LVDT*/        {IN7, CS_5},
+  58:../src/tlm_adc.c ****     /*1V8_FPGA*/         {IN0, CS_6},
+  59:../src/tlm_adc.c ****     /*1V8_IMX_FPGA*/     {IN1, CS_6},
+  60:../src/tlm_adc.c ****     /*3V3_B4_FPGA*/      {IN2, CS_6},
+  61:../src/tlm_adc.c ****     /*3V3_B5_FPGA*/      {IN3, CS_6},
+  62:../src/tlm_adc.c ****     /*0V6_VTT_8GB*/      {IN4, CS_6},
+  63:../src/tlm_adc.c ****     /*2V5_8GB*/          {IN5, CS_6},
+  64:../src/tlm_adc.c ****     /*2V5_8GB_ISENSE*/   {IN6, CS_6},
+  65:../src/tlm_adc.c ****     /*1V2_8GB_ISENSE*/   {IN7, CS_6}
+  66:../src/tlm_adc.c **** };
+  67:../src/tlm_adc.c **** 
+  68:../src/tlm_adc.c **** static spi_instance_t tlm_spi;
+  69:../src/tlm_adc.c **** static uint8_t b_TLM_Initialized;
+  70:../src/tlm_adc.c **** 
+  71:../src/tlm_adc.c **** void  v_Init_TLM()
+  72:../src/tlm_adc.c **** {
+  16              		.loc 1 72 1
+  17              		.cfi_startproc
+  73:../src/tlm_adc.c ****     SPI_init( &tlm_spi, TLM_SPI_BASE_ADDR, 16 );
+  18              		.loc 1 73 5
+  72:../src/tlm_adc.c ****     SPI_init( &tlm_spi, TLM_SPI_BASE_ADDR, 16 );
+  19              		.loc 1 72 1 is_stmt 0
+  20 0000 130101FF 		addi	sp,sp,-16
+  21              		.cfi_def_cfa_offset 16
+  22 0004 23248100 		sw	s0,8(sp)
+  23              		.cfi_offset 8, -8
+  24              		.loc 1 73 5
+  25 0008 17040000 		lla	s0,.LANCHOR0
+  25      13040400 
+  26 0010 13050400 		mv	a0,s0
+  27 0014 13060001 		li	a2,16
+  28 0018 B7D50370 		li	a1,1879298048
+  72:../src/tlm_adc.c ****     SPI_init( &tlm_spi, TLM_SPI_BASE_ADDR, 16 );
+  29              		.loc 1 72 1
+  30 001c 23261100 		sw	ra,12(sp)
+  31              		.cfi_offset 1, -4
+  32              		.loc 1 73 5
+  33 0020 97000000 		call	SPI_init
+  33      E7800000 
+  34              	.LVL0:
+  74:../src/tlm_adc.c ****     SPI_configure_master_mode( &tlm_spi );
+  35              		.loc 1 74 5 is_stmt 1
+  36 0028 13050400 		mv	a0,s0
+  37 002c 97000000 		call	SPI_configure_master_mode
+  37      E7800000 
+  38              	.LVL1:
+  75:../src/tlm_adc.c ****     b_TLM_Initialized = 1;
+  39              		.loc 1 75 5
+  76:../src/tlm_adc.c **** }
+  40              		.loc 1 76 1 is_stmt 0
+  41 0034 8320C100 		lw	ra,12(sp)
+  42              		.cfi_restore 1
+  43 0038 03248100 		lw	s0,8(sp)
+  44              		.cfi_restore 8
+  75:../src/tlm_adc.c ****     b_TLM_Initialized = 1;
+  45              		.loc 1 75 23
+  46 003c 93071000 		li	a5,1
+  47 0040 17070000 		sb	a5,.LANCHOR1,a4
+  47      2300F700 
+  48              		.loc 1 76 1
+  49 0048 13010101 		addi	sp,sp,16
+  50              		.cfi_def_cfa_offset 0
+  51 004c 67800000 		jr	ra
+  52              		.cfi_endproc
+  53              	.LFE0:
+  55              		.section	.text.b_Is_TLM_Initialized,"ax",@progbits
+  56              		.align	2
+  57              		.globl	b_Is_TLM_Initialized
+  59              	b_Is_TLM_Initialized:
+  60              	.LFB1:
+  77:../src/tlm_adc.c **** 
+  78:../src/tlm_adc.c **** uint8_t b_Is_TLM_Initialized(void)
+  79:../src/tlm_adc.c **** {
+  61              		.loc 1 79 1 is_stmt 1
+  62              		.cfi_startproc
+  80:../src/tlm_adc.c ****     return b_TLM_Initialized;
+  63              		.loc 1 80 5
+  81:../src/tlm_adc.c **** }
+  64              		.loc 1 81 1 is_stmt 0
+  65 0000 17050000 		lbu	a0,.LANCHOR1
+  65      03450500 
+  66 0008 67800000 		ret
+  67              		.cfi_endproc
+  68              	.LFE1:
+  70              		.section	.text.u32_Read_TLM,"ax",@progbits
+  71              		.align	2
+  72              		.globl	u32_Read_TLM
+  74              	u32_Read_TLM:
+  75              	.LFB2:
+  82:../src/tlm_adc.c **** 
+  83:../src/tlm_adc.c **** uint32_t u32_Read_TLM( TLM_Signal_t e_Signal )
+  84:../src/tlm_adc.c **** {
+  76              		.loc 1 84 1 is_stmt 1
+  77              		.cfi_startproc
+  78              	.LVL2:
+  85:../src/tlm_adc.c ****     uint32_t u32_Raw_Val;
+  79              		.loc 1 85 5
+  86:../src/tlm_adc.c ****     uint32_t u32_Scaled_Value;
+  80              		.loc 1 86 5
+  87:../src/tlm_adc.c ****     uint8_t u8_N_Readings;
+  81              		.loc 1 87 5
+  88:../src/tlm_adc.c ****     uint8_t u8_N_TLM_Sensor;
+  82              		.loc 1 88 5
+  89:../src/tlm_adc.c **** 
+  90:../src/tlm_adc.c ****     uint8_t u8_Rx_Buffer[3];
+  83              		.loc 1 90 5
+  91:../src/tlm_adc.c **** 
+  92:../src/tlm_adc.c ****     uint8_t u8_In = Sensor[e_Signal].channel;
+  84              		.loc 1 92 5
+  85              		.loc 1 92 37 is_stmt 0
+  86 0000 97070000 		lla	a5,.LANCHOR2
+  86      93870700 
+  87 0008 13153500 		slli	a0,a0,3
+  88              	.LVL3:
+  89 000c 3385A700 		add	a0,a5,a0
+  90              		.loc 1 92 13
+  91 0010 83470500 		lbu	a5,0(a0)
+  92              	.LVL4:
+  93:../src/tlm_adc.c ****     uint8_t u8_CS = Sensor[e_Signal].adc;
+  93              		.loc 1 93 5 is_stmt 1
+  84:../src/tlm_adc.c ****     uint32_t u32_Raw_Val;
+  94              		.loc 1 84 1 is_stmt 0
+  95 0014 130101FE 		addi	sp,sp,-32
+  96              		.cfi_def_cfa_offset 32
+  97 0018 232A9100 		sw	s1,20(sp)
+  98 001c 232E1100 		sw	ra,28(sp)
+  99 0020 232C8100 		sw	s0,24(sp)
+ 100 0024 23282101 		sw	s2,16(sp)
+ 101              		.cfi_offset 9, -12
+ 102              		.cfi_offset 1, -4
+ 103              		.cfi_offset 8, -8
+ 104              		.cfi_offset 18, -16
+  94:../src/tlm_adc.c ****     assert( u8_In < 8 );
+ 105              		.loc 1 94 5
+ 106 0028 13077000 		li	a4,7
+  93:../src/tlm_adc.c ****     uint8_t u8_CS = Sensor[e_Signal].adc;
+ 107              		.loc 1 93 37
+ 108 002c 83244500 		lw	s1,4(a0)
+ 109              	.LVL5:
+ 110              		.loc 1 94 5 is_stmt 1
+ 111 0030 6374F702 		bleu	a5,a4,.L5
+ 112              		.loc 1 94 5 is_stmt 0 discriminator 1
+ 113 0034 97060000 		lla	a3,.LC0
+ 113      93860600 
+ 114 003c 17060000 		lla	a2,.LANCHOR3
+ 114      13060600 
+ 115 0044 9305E005 		li	a1,94
+ 116 0048 17050000 		lla	a0,.LC1
+ 116      13050500 
+ 117 0050 97000000 		call	__assert_func
+ 117      E7800000 
+ 118              	.LVL6:
+ 119              	.L5:
+  95:../src/tlm_adc.c **** 
+  96:../src/tlm_adc.c ****     uint8_t u8_Control_Reg = u8_In << 3;
+ 120              		.loc 1 96 5 is_stmt 1
+ 121              		.loc 1 96 36 is_stmt 0
+ 122 0058 93973700 		slli	a5,a5,3
+ 123              	.LVL7:
+ 124              		.loc 1 96 13
+ 125 005c A305F100 		sb	a5,11(sp)
+  97:../src/tlm_adc.c **** 
+  98:../src/tlm_adc.c ****     for( u8_N_TLM_Sensor = 0; u8_N_TLM_Sensor < 3; u8_N_TLM_Sensor++ )
+ 126              		.loc 1 98 5 is_stmt 1
+ 127              	.LVL8:
+  96:../src/tlm_adc.c **** 
+ 128              		.loc 1 96 13 is_stmt 0
+ 129 0060 13043000 		li	s0,3
+ 130 0064 93F4F40F 		andi	s1,s1,255
+ 131              	.LVL9:
+  99:../src/tlm_adc.c ****     {
+ 100:../src/tlm_adc.c ****         SPI_set_slave_select( &tlm_spi, (spi_slave_t)u8_CS );
+ 132              		.loc 1 100 9
+ 133 0068 17090000 		lla	s2,.LANCHOR0
+ 133      13090900 
+ 134              	.LVL10:
+ 135              	.L6:
+ 136              		.loc 1 100 9 is_stmt 1 discriminator 3
+ 137 0070 93850400 		mv	a1,s1
+ 138 0074 13050900 		mv	a0,s2
+ 139 0078 97000000 		call	SPI_set_slave_select
+ 139      E7800000 
+ 140              	.LVL11:
+ 101:../src/tlm_adc.c ****         SPI_transfer_block( &tlm_spi, &u8_Control_Reg, 1, u8_Rx_Buffer, 2 );
+ 141              		.loc 1 101 9 discriminator 3
+ 142 0080 13072000 		li	a4,2
+ 143 0084 9306C100 		addi	a3,sp,12
+ 144 0088 13061000 		li	a2,1
+ 145 008c 9305B100 		addi	a1,sp,11
+ 146 0090 13050900 		mv	a0,s2
+ 147 0094 97000000 		call	SPI_transfer_block
+ 147      E7800000 
+ 148              	.LVL12:
+ 102:../src/tlm_adc.c ****         SPI_clear_slave_select( &tlm_spi, (spi_slave_t)u8_CS );
+ 149              		.loc 1 102 9 discriminator 3
+ 150 009c 1304F4FF 		addi	s0,s0,-1
+ 151              	.LVL13:
+ 152 00a0 93850400 		mv	a1,s1
+ 153 00a4 13050900 		mv	a0,s2
+ 154 00a8 1374F40F 		andi	s0,s0,0xff
+ 155 00ac 97000000 		call	SPI_clear_slave_select
+ 155      E7800000 
+ 156              	.LVL14:
+  98:../src/tlm_adc.c ****     {
+ 157              		.loc 1 98 5 is_stmt 0 discriminator 3
+ 158 00b4 E31E04FA 		bne	s0,zero,.L6
+ 103:../src/tlm_adc.c ****     }
+ 104:../src/tlm_adc.c **** 
+ 105:../src/tlm_adc.c ****     u32_Raw_Val = (uint32_t)u8_Rx_Buffer[1] * 256 + (uint32_t)u8_Rx_Buffer[0];
+ 159              		.loc 1 105 5 is_stmt 1
+ 160              		.loc 1 105 19 is_stmt 0
+ 161 00b8 8347D100 		lbu	a5,13(sp)
+ 162              		.loc 1 105 53
+ 163 00bc 0345C100 		lbu	a0,12(sp)
+ 106:../src/tlm_adc.c **** 
+ 107:../src/tlm_adc.c ****     return u32_Raw_Val;
+ 108:../src/tlm_adc.c **** }
+ 164              		.loc 1 108 1
+ 165 00c0 8320C101 		lw	ra,28(sp)
+ 166              		.cfi_restore 1
+ 167 00c4 03248101 		lw	s0,24(sp)
+ 168              		.cfi_restore 8
+ 105:../src/tlm_adc.c **** 
+ 169              		.loc 1 105 45
+ 170 00c8 93978700 		slli	a5,a5,8
+ 171              	.LVL15:
+ 107:../src/tlm_adc.c **** }
+ 172              		.loc 1 107 5 is_stmt 1
+ 173              		.loc 1 108 1 is_stmt 0
+ 174 00cc 83244101 		lw	s1,20(sp)
+ 175              		.cfi_restore 9
+ 176 00d0 03290101 		lw	s2,16(sp)
+ 177              		.cfi_restore 18
+ 178 00d4 3385A700 		add	a0,a5,a0
+ 179              	.LVL16:
+ 180 00d8 13010102 		addi	sp,sp,32
+ 181              		.cfi_def_cfa_offset 0
+ 182 00dc 67800000 		jr	ra
+ 183              		.cfi_endproc
+ 184              	.LFE2:
+ 186              		.section	.bss.tlm_spi,"aw",@nobits
+ 187              		.align	2
+ 188              		.set	.LANCHOR0,. + 0
+ 191              	tlm_spi:
+ 192 0000 00000000 		.zero	76
+ 192      00000000 
+ 192      00000000 
+ 192      00000000 
+ 192      00000000 
+ 193              		.section	.rodata.Sensor,"a"
+ 194              		.align	2
+ 195              		.set	.LANCHOR2,. + 0
+ 198              	Sensor:
+ 199 0000 00000000 		.word	0
+ 200 0004 00000000 		.word	0
+ 201 0008 01000000 		.word	1
+ 202 000c 00000000 		.word	0
+ 203 0010 02000000 		.word	2
+ 204 0014 00000000 		.word	0
+ 205 0018 03000000 		.word	3
+ 206 001c 00000000 		.word	0
+ 207 0020 04000000 		.word	4
+ 208 0024 00000000 		.word	0
+ 209 0028 05000000 		.word	5
+ 210 002c 00000000 		.word	0
+ 211 0030 06000000 		.word	6
+ 212 0034 00000000 		.word	0
+ 213 0038 07000000 		.word	7
+ 214 003c 00000000 		.word	0
+ 215 0040 00000000 		.word	0
+ 216 0044 01000000 		.word	1
+ 217 0048 01000000 		.word	1
+ 218 004c 01000000 		.word	1
+ 219 0050 02000000 		.word	2
+ 220 0054 01000000 		.word	1
+ 221 0058 03000000 		.word	3
+ 222 005c 01000000 		.word	1
+ 223 0060 04000000 		.word	4
+ 224 0064 01000000 		.word	1
+ 225 0068 05000000 		.word	5
+ 226 006c 01000000 		.word	1
+ 227 0070 06000000 		.word	6
+ 228 0074 01000000 		.word	1
+ 229 0078 07000000 		.word	7
+ 230 007c 01000000 		.word	1
+ 231 0080 00000000 		.word	0
+ 232 0084 02000000 		.word	2
+ 233 0088 01000000 		.word	1
+ 234 008c 02000000 		.word	2
+ 235 0090 02000000 		.word	2
+ 236 0094 02000000 		.word	2
+ 237 0098 03000000 		.word	3
+ 238 009c 02000000 		.word	2
+ 239 00a0 04000000 		.word	4
+ 240 00a4 02000000 		.word	2
+ 241 00a8 05000000 		.word	5
+ 242 00ac 02000000 		.word	2
+ 243 00b0 06000000 		.word	6
+ 244 00b4 02000000 		.word	2
+ 245 00b8 07000000 		.word	7
+ 246 00bc 02000000 		.word	2
+ 247 00c0 00000000 		.word	0
+ 248 00c4 03000000 		.word	3
+ 249 00c8 01000000 		.word	1
+ 250 00cc 03000000 		.word	3
+ 251 00d0 02000000 		.word	2
+ 252 00d4 03000000 		.word	3
+ 253 00d8 03000000 		.word	3
+ 254 00dc 03000000 		.word	3
+ 255 00e0 04000000 		.word	4
+ 256 00e4 03000000 		.word	3
+ 257 00e8 05000000 		.word	5
+ 258 00ec 03000000 		.word	3
+ 259 00f0 06000000 		.word	6
+ 260 00f4 03000000 		.word	3
+ 261 00f8 07000000 		.word	7
+ 262 00fc 03000000 		.word	3
+ 263 0100 00000000 		.word	0
+ 264 0104 04000000 		.word	4
+ 265 0108 01000000 		.word	1
+ 266 010c 04000000 		.word	4
+ 267 0110 02000000 		.word	2
+ 268 0114 04000000 		.word	4
+ 269 0118 03000000 		.word	3
+ 270 011c 04000000 		.word	4
+ 271 0120 04000000 		.word	4
+ 272 0124 04000000 		.word	4
+ 273 0128 05000000 		.word	5
+ 274 012c 04000000 		.word	4
+ 275 0130 06000000 		.word	6
+ 276 0134 04000000 		.word	4
+ 277 0138 07000000 		.word	7
+ 278 013c 04000000 		.word	4
+ 279 0140 00000000 		.word	0
+ 280 0144 05000000 		.word	5
+ 281 0148 01000000 		.word	1
+ 282 014c 05000000 		.word	5
+ 283 0150 02000000 		.word	2
+ 284 0154 05000000 		.word	5
+ 285 0158 03000000 		.word	3
+ 286 015c 05000000 		.word	5
+ 287 0160 04000000 		.word	4
+ 288 0164 05000000 		.word	5
+ 289 0168 05000000 		.word	5
+ 290 016c 05000000 		.word	5
+ 291 0170 06000000 		.word	6
+ 292 0174 05000000 		.word	5
+ 293 0178 07000000 		.word	7
+ 294 017c 05000000 		.word	5
+ 295              		.section	.rodata.__func__.1821,"a"
+ 296              		.align	2
+ 297              		.set	.LANCHOR3,. + 0
+ 300              	__func__.1821:
+ 301 0000 7533325F 		.string	"u32_Read_TLM"
+ 301      52656164 
+ 301      5F544C4D 
+ 301      00
+ 302              		.section	.rodata.u32_Read_TLM.str1.4,"aMS",@progbits,1
+ 303              		.align	2
+ 304              	.LC0:
+ 305 0000 75385F49 		.string	"u8_In < 8"
+ 305      6E203C20 
+ 305      3800
+ 306 000a 0000     		.zero	2
+ 307              	.LC1:
+ 308 000c 2E2E2F73 		.string	"../src/tlm_adc.c"
+ 308      72632F74 
+ 308      6C6D5F61 
+ 308      64632E63 
+ 308      00
+ 309              		.section	.sbss.b_TLM_Initialized,"aw",@nobits
+ 310              		.set	.LANCHOR1,. + 0
+ 313              	b_TLM_Initialized:
+ 314 0000 00       		.zero	1
+ 315              		.text
+ 316              	.Letext0:
+ 317              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 318              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 319              		.file 4 "/home/iboard/farsight/avtemp/Camera/src/hal/cpu_types.h"
+ 320              		.file 5 "/home/iboard/farsight/avtemp/Camera/include/core_spi.h"
+ 321              		.file 6 "/home/iboard/farsight/avtemp/Camera/include/tlm_adc.h"
+ 322              		.file 7 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/assert.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 tlm_adc.c
+<<<<<<< HEAD
+     /tmp/cc65CUWS.s:13     .text.v_Init_TLM:0000000000000000 v_Init_TLM
+     /tmp/cc65CUWS.s:17     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:18     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:19     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:20     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:21     .text.v_Init_TLM:0000000000000004 .L0 
+     /tmp/cc65CUWS.s:23     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/cc65CUWS.s:25     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/cc65CUWS.s:30     .text.v_Init_TLM:000000000000001c .L0 
+     /tmp/cc65CUWS.s:31     .text.v_Init_TLM:0000000000000020 .L0 
+     /tmp/cc65CUWS.s:33     .text.v_Init_TLM:0000000000000020 .L0 
+     /tmp/cc65CUWS.s:36     .text.v_Init_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:40     .text.v_Init_TLM:0000000000000034 .L0 
+     /tmp/cc65CUWS.s:41     .text.v_Init_TLM:0000000000000034 .L0 
+     /tmp/cc65CUWS.s:42     .text.v_Init_TLM:0000000000000038 .L0 
+     /tmp/cc65CUWS.s:44     .text.v_Init_TLM:000000000000003c .L0 
+     /tmp/cc65CUWS.s:46     .text.v_Init_TLM:000000000000003c .L0 
+     /tmp/cc65CUWS.s:49     .text.v_Init_TLM:0000000000000048 .L0 
+     /tmp/cc65CUWS.s:50     .text.v_Init_TLM:000000000000004c .L0 
+     /tmp/cc65CUWS.s:52     .text.v_Init_TLM:0000000000000050 .L0 
+     /tmp/cc65CUWS.s:59     .text.b_Is_TLM_Initialized:0000000000000000 b_Is_TLM_Initialized
+     /tmp/cc65CUWS.s:62     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:63     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:64     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:65     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:67     .text.b_Is_TLM_Initialized:000000000000000c .L0 
+     /tmp/cc65CUWS.s:74     .text.u32_Read_TLM:0000000000000000 u32_Read_TLM
+     /tmp/cc65CUWS.s:77     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:79     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:80     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:81     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:82     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:83     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:84     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:85     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:86     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:91     .text.u32_Read_TLM:0000000000000010 .L0 
+     /tmp/cc65CUWS.s:94     .text.u32_Read_TLM:0000000000000014 .L0 
+     /tmp/cc65CUWS.s:95     .text.u32_Read_TLM:0000000000000014 .L0 
+     /tmp/cc65CUWS.s:96     .text.u32_Read_TLM:0000000000000018 .L0 
+     /tmp/cc65CUWS.s:101    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:102    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:103    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:104    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:106    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/cc65CUWS.s:108    .text.u32_Read_TLM:000000000000002c .L0 
+     /tmp/cc65CUWS.s:111    .text.u32_Read_TLM:0000000000000030 .L0 
+     /tmp/cc65CUWS.s:113    .text.u32_Read_TLM:0000000000000034 .L0 
+     /tmp/cc65CUWS.s:121    .text.u32_Read_TLM:0000000000000058 .L0 
+     /tmp/cc65CUWS.s:122    .text.u32_Read_TLM:0000000000000058 .L0 
+     /tmp/cc65CUWS.s:125    .text.u32_Read_TLM:000000000000005c .L0 
+     /tmp/cc65CUWS.s:128    .text.u32_Read_TLM:0000000000000060 .L0 
+     /tmp/cc65CUWS.s:129    .text.u32_Read_TLM:0000000000000060 .L0 
+     /tmp/cc65CUWS.s:133    .text.u32_Read_TLM:0000000000000068 .L0 
+     /tmp/cc65CUWS.s:137    .text.u32_Read_TLM:0000000000000070 .L0 
+     /tmp/cc65CUWS.s:142    .text.u32_Read_TLM:0000000000000080 .L0 
+     /tmp/cc65CUWS.s:150    .text.u32_Read_TLM:000000000000009c .L0 
+     /tmp/cc65CUWS.s:158    .text.u32_Read_TLM:00000000000000b4 .L0 
+     /tmp/cc65CUWS.s:160    .text.u32_Read_TLM:00000000000000b8 .L0 
+     /tmp/cc65CUWS.s:161    .text.u32_Read_TLM:00000000000000b8 .L0 
+     /tmp/cc65CUWS.s:163    .text.u32_Read_TLM:00000000000000bc .L0 
+     /tmp/cc65CUWS.s:165    .text.u32_Read_TLM:00000000000000c0 .L0 
+     /tmp/cc65CUWS.s:166    .text.u32_Read_TLM:00000000000000c4 .L0 
+     /tmp/cc65CUWS.s:168    .text.u32_Read_TLM:00000000000000c8 .L0 
+     /tmp/cc65CUWS.s:170    .text.u32_Read_TLM:00000000000000c8 .L0 
+     /tmp/cc65CUWS.s:173    .text.u32_Read_TLM:00000000000000cc .L0 
+     /tmp/cc65CUWS.s:174    .text.u32_Read_TLM:00000000000000cc .L0 
+     /tmp/cc65CUWS.s:175    .text.u32_Read_TLM:00000000000000d0 .L0 
+     /tmp/cc65CUWS.s:177    .text.u32_Read_TLM:00000000000000d4 .L0 
+     /tmp/cc65CUWS.s:181    .text.u32_Read_TLM:00000000000000dc .L0 
+     /tmp/cc65CUWS.s:183    .text.u32_Read_TLM:00000000000000e0 .L0 
+     /tmp/cc65CUWS.s:188    .bss.tlm_spi:0000000000000000 .LANCHOR0
+     /tmp/cc65CUWS.s:191    .bss.tlm_spi:0000000000000000 tlm_spi
+     /tmp/cc65CUWS.s:195    .rodata.Sensor:0000000000000000 .LANCHOR2
+     /tmp/cc65CUWS.s:198    .rodata.Sensor:0000000000000000 Sensor
+     /tmp/cc65CUWS.s:297    .rodata.__func__.1821:0000000000000000 .LANCHOR3
+     /tmp/cc65CUWS.s:300    .rodata.__func__.1821:0000000000000000 __func__.1821
+     /tmp/cc65CUWS.s:310    .sbss.b_TLM_Initialized:0000000000000000 .LANCHOR1
+     /tmp/cc65CUWS.s:313    .sbss.b_TLM_Initialized:0000000000000000 b_TLM_Initialized
+     /tmp/cc65CUWS.s:55     .text.v_Init_TLM:0000000000000050 .L0 
+     /tmp/cc65CUWS.s:70     .text.b_Is_TLM_Initialized:000000000000000c .L0 
+     /tmp/cc65CUWS.s:186    .text.u32_Read_TLM:00000000000000e0 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:25     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/cc65CUWS.s:47     .text.v_Init_TLM:0000000000000040 .L0 
+     /tmp/cc65CUWS.s:65     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:86     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/cc65CUWS.s:304    .rodata.u32_Read_TLM.str1.4:0000000000000000 .LC0
+     /tmp/cc65CUWS.s:113    .text.u32_Read_TLM:0000000000000034 .L0 
+     /tmp/cc65CUWS.s:114    .text.u32_Read_TLM:000000000000003c .L0 
+     /tmp/cc65CUWS.s:307    .rodata.u32_Read_TLM.str1.4:000000000000000c .LC1
+     /tmp/cc65CUWS.s:116    .text.u32_Read_TLM:0000000000000048 .L0 
+     /tmp/cc65CUWS.s:133    .text.u32_Read_TLM:0000000000000068 .L0 
+     /tmp/cc65CUWS.s:119    .text.u32_Read_TLM:0000000000000058 .L5
+     /tmp/cc65CUWS.s:135    .text.u32_Read_TLM:0000000000000070 .L6
+     /tmp/cc65CUWS.s:1279   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc65CUWS.s:2164   .debug_str:0000000000000713 .LASF133
+     /tmp/cc65CUWS.s:1948   .debug_str:000000000000013a .LASF134
+     /tmp/cc65CUWS.s:1970   .debug_str:00000000000001d8 .LASF135
+     /tmp/cc65CUWS.s:1898   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc65CUWS.s:1908   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc65CUWS.s:1938   .debug_str:00000000000000e4 .LASF0
+     /tmp/cc65CUWS.s:1912   .debug_str:0000000000000011 .LASF3
+     /tmp/cc65CUWS.s:2070   .debug_str:00000000000004c2 .LASF1
+     /tmp/cc65CUWS.s:2084   .debug_str:000000000000051f .LASF2
+     /tmp/cc65CUWS.s:2128   .debug_str:0000000000000609 .LASF4
+     /tmp/cc65CUWS.s:2012   .debug_str:0000000000000328 .LASF5
+     /tmp/cc65CUWS.s:1950   .debug_str:000000000000014b .LASF6
+     /tmp/cc65CUWS.s:1982   .debug_str:0000000000000248 .LASF7
+     /tmp/cc65CUWS.s:2006   .debug_str:00000000000002f9 .LASF8
+     /tmp/cc65CUWS.s:1936   .debug_str:00000000000000d6 .LASF9
+     /tmp/cc65CUWS.s:1920   .debug_str:0000000000000047 .LASF10
+     /tmp/cc65CUWS.s:2000   .debug_str:00000000000002cd .LASF11
+     /tmp/cc65CUWS.s:2166   .debug_str:00000000000007d9 .LASF12
+     /tmp/cc65CUWS.s:1956   .debug_str:0000000000000173 .LASF13
+     /tmp/cc65CUWS.s:2118   .debug_str:00000000000005d4 .LASF14
+     /tmp/cc65CUWS.s:2186   .debug_str:0000000000000879 .LASF15
+     /tmp/cc65CUWS.s:2106   .debug_str:0000000000000583 .LASF16
+     /tmp/cc65CUWS.s:2104   .debug_str:0000000000000576 .LASF136
+     /tmp/cc65CUWS.s:2026   .debug_str:0000000000000393 .LASF17
+     /tmp/cc65CUWS.s:2062   .debug_str:000000000000048b .LASF18
+     /tmp/cc65CUWS.s:2064   .debug_str:0000000000000494 .LASF19
+     /tmp/cc65CUWS.s:2024   .debug_str:0000000000000385 .LASF20
+     /tmp/cc65CUWS.s:1930   .debug_str:00000000000000af .LASF21
+     /tmp/cc65CUWS.s:2120   .debug_str:00000000000005dd .LASF22
+     /tmp/cc65CUWS.s:1986   .debug_str:0000000000000260 .LASF23
+     /tmp/cc65CUWS.s:1942   .debug_str:00000000000000ff .LASF24
+     /tmp/cc65CUWS.s:2158   .debug_str:00000000000006ed .LASF25
+     /tmp/cc65CUWS.s:2042   .debug_str:00000000000003f6 .LASF26
+     /tmp/cc65CUWS.s:1996   .debug_str:00000000000002a9 .LASF27
+     /tmp/cc65CUWS.s:2018   .debug_str:0000000000000360 .LASF28
+     /tmp/cc65CUWS.s:2162   .debug_str:0000000000000706 .LASF29
+     /tmp/cc65CUWS.s:2156   .debug_str:00000000000006dc .LASF30
+     /tmp/cc65CUWS.s:2002   .debug_str:00000000000002da .LASF31
+     /tmp/cc65CUWS.s:1926   .debug_str:000000000000007e .LASF32
+     /tmp/cc65CUWS.s:2184   .debug_str:0000000000000868 .LASF33
+     /tmp/cc65CUWS.s:2028   .debug_str:000000000000039d .LASF34
+     /tmp/cc65CUWS.s:2038   .debug_str:00000000000003dd .LASF35
+     /tmp/cc65CUWS.s:2172   .debug_str:00000000000007ff .LASF36
+     /tmp/cc65CUWS.s:1960   .debug_str:0000000000000190 .LASF37
+     /tmp/cc65CUWS.s:1922   .debug_str:000000000000005e .LASF38
+     /tmp/cc65CUWS.s:2170   .debug_str:00000000000007f1 .LASF49
+     /tmp/cc65CUWS.s:1964   .debug_str:00000000000001b4 .LASF39
+     /tmp/cc65CUWS.s:1966   .debug_str:00000000000001c0 .LASF40
+     /tmp/cc65CUWS.s:1968   .debug_str:00000000000001cc .LASF41
+     /tmp/cc65CUWS.s:2076   .debug_str:00000000000004ec .LASF42
+     /tmp/cc65CUWS.s:1972   .debug_str:000000000000020f .LASF43
+     /tmp/cc65CUWS.s:1974   .debug_str:000000000000021b .LASF44
+     /tmp/cc65CUWS.s:1976   .debug_str:0000000000000227 .LASF45
+     /tmp/cc65CUWS.s:1978   .debug_str:0000000000000233 .LASF46
+     /tmp/cc65CUWS.s:2014   .debug_str:000000000000033b .LASF47
+     /tmp/cc65CUWS.s:2148   .debug_str:00000000000006a0 .LASF48
+     /tmp/cc65CUWS.s:2114   .debug_str:00000000000005b4 .LASF50
+     /tmp/cc65CUWS.s:1998   .debug_str:00000000000002b9 .LASF51
+     /tmp/cc65CUWS.s:2144   .debug_str:0000000000000679 .LASF52
+     /tmp/cc65CUWS.s:2010   .debug_str:0000000000000313 .LASF53
+     /tmp/cc65CUWS.s:2188   .debug_str:0000000000000880 .LASF54
+     /tmp/cc65CUWS.s:2088   .debug_str:000000000000053c .LASF55
+     /tmp/cc65CUWS.s:2090   .debug_str:0000000000000541 .LASF56
+     /tmp/cc65CUWS.s:2092   .debug_str:0000000000000546 .LASF57
+     /tmp/cc65CUWS.s:2094   .debug_str:000000000000054b .LASF58
+     /tmp/cc65CUWS.s:2096   .debug_str:0000000000000550 .LASF59
+     /tmp/cc65CUWS.s:2098   .debug_str:0000000000000555 .LASF60
+     /tmp/cc65CUWS.s:2100   .debug_str:000000000000055a .LASF61
+     /tmp/cc65CUWS.s:1914   .debug_str:000000000000001b .LASF62
+     /tmp/cc65CUWS.s:2110   .debug_str:00000000000005a6 .LASF63
+     /tmp/cc65CUWS.s:2074   .debug_str:00000000000004e3 .LASF64
+     /tmp/cc65CUWS.s:2182   .debug_str:0000000000000854 .LASF65
+     /tmp/cc65CUWS.s:2140   .debug_str:000000000000065e .LASF66
+     /tmp/cc65CUWS.s:2082   .debug_str:0000000000000510 .LASF67
+     /tmp/cc65CUWS.s:2022   .debug_str:000000000000037a .LASF68
+     /tmp/cc65CUWS.s:2176   .debug_str:000000000000082f .LASF69
+     /tmp/cc65CUWS.s:1934   .debug_str:00000000000000c9 .LASF70
+     /tmp/cc65CUWS.s:2126   .debug_str:00000000000005fd .LASF71
+     /tmp/cc65CUWS.s:2152   .debug_str:00000000000006bc .LASF72
+     /tmp/cc65CUWS.s:1944   .debug_str:0000000000000110 .LASF73
+     /tmp/cc65CUWS.s:1952   .debug_str:0000000000000154 .LASF74
+     /tmp/cc65CUWS.s:1958   .debug_str:000000000000017c .LASF75
+     /tmp/cc65CUWS.s:2108   .debug_str:0000000000000592 .LASF76
+     /tmp/cc65CUWS.s:2050   .debug_str:000000000000042d .LASF77
+     /tmp/cc65CUWS.s:1916   .debug_str:000000000000002c .LASF78
+     /tmp/cc65CUWS.s:2132   .debug_str:0000000000000622 .LASF79
+     /tmp/cc65CUWS.s:2078   .debug_str:00000000000004f8 .LASF80
+     /tmp/cc65CUWS.s:2174   .debug_str:000000000000081c .LASF81
+     /tmp/cc65CUWS.s:1962   .debug_str:00000000000001a7 .LASF82
+     /tmp/cc65CUWS.s:2160   .debug_str:00000000000006f9 .LASF83
+     /tmp/cc65CUWS.s:1910   .debug_str:0000000000000000 .LASF84
+     /tmp/cc65CUWS.s:1994   .debug_str:000000000000029c .LASF85
+     /tmp/cc65CUWS.s:2130   .debug_str:0000000000000614 .LASF86
+     /tmp/cc65CUWS.s:1918   .debug_str:000000000000003a .LASF87
+     /tmp/cc65CUWS.s:1984   .debug_str:0000000000000253 .LASF88
+     /tmp/cc65CUWS.s:2190   .debug_str:0000000000000891 .LASF89
+     /tmp/cc65CUWS.s:1954   .debug_str:0000000000000167 .LASF90
+     /tmp/cc65CUWS.s:2122   .debug_str:00000000000005ec .LASF91
+     /tmp/cc65CUWS.s:2044   .debug_str:00000000000003ff .LASF92
+     /tmp/cc65CUWS.s:2180   .debug_str:0000000000000848 .LASF93
+     /tmp/cc65CUWS.s:2154   .debug_str:00000000000006cf .LASF94
+     /tmp/cc65CUWS.s:2138   .debug_str:0000000000000651 .LASF95
+     /tmp/cc65CUWS.s:2054   .debug_str:0000000000000451 .LASF96
+     /tmp/cc65CUWS.s:2168   .debug_str:00000000000007e1 .LASF97
+     /tmp/cc65CUWS.s:2004   .debug_str:00000000000002e9 .LASF98
+     /tmp/cc65CUWS.s:2058   .debug_str:000000000000046c .LASF99
+     /tmp/cc65CUWS.s:2102   .debug_str:0000000000000567 .LASF100
+     /tmp/cc65CUWS.s:1990   .debug_str:000000000000027b .LASF101
+     /tmp/cc65CUWS.s:2020   .debug_str:000000000000036e .LASF102
+     /tmp/cc65CUWS.s:2030   .debug_str:00000000000003a8 .LASF103
+     /tmp/cc65CUWS.s:2142   .debug_str:000000000000066b .LASF104
+     /tmp/cc65CUWS.s:2116   .debug_str:00000000000005c7 .LASF105
+     /tmp/cc65CUWS.s:2060   .debug_str:000000000000047a .LASF106
+     /tmp/cc65CUWS.s:2150   .debug_str:00000000000006ac .LASF107
+     /tmp/cc65CUWS.s:2066   .debug_str:00000000000004a4 .LASF108
+     /tmp/cc65CUWS.s:2052   .debug_str:0000000000000441 .LASF109
+     /tmp/cc65CUWS.s:2136   .debug_str:0000000000000645 .LASF110
+     /tmp/cc65CUWS.s:1992   .debug_str:0000000000000289 .LASF111
+     /tmp/cc65CUWS.s:2086   .debug_str:0000000000000529 .LASF112
+     /tmp/cc65CUWS.s:2036   .debug_str:00000000000003ca .LASF113
+     /tmp/cc65CUWS.s:1932   .debug_str:00000000000000bc .LASF114
+     /tmp/cc65CUWS.s:2034   .debug_str:00000000000003c3 .LASF115
+     /tmp/cc65CUWS.s:2008   .debug_str:000000000000030b .LASF116
+     /tmp/cc65CUWS.s:2146   .debug_str:000000000000068e .LASF117
+     /tmp/cc65CUWS.s:2048   .debug_str:0000000000000420 .LASF137
+     /tmp/cc65CUWS.s:75     .text.u32_Read_TLM:0000000000000000 .LFB2
+     /tmp/cc65CUWS.s:184    .text.u32_Read_TLM:00000000000000e0 .LFE2
+     /tmp/cc65CUWS.s:1980   .debug_str:000000000000023f .LASF138
+     /tmp/cc65CUWS.s:1774   .debug_loc:0000000000000000 .LLST0
+     /tmp/cc65CUWS.s:1988   .debug_str:000000000000026f .LASF118
+     /tmp/cc65CUWS.s:1788   .debug_loc:0000000000000021 .LLST1
+     /tmp/cc65CUWS.s:2192   .debug_str:000000000000089d .LASF119
+     /tmp/cc65CUWS.s:2032   .debug_str:00000000000003b5 .LASF120
+     /tmp/cc65CUWS.s:2016   .debug_str:0000000000000350 .LASF121
+     /tmp/cc65CUWS.s:1804   .debug_loc:0000000000000044 .LLST2
+     /tmp/cc65CUWS.s:2056   .debug_str:000000000000045f .LASF122
+     /tmp/cc65CUWS.s:2112   .debug_str:00000000000005ae .LASF123
+     /tmp/cc65CUWS.s:1820   .debug_loc:0000000000000067 .LLST3
+     /tmp/cc65CUWS.s:2178   .debug_str:0000000000000842 .LASF124
+     /tmp/cc65CUWS.s:1858   .debug_loc:00000000000000bb .LLST4
+     /tmp/cc65CUWS.s:1924   .debug_str:0000000000000075 .LASF139
+     /tmp/cc65CUWS.s:1940   .debug_str:00000000000000f0 .LASF125
+     /tmp/cc65CUWS.s:118    .text.u32_Read_TLM:0000000000000058 .LVL6
+     /tmp/cc65CUWS.s:140    .text.u32_Read_TLM:0000000000000080 .LVL11
+     /tmp/cc65CUWS.s:148    .text.u32_Read_TLM:000000000000009c .LVL12
+     /tmp/cc65CUWS.s:156    .text.u32_Read_TLM:00000000000000b4 .LVL14
+     /tmp/cc65CUWS.s:2124   .debug_str:00000000000005f8 .LASF126
+     /tmp/cc65CUWS.s:2046   .debug_str:000000000000040b .LASF140
+     /tmp/cc65CUWS.s:60     .text.b_Is_TLM_Initialized:0000000000000000 .LFB1
+     /tmp/cc65CUWS.s:68     .text.b_Is_TLM_Initialized:000000000000000c .LFE1
+     /tmp/cc65CUWS.s:2080   .debug_str:0000000000000505 .LASF141
+     /tmp/cc65CUWS.s:14     .text.v_Init_TLM:0000000000000000 .LFB0
+     /tmp/cc65CUWS.s:53     .text.v_Init_TLM:0000000000000050 .LFE0
+     /tmp/cc65CUWS.s:34     .text.v_Init_TLM:0000000000000028 .LVL0
+     /tmp/cc65CUWS.s:38     .text.v_Init_TLM:0000000000000034 .LVL1
+     /tmp/cc65CUWS.s:2068   .debug_str:00000000000004b4 .LASF127
+     /tmp/cc65CUWS.s:2134   .debug_str:0000000000000630 .LASF128
+     /tmp/cc65CUWS.s:2072   .debug_str:00000000000004d0 .LASF129
+     /tmp/cc65CUWS.s:1946   .debug_str:0000000000000123 .LASF130
+     /tmp/cc65CUWS.s:2040   .debug_str:00000000000003ed .LASF131
+     /tmp/cc65CUWS.s:1928   .debug_str:0000000000000095 .LASF132
+     /tmp/cc65CUWS.s:78     .text.u32_Read_TLM:0000000000000000 .LVL2
+     /tmp/cc65CUWS.s:88     .text.u32_Read_TLM:000000000000000c .LVL3
+     /tmp/cc65CUWS.s:171    .text.u32_Read_TLM:00000000000000cc .LVL15
+     /tmp/cc65CUWS.s:179    .text.u32_Read_TLM:00000000000000d8 .LVL16
+     /tmp/cc65CUWS.s:127    .text.u32_Read_TLM:0000000000000060 .LVL8
+     /tmp/cc65CUWS.s:134    .text.u32_Read_TLM:0000000000000070 .LVL10
+     /tmp/cc65CUWS.s:151    .text.u32_Read_TLM:00000000000000a0 .LVL13
+     /tmp/cc65CUWS.s:92     .text.u32_Read_TLM:0000000000000014 .LVL4
+     /tmp/cc65CUWS.s:123    .text.u32_Read_TLM:000000000000005c .LVL7
+     /tmp/cc65CUWS.s:109    .text.u32_Read_TLM:0000000000000030 .LVL5
+     /tmp/cc65CUWS.s:131    .text.u32_Read_TLM:0000000000000068 .LVL9
+     /tmp/cc65CUWS.s:324    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/ccsAES84.s:13     .text.v_Init_TLM:0000000000000000 v_Init_TLM
+     /tmp/ccsAES84.s:17     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:18     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:19     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:20     .text.v_Init_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:21     .text.v_Init_TLM:0000000000000004 .L0 
+     /tmp/ccsAES84.s:23     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/ccsAES84.s:25     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/ccsAES84.s:30     .text.v_Init_TLM:000000000000001c .L0 
+     /tmp/ccsAES84.s:31     .text.v_Init_TLM:0000000000000020 .L0 
+     /tmp/ccsAES84.s:33     .text.v_Init_TLM:0000000000000020 .L0 
+     /tmp/ccsAES84.s:36     .text.v_Init_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:40     .text.v_Init_TLM:0000000000000034 .L0 
+     /tmp/ccsAES84.s:41     .text.v_Init_TLM:0000000000000034 .L0 
+     /tmp/ccsAES84.s:42     .text.v_Init_TLM:0000000000000038 .L0 
+     /tmp/ccsAES84.s:44     .text.v_Init_TLM:000000000000003c .L0 
+     /tmp/ccsAES84.s:46     .text.v_Init_TLM:000000000000003c .L0 
+     /tmp/ccsAES84.s:49     .text.v_Init_TLM:0000000000000048 .L0 
+     /tmp/ccsAES84.s:50     .text.v_Init_TLM:000000000000004c .L0 
+     /tmp/ccsAES84.s:52     .text.v_Init_TLM:0000000000000050 .L0 
+     /tmp/ccsAES84.s:59     .text.b_Is_TLM_Initialized:0000000000000000 b_Is_TLM_Initialized
+     /tmp/ccsAES84.s:62     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/ccsAES84.s:63     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/ccsAES84.s:64     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/ccsAES84.s:65     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/ccsAES84.s:67     .text.b_Is_TLM_Initialized:000000000000000c .L0 
+     /tmp/ccsAES84.s:74     .text.u32_Read_TLM:0000000000000000 u32_Read_TLM
+     /tmp/ccsAES84.s:77     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:79     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:80     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:81     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:82     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:83     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:84     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:85     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:86     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:91     .text.u32_Read_TLM:0000000000000010 .L0 
+     /tmp/ccsAES84.s:94     .text.u32_Read_TLM:0000000000000014 .L0 
+     /tmp/ccsAES84.s:95     .text.u32_Read_TLM:0000000000000014 .L0 
+     /tmp/ccsAES84.s:96     .text.u32_Read_TLM:0000000000000018 .L0 
+     /tmp/ccsAES84.s:101    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:102    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:103    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:104    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:106    .text.u32_Read_TLM:0000000000000028 .L0 
+     /tmp/ccsAES84.s:108    .text.u32_Read_TLM:000000000000002c .L0 
+     /tmp/ccsAES84.s:111    .text.u32_Read_TLM:0000000000000030 .L0 
+     /tmp/ccsAES84.s:113    .text.u32_Read_TLM:0000000000000034 .L0 
+     /tmp/ccsAES84.s:121    .text.u32_Read_TLM:0000000000000058 .L0 
+     /tmp/ccsAES84.s:122    .text.u32_Read_TLM:0000000000000058 .L0 
+     /tmp/ccsAES84.s:125    .text.u32_Read_TLM:000000000000005c .L0 
+     /tmp/ccsAES84.s:128    .text.u32_Read_TLM:0000000000000060 .L0 
+     /tmp/ccsAES84.s:129    .text.u32_Read_TLM:0000000000000060 .L0 
+     /tmp/ccsAES84.s:133    .text.u32_Read_TLM:0000000000000068 .L0 
+     /tmp/ccsAES84.s:137    .text.u32_Read_TLM:0000000000000070 .L0 
+     /tmp/ccsAES84.s:142    .text.u32_Read_TLM:0000000000000080 .L0 
+     /tmp/ccsAES84.s:150    .text.u32_Read_TLM:000000000000009c .L0 
+     /tmp/ccsAES84.s:158    .text.u32_Read_TLM:00000000000000b4 .L0 
+     /tmp/ccsAES84.s:160    .text.u32_Read_TLM:00000000000000b8 .L0 
+     /tmp/ccsAES84.s:161    .text.u32_Read_TLM:00000000000000b8 .L0 
+     /tmp/ccsAES84.s:163    .text.u32_Read_TLM:00000000000000bc .L0 
+     /tmp/ccsAES84.s:165    .text.u32_Read_TLM:00000000000000c0 .L0 
+     /tmp/ccsAES84.s:166    .text.u32_Read_TLM:00000000000000c4 .L0 
+     /tmp/ccsAES84.s:168    .text.u32_Read_TLM:00000000000000c8 .L0 
+     /tmp/ccsAES84.s:170    .text.u32_Read_TLM:00000000000000c8 .L0 
+     /tmp/ccsAES84.s:173    .text.u32_Read_TLM:00000000000000cc .L0 
+     /tmp/ccsAES84.s:174    .text.u32_Read_TLM:00000000000000cc .L0 
+     /tmp/ccsAES84.s:175    .text.u32_Read_TLM:00000000000000d0 .L0 
+     /tmp/ccsAES84.s:177    .text.u32_Read_TLM:00000000000000d4 .L0 
+     /tmp/ccsAES84.s:181    .text.u32_Read_TLM:00000000000000dc .L0 
+     /tmp/ccsAES84.s:183    .text.u32_Read_TLM:00000000000000e0 .L0 
+     /tmp/ccsAES84.s:188    .bss.tlm_spi:0000000000000000 .LANCHOR0
+     /tmp/ccsAES84.s:191    .bss.tlm_spi:0000000000000000 tlm_spi
+     /tmp/ccsAES84.s:195    .rodata.Sensor:0000000000000000 .LANCHOR2
+     /tmp/ccsAES84.s:198    .rodata.Sensor:0000000000000000 Sensor
+     /tmp/ccsAES84.s:297    .rodata.__func__.1821:0000000000000000 .LANCHOR3
+     /tmp/ccsAES84.s:300    .rodata.__func__.1821:0000000000000000 __func__.1821
+     /tmp/ccsAES84.s:310    .sbss.b_TLM_Initialized:0000000000000000 .LANCHOR1
+     /tmp/ccsAES84.s:313    .sbss.b_TLM_Initialized:0000000000000000 b_TLM_Initialized
+     /tmp/ccsAES84.s:55     .text.v_Init_TLM:0000000000000050 .L0 
+     /tmp/ccsAES84.s:70     .text.b_Is_TLM_Initialized:000000000000000c .L0 
+     /tmp/ccsAES84.s:186    .text.u32_Read_TLM:00000000000000e0 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccsAES84.s:25     .text.v_Init_TLM:0000000000000008 .L0 
+     /tmp/ccsAES84.s:47     .text.v_Init_TLM:0000000000000040 .L0 
+     /tmp/ccsAES84.s:65     .text.b_Is_TLM_Initialized:0000000000000000 .L0 
+     /tmp/ccsAES84.s:86     .text.u32_Read_TLM:0000000000000000 .L0 
+     /tmp/ccsAES84.s:304    .rodata.u32_Read_TLM.str1.4:0000000000000000 .LC0
+     /tmp/ccsAES84.s:113    .text.u32_Read_TLM:0000000000000034 .L0 
+     /tmp/ccsAES84.s:114    .text.u32_Read_TLM:000000000000003c .L0 
+     /tmp/ccsAES84.s:307    .rodata.u32_Read_TLM.str1.4:000000000000000c .LC1
+     /tmp/ccsAES84.s:116    .text.u32_Read_TLM:0000000000000048 .L0 
+     /tmp/ccsAES84.s:133    .text.u32_Read_TLM:0000000000000068 .L0 
+     /tmp/ccsAES84.s:119    .text.u32_Read_TLM:0000000000000058 .L5
+     /tmp/ccsAES84.s:135    .text.u32_Read_TLM:0000000000000070 .L6
+     /tmp/ccsAES84.s:1279   .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccsAES84.s:2164   .debug_str:0000000000000713 .LASF133
+     /tmp/ccsAES84.s:1948   .debug_str:000000000000013a .LASF134
+     /tmp/ccsAES84.s:1970   .debug_str:00000000000001d8 .LASF135
+     /tmp/ccsAES84.s:1898   .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccsAES84.s:1908   .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccsAES84.s:1938   .debug_str:00000000000000e4 .LASF0
+     /tmp/ccsAES84.s:1912   .debug_str:0000000000000011 .LASF3
+     /tmp/ccsAES84.s:2070   .debug_str:00000000000004c2 .LASF1
+     /tmp/ccsAES84.s:2084   .debug_str:000000000000051f .LASF2
+     /tmp/ccsAES84.s:2128   .debug_str:0000000000000609 .LASF4
+     /tmp/ccsAES84.s:2012   .debug_str:0000000000000328 .LASF5
+     /tmp/ccsAES84.s:1950   .debug_str:000000000000014b .LASF6
+     /tmp/ccsAES84.s:1982   .debug_str:0000000000000248 .LASF7
+     /tmp/ccsAES84.s:2006   .debug_str:00000000000002f9 .LASF8
+     /tmp/ccsAES84.s:1936   .debug_str:00000000000000d6 .LASF9
+     /tmp/ccsAES84.s:1920   .debug_str:0000000000000047 .LASF10
+     /tmp/ccsAES84.s:2000   .debug_str:00000000000002cd .LASF11
+     /tmp/ccsAES84.s:2166   .debug_str:00000000000007d9 .LASF12
+     /tmp/ccsAES84.s:1956   .debug_str:0000000000000173 .LASF13
+     /tmp/ccsAES84.s:2118   .debug_str:00000000000005d4 .LASF14
+     /tmp/ccsAES84.s:2186   .debug_str:0000000000000879 .LASF15
+     /tmp/ccsAES84.s:2106   .debug_str:0000000000000583 .LASF16
+     /tmp/ccsAES84.s:2104   .debug_str:0000000000000576 .LASF136
+     /tmp/ccsAES84.s:2026   .debug_str:0000000000000393 .LASF17
+     /tmp/ccsAES84.s:2062   .debug_str:000000000000048b .LASF18
+     /tmp/ccsAES84.s:2064   .debug_str:0000000000000494 .LASF19
+     /tmp/ccsAES84.s:2024   .debug_str:0000000000000385 .LASF20
+     /tmp/ccsAES84.s:1930   .debug_str:00000000000000af .LASF21
+     /tmp/ccsAES84.s:2120   .debug_str:00000000000005dd .LASF22
+     /tmp/ccsAES84.s:1986   .debug_str:0000000000000260 .LASF23
+     /tmp/ccsAES84.s:1942   .debug_str:00000000000000ff .LASF24
+     /tmp/ccsAES84.s:2158   .debug_str:00000000000006ed .LASF25
+     /tmp/ccsAES84.s:2042   .debug_str:00000000000003f6 .LASF26
+     /tmp/ccsAES84.s:1996   .debug_str:00000000000002a9 .LASF27
+     /tmp/ccsAES84.s:2018   .debug_str:0000000000000360 .LASF28
+     /tmp/ccsAES84.s:2162   .debug_str:0000000000000706 .LASF29
+     /tmp/ccsAES84.s:2156   .debug_str:00000000000006dc .LASF30
+     /tmp/ccsAES84.s:2002   .debug_str:00000000000002da .LASF31
+     /tmp/ccsAES84.s:1926   .debug_str:000000000000007e .LASF32
+     /tmp/ccsAES84.s:2184   .debug_str:0000000000000868 .LASF33
+     /tmp/ccsAES84.s:2028   .debug_str:000000000000039d .LASF34
+     /tmp/ccsAES84.s:2038   .debug_str:00000000000003dd .LASF35
+     /tmp/ccsAES84.s:2172   .debug_str:00000000000007ff .LASF36
+     /tmp/ccsAES84.s:1960   .debug_str:0000000000000190 .LASF37
+     /tmp/ccsAES84.s:1922   .debug_str:000000000000005e .LASF38
+     /tmp/ccsAES84.s:2170   .debug_str:00000000000007f1 .LASF49
+     /tmp/ccsAES84.s:1964   .debug_str:00000000000001b4 .LASF39
+     /tmp/ccsAES84.s:1966   .debug_str:00000000000001c0 .LASF40
+     /tmp/ccsAES84.s:1968   .debug_str:00000000000001cc .LASF41
+     /tmp/ccsAES84.s:2076   .debug_str:00000000000004ec .LASF42
+     /tmp/ccsAES84.s:1972   .debug_str:000000000000020f .LASF43
+     /tmp/ccsAES84.s:1974   .debug_str:000000000000021b .LASF44
+     /tmp/ccsAES84.s:1976   .debug_str:0000000000000227 .LASF45
+     /tmp/ccsAES84.s:1978   .debug_str:0000000000000233 .LASF46
+     /tmp/ccsAES84.s:2014   .debug_str:000000000000033b .LASF47
+     /tmp/ccsAES84.s:2148   .debug_str:00000000000006a0 .LASF48
+     /tmp/ccsAES84.s:2114   .debug_str:00000000000005b4 .LASF50
+     /tmp/ccsAES84.s:1998   .debug_str:00000000000002b9 .LASF51
+     /tmp/ccsAES84.s:2144   .debug_str:0000000000000679 .LASF52
+     /tmp/ccsAES84.s:2010   .debug_str:0000000000000313 .LASF53
+     /tmp/ccsAES84.s:2188   .debug_str:0000000000000880 .LASF54
+     /tmp/ccsAES84.s:2088   .debug_str:000000000000053c .LASF55
+     /tmp/ccsAES84.s:2090   .debug_str:0000000000000541 .LASF56
+     /tmp/ccsAES84.s:2092   .debug_str:0000000000000546 .LASF57
+     /tmp/ccsAES84.s:2094   .debug_str:000000000000054b .LASF58
+     /tmp/ccsAES84.s:2096   .debug_str:0000000000000550 .LASF59
+     /tmp/ccsAES84.s:2098   .debug_str:0000000000000555 .LASF60
+     /tmp/ccsAES84.s:2100   .debug_str:000000000000055a .LASF61
+     /tmp/ccsAES84.s:1914   .debug_str:000000000000001b .LASF62
+     /tmp/ccsAES84.s:2110   .debug_str:00000000000005a6 .LASF63
+     /tmp/ccsAES84.s:2074   .debug_str:00000000000004e3 .LASF64
+     /tmp/ccsAES84.s:2182   .debug_str:0000000000000854 .LASF65
+     /tmp/ccsAES84.s:2140   .debug_str:000000000000065e .LASF66
+     /tmp/ccsAES84.s:2082   .debug_str:0000000000000510 .LASF67
+     /tmp/ccsAES84.s:2022   .debug_str:000000000000037a .LASF68
+     /tmp/ccsAES84.s:2176   .debug_str:000000000000082f .LASF69
+     /tmp/ccsAES84.s:1934   .debug_str:00000000000000c9 .LASF70
+     /tmp/ccsAES84.s:2126   .debug_str:00000000000005fd .LASF71
+     /tmp/ccsAES84.s:2152   .debug_str:00000000000006bc .LASF72
+     /tmp/ccsAES84.s:1944   .debug_str:0000000000000110 .LASF73
+     /tmp/ccsAES84.s:1952   .debug_str:0000000000000154 .LASF74
+     /tmp/ccsAES84.s:1958   .debug_str:000000000000017c .LASF75
+     /tmp/ccsAES84.s:2108   .debug_str:0000000000000592 .LASF76
+     /tmp/ccsAES84.s:2050   .debug_str:000000000000042d .LASF77
+     /tmp/ccsAES84.s:1916   .debug_str:000000000000002c .LASF78
+     /tmp/ccsAES84.s:2132   .debug_str:0000000000000622 .LASF79
+     /tmp/ccsAES84.s:2078   .debug_str:00000000000004f8 .LASF80
+     /tmp/ccsAES84.s:2174   .debug_str:000000000000081c .LASF81
+     /tmp/ccsAES84.s:1962   .debug_str:00000000000001a7 .LASF82
+     /tmp/ccsAES84.s:2160   .debug_str:00000000000006f9 .LASF83
+     /tmp/ccsAES84.s:1910   .debug_str:0000000000000000 .LASF84
+     /tmp/ccsAES84.s:1994   .debug_str:000000000000029c .LASF85
+     /tmp/ccsAES84.s:2130   .debug_str:0000000000000614 .LASF86
+     /tmp/ccsAES84.s:1918   .debug_str:000000000000003a .LASF87
+     /tmp/ccsAES84.s:1984   .debug_str:0000000000000253 .LASF88
+     /tmp/ccsAES84.s:2190   .debug_str:0000000000000891 .LASF89
+     /tmp/ccsAES84.s:1954   .debug_str:0000000000000167 .LASF90
+     /tmp/ccsAES84.s:2122   .debug_str:00000000000005ec .LASF91
+     /tmp/ccsAES84.s:2044   .debug_str:00000000000003ff .LASF92
+     /tmp/ccsAES84.s:2180   .debug_str:0000000000000848 .LASF93
+     /tmp/ccsAES84.s:2154   .debug_str:00000000000006cf .LASF94
+     /tmp/ccsAES84.s:2138   .debug_str:0000000000000651 .LASF95
+     /tmp/ccsAES84.s:2054   .debug_str:0000000000000451 .LASF96
+     /tmp/ccsAES84.s:2168   .debug_str:00000000000007e1 .LASF97
+     /tmp/ccsAES84.s:2004   .debug_str:00000000000002e9 .LASF98
+     /tmp/ccsAES84.s:2058   .debug_str:000000000000046c .LASF99
+     /tmp/ccsAES84.s:2102   .debug_str:0000000000000567 .LASF100
+     /tmp/ccsAES84.s:1990   .debug_str:000000000000027b .LASF101
+     /tmp/ccsAES84.s:2020   .debug_str:000000000000036e .LASF102
+     /tmp/ccsAES84.s:2030   .debug_str:00000000000003a8 .LASF103
+     /tmp/ccsAES84.s:2142   .debug_str:000000000000066b .LASF104
+     /tmp/ccsAES84.s:2116   .debug_str:00000000000005c7 .LASF105
+     /tmp/ccsAES84.s:2060   .debug_str:000000000000047a .LASF106
+     /tmp/ccsAES84.s:2150   .debug_str:00000000000006ac .LASF107
+     /tmp/ccsAES84.s:2066   .debug_str:00000000000004a4 .LASF108
+     /tmp/ccsAES84.s:2052   .debug_str:0000000000000441 .LASF109
+     /tmp/ccsAES84.s:2136   .debug_str:0000000000000645 .LASF110
+     /tmp/ccsAES84.s:1992   .debug_str:0000000000000289 .LASF111
+     /tmp/ccsAES84.s:2086   .debug_str:0000000000000529 .LASF112
+     /tmp/ccsAES84.s:2036   .debug_str:00000000000003ca .LASF113
+     /tmp/ccsAES84.s:1932   .debug_str:00000000000000bc .LASF114
+     /tmp/ccsAES84.s:2034   .debug_str:00000000000003c3 .LASF115
+     /tmp/ccsAES84.s:2008   .debug_str:000000000000030b .LASF116
+     /tmp/ccsAES84.s:2146   .debug_str:000000000000068e .LASF117
+     /tmp/ccsAES84.s:2048   .debug_str:0000000000000420 .LASF137
+     /tmp/ccsAES84.s:75     .text.u32_Read_TLM:0000000000000000 .LFB2
+     /tmp/ccsAES84.s:184    .text.u32_Read_TLM:00000000000000e0 .LFE2
+     /tmp/ccsAES84.s:1980   .debug_str:000000000000023f .LASF138
+     /tmp/ccsAES84.s:1774   .debug_loc:0000000000000000 .LLST0
+     /tmp/ccsAES84.s:1988   .debug_str:000000000000026f .LASF118
+     /tmp/ccsAES84.s:1788   .debug_loc:0000000000000021 .LLST1
+     /tmp/ccsAES84.s:2192   .debug_str:000000000000089d .LASF119
+     /tmp/ccsAES84.s:2032   .debug_str:00000000000003b5 .LASF120
+     /tmp/ccsAES84.s:2016   .debug_str:0000000000000350 .LASF121
+     /tmp/ccsAES84.s:1804   .debug_loc:0000000000000044 .LLST2
+     /tmp/ccsAES84.s:2056   .debug_str:000000000000045f .LASF122
+     /tmp/ccsAES84.s:2112   .debug_str:00000000000005ae .LASF123
+     /tmp/ccsAES84.s:1820   .debug_loc:0000000000000067 .LLST3
+     /tmp/ccsAES84.s:2178   .debug_str:0000000000000842 .LASF124
+     /tmp/ccsAES84.s:1858   .debug_loc:00000000000000bb .LLST4
+     /tmp/ccsAES84.s:1924   .debug_str:0000000000000075 .LASF139
+     /tmp/ccsAES84.s:1940   .debug_str:00000000000000f0 .LASF125
+     /tmp/ccsAES84.s:118    .text.u32_Read_TLM:0000000000000058 .LVL6
+     /tmp/ccsAES84.s:140    .text.u32_Read_TLM:0000000000000080 .LVL11
+     /tmp/ccsAES84.s:148    .text.u32_Read_TLM:000000000000009c .LVL12
+     /tmp/ccsAES84.s:156    .text.u32_Read_TLM:00000000000000b4 .LVL14
+     /tmp/ccsAES84.s:2124   .debug_str:00000000000005f8 .LASF126
+     /tmp/ccsAES84.s:2046   .debug_str:000000000000040b .LASF140
+     /tmp/ccsAES84.s:60     .text.b_Is_TLM_Initialized:0000000000000000 .LFB1
+     /tmp/ccsAES84.s:68     .text.b_Is_TLM_Initialized:000000000000000c .LFE1
+     /tmp/ccsAES84.s:2080   .debug_str:0000000000000505 .LASF141
+     /tmp/ccsAES84.s:14     .text.v_Init_TLM:0000000000000000 .LFB0
+     /tmp/ccsAES84.s:53     .text.v_Init_TLM:0000000000000050 .LFE0
+     /tmp/ccsAES84.s:34     .text.v_Init_TLM:0000000000000028 .LVL0
+     /tmp/ccsAES84.s:38     .text.v_Init_TLM:0000000000000034 .LVL1
+     /tmp/ccsAES84.s:2068   .debug_str:00000000000004b4 .LASF127
+     /tmp/ccsAES84.s:2134   .debug_str:0000000000000630 .LASF128
+     /tmp/ccsAES84.s:2072   .debug_str:00000000000004d0 .LASF129
+     /tmp/ccsAES84.s:1946   .debug_str:0000000000000123 .LASF130
+     /tmp/ccsAES84.s:2040   .debug_str:00000000000003ed .LASF131
+     /tmp/ccsAES84.s:1928   .debug_str:0000000000000095 .LASF132
+     /tmp/ccsAES84.s:78     .text.u32_Read_TLM:0000000000000000 .LVL2
+     /tmp/ccsAES84.s:88     .text.u32_Read_TLM:000000000000000c .LVL3
+     /tmp/ccsAES84.s:171    .text.u32_Read_TLM:00000000000000cc .LVL15
+     /tmp/ccsAES84.s:179    .text.u32_Read_TLM:00000000000000d8 .LVL16
+     /tmp/ccsAES84.s:127    .text.u32_Read_TLM:0000000000000060 .LVL8
+     /tmp/ccsAES84.s:134    .text.u32_Read_TLM:0000000000000070 .LVL10
+     /tmp/ccsAES84.s:151    .text.u32_Read_TLM:00000000000000a0 .LVL13
+     /tmp/ccsAES84.s:92     .text.u32_Read_TLM:0000000000000014 .LVL4
+     /tmp/ccsAES84.s:123    .text.u32_Read_TLM:000000000000005c .LVL7
+     /tmp/ccsAES84.s:109    .text.u32_Read_TLM:0000000000000030 .LVL5
+     /tmp/ccsAES84.s:131    .text.u32_Read_TLM:0000000000000068 .LVL9
+     /tmp/ccsAES84.s:324    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+UNDEFINED SYMBOLS
+SPI_init
+SPI_configure_master_mode
+__assert_func
+SPI_set_slave_select
+SPI_transfer_block
+SPI_clear_slave_select

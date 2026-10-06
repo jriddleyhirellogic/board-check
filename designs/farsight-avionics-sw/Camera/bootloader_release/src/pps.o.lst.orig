@@ -1,0 +1,640 @@
+   1              		.file	"pps.c"
+   2              		.option nopic
+   3              		.attribute arch, "rv32i2p0_m2p0"
+   4              		.attribute unaligned_access, 0
+   5              		.attribute stack_align, 16
+   6              		.text
+   7              	.Ltext0:
+   8              		.cfi_sections	.debug_frame
+   9              		.section	.text.v_PPS_Start,"ax",@progbits
+  10              		.align	2
+  11              		.globl	v_PPS_Start
+  13              	v_PPS_Start:
+  14              	.LFB0:
+  15              		.file 1 "../src/pps.c"
+   1:../src/pps.c  **** /*
+   2:../src/pps.c  ****  * pps.c
+   3:../src/pps.c  ****  *
+   4:../src/pps.c  ****  *  Created on: Jun 29, 2026
+   5:../src/pps.c  ****  *      Author: iboard
+   6:../src/pps.c  ****  */
+   7:../src/pps.c  **** 
+   8:../src/pps.c  **** #include "pps.h"
+   9:../src/pps.c  **** #include "config.h"
+  10:../src/pps.c  **** 
+  11:../src/pps.c  **** void v_PPS_Start(void)
+  12:../src/pps.c  **** {
+  16              		.loc 1 12 1
+  17              		.cfi_startproc
+  13:../src/pps.c  ****     PPS_BASE[TRIGGER_TIME_JAM] = 1;
+  18              		.loc 1 13 5
+  19              		.loc 1 13 32 is_stmt 0
+  20 0000 B7570170 		li	a5,1879134208
+  21 0004 13071000 		li	a4,1
+  22 0008 23A0E700 		sw	a4,0(a5)
+  14:../src/pps.c  **** }
+  23              		.loc 1 14 1
+  24 000c 67800000 		ret
+  25              		.cfi_endproc
+  26              	.LFE0:
+  28              		.section	.text.v_PPS_Load_Seconds,"ax",@progbits
+  29              		.align	2
+  30              		.globl	v_PPS_Load_Seconds
+  32              	v_PPS_Load_Seconds:
+  33              	.LFB1:
+  15:../src/pps.c  **** 
+  16:../src/pps.c  **** void v_PPS_Load_Seconds(Sys_Time_t *p_Time)
+  17:../src/pps.c  **** {
+  34              		.loc 1 17 1 is_stmt 1
+  35              		.cfi_startproc
+  36              	.LVL0:
+  18:../src/pps.c  ****     PPS_BASE[LOAD_SECONDS]  = p_Time->u32_Time_Sec;
+  37              		.loc 1 18 5
+  38              		.loc 1 18 37 is_stmt 0
+  39 0000 03270500 		lw	a4,0(a0)
+  40              		.loc 1 18 29
+  41 0004 B7570170 		li	a5,1879134208
+  42 0008 23A2E700 		sw	a4,4(a5)
+  19:../src/pps.c  **** }
+  43              		.loc 1 19 1
+  44 000c 67800000 		ret
+  45              		.cfi_endproc
+  46              	.LFE1:
+  48              		.section	.text.v_PPS_Set_Rx_Delay,"ax",@progbits
+  49              		.align	2
+  50              		.globl	v_PPS_Set_Rx_Delay
+  52              	v_PPS_Set_Rx_Delay:
+  53              	.LFB2:
+  20:../src/pps.c  **** 
+  21:../src/pps.c  **** void v_PPS_Set_Rx_Delay(uint32_t u32_Delay)
+  22:../src/pps.c  **** {
+  54              		.loc 1 22 1 is_stmt 1
+  55              		.cfi_startproc
+  56              	.LVL1:
+  23:../src/pps.c  ****     PPS_BASE[PPS_RX_DELAY] = u32_Delay;
+  57              		.loc 1 23 5
+  58              		.loc 1 23 28 is_stmt 0
+  59 0000 B7570170 		li	a5,1879134208
+  60 0004 23A4A700 		sw	a0,8(a5)
+  24:../src/pps.c  **** }
+  61              		.loc 1 24 1
+  62 0008 67800000 		ret
+  63              		.cfi_endproc
+  64              	.LFE2:
+  66              		.section	.text.v_PPS_Enable_Local_PPS_Source,"ax",@progbits
+  67              		.align	2
+  68              		.globl	v_PPS_Enable_Local_PPS_Source
+  70              	v_PPS_Enable_Local_PPS_Source:
+  71              	.LFB3:
+  25:../src/pps.c  **** 
+  26:../src/pps.c  **** void v_PPS_Enable_Local_PPS_Source(uint8_t b_Enable)
+  27:../src/pps.c  **** {
+  72              		.loc 1 27 1 is_stmt 1
+  73              		.cfi_startproc
+  74              	.LVL2:
+  28:../src/pps.c  ****     PPS_BASE[EN_LOCAL_PPS_SOURCE] = b_Enable ? 1 : 0;
+  75              		.loc 1 28 5
+  76              		.loc 1 28 50 is_stmt 0
+  77 0000 3335A000 		snez	a0,a0
+  78              	.LVL3:
+  79              		.loc 1 28 35
+  80 0004 B7570170 		li	a5,1879134208
+  81 0008 23A6A700 		sw	a0,12(a5)
+  29:../src/pps.c  **** }
+  82              		.loc 1 29 1
+  83 000c 67800000 		ret
+  84              		.cfi_endproc
+  85              	.LFE3:
+  87              		.section	.text.u32_Get_PPS_Freq_Error,"ax",@progbits
+  88              		.align	2
+  89              		.globl	u32_Get_PPS_Freq_Error
+  91              	u32_Get_PPS_Freq_Error:
+  92              	.LFB4:
+  30:../src/pps.c  **** 
+  31:../src/pps.c  **** uint32_t u32_Get_PPS_Freq_Error(void)
+  32:../src/pps.c  **** {
+  93              		.loc 1 32 1 is_stmt 1
+  94              		.cfi_startproc
+  33:../src/pps.c  ****     return PPS_BASE[FREQUENCY_ERROR];
+  95              		.loc 1 33 5
+  96              		.loc 1 33 20 is_stmt 0
+  97 0000 B7570170 		li	a5,1879134208
+  98 0004 03A50701 		lw	a0,16(a5)
+  34:../src/pps.c  **** }
+  99              		.loc 1 34 1
+ 100 0008 67800000 		ret
+ 101              		.cfi_endproc
+ 102              	.LFE4:
+ 104              		.section	.text.u32_Get_PPS_Phase_Error,"ax",@progbits
+ 105              		.align	2
+ 106              		.globl	u32_Get_PPS_Phase_Error
+ 108              	u32_Get_PPS_Phase_Error:
+ 109              	.LFB5:
+  35:../src/pps.c  **** 
+  36:../src/pps.c  **** uint32_t u32_Get_PPS_Phase_Error(void)
+  37:../src/pps.c  **** {
+ 110              		.loc 1 37 1 is_stmt 1
+ 111              		.cfi_startproc
+  38:../src/pps.c  ****     return PPS_BASE[PHASE_ERROR];
+ 112              		.loc 1 38 5
+ 113              		.loc 1 38 20 is_stmt 0
+ 114 0000 B7570170 		li	a5,1879134208
+ 115 0004 03A54701 		lw	a0,20(a5)
+  39:../src/pps.c  **** }
+ 116              		.loc 1 39 1
+ 117 0008 67800000 		ret
+ 118              		.cfi_endproc
+ 119              	.LFE5:
+ 121              		.section	.text.b_PPS_Is_Locked,"ax",@progbits
+ 122              		.align	2
+ 123              		.globl	b_PPS_Is_Locked
+ 125              	b_PPS_Is_Locked:
+ 126              	.LFB6:
+  40:../src/pps.c  **** 
+  41:../src/pps.c  **** uint8_t b_PPS_Is_Locked(void)
+  42:../src/pps.c  **** {
+ 127              		.loc 1 42 1 is_stmt 1
+ 128              		.cfi_startproc
+  43:../src/pps.c  ****     return 1;
+ 129              		.loc 1 43 5
+  44:../src/pps.c  **** }
+ 130              		.loc 1 44 1 is_stmt 0
+ 131 0000 13051000 		li	a0,1
+ 132 0004 67800000 		ret
+ 133              		.cfi_endproc
+ 134              	.LFE6:
+ 136              		.section	.text.v_Get_PPS_Time,"ax",@progbits
+ 137              		.align	2
+ 138              		.globl	v_Get_PPS_Time
+ 140              	v_Get_PPS_Time:
+ 141              	.LFB7:
+  45:../src/pps.c  **** 
+  46:../src/pps.c  **** void v_Get_PPS_Time(Sys_Time_t *PPS_Time)
+  47:../src/pps.c  **** {
+ 142              		.loc 1 47 1 is_stmt 1
+ 143              		.cfi_startproc
+ 144              	.LVL4:
+  48:../src/pps.c  ****     PPS_Time->u32_Time_Sec = PPS_BASE[SECONDS];
+ 145              		.loc 1 48 5
+ 146              		.loc 1 48 38 is_stmt 0
+ 147 0000 B7570170 		li	a5,1879134208
+ 148 0004 03A78701 		lw	a4,24(a5)
+ 149              		.loc 1 48 28
+ 150 0008 2320E500 		sw	a4,0(a0)
+  49:../src/pps.c  ****     PPS_Time->u32_Time_msec = PPS_BASE[NANOSECONDS] / 1000000;
+ 151              		.loc 1 49 5 is_stmt 1
+ 152              		.loc 1 49 39 is_stmt 0
+ 153 000c 83A7C701 		lw	a5,28(a5)
+ 154              		.loc 1 49 53
+ 155 0010 37470F00 		li	a4,999424
+ 156 0014 13070724 		addi	a4,a4,576
+ 157 0018 B3D7E702 		divu	a5,a5,a4
+ 158              		.loc 1 49 29
+ 159 001c 2322F500 		sw	a5,4(a0)
+  50:../src/pps.c  **** 
+  51:../src/pps.c  **** }
+ 160              		.loc 1 51 1
+ 161 0020 67800000 		ret
+ 162              		.cfi_endproc
+ 163              	.LFE7:
+ 165              		.section	.text.v_Enable_PPS_IRQ,"ax",@progbits
+ 166              		.align	2
+ 167              		.globl	v_Enable_PPS_IRQ
+ 169              	v_Enable_PPS_IRQ:
+ 170              	.LFB9:
+  52:../src/pps.c  **** 
+  53:../src/pps.c  **** static void v_Reset_PPS_Irq(void)
+  54:../src/pps.c  **** {
+  55:../src/pps.c  ****     PPS_BASE[RESET_IRQ] = 1;
+  56:../src/pps.c  **** }
+  57:../src/pps.c  **** 
+  58:../src/pps.c  **** void v_Enable_PPS_IRQ( uint8_t b_Enable )
+  59:../src/pps.c  **** {
+ 171              		.loc 1 59 1 is_stmt 1
+ 172              		.cfi_startproc
+ 173              	.LVL5:
+  60:../src/pps.c  ****     if( b_Enable )
+ 174              		.loc 1 60 5
+  61:../src/pps.c  ****     {
+  62:../src/pps.c  ****         __asm volatile ( "csrs mie, %0" ::"r" ( PPS_IRQ ) );
+ 175              		.loc 1 62 9 is_stmt 0
+ 176 0000 B7070010 		li	a5,268435456
+  60:../src/pps.c  ****     if( b_Enable )
+ 177              		.loc 1 60 7
+ 178 0004 63060500 		beq	a0,zero,.L10
+ 179              		.loc 1 62 9 is_stmt 1
+ 180              	 #APP
+ 181              	# 62 "../src/pps.c" 1
+  63              	    }
+ 182              		csrs mie, a5
+ 183              	# 0 "" 2
+ 184              	 #NO_APP
+ 185 000c 67800000 		ret
+ 186              	.L10:
+  64:../src/pps.c  ****     else
+  65:../src/pps.c  ****     {
+  66:../src/pps.c  ****         __asm volatile ( "csrc mie, %0" ::"r" ( PPS_IRQ ) );
+ 187              		.loc 1 66 9
+ 188              	 #APP
+ 189              	# 66 "../src/pps.c" 1
+  67              	    }
+  68:../src/pps.c  **** }
+ 190              		csrc mie, a5
+ 191              	# 0 "" 2
+ 192              		.loc 1 68 1 is_stmt 0
+ 193              	 #NO_APP
+ 194 0014 67800000 		ret
+ 195              		.cfi_endproc
+ 196              	.LFE9:
+ 198              		.section	.text.v_PPS_IRQ_Handler,"ax",@progbits
+ 199              		.align	2
+ 200              		.globl	v_PPS_IRQ_Handler
+ 202              	v_PPS_IRQ_Handler:
+ 203              	.LFB10:
+  69:../src/pps.c  **** 
+  70:../src/pps.c  **** static uint32_t u32_PPS_Counter;
+  71:../src/pps.c  **** 
+  72:../src/pps.c  **** void v_PPS_IRQ_Handler()
+  73:../src/pps.c  **** {
+ 204              		.loc 1 73 1 is_stmt 1
+ 205              		.cfi_startproc
+  74:../src/pps.c  ****     v_Reset_PPS_Irq();
+ 206              		.loc 1 74 5
+ 207              	.LBB4:
+ 208              	.LBB5:
+  55:../src/pps.c  **** }
+ 209              		.loc 1 55 5
+  55:../src/pps.c  **** }
+ 210              		.loc 1 55 25 is_stmt 0
+ 211 0000 B7570170 		li	a5,1879134208
+ 212 0004 13071000 		li	a4,1
+ 213 0008 23A0E702 		sw	a4,32(a5)
+ 214              	.LBE5:
+ 215              	.LBE4:
+  75:../src/pps.c  ****     ++u32_PPS_Counter;
+ 216              		.loc 1 75 5 is_stmt 1
+ 217 000c 17070000 		lla	a4,.LANCHOR0
+ 217      13070700 
+ 218 0014 83270700 		lw	a5,0(a4)
+ 219 0018 93871700 		addi	a5,a5,1
+ 220 001c 2320F700 		sw	a5,0(a4)
+  76:../src/pps.c  **** }
+ 221              		.loc 1 76 1 is_stmt 0
+ 222 0020 67800000 		ret
+ 223              		.cfi_endproc
+ 224              	.LFE10:
+ 226              		.section	.sbss.u32_PPS_Counter,"aw",@nobits
+ 227              		.align	2
+ 228              		.set	.LANCHOR0,. + 0
+ 231              	u32_PPS_Counter:
+ 232 0000 00000000 		.zero	4
+ 233              		.text
+ 234              	.Letext0:
+ 235              		.file 2 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/machine/_defau
+ 236              		.file 3 "/home/iboard/farsight/farsight-riscv-toolchain/riscv64-unknown-elf/include/sys/_stdint.h"
+ 237              		.file 4 "/home/iboard/farsight/avtemp/Camera/include/pps.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 pps.c
+<<<<<<< HEAD
+     /tmp/ccGEpBjE.s:13     .text.v_PPS_Start:0000000000000000 v_PPS_Start
+     /tmp/ccGEpBjE.s:17     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:18     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:19     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:20     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:24     .text.v_PPS_Start:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:25     .text.v_PPS_Start:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:32     .text.v_PPS_Load_Seconds:0000000000000000 v_PPS_Load_Seconds
+     /tmp/ccGEpBjE.s:35     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:37     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:38     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:39     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:41     .text.v_PPS_Load_Seconds:0000000000000004 .L0 
+     /tmp/ccGEpBjE.s:44     .text.v_PPS_Load_Seconds:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:45     .text.v_PPS_Load_Seconds:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:52     .text.v_PPS_Set_Rx_Delay:0000000000000000 v_PPS_Set_Rx_Delay
+     /tmp/ccGEpBjE.s:55     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:57     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:58     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:59     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:62     .text.v_PPS_Set_Rx_Delay:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:63     .text.v_PPS_Set_Rx_Delay:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:70     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 v_PPS_Enable_Local_PPS_Source
+     /tmp/ccGEpBjE.s:73     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:75     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:76     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:77     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:80     .text.v_PPS_Enable_Local_PPS_Source:0000000000000004 .L0 
+     /tmp/ccGEpBjE.s:83     .text.v_PPS_Enable_Local_PPS_Source:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:84     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:91     .text.u32_Get_PPS_Freq_Error:0000000000000000 u32_Get_PPS_Freq_Error
+     /tmp/ccGEpBjE.s:94     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:95     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:96     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:97     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:100    .text.u32_Get_PPS_Freq_Error:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:101    .text.u32_Get_PPS_Freq_Error:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:108    .text.u32_Get_PPS_Phase_Error:0000000000000000 u32_Get_PPS_Phase_Error
+     /tmp/ccGEpBjE.s:111    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:112    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:113    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:114    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:117    .text.u32_Get_PPS_Phase_Error:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:118    .text.u32_Get_PPS_Phase_Error:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:125    .text.b_PPS_Is_Locked:0000000000000000 b_PPS_Is_Locked
+     /tmp/ccGEpBjE.s:128    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:129    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:130    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:131    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:133    .text.b_PPS_Is_Locked:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:140    .text.v_Get_PPS_Time:0000000000000000 v_Get_PPS_Time
+     /tmp/ccGEpBjE.s:143    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:145    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:146    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:147    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:150    .text.v_Get_PPS_Time:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:152    .text.v_Get_PPS_Time:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:153    .text.v_Get_PPS_Time:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:155    .text.v_Get_PPS_Time:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:159    .text.v_Get_PPS_Time:000000000000001c .L0 
+     /tmp/ccGEpBjE.s:161    .text.v_Get_PPS_Time:0000000000000020 .L0 
+     /tmp/ccGEpBjE.s:162    .text.v_Get_PPS_Time:0000000000000024 .L0 
+     /tmp/ccGEpBjE.s:169    .text.v_Enable_PPS_IRQ:0000000000000000 v_Enable_PPS_IRQ
+     /tmp/ccGEpBjE.s:172    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:174    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:175    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:176    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:178    .text.v_Enable_PPS_IRQ:0000000000000004 .L0 
+        ../src/pps.c:62     .text.v_Enable_PPS_IRQ:0000000000000008 .L0 
+        ../src/pps.c:66     .text.v_Enable_PPS_IRQ:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:194    .text.v_Enable_PPS_IRQ:0000000000000014 .L0 
+     /tmp/ccGEpBjE.s:195    .text.v_Enable_PPS_IRQ:0000000000000018 .L0 
+     /tmp/ccGEpBjE.s:202    .text.v_PPS_IRQ_Handler:0000000000000000 v_PPS_IRQ_Handler
+     /tmp/ccGEpBjE.s:205    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:206    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:209    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:210    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:211    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:217    .text.v_PPS_IRQ_Handler:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:222    .text.v_PPS_IRQ_Handler:0000000000000020 .L0 
+     /tmp/ccGEpBjE.s:223    .text.v_PPS_IRQ_Handler:0000000000000024 .L0 
+     /tmp/ccGEpBjE.s:228    .sbss.u32_PPS_Counter:0000000000000000 .LANCHOR0
+     /tmp/ccGEpBjE.s:231    .sbss.u32_PPS_Counter:0000000000000000 u32_PPS_Counter
+     /tmp/ccGEpBjE.s:28     .text.v_PPS_Start:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:48     .text.v_PPS_Load_Seconds:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:66     .text.v_PPS_Set_Rx_Delay:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:87     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .L0 
+     /tmp/ccGEpBjE.s:104    .text.u32_Get_PPS_Freq_Error:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:121    .text.u32_Get_PPS_Phase_Error:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:136    .text.b_PPS_Is_Locked:0000000000000008 .L0 
+     /tmp/ccGEpBjE.s:165    .text.v_Get_PPS_Time:0000000000000024 .L0 
+     /tmp/ccGEpBjE.s:198    .text.v_Enable_PPS_IRQ:0000000000000018 .L0 
+     /tmp/ccGEpBjE.s:226    .text.v_PPS_IRQ_Handler:0000000000000024 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/ccGEpBjE.s:186    .text.v_Enable_PPS_IRQ:0000000000000010 .L10
+     /tmp/ccGEpBjE.s:217    .text.v_PPS_IRQ_Handler:000000000000000c .L0 
+     /tmp/ccGEpBjE.s:550    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/ccGEpBjE.s:939    .debug_str:0000000000000000 .LASF37
+     /tmp/ccGEpBjE.s:979    .debug_str:00000000000001d5 .LASF38
+     /tmp/ccGEpBjE.s:1017   .debug_str:00000000000002e5 .LASF39
+     /tmp/ccGEpBjE.s:913    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/ccGEpBjE.s:937    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/ccGEpBjE.s:1019   .debug_str:000000000000031c .LASF0
+     /tmp/ccGEpBjE.s:941    .debug_str:00000000000000c6 .LASF5
+     /tmp/ccGEpBjE.s:957    .debug_str:0000000000000136 .LASF1
+     /tmp/ccGEpBjE.s:1007   .debug_str:00000000000002ae .LASF2
+     /tmp/ccGEpBjE.s:965    .debug_str:0000000000000178 .LASF3
+     /tmp/ccGEpBjE.s:1015   .debug_str:00000000000002dc .LASF4
+     /tmp/ccGEpBjE.s:975    .debug_str:00000000000001bd .LASF6
+     /tmp/ccGEpBjE.s:961    .debug_str:0000000000000157 .LASF7
+     /tmp/ccGEpBjE.s:1001   .debug_str:0000000000000282 .LASF8
+     /tmp/ccGEpBjE.s:989    .debug_str:0000000000000216 .LASF9
+     /tmp/ccGEpBjE.s:983    .debug_str:00000000000001f3 .LASF10
+     /tmp/ccGEpBjE.s:991    .debug_str:000000000000022d .LASF11
+     /tmp/ccGEpBjE.s:1013   .debug_str:00000000000002d3 .LASF12
+     /tmp/ccGEpBjE.s:1003   .debug_str:0000000000000290 .LASF13
+     /tmp/ccGEpBjE.s:1005   .debug_str:00000000000002a1 .LASF14
+     /tmp/ccGEpBjE.s:949    .debug_str:00000000000000f8 .LASF15
+     /tmp/ccGEpBjE.s:995    .debug_str:000000000000023f .LASF16
+     /tmp/ccGEpBjE.s:945    .debug_str:00000000000000e0 .LASF17
+     /tmp/ccGEpBjE.s:953    .debug_str:000000000000010c .LASF18
+     /tmp/ccGEpBjE.s:947    .debug_str:00000000000000f0 .LASF19
+     /tmp/ccGEpBjE.s:1025   .debug_str:000000000000034b .LASF20
+     /tmp/ccGEpBjE.s:993    .debug_str:0000000000000235 .LASF21
+     /tmp/ccGEpBjE.s:977    .debug_str:00000000000001c8 .LASF22
+     /tmp/ccGEpBjE.s:969    .debug_str:0000000000000194 .LASF23
+     /tmp/ccGEpBjE.s:1009   .debug_str:00000000000002b8 .LASF24
+     /tmp/ccGEpBjE.s:1021   .debug_str:0000000000000328 .LASF40
+     /tmp/ccGEpBjE.s:971    .debug_str:00000000000001a2 .LASF41
+     /tmp/ccGEpBjE.s:203    .text.v_PPS_IRQ_Handler:0000000000000000 .LFB10
+     /tmp/ccGEpBjE.s:224    .text.v_PPS_IRQ_Handler:0000000000000024 .LFE10
+     /tmp/ccGEpBjE.s:207    .text.v_PPS_IRQ_Handler:0000000000000000 .LBB4
+     /tmp/ccGEpBjE.s:215    .text.v_PPS_IRQ_Handler:000000000000000c .LBE4
+     /tmp/ccGEpBjE.s:981    .debug_str:00000000000001e2 .LASF25
+     /tmp/ccGEpBjE.s:170    .text.v_Enable_PPS_IRQ:0000000000000000 .LFB9
+     /tmp/ccGEpBjE.s:196    .text.v_Enable_PPS_IRQ:0000000000000018 .LFE9
+     /tmp/ccGEpBjE.s:967    .debug_str:000000000000018b .LASF27
+     /tmp/ccGEpBjE.s:1011   .debug_str:00000000000002c3 .LASF42
+     /tmp/ccGEpBjE.s:963    .debug_str:0000000000000169 .LASF26
+     /tmp/ccGEpBjE.s:141    .text.v_Get_PPS_Time:0000000000000000 .LFB7
+     /tmp/ccGEpBjE.s:163    .text.v_Get_PPS_Time:0000000000000024 .LFE7
+     /tmp/ccGEpBjE.s:973    .debug_str:00000000000001b4 .LASF28
+     /tmp/ccGEpBjE.s:943    .debug_str:00000000000000d0 .LASF29
+     /tmp/ccGEpBjE.s:126    .text.b_PPS_Is_Locked:0000000000000000 .LFB6
+     /tmp/ccGEpBjE.s:134    .text.b_PPS_Is_Locked:0000000000000008 .LFE6
+     /tmp/ccGEpBjE.s:997    .debug_str:0000000000000253 .LASF30
+     /tmp/ccGEpBjE.s:109    .text.u32_Get_PPS_Phase_Error:0000000000000000 .LFB5
+     /tmp/ccGEpBjE.s:119    .text.u32_Get_PPS_Phase_Error:000000000000000c .LFE5
+     /tmp/ccGEpBjE.s:999    .debug_str:000000000000026b .LASF31
+     /tmp/ccGEpBjE.s:92     .text.u32_Get_PPS_Freq_Error:0000000000000000 .LFB4
+     /tmp/ccGEpBjE.s:102    .text.u32_Get_PPS_Freq_Error:000000000000000c .LFE4
+     /tmp/ccGEpBjE.s:955    .debug_str:0000000000000118 .LASF32
+     /tmp/ccGEpBjE.s:71     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .LFB3
+     /tmp/ccGEpBjE.s:85     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .LFE3
+     /tmp/ccGEpBjE.s:868    .debug_loc:0000000000000000 .LLST0
+     /tmp/ccGEpBjE.s:1023   .debug_str:0000000000000338 .LASF33
+     /tmp/ccGEpBjE.s:53     .text.v_PPS_Set_Rx_Delay:0000000000000000 .LFB2
+     /tmp/ccGEpBjE.s:64     .text.v_PPS_Set_Rx_Delay:000000000000000c .LFE2
+     /tmp/ccGEpBjE.s:985    .debug_str:0000000000000200 .LASF34
+     /tmp/ccGEpBjE.s:959    .debug_str:0000000000000144 .LASF35
+     /tmp/ccGEpBjE.s:33     .text.v_PPS_Load_Seconds:0000000000000000 .LFB1
+     /tmp/ccGEpBjE.s:46     .text.v_PPS_Load_Seconds:0000000000000010 .LFE1
+     /tmp/ccGEpBjE.s:951    .debug_str:0000000000000105 .LASF36
+     /tmp/ccGEpBjE.s:987    .debug_str:000000000000020a .LASF43
+     /tmp/ccGEpBjE.s:14     .text.v_PPS_Start:0000000000000000 .LFB0
+     /tmp/ccGEpBjE.s:26     .text.v_PPS_Start:0000000000000010 .LFE0
+     /tmp/ccGEpBjE.s:74     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .LVL2
+     /tmp/ccGEpBjE.s:78     .text.v_PPS_Enable_Local_PPS_Source:0000000000000004 .LVL3
+     /tmp/ccGEpBjE.s:239    .debug_info:0000000000000000 .Ldebug_info0
+=======
+     /tmp/cc6ho1Nf.s:13     .text.v_PPS_Start:0000000000000000 v_PPS_Start
+     /tmp/cc6ho1Nf.s:17     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:18     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:19     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:20     .text.v_PPS_Start:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:24     .text.v_PPS_Start:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:25     .text.v_PPS_Start:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:32     .text.v_PPS_Load_Seconds:0000000000000000 v_PPS_Load_Seconds
+     /tmp/cc6ho1Nf.s:35     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:37     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:38     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:39     .text.v_PPS_Load_Seconds:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:41     .text.v_PPS_Load_Seconds:0000000000000004 .L0 
+     /tmp/cc6ho1Nf.s:44     .text.v_PPS_Load_Seconds:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:45     .text.v_PPS_Load_Seconds:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:52     .text.v_PPS_Set_Rx_Delay:0000000000000000 v_PPS_Set_Rx_Delay
+     /tmp/cc6ho1Nf.s:55     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:57     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:58     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:59     .text.v_PPS_Set_Rx_Delay:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:62     .text.v_PPS_Set_Rx_Delay:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:63     .text.v_PPS_Set_Rx_Delay:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:70     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 v_PPS_Enable_Local_PPS_Source
+     /tmp/cc6ho1Nf.s:73     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:75     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:76     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:77     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:80     .text.v_PPS_Enable_Local_PPS_Source:0000000000000004 .L0 
+     /tmp/cc6ho1Nf.s:83     .text.v_PPS_Enable_Local_PPS_Source:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:84     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:91     .text.u32_Get_PPS_Freq_Error:0000000000000000 u32_Get_PPS_Freq_Error
+     /tmp/cc6ho1Nf.s:94     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:95     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:96     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:97     .text.u32_Get_PPS_Freq_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:100    .text.u32_Get_PPS_Freq_Error:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:101    .text.u32_Get_PPS_Freq_Error:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:108    .text.u32_Get_PPS_Phase_Error:0000000000000000 u32_Get_PPS_Phase_Error
+     /tmp/cc6ho1Nf.s:111    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:112    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:113    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:114    .text.u32_Get_PPS_Phase_Error:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:117    .text.u32_Get_PPS_Phase_Error:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:118    .text.u32_Get_PPS_Phase_Error:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:125    .text.b_PPS_Is_Locked:0000000000000000 b_PPS_Is_Locked
+     /tmp/cc6ho1Nf.s:128    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:129    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:130    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:131    .text.b_PPS_Is_Locked:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:133    .text.b_PPS_Is_Locked:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:140    .text.v_Get_PPS_Time:0000000000000000 v_Get_PPS_Time
+     /tmp/cc6ho1Nf.s:143    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:145    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:146    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:147    .text.v_Get_PPS_Time:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:150    .text.v_Get_PPS_Time:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:152    .text.v_Get_PPS_Time:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:153    .text.v_Get_PPS_Time:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:155    .text.v_Get_PPS_Time:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:159    .text.v_Get_PPS_Time:000000000000001c .L0 
+     /tmp/cc6ho1Nf.s:161    .text.v_Get_PPS_Time:0000000000000020 .L0 
+     /tmp/cc6ho1Nf.s:162    .text.v_Get_PPS_Time:0000000000000024 .L0 
+     /tmp/cc6ho1Nf.s:169    .text.v_Enable_PPS_IRQ:0000000000000000 v_Enable_PPS_IRQ
+     /tmp/cc6ho1Nf.s:172    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:174    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:175    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:176    .text.v_Enable_PPS_IRQ:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:178    .text.v_Enable_PPS_IRQ:0000000000000004 .L0 
+        ../src/pps.c:62     .text.v_Enable_PPS_IRQ:0000000000000008 .L0 
+        ../src/pps.c:66     .text.v_Enable_PPS_IRQ:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:194    .text.v_Enable_PPS_IRQ:0000000000000014 .L0 
+     /tmp/cc6ho1Nf.s:195    .text.v_Enable_PPS_IRQ:0000000000000018 .L0 
+     /tmp/cc6ho1Nf.s:202    .text.v_PPS_IRQ_Handler:0000000000000000 v_PPS_IRQ_Handler
+     /tmp/cc6ho1Nf.s:205    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:206    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:209    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:210    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:211    .text.v_PPS_IRQ_Handler:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:217    .text.v_PPS_IRQ_Handler:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:222    .text.v_PPS_IRQ_Handler:0000000000000020 .L0 
+     /tmp/cc6ho1Nf.s:223    .text.v_PPS_IRQ_Handler:0000000000000024 .L0 
+     /tmp/cc6ho1Nf.s:228    .sbss.u32_PPS_Counter:0000000000000000 .LANCHOR0
+     /tmp/cc6ho1Nf.s:231    .sbss.u32_PPS_Counter:0000000000000000 u32_PPS_Counter
+     /tmp/cc6ho1Nf.s:28     .text.v_PPS_Start:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:48     .text.v_PPS_Load_Seconds:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:66     .text.v_PPS_Set_Rx_Delay:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:87     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .L0 
+     /tmp/cc6ho1Nf.s:104    .text.u32_Get_PPS_Freq_Error:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:121    .text.u32_Get_PPS_Phase_Error:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:136    .text.b_PPS_Is_Locked:0000000000000008 .L0 
+     /tmp/cc6ho1Nf.s:165    .text.v_Get_PPS_Time:0000000000000024 .L0 
+     /tmp/cc6ho1Nf.s:198    .text.v_Enable_PPS_IRQ:0000000000000018 .L0 
+     /tmp/cc6ho1Nf.s:226    .text.v_PPS_IRQ_Handler:0000000000000024 .L0 
+                     .debug_frame:0000000000000000 .L0 
+     /tmp/cc6ho1Nf.s:186    .text.v_Enable_PPS_IRQ:0000000000000010 .L10
+     /tmp/cc6ho1Nf.s:217    .text.v_PPS_IRQ_Handler:000000000000000c .L0 
+     /tmp/cc6ho1Nf.s:550    .debug_abbrev:0000000000000000 .Ldebug_abbrev0
+     /tmp/cc6ho1Nf.s:939    .debug_str:0000000000000000 .LASF37
+     /tmp/cc6ho1Nf.s:979    .debug_str:00000000000001d5 .LASF38
+     /tmp/cc6ho1Nf.s:1017   .debug_str:00000000000002e5 .LASF39
+     /tmp/cc6ho1Nf.s:913    .debug_ranges:0000000000000000 .Ldebug_ranges0
+     /tmp/cc6ho1Nf.s:937    .debug_line:0000000000000000 .Ldebug_line0
+     /tmp/cc6ho1Nf.s:1019   .debug_str:000000000000031c .LASF0
+     /tmp/cc6ho1Nf.s:941    .debug_str:00000000000000c6 .LASF5
+     /tmp/cc6ho1Nf.s:957    .debug_str:0000000000000136 .LASF1
+     /tmp/cc6ho1Nf.s:1007   .debug_str:00000000000002ae .LASF2
+     /tmp/cc6ho1Nf.s:965    .debug_str:0000000000000178 .LASF3
+     /tmp/cc6ho1Nf.s:1015   .debug_str:00000000000002dc .LASF4
+     /tmp/cc6ho1Nf.s:975    .debug_str:00000000000001bd .LASF6
+     /tmp/cc6ho1Nf.s:961    .debug_str:0000000000000157 .LASF7
+     /tmp/cc6ho1Nf.s:1001   .debug_str:0000000000000282 .LASF8
+     /tmp/cc6ho1Nf.s:989    .debug_str:0000000000000216 .LASF9
+     /tmp/cc6ho1Nf.s:983    .debug_str:00000000000001f3 .LASF10
+     /tmp/cc6ho1Nf.s:991    .debug_str:000000000000022d .LASF11
+     /tmp/cc6ho1Nf.s:1013   .debug_str:00000000000002d3 .LASF12
+     /tmp/cc6ho1Nf.s:1003   .debug_str:0000000000000290 .LASF13
+     /tmp/cc6ho1Nf.s:1005   .debug_str:00000000000002a1 .LASF14
+     /tmp/cc6ho1Nf.s:949    .debug_str:00000000000000f8 .LASF15
+     /tmp/cc6ho1Nf.s:995    .debug_str:000000000000023f .LASF16
+     /tmp/cc6ho1Nf.s:945    .debug_str:00000000000000e0 .LASF17
+     /tmp/cc6ho1Nf.s:953    .debug_str:000000000000010c .LASF18
+     /tmp/cc6ho1Nf.s:947    .debug_str:00000000000000f0 .LASF19
+     /tmp/cc6ho1Nf.s:1025   .debug_str:000000000000034b .LASF20
+     /tmp/cc6ho1Nf.s:993    .debug_str:0000000000000235 .LASF21
+     /tmp/cc6ho1Nf.s:977    .debug_str:00000000000001c8 .LASF22
+     /tmp/cc6ho1Nf.s:969    .debug_str:0000000000000194 .LASF23
+     /tmp/cc6ho1Nf.s:1009   .debug_str:00000000000002b8 .LASF24
+     /tmp/cc6ho1Nf.s:1021   .debug_str:0000000000000328 .LASF40
+     /tmp/cc6ho1Nf.s:971    .debug_str:00000000000001a2 .LASF41
+     /tmp/cc6ho1Nf.s:203    .text.v_PPS_IRQ_Handler:0000000000000000 .LFB10
+     /tmp/cc6ho1Nf.s:224    .text.v_PPS_IRQ_Handler:0000000000000024 .LFE10
+     /tmp/cc6ho1Nf.s:207    .text.v_PPS_IRQ_Handler:0000000000000000 .LBB4
+     /tmp/cc6ho1Nf.s:215    .text.v_PPS_IRQ_Handler:000000000000000c .LBE4
+     /tmp/cc6ho1Nf.s:981    .debug_str:00000000000001e2 .LASF25
+     /tmp/cc6ho1Nf.s:170    .text.v_Enable_PPS_IRQ:0000000000000000 .LFB9
+     /tmp/cc6ho1Nf.s:196    .text.v_Enable_PPS_IRQ:0000000000000018 .LFE9
+     /tmp/cc6ho1Nf.s:967    .debug_str:000000000000018b .LASF27
+     /tmp/cc6ho1Nf.s:1011   .debug_str:00000000000002c3 .LASF42
+     /tmp/cc6ho1Nf.s:963    .debug_str:0000000000000169 .LASF26
+     /tmp/cc6ho1Nf.s:141    .text.v_Get_PPS_Time:0000000000000000 .LFB7
+     /tmp/cc6ho1Nf.s:163    .text.v_Get_PPS_Time:0000000000000024 .LFE7
+     /tmp/cc6ho1Nf.s:973    .debug_str:00000000000001b4 .LASF28
+     /tmp/cc6ho1Nf.s:943    .debug_str:00000000000000d0 .LASF29
+     /tmp/cc6ho1Nf.s:126    .text.b_PPS_Is_Locked:0000000000000000 .LFB6
+     /tmp/cc6ho1Nf.s:134    .text.b_PPS_Is_Locked:0000000000000008 .LFE6
+     /tmp/cc6ho1Nf.s:997    .debug_str:0000000000000253 .LASF30
+     /tmp/cc6ho1Nf.s:109    .text.u32_Get_PPS_Phase_Error:0000000000000000 .LFB5
+     /tmp/cc6ho1Nf.s:119    .text.u32_Get_PPS_Phase_Error:000000000000000c .LFE5
+     /tmp/cc6ho1Nf.s:999    .debug_str:000000000000026b .LASF31
+     /tmp/cc6ho1Nf.s:92     .text.u32_Get_PPS_Freq_Error:0000000000000000 .LFB4
+     /tmp/cc6ho1Nf.s:102    .text.u32_Get_PPS_Freq_Error:000000000000000c .LFE4
+     /tmp/cc6ho1Nf.s:955    .debug_str:0000000000000118 .LASF32
+     /tmp/cc6ho1Nf.s:71     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .LFB3
+     /tmp/cc6ho1Nf.s:85     .text.v_PPS_Enable_Local_PPS_Source:0000000000000010 .LFE3
+     /tmp/cc6ho1Nf.s:868    .debug_loc:0000000000000000 .LLST0
+     /tmp/cc6ho1Nf.s:1023   .debug_str:0000000000000338 .LASF33
+     /tmp/cc6ho1Nf.s:53     .text.v_PPS_Set_Rx_Delay:0000000000000000 .LFB2
+     /tmp/cc6ho1Nf.s:64     .text.v_PPS_Set_Rx_Delay:000000000000000c .LFE2
+     /tmp/cc6ho1Nf.s:985    .debug_str:0000000000000200 .LASF34
+     /tmp/cc6ho1Nf.s:959    .debug_str:0000000000000144 .LASF35
+     /tmp/cc6ho1Nf.s:33     .text.v_PPS_Load_Seconds:0000000000000000 .LFB1
+     /tmp/cc6ho1Nf.s:46     .text.v_PPS_Load_Seconds:0000000000000010 .LFE1
+     /tmp/cc6ho1Nf.s:951    .debug_str:0000000000000105 .LASF36
+     /tmp/cc6ho1Nf.s:987    .debug_str:000000000000020a .LASF43
+     /tmp/cc6ho1Nf.s:14     .text.v_PPS_Start:0000000000000000 .LFB0
+     /tmp/cc6ho1Nf.s:26     .text.v_PPS_Start:0000000000000010 .LFE0
+     /tmp/cc6ho1Nf.s:74     .text.v_PPS_Enable_Local_PPS_Source:0000000000000000 .LVL2
+     /tmp/cc6ho1Nf.s:78     .text.v_PPS_Enable_Local_PPS_Source:0000000000000004 .LVL3
+     /tmp/cc6ho1Nf.s:239    .debug_info:0000000000000000 .Ldebug_info0
+>>>>>>> merge_steven_latest
+
+NO UNDEFINED SYMBOLS

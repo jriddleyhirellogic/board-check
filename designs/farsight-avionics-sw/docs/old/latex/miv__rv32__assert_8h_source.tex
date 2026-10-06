@@ -1,0 +1,44 @@
+\doxysection{miv\+\_\+rv32\+\_\+assert.\+h}
+\hypertarget{miv__rv32__assert_8h_source}{}\label{miv__rv32__assert_8h_source}\index{src/miv\_rv32\_hal/miv\_rv32\_assert.h@{src/miv\_rv32\_hal/miv\_rv32\_assert.h}}
+\doxymbox{\hyperlink{miv__rv32__assert_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00001}00001\ \textcolor{comment}{/*******************************************************************************}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00002}00002\ \textcolor{comment}{\ *\ Copyright\ 2022\ Microchip\ FPGA\ Embedded\ Systems\ Solutions.}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00003}00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00004}00004\ \textcolor{comment}{\ *\ SPDX-\/License-\/Identifier:\ MIT}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00005}00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00006}00006\ \textcolor{comment}{\ *\ MIV\_RV32\ HAL\ Embedded\ Software}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00007}00007\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00008}00008\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00009}00009\ \textcolor{preprocessor}{\#ifndef\ MIV\_RV32\_ASSERT\_HEADER}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00010}00010\ \textcolor{preprocessor}{\#define\ MIV\_RV32\_ASSERT\_HEADER}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00012}00012\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00013}00013\ \textcolor{keyword}{extern}\ \textcolor{stringliteral}{"{}C"{}}\ \{}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00014}00014\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00016}00016\ \textcolor{comment}{/***************************************************************************/}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00019}00019\ \textcolor{comment}{/*\ Disable\ assertions\ if\ we\ do\ not\ recognize\ the\ compiler.\ */}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00020}00020\ \textcolor{preprocessor}{\#if\ defined\ (\ \_\_GNUC\_\_\ )}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00021}00021\ \textcolor{preprocessor}{\#if\ defined(NDEBUG)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00022}00022\ \textcolor{preprocessor}{\#define\ ASSERT(CHECK)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00023}00023\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00024}00024\ \textcolor{preprocessor}{\#define\ ASSERT(CHECK)\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00025}00025\ \textcolor{preprocessor}{\ \ \ \ do\ \{\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00026}00026\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ if\ (!(CHECK))\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00027}00027\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \{\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00028}00028\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \_\_asm\_\_\ volatile\ ("{}ebreak"{});\ \(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00029}00029\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \}\(\backslash\)}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00030}00030\ \textcolor{preprocessor}{\ \ \ \ \}\ while(0);}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00031}00031\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00032}00032\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ NDEBUG\ check\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00033}00033\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ compiler\ check\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00035}00035\ \textcolor{preprocessor}{\#ifdef\ \_\_cplusplus}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00036}00036\ \}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00037}00037\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00039}00039\ \textcolor{preprocessor}{\#endif\ \ }\textcolor{comment}{/*\ MIV\_RV32\_ASSERT\_HEADER\ */}\textcolor{preprocessor}{}}
+\DoxyCodeLine{\Hypertarget{miv__rv32__assert_8h_source_l00040}00040\ }
+
+\end{DoxyCode}

@@ -1,0 +1,982 @@
+\doxysection{src/\+util.c File Reference}
+\hypertarget{util_8c}{}\label{util_8c}\index{src/util.c@{src/util.c}}
+{\ttfamily \+\#include $<$assert.\+h$>$}\newline
+{\ttfamily \+\#include "{}Free\+RTOSConfig.\+h"{}}\newline
+{\ttfamily \+\#include "{}Free\+RTOS.\+h"{}}\newline
+{\ttfamily \+\#include "{}task.\+h"{}}\newline
+{\ttfamily \+\#include "{}core\+\_\+gpio.\+h"{}}\newline
+{\ttfamily \+\#include "{}core\+\_\+spi.\+h"{}}\newline
+{\ttfamily \+\#include "{}util.\+h"{}}\newline
+Include dependency graph for util.\+c:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c__incl}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{util_8c_a99b018e1d163b3be5baf621486c092d2}{v\+\_\+\+Set\+\_\+\+Camera\+\_\+\+SPI\+\_\+\+Instance}} (\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}\doxymbox{\hyperlink{hal__lvdt_8c_a61caf4ed81df7167ee131a3aada5df99}{instance}})
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{util_8c_a6111381a9a51e37aec42efe18623ebdf}{reverse\+\_\+bits}} (uint8\+\_\+t num)
+\item 
+void \doxymbox{\hyperlink{util_8c_aa01fe291a67cdae7a7cd0b2c74d5df93}{spi\+\_\+wr}} (uint8\+\_\+t chip\+\_\+id, uint8\+\_\+t reg\+\_\+addr, uint8\+\_\+t spi\+\_\+data)
+\item 
+uint8\+\_\+t \doxymbox{\hyperlink{util_8c_a3bb4e8d08a6ac3071db8fa68c21d9fe8}{spi\+\_\+rd}} (uint8\+\_\+t chip\+\_\+id, uint8\+\_\+t reg\+\_\+addr)
+\item 
+void \doxymbox{\hyperlink{util_8c_af989d4d7db65d8fd2dfbcb0136b14e08}{spi\+\_\+set\+\_\+and\+\_\+confirm}} (uint8\+\_\+t wr\+\_\+chip\+\_\+id, uint8\+\_\+t rd\+\_\+chip\+\_\+id, uint8\+\_\+t reg\+\_\+addr, uint8\+\_\+t wr\+\_\+spi\+\_\+data)
+\item 
+void \doxymbox{\hyperlink{util_8c_a859f46c6c0863ce677ff2a711e31926a}{set\+\_\+standby}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_ae9a50467ece92d03401e9afd3b1bec53}{set\+\_\+master\+\_\+mode}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a65f7849c70042899a38355e8f9723244}{set\+\_\+incksel}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_abf0d79b4e097331db7ebb9197b4ca669}{set\+\_\+hvmode}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_af7b321a806df6663489e8a8dd277e087}{set\+\_\+vopb\+\_\+vblk\+\_\+hwidth}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5}{set\+\_\+finfo\+\_\+hwidth}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a7b41e6b0dde5c77f8495bc7254259740}{set\+\_\+vmax}} (uint32\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a30f863c7dad42269d6857bf7a07b07bf}{set\+\_\+hmax}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624}{set\+\_\+freq}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_abdce3f93aa3642b79607f9c1c5ce7007}{set\+\_\+vndmy}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e}{set\+\_\+vndmy\+\_\+trig}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_ab000c32033b01fc1cfa5f8314358403f}{set\+\_\+gmrwt}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531}{set\+\_\+gmtwt}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2}{set\+\_\+gaindly}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a14f51108dde7ff11b236a7fec81e47ed}{set\+\_\+gsdly}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc}{set\+\_\+roi\+\_\+mode}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a879f17850ba85699520f937aef65fbcf}{set\+\_\+adbit}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a344d5de9cc46cca1ea54d402a870bb21}{set\+\_\+slvs\+\_\+en}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a}{set\+\_\+shs}} (uint32\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6}{set\+\_\+trig\+\_\+mode\+\_\+timing}} (uint8\+\_\+t sel1, uint8\+\_\+t sel2)
+\item 
+void \doxymbox{\hyperlink{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a}{set\+\_\+odbit}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9}{set\+\_\+tout0sel}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a4a810a1d2d12c7034b450abe169d4df1}{set\+\_\+gain\+\_\+rts}} (uint8\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4}{set\+\_\+gain}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a2e4b0fbcc9d1d92d59518250a003b852}{set\+\_\+blklevel}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a7f3c650ffbd13c00398c510885f74b7f}{set\+\_\+synccode}} (uint16\+\_\+t sel)
+\item 
+void \doxymbox{\hyperlink{util_8c_a5b9cf47b3e724fd7dae36c91a248810f}{set\+\_\+crc\+\_\+err\+\_\+mode}} (uint8\+\_\+t sel)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{util_8c_a23cda2bb3538f4441df531c92ace8c72}{p\+\_\+instance}}
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_ae9022649e3c6438f86c54743abe95960}{g\+\_\+10ms\+\_\+count}}
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_af585aa7b1347918ec907ef0db855aa15}{timerdone}} = 0
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a5aaf42e66231783085305e085b597669}{g\+\_\+10ms\+\_\+count1}}
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a460ca72745df2ebcf72fc26d61b5af18}{g\+\_\+ms\+\_\+count}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a03accc5cdb89a57bf1503e7f37e84fd5}{g\+\_\+state}} = 1
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a7221fcec9e6ae1324a67f13736cffebc}{rx\+\_\+tmr\+\_\+done}} = 0
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_aa79a4ded90d9312ae4e4b779074faf76}{rx\+\_\+ms\+\_\+count1}}
+\item 
+volatile uint32\+\_\+t \doxymbox{\hyperlink{util_8c_ac0f937cb1b5e42f6b6ff9e60af6d110e}{rx\+\_\+ms\+\_\+count}}
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a50f830243a2e34ac87067e2bdf9abbbb}{t\+\_\+ms\+\_\+count}} = 0
+\item 
+uint32\+\_\+t \doxymbox{\hyperlink{util_8c_a37f3a7f27506843cd1ba033a93f2581d}{process\+\_\+data}} = 0
+\end{DoxyCompactItemize}
+
+
+\label{doc-func-members}
+\Hypertarget{util_8c_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{util_8c_a6111381a9a51e37aec42efe18623ebdf}\index{util.c@{util.c}!reverse\_bits@{reverse\_bits}}
+\index{reverse\_bits@{reverse\_bits}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{reverse\_bits()}{reverse\_bits()}}
+{\footnotesize\ttfamily \label{util_8c_a6111381a9a51e37aec42efe18623ebdf} 
+uint8\+\_\+t reverse\+\_\+bits (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{num}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00049}{49}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a6111381a9a51e37aec42efe18623ebdf_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a879f17850ba85699520f937aef65fbcf}\index{util.c@{util.c}!set\_adbit@{set\_adbit}}
+\index{set\_adbit@{set\_adbit}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_adbit()}{set\_adbit()}}
+{\footnotesize\ttfamily \label{util_8c_a879f17850ba85699520f937aef65fbcf} 
+void set\+\_\+adbit (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00311}{311}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a879f17850ba85699520f937aef65fbcf_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a879f17850ba85699520f937aef65fbcf_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a2e4b0fbcc9d1d92d59518250a003b852}\index{util.c@{util.c}!set\_blklevel@{set\_blklevel}}
+\index{set\_blklevel@{set\_blklevel}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_blklevel()}{set\_blklevel()}}
+{\footnotesize\ttfamily \label{util_8c_a2e4b0fbcc9d1d92d59518250a003b852} 
+void set\+\_\+blklevel (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00419}{419}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a2e4b0fbcc9d1d92d59518250a003b852_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a2e4b0fbcc9d1d92d59518250a003b852_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a5b9cf47b3e724fd7dae36c91a248810f}\index{util.c@{util.c}!set\_crc\_err\_mode@{set\_crc\_err\_mode}}
+\index{set\_crc\_err\_mode@{set\_crc\_err\_mode}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_crc\_err\_mode()}{set\_crc\_err\_mode()}}
+{\footnotesize\ttfamily \label{util_8c_a5b9cf47b3e724fd7dae36c91a248810f} 
+void set\+\_\+crc\+\_\+err\+\_\+mode (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00431}{431}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a5b9cf47b3e724fd7dae36c91a248810f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a5b9cf47b3e724fd7dae36c91a248810f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5}\index{util.c@{util.c}!set\_finfo\_hwidth@{set\_finfo\_hwidth}}
+\index{set\_finfo\_hwidth@{set\_finfo\_hwidth}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_finfo\_hwidth()}{set\_finfo\_hwidth()}}
+{\footnotesize\ttfamily \label{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5} 
+void set\+\_\+finfo\+\_\+hwidth (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00214}{214}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab0ac55f321a05dd85efa4f0b8586c2e5_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624}\index{util.c@{util.c}!set\_freq@{set\_freq}}
+\index{set\_freq@{set\_freq}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_freq()}{set\_freq()}}
+{\footnotesize\ttfamily \label{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624} 
+void set\+\_\+freq (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00233}{233}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a359d7435788cdbd9e6a38b7f5c2f7624_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4}\index{util.c@{util.c}!set\_gain@{set\_gain}}
+\index{set\_gain@{set\_gain}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gain()}{set\_gain()}}
+{\footnotesize\ttfamily \label{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4} 
+void set\+\_\+gain (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00413}{413}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a16bb2bdb8f89809d1264a88e3f5186f4_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a4a810a1d2d12c7034b450abe169d4df1}\index{util.c@{util.c}!set\_gain\_rts@{set\_gain\_rts}}
+\index{set\_gain\_rts@{set\_gain\_rts}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gain\_rts()}{set\_gain\_rts()}}
+{\footnotesize\ttfamily \label{util_8c_a4a810a1d2d12c7034b450abe169d4df1} 
+void set\+\_\+gain\+\_\+rts (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00399}{399}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a4a810a1d2d12c7034b450abe169d4df1_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a4a810a1d2d12c7034b450abe169d4df1_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2}\index{util.c@{util.c}!set\_gaindly@{set\_gaindly}}
+\index{set\_gaindly@{set\_gaindly}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gaindly()}{set\_gaindly()}}
+{\footnotesize\ttfamily \label{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2} 
+void set\+\_\+gaindly (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00296}{296}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9f7ef94ab2f62f5c0ba61add12805db2_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_ab000c32033b01fc1cfa5f8314358403f}\index{util.c@{util.c}!set\_gmrwt@{set\_gmrwt}}
+\index{set\_gmrwt@{set\_gmrwt}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gmrwt()}{set\_gmrwt()}}
+{\footnotesize\ttfamily \label{util_8c_ab000c32033b01fc1cfa5f8314358403f} 
+void set\+\_\+gmrwt (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00286}{286}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab000c32033b01fc1cfa5f8314358403f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab000c32033b01fc1cfa5f8314358403f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531}\index{util.c@{util.c}!set\_gmtwt@{set\_gmtwt}}
+\index{set\_gmtwt@{set\_gmtwt}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gmtwt()}{set\_gmtwt()}}
+{\footnotesize\ttfamily \label{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531} 
+void set\+\_\+gmtwt (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00291}{291}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9777afa12e6e0f51f0a8cefe95dc4531_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a14f51108dde7ff11b236a7fec81e47ed}\index{util.c@{util.c}!set\_gsdly@{set\_gsdly}}
+\index{set\_gsdly@{set\_gsdly}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_gsdly()}{set\_gsdly()}}
+{\footnotesize\ttfamily \label{util_8c_a14f51108dde7ff11b236a7fec81e47ed} 
+void set\+\_\+gsdly (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00301}{301}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a14f51108dde7ff11b236a7fec81e47ed_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a14f51108dde7ff11b236a7fec81e47ed_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a30f863c7dad42269d6857bf7a07b07bf}\index{util.c@{util.c}!set\_hmax@{set\_hmax}}
+\index{set\_hmax@{set\_hmax}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_hmax()}{set\_hmax()}}
+{\footnotesize\ttfamily \label{util_8c_a30f863c7dad42269d6857bf7a07b07bf} 
+void set\+\_\+hmax (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00227}{227}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a30f863c7dad42269d6857bf7a07b07bf_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a30f863c7dad42269d6857bf7a07b07bf_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_abf0d79b4e097331db7ebb9197b4ca669}\index{util.c@{util.c}!set\_hvmode@{set\_hvmode}}
+\index{set\_hvmode@{set\_hvmode}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_hvmode()}{set\_hvmode()}}
+{\footnotesize\ttfamily \label{util_8c_abf0d79b4e097331db7ebb9197b4ca669} 
+void set\+\_\+hvmode (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00184}{184}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_abf0d79b4e097331db7ebb9197b4ca669_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_abf0d79b4e097331db7ebb9197b4ca669_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a65f7849c70042899a38355e8f9723244}\index{util.c@{util.c}!set\_incksel@{set\_incksel}}
+\index{set\_incksel@{set\_incksel}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_incksel()}{set\_incksel()}}
+{\footnotesize\ttfamily \label{util_8c_a65f7849c70042899a38355e8f9723244} 
+void set\+\_\+incksel (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00127}{127}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a65f7849c70042899a38355e8f9723244_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a65f7849c70042899a38355e8f9723244_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_ae9a50467ece92d03401e9afd3b1bec53}\index{util.c@{util.c}!set\_master\_mode@{set\_master\_mode}}
+\index{set\_master\_mode@{set\_master\_mode}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_master\_mode()}{set\_master\_mode()}}
+{\footnotesize\ttfamily \label{util_8c_ae9a50467ece92d03401e9afd3b1bec53} 
+void set\+\_\+master\+\_\+mode (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00122}{122}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ae9a50467ece92d03401e9afd3b1bec53_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ae9a50467ece92d03401e9afd3b1bec53_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a}\index{util.c@{util.c}!set\_odbit@{set\_odbit}}
+\index{set\_odbit@{set\_odbit}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_odbit()}{set\_odbit()}}
+{\footnotesize\ttfamily \label{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a} 
+void set\+\_\+odbit (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00377}{377}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a9d28e7c156faeeae4899ac1bdf30be9a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc}\index{util.c@{util.c}!set\_roi\_mode@{set\_roi\_mode}}
+\index{set\_roi\_mode@{set\_roi\_mode}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_roi\_mode()}{set\_roi\_mode()}}
+{\footnotesize\ttfamily \label{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc} 
+void set\+\_\+roi\+\_\+mode (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00306}{306}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a16f619b79dffb0b0d2bd5bc7daa61cbc_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a}\index{util.c@{util.c}!set\_shs@{set\_shs}}
+\index{set\_shs@{set\_shs}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_shs()}{set\_shs()}}
+{\footnotesize\ttfamily \label{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a} 
+void set\+\_\+shs (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00342}{342}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_adff9ac2a7b5e3753b3fe43183e7ea86a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a344d5de9cc46cca1ea54d402a870bb21}\index{util.c@{util.c}!set\_slvs\_en@{set\_slvs\_en}}
+\index{set\_slvs\_en@{set\_slvs\_en}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_slvs\_en()}{set\_slvs\_en()}}
+{\footnotesize\ttfamily \label{util_8c_a344d5de9cc46cca1ea54d402a870bb21} 
+void set\+\_\+slvs\+\_\+en (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00331}{331}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a344d5de9cc46cca1ea54d402a870bb21_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a344d5de9cc46cca1ea54d402a870bb21_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a859f46c6c0863ce677ff2a711e31926a}\index{util.c@{util.c}!set\_standby@{set\_standby}}
+\index{set\_standby@{set\_standby}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_standby()}{set\_standby()}}
+{\footnotesize\ttfamily \label{util_8c_a859f46c6c0863ce677ff2a711e31926a} 
+void set\+\_\+standby (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00117}{117}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a859f46c6c0863ce677ff2a711e31926a_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a859f46c6c0863ce677ff2a711e31926a_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a7f3c650ffbd13c00398c510885f74b7f}\index{util.c@{util.c}!set\_synccode@{set\_synccode}}
+\index{set\_synccode@{set\_synccode}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_synccode()}{set\_synccode()}}
+{\footnotesize\ttfamily \label{util_8c_a7f3c650ffbd13c00398c510885f74b7f} 
+void set\+\_\+synccode (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00425}{425}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a7f3c650ffbd13c00398c510885f74b7f_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a7f3c650ffbd13c00398c510885f74b7f_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9}\index{util.c@{util.c}!set\_tout0sel@{set\_tout0sel}}
+\index{set\_tout0sel@{set\_tout0sel}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_tout0sel()}{set\_tout0sel()}}
+{\footnotesize\ttfamily \label{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9} 
+void set\+\_\+tout0sel (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00394}{394}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a68e8d0b5755ba441bfd818f8c71f28b9_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6}\index{util.c@{util.c}!set\_trig\_mode\_timing@{set\_trig\_mode\_timing}}
+\index{set\_trig\_mode\_timing@{set\_trig\_mode\_timing}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_trig\_mode\_timing()}{set\_trig\_mode\_timing()}}
+{\footnotesize\ttfamily \label{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6} 
+void set\+\_\+trig\+\_\+mode\+\_\+timing (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel1}{, }\item[{uint8\+\_\+t}]{sel2}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00349}{349}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_ab13ea822dca5e2e4a8f2dcdc3c4bfab6_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a7b41e6b0dde5c77f8495bc7254259740}\index{util.c@{util.c}!set\_vmax@{set\_vmax}}
+\index{set\_vmax@{set\_vmax}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_vmax()}{set\_vmax()}}
+{\footnotesize\ttfamily \label{util_8c_a7b41e6b0dde5c77f8495bc7254259740} 
+void set\+\_\+vmax (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00220}{220}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a7b41e6b0dde5c77f8495bc7254259740_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a7b41e6b0dde5c77f8495bc7254259740_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_abdce3f93aa3642b79607f9c1c5ce7007}\index{util.c@{util.c}!set\_vndmy@{set\_vndmy}}
+\index{set\_vndmy@{set\_vndmy}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_vndmy()}{set\_vndmy()}}
+{\footnotesize\ttfamily \label{util_8c_abdce3f93aa3642b79607f9c1c5ce7007} 
+void set\+\_\+vndmy (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00258}{258}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_abdce3f93aa3642b79607f9c1c5ce7007_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_abdce3f93aa3642b79607f9c1c5ce7007_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e}\index{util.c@{util.c}!set\_vndmy\_trig@{set\_vndmy\_trig}}
+\index{set\_vndmy\_trig@{set\_vndmy\_trig}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_vndmy\_trig()}{set\_vndmy\_trig()}}
+{\footnotesize\ttfamily \label{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e} 
+void set\+\_\+vndmy\+\_\+trig (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00272}{272}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a8360a04d1fcddd526e4d0fc5f6f7b50e_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_af7b321a806df6663489e8a8dd277e087}\index{util.c@{util.c}!set\_vopb\_vblk\_hwidth@{set\_vopb\_vblk\_hwidth}}
+\index{set\_vopb\_vblk\_hwidth@{set\_vopb\_vblk\_hwidth}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{set\_vopb\_vblk\_hwidth()}{set\_vopb\_vblk\_hwidth()}}
+{\footnotesize\ttfamily \label{util_8c_af7b321a806df6663489e8a8dd277e087} 
+void set\+\_\+vopb\+\_\+vblk\+\_\+hwidth (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{sel}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00208}{208}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_af7b321a806df6663489e8a8dd277e087_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_af7b321a806df6663489e8a8dd277e087_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a3bb4e8d08a6ac3071db8fa68c21d9fe8}\index{util.c@{util.c}!spi\_rd@{spi\_rd}}
+\index{spi\_rd@{spi\_rd}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{spi\_rd()}{spi\_rd()}}
+{\footnotesize\ttfamily \label{util_8c_a3bb4e8d08a6ac3071db8fa68c21d9fe8} 
+uint8\+\_\+t spi\+\_\+rd (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{chip\+\_\+id}{, }\item[{uint8\+\_\+t}]{reg\+\_\+addr}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00075}{75}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a3bb4e8d08a6ac3071db8fa68c21d9fe8_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a3bb4e8d08a6ac3071db8fa68c21d9fe8_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_af989d4d7db65d8fd2dfbcb0136b14e08}\index{util.c@{util.c}!spi\_set\_and\_confirm@{spi\_set\_and\_confirm}}
+\index{spi\_set\_and\_confirm@{spi\_set\_and\_confirm}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{spi\_set\_and\_confirm()}{spi\_set\_and\_confirm()}}
+{\footnotesize\ttfamily \label{util_8c_af989d4d7db65d8fd2dfbcb0136b14e08} 
+void spi\+\_\+set\+\_\+and\+\_\+confirm (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{wr\+\_\+chip\+\_\+id}{, }\item[{uint8\+\_\+t}]{rd\+\_\+chip\+\_\+id}{, }\item[{uint8\+\_\+t}]{reg\+\_\+addr}{, }\item[{uint8\+\_\+t}]{wr\+\_\+spi\+\_\+data}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00095}{95}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_af989d4d7db65d8fd2dfbcb0136b14e08_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_af989d4d7db65d8fd2dfbcb0136b14e08_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_aa01fe291a67cdae7a7cd0b2c74d5df93}\index{util.c@{util.c}!spi\_wr@{spi\_wr}}
+\index{spi\_wr@{spi\_wr}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{spi\_wr()}{spi\_wr()}}
+{\footnotesize\ttfamily \label{util_8c_aa01fe291a67cdae7a7cd0b2c74d5df93} 
+void spi\+\_\+wr (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{chip\+\_\+id}{, }\item[{uint8\+\_\+t}]{reg\+\_\+addr}{, }\item[{uint8\+\_\+t}]{spi\+\_\+data}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00060}{60}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the call graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_aa01fe291a67cdae7a7cd0b2c74d5df93_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_aa01fe291a67cdae7a7cd0b2c74d5df93_icgraph}
+\end{center}
+\end{figure}
+\Hypertarget{util_8c_a99b018e1d163b3be5baf621486c092d2}\index{util.c@{util.c}!v\_Set\_Camera\_SPI\_Instance@{v\_Set\_Camera\_SPI\_Instance}}
+\index{v\_Set\_Camera\_SPI\_Instance@{v\_Set\_Camera\_SPI\_Instance}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{v\_Set\_Camera\_SPI\_Instance()}{v\_Set\_Camera\_SPI\_Instance()}}
+{\footnotesize\ttfamily \label{util_8c_a99b018e1d163b3be5baf621486c092d2} 
+void v\+\_\+\+Set\+\_\+\+Camera\+\_\+\+SPI\+\_\+\+Instance (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}} \texorpdfstring{$\ast$}{*}}]{instance}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00044}{44}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+Here is the caller graph for this function:\+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{util_8c_a99b018e1d163b3be5baf621486c092d2_icgraph}
+\end{center}
+\end{figure}
+
+
+\label{doc-var-members}
+\Hypertarget{util_8c_doc-var-members}
+\doxysubsection{Variable Documentation}
+\Hypertarget{util_8c_ae9022649e3c6438f86c54743abe95960}\index{util.c@{util.c}!g\_10ms\_count@{g\_10ms\_count}}
+\index{g\_10ms\_count@{g\_10ms\_count}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{g\_10ms\_count}{g\_10ms\_count}}
+{\footnotesize\ttfamily \label{util_8c_ae9022649e3c6438f86c54743abe95960} 
+volatile uint32\+\_\+t g\+\_\+10ms\+\_\+count}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00029}{29}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a5aaf42e66231783085305e085b597669}\index{util.c@{util.c}!g\_10ms\_count1@{g\_10ms\_count1}}
+\index{g\_10ms\_count1@{g\_10ms\_count1}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{g\_10ms\_count1}{g\_10ms\_count1}}
+{\footnotesize\ttfamily \label{util_8c_a5aaf42e66231783085305e085b597669} 
+volatile uint32\+\_\+t g\+\_\+10ms\+\_\+count1}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00031}{31}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a460ca72745df2ebcf72fc26d61b5af18}\index{util.c@{util.c}!g\_ms\_count@{g\_ms\_count}}
+\index{g\_ms\_count@{g\_ms\_count}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{g\_ms\_count}{g\_ms\_count}}
+{\footnotesize\ttfamily \label{util_8c_a460ca72745df2ebcf72fc26d61b5af18} 
+volatile uint32\+\_\+t g\+\_\+ms\+\_\+count}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00032}{32}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a03accc5cdb89a57bf1503e7f37e84fd5}\index{util.c@{util.c}!g\_state@{g\_state}}
+\index{g\_state@{g\_state}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{g\_state}{g\_state}}
+{\footnotesize\ttfamily \label{util_8c_a03accc5cdb89a57bf1503e7f37e84fd5} 
+uint32\+\_\+t g\+\_\+state = 1}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00033}{33}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a23cda2bb3538f4441df531c92ace8c72}\index{util.c@{util.c}!p\_instance@{p\_instance}}
+\index{p\_instance@{p\_instance}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{p\_instance}{p\_instance}}
+{\footnotesize\ttfamily \label{util_8c_a23cda2bb3538f4441df531c92ace8c72} 
+\doxymbox{\hyperlink{core__spi_8h_ac5fac91679b0d1a0d47d793fe8a7d681}{spi\+\_\+instance\+\_\+t}}\texorpdfstring{$\ast$}{*} p\+\_\+instance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00023}{23}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a37f3a7f27506843cd1ba033a93f2581d}\index{util.c@{util.c}!process\_data@{process\_data}}
+\index{process\_data@{process\_data}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{process\_data}{process\_data}}
+{\footnotesize\ttfamily \label{util_8c_a37f3a7f27506843cd1ba033a93f2581d} 
+uint32\+\_\+t process\+\_\+data = 0}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00039}{39}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_ac0f937cb1b5e42f6b6ff9e60af6d110e}\index{util.c@{util.c}!rx\_ms\_count@{rx\_ms\_count}}
+\index{rx\_ms\_count@{rx\_ms\_count}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{rx\_ms\_count}{rx\_ms\_count}}
+{\footnotesize\ttfamily \label{util_8c_ac0f937cb1b5e42f6b6ff9e60af6d110e} 
+volatile uint32\+\_\+t rx\+\_\+ms\+\_\+count}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00037}{37}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_aa79a4ded90d9312ae4e4b779074faf76}\index{util.c@{util.c}!rx\_ms\_count1@{rx\_ms\_count1}}
+\index{rx\_ms\_count1@{rx\_ms\_count1}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{rx\_ms\_count1}{rx\_ms\_count1}}
+{\footnotesize\ttfamily \label{util_8c_aa79a4ded90d9312ae4e4b779074faf76} 
+volatile uint32\+\_\+t rx\+\_\+ms\+\_\+count1}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00036}{36}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a7221fcec9e6ae1324a67f13736cffebc}\index{util.c@{util.c}!rx\_tmr\_done@{rx\_tmr\_done}}
+\index{rx\_tmr\_done@{rx\_tmr\_done}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{rx\_tmr\_done}{rx\_tmr\_done}}
+{\footnotesize\ttfamily \label{util_8c_a7221fcec9e6ae1324a67f13736cffebc} 
+volatile uint32\+\_\+t rx\+\_\+tmr\+\_\+done = 0}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00035}{35}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_a50f830243a2e34ac87067e2bdf9abbbb}\index{util.c@{util.c}!t\_ms\_count@{t\_ms\_count}}
+\index{t\_ms\_count@{t\_ms\_count}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{t\_ms\_count}{t\_ms\_count}}
+{\footnotesize\ttfamily \label{util_8c_a50f830243a2e34ac87067e2bdf9abbbb} 
+uint32\+\_\+t t\+\_\+ms\+\_\+count = 0}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00038}{38}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
+\Hypertarget{util_8c_af585aa7b1347918ec907ef0db855aa15}\index{util.c@{util.c}!timerdone@{timerdone}}
+\index{timerdone@{timerdone}!util.c@{util.c}}
+\doxysubsubsection{\texorpdfstring{timerdone}{timerdone}}
+{\footnotesize\ttfamily \label{util_8c_af585aa7b1347918ec907ef0db855aa15} 
+volatile uint32\+\_\+t timerdone = 0}
+
+
+
+Definition at line \doxymbox{\hyperlink{util_8c_source_l00030}{30}} of file \doxymbox{\hyperlink{util_8c_source}{util.\+c}}.
+
