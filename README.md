@@ -218,6 +218,8 @@ the other board, from the system YAML's links.
 | CLK002 | error | Alternate oscillators that differ in frequency, single-ended vs differential output, or which net carries the true output |
 | CLK003 | error | Oscillator frequency (`part_info.frequency_hz`) differs from a frequency in the name of a net it drives (`ETH1_50MHZ_OSC_OUT`, `148.5MHZ_P`) |
 | CLK004 | error | Clock input (part data `clock_inputs`) whose select pins, read like straps, expect another frequency than its oscillator (or net name) gives; warning when the select levels cannot be read |
+| CLK005 | error | An FPGA clock input whose frequency in the FPGA project (timing constraints' `create_clock` period, a frequency in the port name) differs from the oscillator the board wires to the pin, through series resistors (or a frequency in the net name) |
+| CLK006 | info | Each FPGA clock input (clocked ports, ports named with a frequency, transceiver reference clocks, and pin-map entries named with a frequency that are not applied) with what the project states and what the board provides; inputs fed from a connector or another part are listed, not compared |
 
 PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-007, PWU001-004, STP001-004, ANA001-003 and CLK001-004 need
 [electronic-parts-repository](https://github.com/jriddleyhirellogic/electronic-parts-repository);
@@ -276,6 +278,8 @@ own files where they live (paths relative to the config file), never a copy:
   `XCVR_4A_REFCLK_P`). A port is a transceiver reference clock when the
   SmartDesign top level connects it to a `REF_CLK_PAD_P/N` pin
   (`fpga_pins.refclk_pads`), or, without SmartDesign, by name.
+- `timing`: the FPGA's timing constraints (SDC). Their `create_clock`
+  periods on ports are compared with the board's oscillators (CLK005).
 - `unused_io` / `unused_pull`: what the build does with a user I/O no
   constraint names, as the build's pin report states it (PolarFire:
   tristated with a weak pull-up). FIO005 quotes `unused_io`; FIO015 uses

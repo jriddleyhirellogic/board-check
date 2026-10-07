@@ -256,3 +256,125 @@ def clock_select(ctx):
                                             f"{label}, but its select pins ({levels} = {value}) expect "
                                             f"{_mhz(want)}", refs=[comp.designator], nets=list(sig.nets),
                                   part_number=comp.part_number)
+
+
+# -- FPGA clock inputs ----------------------------------------------------------------
+
+_POLARITY = re.compile(r"_[pn]$", re.I)
+
+
+class _NetSignal:
+    """A lone net in the shape of levels.signals' entries."""
+    def __init__(self, net):
+        self.nets = [net.name]
+        self.pins = list(net.pins)
+
+
+class ClockInput:
+    def __init__(self, fpga, name, balls, applied, where=""):
+        self.fpga = fpga            # designator
+        self.name = name            # port, or pair base ("ref_clk_148p5mhz")
+        self.balls = balls
+        self.applied = applied      # False: a pin-map entry the constraints do not apply
+        self.where = where
+        self.stated = []            # [(Hz, "timing file io.sdc:17" / "port name")]
+        self.board = []             # [(Hz, label)]: oscillators, else a frequency in a net name
+        self.other = []             # what else is on the signal when nothing states a frequency
+
+
+def fpga_clock_inputs(ctx):
+    """[ClockInput] per FPGA: ports the timing constraints clock
+    (`fpga.<ref>.timing`), constrained ports whose name states a frequency,
+    transceiver reference-clock ports, and pin-map entries named with a
+    frequency that no port list applies. A differential pair is one input."""
+    from .fpga import _is_refclk
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    pt = _pin_types(ctx)
+    out = []
+    for desig, f in sorted(ctx.fpgas.items(), key=lambda kv: natural_key(kv[0])):
+        if not hasattr(f, "constraint") or not f.io.available:
+            continue
+        groups = {}
+        for ball, c in f.io.pins.items():
+            base = _POLARITY.sub("", c.port)
+            if c.port in f.io.clocks or base in f.io.clocks or name_frequency(c.port.upper()) \
+                    or _is_refclk(ctx, f, c.port):
+                g = groups.setdefault(base, ClockInput(desig, base, [], True))
+                g.balls.append(ball)
+                if c.port in f.io.clocks and not any(s == f.io.clocks[c.port][0] for s, _ in g.stated):
+                    g.stated.append((f.io.clocks[c.port][0], f"timing file {f.io.clocks[c.port][1]}"))
+        for ball, (key, where) in f.io.unapplied.items():
+            base = _POLARITY.sub("", key)
+            if name_frequency(key.upper()) and base not in groups:
+                groups.setdefault(("unapplied", base), ClockInput(desig, base, [], False, where)).balls.append(ball)
+            elif ("unapplied", base) in groups:
+                groups[("unapplied", base)].balls.append(ball)
+        for g in groups.values():
+            hz = name_frequency(g.name.upper())
+            if hz and not any(abs(s - hz) <= 1 for s, _ in g.stated):
+                g.stated.append((hz, "port name" if g.applied else f"pin-map name ({g.where})"))
+            elif hz and g.stated:
+                g.stated[0] = (g.stated[0][0], g.stated[0][1] + ", port name")
+            g.balls.sort(key=natural_key)
+            seen, other = set(), set()
+            for ball in g.balls:
+                pin = next((p for p in f.component.pins if str(p.designator) == ball), None)
+                if pin is None or not pin.net:
+                    continue
+                sig = by_net.get(pin.net) or _NetSignal(ctx.design.nets[pin.net])
+                for hz_, label in _sources(ctx, sig, f.component):
+                    if label not in seen:
+                        seen.add(label)
+                        g.board.append((hz_, label))
+                for q in (q for n in sig.nets for q in ctx.design.nets[n].pins):   # connectors included
+                    if q.component is f.component:
+                        continue
+                    if ctx.kind(q.component) == "connector":
+                        other.add(f"{q.ref} (connector)")
+                    else:
+                        pp = pt.part_entry(q)
+                        if pp is not None and pp.mapped in ("output", "io") and q.component.designator not in ctx.fpgas:
+                            other.add(f"{q.ref} {q.name}")
+            g.other = sorted(other, key=natural_key)
+            out.append(g)
+    return sorted(out, key=lambda g: (natural_key(g.fpga), not g.applied, g.name))
+
+
+@check("CLK005", "FPGA clock input runs at a different frequency than the FPGA design states", ERROR)
+def fpga_clock_frequency(ctx):
+    """The frequency the FPGA project states for a clock input (its timing
+    constraints' create_clock period, a frequency in the port name) against
+    the oscillator the board wires to that pin (through series resistors),
+    or a frequency in the net's name when no oscillator is found."""
+    for g in fpga_clock_inputs(ctx):
+        if not g.applied:
+            continue
+        for hz, source in g.stated:
+            wrong = [(b, label) for b, label in g.board if abs(b - hz) > 1]
+            if wrong:
+                yield Finding("CLK005", f"{g.fpga} '{g.name}' ({', '.join(g.balls)}) is {_mhz(hz)} by its {source}, "
+                                        f"but the board clocks it from " + ", ".join(f"{label} at {_mhz(b)}"
+                                                                                   for b, label in wrong),
+                              refs=[g.fpga] + [label.split()[0] for _, label in wrong
+                                               if not label.startswith("the net name")])
+
+
+@check("CLK006", "FPGA clock inputs and what clocks them", INFO)
+def fpga_clock_summary(ctx):
+    """Every FPGA clock input with what the FPGA project states and what
+    the board provides, including inputs clocked from off the board (a
+    connector) or by another part, which no check compares, and pin-map
+    entries named with a frequency that the constraints do not apply."""
+    by_fpga = {}
+    for g in fpga_clock_inputs(ctx):
+        stated = "; ".join(f"{_mhz(h)} ({s})" for h, s in g.stated) or "no frequency stated"
+        if g.board:
+            board = ", ".join(f"{label} {_mhz(h)}" for h, label in g.board)
+        elif g.other:
+            board = "from " + ", ".join(g.other) + ", not compared"
+        else:
+            board = "nothing found on the board"
+        tag = "" if g.applied else " [pin map only, not applied]"
+        by_fpga.setdefault(g.fpga, []).append(f"'{g.name}' {'/'.join(g.balls)}{tag}: {stated} <- {board}")
+    for desig, lines in by_fpga.items():
+        yield Finding("CLK006", f"{desig} clock inputs: " + " | ".join(lines), refs=[desig])

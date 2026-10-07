@@ -56,6 +56,8 @@ fpga:
       - ../farsight-fpga/constr/mpf500ts-fc1152m/io/io_constraints.pdc
     top_level:
       - ../farsight-fpga/bd/mpf500ts-fc1152m/top/components/top.tcl
+    timing:       # create_clock periods on ports (CLK005/CLK006)
+      - ../farsight-fpga/constr/mpf500ts-fc1152m/sdc/timing_user_constraints.sdc
     bank_pattern: '(?:GPIO|HSIO)\d+[PN]B(\d+)'   # HSIO162PB0 -> bank 0, GPIO261PB4 -> bank 4
     bank_supply: 'VDDI{bank}'
     bank_name: 'Bank{bank}'
@@ -73,6 +75,8 @@ fpga:
       - ../farsight-fpga-house-keeper/constr/a3pe3000l-fg484m/io/fm/io_constraints.pdc
     top_level:
       - ../farsight-fpga-house-keeper/src/top.sv
+    timing:
+      - ../farsight-fpga-house-keeper/constr/a3pe3000l-fg484m/sdc/timing_user_constraints.sdc
     top_module: top
     bank_pattern: 'IO\d+[PN][A-Z]B(\d+)V\d'   # IO40PDB0V4 -> bank 0
     bank_supply: 'VCCIB{bank}'

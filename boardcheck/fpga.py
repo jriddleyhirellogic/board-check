@@ -61,6 +61,9 @@ class FpgaIO:
     port_bases: dict = field(default_factory=dict)
     # SmartDesign connections of each top-level port: {port: {"inst:PIN", ...}}
     port_links: dict = field(default_factory=dict)
+    # Clocks the timing constraints define on ports: {port: (Hz, "file:line")}
+    timing_files: list = field(default_factory=list)
+    clocks: dict = field(default_factory=dict)
     # Pin-map entries (`dict set pins`) that apply_pin_constraints was handed
     # but no port list applied: {ball: (map key, "file:line")}.
     unapplied: dict = field(default_factory=dict)
@@ -311,10 +314,10 @@ def _pairs(words):
     return {vals[i]: vals[i + 1] for i in range(0, len(vals) - 1, 2)}
 
 
-def load(designator, files, base_dir="", top_files=(), top_module=None):
+def load(designator, files, base_dir="", top_files=(), top_module=None, timing_files=()):
     """Read one FPGA's constraint files, and optionally its top-level port
-    declarations. Relative paths resolve against base_dir (the directory of
-    the board-check config)."""
+    declarations and timing constraints. Relative paths resolve against
+    base_dir (the directory of the board-check config)."""
     fpga = FpgaIO(designator)
     reader = _Reader(fpga)
     for f in files:
@@ -331,7 +334,43 @@ def load(designator, files, base_dir="", top_files=(), top_module=None):
             fpga.missing.append(path)
             continue
         _read_top(fpga, path, top_module)
+    for f in timing_files:
+        path = os.path.normpath(os.path.join(base_dir, os.path.expanduser(f)))
+        fpga.timing_files.append(path)
+        if not os.path.isfile(path):
+            fpga.missing.append(path)
+            continue
+        _read_sdc(fpga, path)
     return fpga
+
+
+_CREATE_CLOCK = re.compile(r"\bcreate_clock\b(?P<opts>.*?)\[\s*get_ports\s+(?P<ports>\{[^}]*\}|\S+?)\s*\]")
+_PERIOD = re.compile(r"-period\s+\{?\s*([0-9.]+)")
+
+
+def _read_sdc(fpga, path):
+    """`create_clock -period <ns> [get_ports {...}]` (SDC times are in ns)."""
+    name = os.path.basename(path)
+    with open(path, encoding="utf-8", errors="replace") as f:
+        lines = f.read().splitlines()
+    i = 0
+    while i < len(lines):
+        start, text = i + 1, lines[i]
+        while text.rstrip().endswith("\\") and i + 1 < len(lines):
+            i += 1
+            text = text.rstrip()[:-1] + " " + lines[i]
+        i += 1
+        code = text.split("#", 1)[0]
+        m = _CREATE_CLOCK.search(code)
+        if not m:
+            continue
+        period = _PERIOD.search(m.group("opts"))
+        if not period or float(period.group(1)) <= 0:
+            fpga.problems.append(f"{name}:{start}: create_clock without a period")
+            continue
+        hz = 1e9 / float(period.group(1))
+        for port in m.group("ports").strip("{} ").split():
+            fpga.clocks[port] = (hz, f"{name}:{start}")
 
 
 # -- top-level port declarations ----------------------------------------------
@@ -499,7 +538,10 @@ def board_fpgas(design, config):
         tops = cfg.get("top_level") or []
         if isinstance(tops, str):
             tops = [tops]
-        io = load(desig, files, config.base_dir, tops, cfg.get("top_module"))
+        timing = cfg.get("timing") or []
+        if isinstance(timing, str):
+            timing = [timing]
+        io = load(desig, files, config.base_dir, tops, cfg.get("top_module"), timing)
         comp = design.components.get(desig)
         out[desig] = FpgaPins(comp, io, cfg) if comp is not None else io
     return out
