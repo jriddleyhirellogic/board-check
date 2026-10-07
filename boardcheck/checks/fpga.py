@@ -481,3 +481,130 @@ def _other_buses(f):
         if idx and port not in buses[base]:
             buses[base].append(port)
     return buses
+
+
+# -- back-powering from unused I/O ----------------------------------------------------
+
+_SERIES_TO_RAIL = ("inductor", "ferrite")
+
+
+def switched_rails(ctx):
+    """{rail net: (regulator, enable pin, [drivers])} for regulator outputs
+    (part data `regulator.output_pins`, through a series inductor or ferrite
+    for a switcher's switch node) whose enable pin is driven by a logic
+    output: an FPGA port or an IC output, directly or through series
+    resistors. Such a rail can be off while the rest of the board is on."""
+    if hasattr(ctx, "_switched_rails"):
+        return ctx._switched_rails
+    from .levels import signals
+    from .pins import _norm, _pin_types
+    pt = _pin_types(ctx)
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    out = {}
+    for comp in sorted(ctx.design.components.values(), key=lambda c: natural_key(c.designator)):
+        block = ctx.partsdb.regulator(comp.part_number) if ctx.partsdb is not None else None
+        if not block or not block.get("enable_pin"):
+            continue
+        keyed = {}
+        for p in comp.pins:
+            pp = pt.part_entry(p)
+            if pp is not None:
+                keyed.setdefault(_norm(pp.key), []).append(p)
+        en = next(iter(keyed.get(_norm(block["enable_pin"]), [])), None)
+        if en is None or not en.net:
+            continue
+        sig = by_net.get(en.net)
+        drivers = []
+        for q in (sig.pins if sig else ctx.design.nets[en.net].pins):
+            if q.component is comp:
+                continue
+            f = ctx.fpga_for(q.component)
+            if f is not None:
+                c = f.constraint(q)
+                if c is not None and f.direction(c) in ("output", "inout"):
+                    drivers.append(f"{q.ref} '{c.port}'")
+                continue
+            pp = pt.part_entry(q)
+            if pp is not None and pp.mapped in ("output", "open_collector"):
+                drivers.append(q.ref)
+        if not drivers:
+            continue
+        rails = set()
+        for key in block.get("output_pins") or []:
+            for p in keyed.get(_norm(key), []):
+                if not p.net:
+                    continue
+                rails.add(p.net)
+                for q in ctx.design.nets[p.net].pins:
+                    if ctx.kind(q.component) in _SERIES_TO_RAIL and len(q.component.pins) == 2:
+                        other = next(x for x in q.component.pins if x is not q)
+                        if other.net and ctx.config.is_rail(other.net):
+                            rails.add(other.net)
+        for rail in rails:
+            if ctx.config.is_rail(rail):
+                out.setdefault(rail, (comp, en, drivers))
+    ctx._switched_rails = out
+    return out
+
+
+def _pin_supplies(ctx, pin):
+    """Rail nets of the part-data `supply` pin a pin is referred to; else,
+    when the part has a single power rail, that rail."""
+    from .pins import _norm, _pin_types
+    pt = _pin_types(ctx)
+    pp = pt.part_entry(pin)
+    comp = pin.component
+    sup = pp.entry.get("supply") if pp is not None else None
+    if sup:
+        return {p.net for p in comp.pins if p.net and (pt.part_entry(p) is not None
+                                                     and _norm(pt.part_entry(p).key) == _norm(sup))}
+    rails = {p.net for p in comp.pins if p.net and ctx.config.is_rail(p.net)
+             and (pt.part_entry(p) is not None and pt.part_entry(p).mapped == "power")}
+    return rails if len(rails) == 1 else set()
+
+
+@check("FIO015", "Unused FPGA pin's weak pull-up feeds a part whose supply can be off", WARNING, needs_partsdb=True)
+def unused_pin_back_power(ctx):
+    """An unconstrained user I/O that the build leaves with a weak pull-up
+    (`fpga.<ref>.unused_pull: up`) holds its net at the bank supply. When
+    that net reaches a pin of another part whose own supply is a different,
+    switched rail (switched_rails), the pull-up feeds that rail through the
+    pin's protection diode while it is off. Grouped per FPGA, part and rail."""
+    from .levels import signals
+    from .pins import _pin_types
+    cfg = ctx.config
+    pt = _pin_types(ctx)
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    switched = switched_rails(ctx)
+    fpga_comps = {d for d in ctx.fpgas}
+    for desig, f in _fpgas(ctx):
+        if str(getattr(f, "unused_pull", "") or "").lower() not in ("up", "pull_up"):
+            continue
+        groups = defaultdict(list)
+        for pin in sorted(f.component.pins, key=lambda p: natural_key(p.designator)):
+            bank = f.bank(pin)
+            if bank is None or f.constraint(pin) is not None or not pin.net:
+                continue
+            if cfg.is_ground(pin.net) or cfg.net_voltage(pin.net) is not None:
+                continue
+            source = {n for n in f.bank_supply_nets(bank) if n}
+            sig = by_net.get(pin.net)
+            for q in (sig.pins if sig else ctx.design.nets[pin.net].pins):
+                comp = q.component
+                if comp is f.component or comp.designator in fpga_comps or ctx.kind(comp) != "ic" \
+                        or pt.part_entry(q) is None:
+                    continue
+                for rail in sorted(_pin_supplies(ctx, q) - source):
+                    if rail in switched:
+                        groups[(comp.designator, rail)].append((pin, q, ", ".join(sorted(source))))
+        for (ref, rail), hits in sorted(groups.items(), key=lambda kv: natural_key(kv[0][0])):
+            reg, en, drivers = switched[rail]
+            comp = ctx.design.components[ref]
+            balls = ", ".join(f"{p.designator} to {q.designator} {q.name}" for p, q, _ in hits[:8]) \
+                + (f", ... {len(hits) - 8} more" if len(hits) > 8 else "")
+            yield Finding("FIO015", f"{desig}: {len(hits)} unused pin(s) keep a weak pull-up to {hits[0][2]} and "
+                                    f"reach {ref} ({comp.part_number}) pins supplied from '{rail}' ({balls}). "
+                                    f"{reg.designator} switches '{rail}' (enable {en.ref} driven by "
+                                    f"{', '.join(drivers)}): while it is off, the pull-ups feed it through "
+                                    f"{ref}'s pin protection", refs=[desig, ref, reg.designator],
+                          nets=sorted({p.net for p, _, _ in hits}, key=natural_key) + [rail])

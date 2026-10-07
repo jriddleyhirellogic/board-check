@@ -67,6 +67,7 @@ fpga:
     # Unconstrained user I/O, from the retained build's pin report as quoted in
     # farsight-fpga docs/requirements/pf-fpga-findings.md PF-F-50 (:521).
     unused_io: 'the build leaves it tristated with a weak pull-up (input buffer disabled)'
+    unused_pull: up
   U2:   # ProASIC3L A3PE3000L-FG484M (housekeeper)
     constraints:
       - ../farsight-fpga-house-keeper/constr/a3pe3000l-fg484m/io/fm/io_constraints.pdc

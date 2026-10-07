@@ -182,6 +182,7 @@ the other board, from the system YAML's links.
 | FIO014 | error | A bus bit wired between two FPGAs lands on a port other than the same bit of its namesake bus (`pa3_fw_version[0]` vs `fw_version[0]`) |
 | FIO012 | warning | Unused FPGA pins not terminated as the part data's `unused_pins` rules say (e.g. PolarFire unused REFCLK/RX pins: 100 kohm to VSS) |
 | FIO011 | warning | Transceiver quad with used lanes and no reference clock on its own REFCLK pins or on a quad above it (part data `transceivers`); info when it relies on a cascade |
+| FIO015 | warning | Unused FPGA pins whose weak pull-up (`fpga.<ref>.unused_pull: up`) reaches pins of another part supplied from a different, switched rail (a regulator whose part-data enable pin is driven by an FPGA port or IC output): while that rail is off the pull-ups feed it through the part's pin protection |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
 | LVL002 | error | Driver's VOL above a receiver's VIL / VT- |
 | LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input. Above the absolute maximum through a series resistor that holds the clamp current within the part's `ii_clamp` rating: warning; such inputs of one part together above its `ii_clamp_package` rating: error |
@@ -197,7 +198,7 @@ the other board, from the system YAML's links.
 | FW002 | warning | ADC input wired to a signal no firmware channel reads, or a firmware channel on an unconnected input |
 | FW003 | info | Firmware channel map traced to the board |
 | FW004 | error | A voltage channel's rail, at its nominal voltage, reaches the ADC above the ADC reference (divider too weak) |
-| FW005 | warning | Calibration file gains that differ from the board's scaling (reference / 2^bits / divider ratio, mV at the rail per count) |
+| FW005 | warning | Calibration file gains that differ from the board's scaling (reference / 2^bits / divider ratio, mV at the rail per count); a table of placeholders (every row gain 1, offset 0) is reported once |
 | FW007 | error | A firmware constant for a PWM output's full scale (e.g. `PWM_VREF_mV`) differs from what the board delivers at the load: the FPGA bank rail through the RC filter's divider |
 | FW008 | warning | A firmware maximum (e.g. `I_MAX_MA`) beyond what the PWM output's full scale can produce through the load's characteristic (e.g. DRV8434 I_FS = VREF / KV) |
 | FW006 | warning | Calibration file rows that do not name the firmware enum's signal at their position (the table is loaded by position) |
@@ -275,6 +276,10 @@ own files where they live (paths relative to the config file), never a copy:
   `XCVR_4A_REFCLK_P`). A port is a transceiver reference clock when the
   SmartDesign top level connects it to a `REF_CLK_PAD_P/N` pin
   (`fpga_pins.refclk_pads`), or, without SmartDesign, by name.
+- `unused_io` / `unused_pull`: what the build does with a user I/O no
+  constraint names, as the build's pin report states it (PolarFire:
+  tristated with a weak pull-up). FIO005 quotes `unused_io`; FIO015 uses
+  `unused_pull: up`. Left out, unused pins are not assumed to be anything.
 
 Constrained pins take their type from this configuration ahead of the part
 data and the symbol, so PIN004-006 see FPGA outputs and inputs as the

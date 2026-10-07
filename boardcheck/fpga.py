@@ -428,6 +428,7 @@ class FpgaPins:
         self._pair_res = [re.compile(x) for x in cfg.get("pair_patterns") or []]
         self._xcvr_re = re.compile(cfg["transceiver_pattern"]) if cfg.get("transceiver_pattern") else None
         self.unused_io = cfg.get("unused_io")     # what the build makes of an unconstrained user I/O, as text
+        self.unused_pull = cfg.get("unused_pull")  # its weak pull: "up", "down" or None
 
     def constraint(self, pin):
         return self.io.pins.get(str(pin.designator))
