@@ -1,8 +1,9 @@
 {
   "project": {
     "name": "CM-03545_ASSY, PCB, AVIONICS, FARSIGHT, FLIGHT MODEL.PrjPcb",
-    "created": "10\/1\/2026 9:53:13 AM",
-    "exportScriptVersion": "2.4.0",
+    "created": "10\/2\/2026 3:13:32 PM",
+    "exportScriptVersion": "2.6.0",
+    "parameters": {"ASM_DWG_Number": "CM-03545", "ASM_Rev": "2", "ASM_Title": "ASSY, PCB, AVIONICS, FARSIGHT, FLIGHT MODEL", "BOM_DWG_Number": "CM-03545-BOM", "BOM_Title": "BOM, ASSY, PCB, AVIONICS, FARSIGHT, FLIGHT MODEL", "Design_Date": "02\/25\/2026", "Designed_By": "G. GONCHARUK", "Drawn_By": "G. GONCHARUK", "Drawn_Date": "02\/25\/2026", "FAB_DWG_Number": "CM-03544", "FAB_Rev": "2", "FAB_Title": "PCB, AVIONICS, FARSIGHT, FLIGHT MODEL", "SCH_DWG_Number": "CM-03543", "SCH_Rev": "2", "SCH_Title": "SCHEMATIC, AVIONICS, FARSIGHT, FLIGHT MODEL"},
     "partNumbers": [
       {
         "partNumber": "0015913140",
@@ -11249,6 +11250,7 @@
         "sheetNumber": "1",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "1", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
 
         ]
@@ -11260,6 +11262,7 @@
         "sheetNumber": "3",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "3", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1014",
@@ -14235,6 +14238,7 @@
         "sheetNumber": "4",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "4", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1013",
@@ -18784,6 +18788,7 @@
         "sheetNumber": "5",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "5", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C222",
@@ -24492,6 +24497,7 @@
         "sheetNumber": "6",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "6", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C367",
@@ -29098,6 +29104,7 @@
         "sheetNumber": "7",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "7", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1031",
@@ -31376,6 +31383,7 @@
         "sheetNumber": "8",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "8", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C707",
@@ -34361,6 +34369,7 @@
         "sheetNumber": "9",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "9", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1033",
@@ -37140,6 +37149,7 @@
         "sheetNumber": "10",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "10", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C537",
@@ -38065,6 +38075,7 @@
         "sheetNumber": "11",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "11", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C312",
@@ -38893,6 +38904,7 @@
         "sheetNumber": "12",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "12", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C430",
@@ -40996,6 +41008,7 @@
         "sheetNumber": "13",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "13", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C910",
@@ -41608,6 +41621,7 @@
         "sheetNumber": "14",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "14", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C311",
@@ -43995,6 +44009,7 @@
         "sheetNumber": "15",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "15", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C555",
@@ -45687,6 +45702,7 @@
         "sheetNumber": "16",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "16", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C908",
@@ -46826,6 +46842,7 @@
         "sheetNumber": "17",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "17", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C921",
@@ -47878,6 +47895,7 @@
         "sheetNumber": "18",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "18", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C366",
@@ -49283,6 +49301,7 @@
         "sheetNumber": "19",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "19", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "U1",
@@ -49562,6 +49581,7 @@
         "sheetNumber": "20",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "20", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1010",
@@ -50051,6 +50071,7 @@
         "sheetNumber": "21",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "21", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
 
         ]
@@ -50062,6 +50083,7 @@
         "sheetNumber": "24",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "24", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C785",
@@ -50859,6 +50881,7 @@
         "sheetNumber": "25",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "25", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1042",
@@ -54900,6 +54923,7 @@
         "sheetNumber": "26",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "26", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1039",
@@ -56347,6 +56371,7 @@
         "sheetNumber": "27",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "27", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C336",
@@ -61247,6 +61272,7 @@
         "sheetNumber": "28",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "28", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C347",
@@ -64307,6 +64333,7 @@
         "sheetNumber": "29",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "29", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1000",
@@ -70008,6 +70035,7 @@
         "sheetNumber": "30",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "30", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1",
@@ -74042,6 +74070,7 @@
         "sheetNumber": "31",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "31", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1012",
@@ -77536,6 +77565,7 @@
         "sheetNumber": "32",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "32", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C339",
@@ -81920,6 +81950,7 @@
         "sheetNumber": "33",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "33", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1034",
@@ -84345,6 +84376,7 @@
         "sheetNumber": "2",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "2", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
 
         ]
@@ -84356,6 +84388,7 @@
         "sheetNumber": "22",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "22", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C1019",
@@ -87879,6 +87912,7 @@
         "sheetNumber": "23",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "23", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C309",
@@ -91947,6 +91981,7 @@
         "sheetNumber": "34",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "34", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C789",
@@ -95535,6 +95570,7 @@
         "sheetNumber": "35",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "35", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C100",
@@ -100396,6 +100432,7 @@
         "sheetNumber": "36",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "36", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C318",
@@ -104757,6 +104794,7 @@
         "sheetNumber": "37",
         "documentNumber": "*",
         "sheetTotal": "37",
+        "parameters": {"CurrentTime": "*", "CurrentDate": "*", "Time": "*", "Date": "*", "DocumentFullPathAndName": "*", "DocumentName": "*", "ModifiedDate": "*", "ApprovedBy": "*", "CheckedBy": "*", "Author": "*", "CompanyName": "*", "DrawnBy": "*", "Engineer": "*", "Organization": "*", "Address1": "*", "Address2": "*", "Address3": "*", "Address4": "*", "Title": "*", "DocumentNumber": "*", "Revision": "*", "SheetNumber": "37", "SheetTotal": "37", "Rule": "*", "ImagePath": "*", "ProjectName": "*", "Application_BuildNumber": "*"},
         "components": [
           {
             "designator": "C691",

@@ -19,7 +19,8 @@ def _counts_line(result):
 
 def text(result):
     d = result.ctx.design
-    lines = [f"{d.name}  (export v{d.export_version}, {len(d.sheets)} sheets, "
+    sch = f"SCH {d.schematic_id}, " if d.schematic_id else ""
+    lines = [f"{d.name}  ({sch}export v{d.export_version}, {len(d.sheets)} sheets, "
              f"{len(d.components)} components, {len(d.nets)} nets)"]
     for f in result.active:
         lines.append(f"[{_ICON[f.severity]}] {f.check} {f.message}")
@@ -37,7 +38,8 @@ def markdown(result):
     ctx = result.ctx
     d = ctx.design
     out = [f"# Board check: {d.name}", ""]
-    out.append(f"Source `{d.source}`, export script v{d.export_version}: {len(d.sheets)} sheets, "
+    sch = f"Schematic {d.schematic_id}. " if d.schematic_id else ""
+    out.append(f"{sch}Source `{d.source}`, export script v{d.export_version}: {len(d.sheets)} sheets, "
                f"{len(d.components)} components, {len(d.part_params)} part numbers, {len(d.nets)} nets.")
     out.append("")
     out.append(f"**{_counts_line(result)}**")
@@ -115,6 +117,7 @@ def as_json(result):
         "design": d.name,
         "source": d.source,
         "export_version": d.export_version,
+        "schematic": d.schematic_id or None,
         "counts": {ERROR: result.count(ERROR), WARNING: result.count(WARNING),
                    INFO: result.count(INFO), "waived": len(result.waived)},
         "skipped": [{"check": c, "reason": r} for c, r in result.skipped],

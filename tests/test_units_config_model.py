@@ -104,3 +104,13 @@ def test_split_part_suffix():
     assert split_part_suffix("U1C") == ("U1", "C")
     assert split_part_suffix("R5") == ("R5", "")
     assert split_part_suffix("FID") == ("FID", "")
+
+
+def test_title_block_names_the_schematic():
+    from helpers import make_export
+    raw = make_export([])
+    assert Design(raw).schematic_id == ""
+    raw["project"]["parameters"] = {"SCH_DWG_Number": "CM-03543", "SCH_Rev": "2", "ASM_Rev": "2"}
+    assert Design(raw).schematic_id == "CM-03543 rev 2"
+    raw["project"]["parameters"] = [{"name": "SCH_DWG_Number", "value": "CM-1"}]
+    assert Design(raw).schematic_id == "CM-1"

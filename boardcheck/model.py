@@ -81,6 +81,10 @@ class Design:
         project = raw["project"]
         self.name = project.get("name", "")
         self.export_version = project.get("exportScriptVersion", "")
+        params = project.get("parameters") or {}       # title block (script >= 2.6.0)
+        if isinstance(params, list):
+            params = {x.get("name"): x.get("value") for x in params if isinstance(x, dict)}
+        self.parameters = params
         self.part_params = {
             p["partNumber"]: {x["name"]: x["value"] for x in p.get("parameters", [])}
             for p in project.get("partNumbers", [])
@@ -90,6 +94,12 @@ class Design:
         self.nets = {}
         self.has_footprints = False     # the export carries "footprint" (script >= 2.4.0)
         self._load(project.get("schematics", []))
+
+    @property
+    def schematic_id(self):
+        """'CM-03543 rev 2' from the title block, or ''."""
+        num, rev = self.parameters.get("SCH_DWG_Number"), self.parameters.get("SCH_Rev")
+        return f"{num} rev {rev}" if num and rev else (num or "")
 
     @classmethod
     def load(cls, path):

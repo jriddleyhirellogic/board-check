@@ -56,7 +56,8 @@ def test_cli_json_output_and_exit_code(tmp_path, capsys):
 
 
 FARSIGHT_DIR = os.path.join(REPO, "designs", "CM-03545")
-# The current export first (script 2.4.0, committed as CM-03545.json), else the
+# The current export first (script 2.6.0, committed as CM-03545.json; the same
+# file as farsight-fpga/verification/board/CM-03545.json), else the
 # latest dated one.
 FARSIGHT = sorted(glob.glob(os.path.join(FARSIGHT_DIR, "CM-03545*_sch_*.json"))) + \
     [p for p in [os.path.join(FARSIGHT_DIR, "CM-03545.json")] if os.path.isfile(p)]
