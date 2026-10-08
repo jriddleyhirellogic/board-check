@@ -183,6 +183,7 @@ the other board, from the system YAML's links.
 | FIO012 | warning | Unused FPGA pins not terminated as the part data's `unused_pins` rules say (e.g. PolarFire unused REFCLK/RX pins: 100 kohm to VSS) |
 | FIO011 | warning | Transceiver quad with used lanes and no reference clock on its own REFCLK pins or on a quad above it (part data `transceivers`); info when it relies on a cascade |
 | FIO015 | warning | Unused FPGA pins whose weak pull-up (`fpga.<ref>.unused_pull: up`) reaches pins of another part supplied from a different, switched rail (a regulator whose part-data enable pin is driven by an FPGA port or IC output): while that rail is off the pull-ups feed it through the part's pin protection |
+| FIO016 | info | Constrained FPGA outputs (and pins with a constraint pull-up) that reach another part supplied from a different, switched rail: whether that back-powers the part depends on what the FPGA design drives while the rail is off, so each is listed to confirm |
 | LVL001 | error | Driver's VOH (or pull-up level) below a receiver's VIH / VT+ |
 | LVL002 | error | Driver's VOL above a receiver's VIL / VT- |
 | LVL003 | error | Highest level on a signal (driver supply, pull-up or divider) above a receiver's absolute or recommended maximum input. Above the absolute maximum through a series resistor that holds the clamp current within the part's `ii_clamp` rating: warning; such inputs of one part together above its `ii_clamp_package` rating: error |

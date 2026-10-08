@@ -563,6 +563,31 @@ def _pin_supplies(ctx, pin):
     return rails if len(rails) == 1 else set()
 
 
+def _switched_loads(ctx, f, pin, by_net, switched):
+    """[(part pin, rail)] for pins of other parts (not FPGAs) on the FPGA
+    pin's signal whose part-data supply is a switched rail other than the
+    FPGA pin's bank supply."""
+    from .pins import _pin_types
+    pt = _pin_types(ctx)
+    bank = f.bank(pin)
+    source = {n for n in f.bank_supply_nets(bank) if n} if bank is not None else set()
+    sig = by_net.get(pin.net)
+    out = []
+    for q in (sig.pins if sig else ctx.design.nets[pin.net].pins):
+        comp = q.component
+        if comp is f.component or comp.designator in ctx.fpgas or ctx.kind(comp) != "ic" \
+                or pt.part_entry(q) is None:
+            continue
+        for rail in sorted(_pin_supplies(ctx, q) - source):
+            if rail in switched:
+                out.append((q, rail))
+    return out, ", ".join(sorted(source))
+
+
+def _signal_pin(ctx, pin):
+    return bool(pin.net) and not ctx.config.is_ground(pin.net) and ctx.config.net_voltage(pin.net) is None
+
+
 @check("FIO015", "Unused FPGA pin's weak pull-up feeds a part whose supply can be off", WARNING, needs_partsdb=True)
 def unused_pin_back_power(ctx):
     """An unconstrained user I/O that the build leaves with a weak pull-up
@@ -571,32 +596,18 @@ def unused_pin_back_power(ctx):
     switched rail (switched_rails), the pull-up feeds that rail through the
     pin's protection diode while it is off. Grouped per FPGA, part and rail."""
     from .levels import signals
-    from .pins import _pin_types
-    cfg = ctx.config
-    pt = _pin_types(ctx)
     by_net = {n: s for s in signals(ctx) for n in s.nets}
     switched = switched_rails(ctx)
-    fpga_comps = {d for d in ctx.fpgas}
     for desig, f in _fpgas(ctx):
         if str(getattr(f, "unused_pull", "") or "").lower() not in ("up", "pull_up"):
             continue
         groups = defaultdict(list)
         for pin in sorted(f.component.pins, key=lambda p: natural_key(p.designator)):
-            bank = f.bank(pin)
-            if bank is None or f.constraint(pin) is not None or not pin.net:
+            if f.bank(pin) is None or f.constraint(pin) is not None or not _signal_pin(ctx, pin):
                 continue
-            if cfg.is_ground(pin.net) or cfg.net_voltage(pin.net) is not None:
-                continue
-            source = {n for n in f.bank_supply_nets(bank) if n}
-            sig = by_net.get(pin.net)
-            for q in (sig.pins if sig else ctx.design.nets[pin.net].pins):
-                comp = q.component
-                if comp is f.component or comp.designator in fpga_comps or ctx.kind(comp) != "ic" \
-                        or pt.part_entry(q) is None:
-                    continue
-                for rail in sorted(_pin_supplies(ctx, q) - source):
-                    if rail in switched:
-                        groups[(comp.designator, rail)].append((pin, q, ", ".join(sorted(source))))
+            loads, source = _switched_loads(ctx, f, pin, by_net, switched)
+            for q, rail in loads:
+                groups[(q.component.designator, rail)].append((pin, q, source))
         for (ref, rail), hits in sorted(groups.items(), key=lambda kv: natural_key(kv[0][0])):
             reg, en, drivers = switched[rail]
             comp = ctx.design.components[ref]
@@ -608,3 +619,39 @@ def unused_pin_back_power(ctx):
                                     f"{', '.join(drivers)}): while it is off, the pull-ups feed it through "
                                     f"{ref}'s pin protection", refs=[desig, ref, reg.designator],
                           nets=sorted({p.net for p, _, _ in hits}, key=natural_key) + [rail])
+
+
+@check("FIO016", "FPGA ports that reach a part whose supply can be off", INFO, needs_partsdb=True)
+def driven_pin_back_power(ctx):
+    """Constrained outputs (and pins with a constraint pull-up) that reach
+    pins of another part supplied from a different, switched rail
+    (switched_rails). Whether that back-powers the part depends on what the
+    FPGA design does while the rail is off, which the board does not show:
+    each is listed to be confirmed (driven low or high-Z while it is off).
+    Grouped per FPGA, part and rail."""
+    from .levels import signals
+    by_net = {n: s for s in signals(ctx) for n in s.nets}
+    switched = switched_rails(ctx)
+    for desig, f in _fpgas(ctx):
+        groups = defaultdict(list)
+        for pin in sorted(f.component.pins, key=lambda p: natural_key(p.designator)):
+            c = f.constraint(pin)
+            if c is None or not _signal_pin(ctx, pin):
+                continue
+            driven = f.direction(c) in ("output", "inout")
+            if not driven and c.pull != "pull_up":
+                continue
+            loads, _ = _switched_loads(ctx, f, pin, by_net, switched)
+            for q, rail in loads:
+                label = c.port if driven else f"{c.port} (pull-up)"
+                if label not in groups[(q.component.designator, rail)]:
+                    groups[(q.component.designator, rail)].append(label)
+        for (ref, rail), ports in sorted(groups.items(), key=lambda kv: natural_key(kv[0][0])):
+            reg, en, drivers = switched[rail]
+            comp = ctx.design.components[ref]
+            ports = sorted(ports, key=natural_key)
+            names = ", ".join(f"'{p}'" for p in ports[:8]) + (f", ... {len(ports) - 8} more" if len(ports) > 8 else "")
+            yield Finding("FIO016", f"{desig} reaches {ref} ({comp.part_number}), supplied from '{rail}', with "
+                                    f"{len(ports)} port(s): {names}. {reg.designator} switches '{rail}' (enable "
+                                    f"{en.ref} driven by {', '.join(drivers)}): confirm the FPGA design holds them "
+                                    f"low or high-Z while it is off", refs=[desig, ref, reg.designator], nets=[rail])

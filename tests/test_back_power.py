@@ -10,9 +10,10 @@ PHY = {"pin_functions": {"VIO": {"direction": "power", "function": "POWER", "pin
                          "TXD": {"direction": "input", "function": "TXD", "pins": ["3"], "supply": "VIO"}}}
 
 
-def _ctx(tmp_path, pull="up", en_net="EN_PHY", phy_vio="3V3_PHY"):
+def _ctx(tmp_path, pull="up", en_net="EN_PHY", phy_vio="3V3_PHY", txd=None):
     pdc = tmp_path / "io.pdc"
-    pdc.write_text('set_io {phy_en} -pinname "B1" -iostd "LVCMOS33" -direction "OUTPUT"\n')
+    pdc.write_text('set_io {phy_en} -pinname "B1" -iostd "LVCMOS33" -direction "OUTPUT"\n'
+                   + (f'set_io {{phy_txd}} -pinname "A1" -iostd "LVCMOS33" {txd}\n' if txd else ""))
     fpga_cfg = {"constraints": [str(pdc)], "bank_pattern": r"GPIO\d+[PN]B(\d+)", "bank_supply": "VDDI{bank}"}
     if pull:
         fpga_cfg["unused_pull"] = pull
@@ -45,3 +46,15 @@ def test_not_reported(tmp_path):
     assert findings(fio.unused_pin_back_power, _ctx(tmp_path, pull="down")) == []
     assert findings(fio.unused_pin_back_power, _ctx(tmp_path, en_net="5V0")) == [], "enable tied on"
     assert findings(fio.unused_pin_back_power, _ctx(tmp_path, phy_vio="3V3")) == [], "same rail as the bank"
+
+
+def test_driven_port_into_switched_supply_is_listed(tmp_path):
+    ctx = _ctx(tmp_path, txd='-direction "OUTPUT"')
+    assert findings(fio.unused_pin_back_power, ctx) == [], "A1 is constrained now"
+    (f,) = findings(fio.driven_pin_back_power, ctx)
+    assert f.message == ("U1 reaches U5 (PHY), supplied from '3V3_PHY', with 1 port(s): 'phy_txd'. U6 switches "
+                         "'3V3_PHY' (enable U6.3 driven by U1.B1 'phy_en'): confirm the FPGA design holds them "
+                         "low or high-Z while it is off")
+    (f,) = findings(fio.driven_pin_back_power, _ctx(tmp_path, txd='-direction "INPUT" -RES_PULL "UP"'))
+    assert "'phy_txd (pull-up)'" in f.message
+    assert findings(fio.driven_pin_back_power, _ctx(tmp_path, txd='-direction "INPUT"')) == []
