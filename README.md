@@ -207,6 +207,7 @@ the other board, from the system YAML's links.
 | FW011 | error | A firmware GPIO define (`#define NAME GPIO_<n>`) whose CoreGPIO bit reaches an FPGA top-level port of another name |
 | FW012 | warning | A GPIO define the firmware sources use whose bit the FPGA design ties to a constant or leaves unconnected |
 | FW013 | info | Firmware GPIO map: defines traced to FPGA balls, FPGA-internal, constant or unconnected, and header groups with no CoreGPIO configured |
+| FW014 | warning | A table of per-channel scale factors (`scale_table`, e.g. telemetry.h's comment table) that differs from the board: a row's ADC input and chip select against the firmware enum, volts per count against reference / 2^bits / divider, amps per count against the shunt and amplifier (tolerance 2%) |
 | STP001 | error | Configuration strap pin (per the part data's `straps`) with nothing setting its level at reset |
 | STP002 | error | Strap pin whose resistors put it between VIL and VIH (warning when the thresholds are assumed) |
 | STP003 | error | Strap pin driven by another part's output when the data sheet forbids it |

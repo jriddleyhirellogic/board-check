@@ -100,6 +100,10 @@ firmware:
       net_strip: ['_ADC$', '_TLM$']
       adc_reference_pin: VA
       adc_bits: 12
+      # Per-channel scale factors (V or A per count) in a comment table that
+      # no firmware source includes; the intended values (FW014).
+      scale_table:
+        file: ../farsight-avionics-sw/Camera/include/telemetry.h
       calibration:
         file: ../farsight-avionics-sw/Cal_spreadsheets/default_cals.xlsx
         sheet: TLM

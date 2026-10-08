@@ -255,3 +255,19 @@ def test_gpio_bit_on_a_differently_named_port(tmp_path):
     assert f.message == ("gpio: firmware 'A_PWR_EN' is gpo:GPIO_OUT[0], which reaches top-level port 'lvds_pwr_en', "
                          "ball A1 'PWR_A'")
     assert findings(fw.gpio_unconnected, ctx) == []
+
+
+def test_scale_table_against_board(tmp_path):
+    ctx = _scaled(tmp_path, ["TLM_3V3_MISC,1,0", "TLM_1V8_FPGA,1,0", "TLM_5V0,1,0"])
+    (tmp_path / "telemetry.h").write_text(
+        "//3V3_MISC    VOLTAGE IN0 CS_1    N/A 0.00132967\n"
+        "//1V8_FPGA    VOLTAGE IN1 CS_1    N/A 0.00080586\n"
+        "//5V0         VOLTAGE IN1 CS_2    N/A 0.0016\n")
+    ctx.config["firmware"]["adc_channel_maps"][0]["scale_table"] = {"file": str(tmp_path / "telemetry.h")}
+    msgs = [f.message for f in findings(fw.scale_table_vs_board, ctx)]
+    assert msgs == ["tlm: telemetry.h:3 puts '5V0' on select 1 input 1, the firmware enum on select 1 input 0",
+                    "tlm: telemetry.h:3 scales '5V0' at 1.6 mV/count, the board at 0.80566 mV/count "
+                    "(R103, ratio 1): 1.99 times the board"], "3V3_MISC 1.32967 is within 2% of 1.3294"
+    (tmp_path / "telemetry.h").write_text("//3V3_MISC    VOLTAGE IN0 CS_1    N/A 0.00132967\n")
+    assert [f.message for f in findings(fw.scale_table_vs_board, ctx)][-1] == \
+        "tlm: 'TLM_5V0' has no row in the scale table"

@@ -598,6 +598,89 @@ def current_offsets(ctx):
                           refs=sorted(refs, key=natural_key))
 
 
+# -- scale table ---------------------------------------------------------------------
+
+_SCALE_ROW = (r"^\s*//\s*(?P<name>\S+)\s+(?P<kind>VOLTAGE|CURRENT)\s+IN(?P<ch>\d+)\s+CS_(?P<cs>\d+)"
+              r"\s+(?P<current>\S+)\s+(?P<voltage>\S+)")
+
+
+def scale_table(ctx, m):
+    """{signal: (kind, select, channel, scale per count, "file:line")} from
+    the map's `scale_table` (a table of per-channel scale factors, e.g.
+    Camera/include/telemetry.h: `//3V3_ETH1 VOLTAGE IN5 CS_4 N/A 0.00132967`),
+    or None when none is configured."""
+    spec = m.spec.get("scale_table")
+    if not spec:
+        return None
+    path = m._path(spec["file"])
+    if not os.path.isfile(path):
+        m.problems.append(f"scale table not found: {path}")
+        return None
+    rx = re.compile(spec.get("pattern", _SCALE_ROW))
+    base = int(spec.get("select_base", 1))
+    rows = {}
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for i, line in enumerate(f, 1):
+            r = rx.match(line)
+            if not r:
+                continue
+            kind = r.group("kind").lower()
+            try:
+                scale = float(r.group(kind))
+            except ValueError:
+                continue
+            rows[r.group("name")] = (kind, int(r.group("cs")) - base, int(r.group("ch")), scale,
+                                     f"{os.path.basename(path)}:{i}")
+    return rows
+
+
+@check("FW014", "Scale table differs from the board", WARNING)
+def scale_table_vs_board(ctx):
+    """A table of per-channel scale factors (`scale_table`) against the
+    board: each row's ADC input and chip select against the firmware enum's
+    position for that signal, a voltage row's volts per count against the
+    reference / 2^bits / divider ratio, a current row's amps per count
+    against the shunt and amplifier (FW009). `tolerance` (default 2%)."""
+    for m in _maps(ctx):
+        rows = scale_table(ctx, m)
+        if not rows:
+            continue
+        tol = float(m.spec["scale_table"].get("tolerance", 0.02))
+        bits = int(m.spec.get("adc_bits", 12))
+        currents = {e[1]: cc for e, cc in current_channels(ctx, m)}
+        for name, stem, select, ch, pin, net in m.entries:
+            row = rows.get(stem)
+            if row is None:
+                yield Finding("FW014", f"{m.name}: '{name}' has no row in the scale table")
+                continue
+            kind, r_sel, r_ch, scale, where = row
+            if (r_sel, r_ch) != (select, ch):
+                yield Finding("FW014", f"{m.name}: {where} puts '{stem}' on select {r_sel} input {r_ch}, "
+                                       f"the firmware enum on select {select} input {ch}")
+            if pin is None:
+                continue
+            if kind == "voltage":
+                sc = channel_scaling(ctx, m, pin)
+                ref = _reference_volts(ctx, m, pin.component)
+                if sc is None or ref is None:
+                    continue
+                board = ref / (1 << bits) / sc[0]
+                how = f"{'/'.join(sc[2])}, ratio {sc[0]:.4g}"
+                unit, mult = "mV", 1e3
+            else:
+                cc = currents.get(stem)
+                if cc is None or cc.amps_per_count is None:
+                    continue
+                board = cc.amps_per_count
+                how = f"shunt {cc.shunt} {cc.ohms * 1e3:g} mOhm, gain {cc.gain:.4g}"
+                unit, mult = "mA", 1e3
+            if abs(scale - board) > tol * board:
+                refs = [pin.component.designator] + (sc[2] if kind == "voltage" else [cc.shunt])
+                yield Finding("FW014", f"{m.name}: {where} scales '{stem}' at {scale * mult:.5g} {unit}/count, "
+                                       f"the board at {board * mult:.5g} {unit}/count ({how}): "
+                                       f"{scale / board:.3g} times the board", refs=refs, nets=[net])
+
+
 # -- GPIO bit maps ---------------------------------------------------------------------
 
 def parse_gpio_header(path):
