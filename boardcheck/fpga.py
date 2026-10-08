@@ -468,6 +468,8 @@ class FpgaPins:
         self._xcvr_re = re.compile(cfg["transceiver_pattern"]) if cfg.get("transceiver_pattern") else None
         self.unused_io = cfg.get("unused_io")     # what the build makes of an unconstrained user I/O, as text
         self.unused_pull = cfg.get("unused_pull")  # its weak pull: "up", "down" or None
+        self.smartdesign = None                    # smartdesign.Index, when `smartdesign_dirs` is set
+        self.top_design = None                     # the top-level SmartDesign's name
 
     def constraint(self, pin):
         return self.io.pins.get(str(pin.designator))
@@ -544,4 +546,13 @@ def board_fpgas(design, config):
         io = load(desig, files, config.base_dir, tops, cfg.get("top_module"), timing)
         comp = design.components.get(desig)
         out[desig] = FpgaPins(comp, io, cfg) if comp is not None else io
+        dirs = cfg.get("smartdesign_dirs") or []
+        if comp is not None and dirs:
+            from .ipclocks import Index
+            index = Index([os.path.normpath(os.path.join(config.base_dir, os.path.expanduser(d)))
+                           for d in ([dirs] if isinstance(dirs, str) else dirs)])
+            io.problems.extend(index.problems)
+            out[desig].smartdesign = index
+            out[desig].top_design = next((sd.name for sd in index.designs.values()
+                                          if os.path.normpath(sd.path) in io.top_files), None)
     return out

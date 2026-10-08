@@ -56,3 +56,57 @@ def test_clock_from_a_connector_is_listed_not_compared(tmp_path):
     (s,) = findings(clocks.fpga_clock_summary, ctx)
     assert s.message == ("U1 clock inputs: 'tck' A1: 10 MHz (timing file t.sdc:1) <- from J1.1 (connector), "
                          "not compared")
+
+
+TOP_SD = """\
+set sd_name {top}
+create_smartdesign -sd_name ${sd_name}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {clk_in} -port_direction {IN} -port_is_pad {1}
+sd_instantiate_macro -sd_name ${sd_name} -macro_name {CLKINT} -instance_name {buf_inst}
+sd_instantiate_component -sd_name ${sd_name} -component_name {sub} -instance_name {sub_inst}
+sd_connect_pins -sd_name ${sd_name} -pin_names {"clk_in" "buf_inst:A" }
+sd_connect_pins -sd_name ${sd_name} -pin_names {"buf_inst:Y" "sub_inst:ref" }
+"""
+SUB_SD = """\
+set sd_name {sub}
+sd_create_scalar_port -sd_name ${sd_name} -port_name {ref} -port_direction {IN}
+sd_instantiate_component -sd_name ${sd_name} -component_name {MY_CCC} -instance_name {ccc_inst}
+sd_connect_pins -sd_name ${sd_name} -pin_names {"ccc_inst:REF_CLK_0" "ref" }
+"""
+CCC = """\
+create_and_configure_core -core_vlnv {Actel:SgCore:PF_CCC:2.2.220} -component_name {MY_CCC} -params {\\
+"PLL_IN_FREQ_0:{mhz}"  \\
+"PLL_IN_FREQ_1:100"  }
+"""
+
+
+def _sd(tmp_path, mhz):
+    bd = tmp_path / "bd"
+    (bd / "top" / "components").mkdir(parents=True)
+    (bd / "sub" / "components").mkdir(parents=True)
+    (bd / "top" / "components" / "top.tcl").write_text(TOP_SD)
+    (bd / "sub" / "components" / "sub.tcl").write_text(SUB_SD)
+    (bd / "sub" / "components" / "MY_CCC.tcl").write_text(CCC.replace("{mhz}", mhz))
+    return bd
+
+
+def test_smartdesign_walks_to_ip_reference_clock(tmp_path):
+    from boardcheck.config import Config
+    from boardcheck.ipclocks import Index
+    fp = Config()["fpga_pins"]
+    ix = Index([str(_sd(tmp_path, "25"))])
+    (got,) = ix.clock_settings("top", "clk_in", fp["clock_params"], fp["clock_passthrough"])
+    assert got[:2] == (25.0, "MY_CCC PLL_IN_FREQ_0"), "through CLKINT A->Y and into the sub design"
+    assert ix.clock_settings("top", "nothing", fp["clock_params"], fp["clock_passthrough"]) == []
+
+
+def test_ip_clock_setting_against_oscillator(tmp_path):
+    bd = _sd(tmp_path, "50")
+    (tmp_path / "io.pdc").write_text('set_io {clk_in} -pinname "A1" -iostd "LVCMOS33" -direction "INPUT"\n')
+    cfg = {"constraints": [str(tmp_path / "io.pdc")], "top_level": [str(bd / "top" / "components" / "top.tcl")],
+           "smartdesign_dirs": [str(bd)]}
+    comps = [("U1", "FPGA", [("A1", "IO1", "CLK")]), ("Y1", "OSC", [("3", "OUT", "CLK"), ("4", "VDD", "3V3")])]
+    ctx = build_ctx(comps, config={"fpga": {"U1": cfg}}, parts={"OSC": OSC, "FPGA": {"pin_functions": {}}})
+    (f,) = findings(clocks.fpga_clock_frequency, ctx)
+    assert f.message == "U1 'clk_in' (A1) is 50 MHz by its IP MY_CCC PLL_IN_FREQ_0, but the board clocks it from " \
+                        "Y1 (OSC) at 25 MHz"

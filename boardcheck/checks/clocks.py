@@ -270,6 +270,16 @@ class _NetSignal:
         self.pins = list(net.pins)
 
 
+def _state(g, hz, source):
+    """Add a stated frequency, joining sources that state the same one."""
+    for i, (h, s) in enumerate(g.stated):
+        if abs(h - hz) <= 1:
+            if source not in s.split(", "):
+                g.stated[i] = (h, f"{s}, {source}")
+            return
+    g.stated.append((hz, source))
+
+
 class ClockInput:
     def __init__(self, fpga, name, balls, applied, where=""):
         self.fpga = fpga            # designator
@@ -290,6 +300,7 @@ def fpga_clock_inputs(ctx):
     from .fpga import _is_refclk
     by_net = {n: s for s in signals(ctx) for n in s.nets}
     pt = _pin_types(ctx)
+    fp = ctx.config["fpga_pins"]
     out = []
     for desig, f in sorted(ctx.fpgas.items(), key=lambda kv: natural_key(kv[0])):
         if not hasattr(f, "constraint") or not f.io.available:
@@ -297,12 +308,18 @@ def fpga_clock_inputs(ctx):
         groups = {}
         for ball, c in f.io.pins.items():
             base = _POLARITY.sub("", c.port)
+            ip = []
+            if getattr(f, "smartdesign", None) is not None and f.top_design:
+                ip = f.smartdesign.clock_settings(f.top_design, c.port, fp["clock_params"],
+                                                  fp["clock_passthrough"])
             if c.port in f.io.clocks or base in f.io.clocks or name_frequency(c.port.upper()) \
-                    or _is_refclk(ctx, f, c.port):
+                    or _is_refclk(ctx, f, c.port) or ip:
                 g = groups.setdefault(base, ClockInput(desig, base, [], True))
                 g.balls.append(ball)
-                if c.port in f.io.clocks and not any(s == f.io.clocks[c.port][0] for s, _ in g.stated):
-                    g.stated.append((f.io.clocks[c.port][0], f"timing file {f.io.clocks[c.port][1]}"))
+                if c.port in f.io.clocks:
+                    _state(g, f.io.clocks[c.port][0], f"timing file {f.io.clocks[c.port][1]}")
+                for mhz, label, _ in ip:
+                    _state(g, mhz * 1e6, f"IP {label}")
         for ball, (key, where) in f.io.unapplied.items():
             base = _POLARITY.sub("", key)
             if name_frequency(key.upper()) and base not in groups:
@@ -311,10 +328,8 @@ def fpga_clock_inputs(ctx):
                 groups[("unapplied", base)].balls.append(ball)
         for g in groups.values():
             hz = name_frequency(g.name.upper())
-            if hz and not any(abs(s - hz) <= 1 for s, _ in g.stated):
-                g.stated.append((hz, "port name" if g.applied else f"pin-map name ({g.where})"))
-            elif hz and g.stated:
-                g.stated[0] = (g.stated[0][0], g.stated[0][1] + ", port name")
+            if hz:
+                _state(g, hz, "port name" if g.applied else f"pin-map name ({g.where})")
             g.balls.sort(key=natural_key)
             seen, other = set(), set()
             for ball in g.balls:

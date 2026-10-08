@@ -220,7 +220,7 @@ the other board, from the system YAML's links.
 | CLK002 | error | Alternate oscillators that differ in frequency, single-ended vs differential output, or which net carries the true output |
 | CLK003 | error | Oscillator frequency (`part_info.frequency_hz`) differs from a frequency in the name of a net it drives (`ETH1_50MHZ_OSC_OUT`, `148.5MHZ_P`) |
 | CLK004 | error | Clock input (part data `clock_inputs`) whose select pins, read like straps, expect another frequency than its oscillator (or net name) gives; warning when the select levels cannot be read |
-| CLK005 | error | An FPGA clock input whose frequency in the FPGA project (timing constraints' `create_clock` period, a frequency in the port name) differs from the oscillator the board wires to the pin, through series resistors (or a frequency in the net name) |
+| CLK005 | error | An FPGA clock input whose frequency in the FPGA project (timing constraints' `create_clock` period, the reference-clock setting of the IP it reaches through SmartDesign, a frequency in the port name) differs from the oscillator the board wires to the pin, through series resistors (or a frequency in the net name) |
 | CLK006 | info | Each FPGA clock input (clocked ports, ports named with a frequency, transceiver reference clocks, and pin-map entries named with a frequency that are not applied) with what the project states and what the board provides; inputs fed from a connector or another part are listed, not compared |
 
 PRT003, PRT004, PRT006, PIN001-003, PIN007-008, LVL001-007, PWU001-004, STP001-004, ANA001-003 and CLK001-004 need
@@ -282,6 +282,11 @@ own files where they live (paths relative to the config file), never a copy:
   (`fpga_pins.refclk_pads`), or, without SmartDesign, by name.
 - `timing`: the FPGA's timing constraints (SDC). Their `create_clock`
   periods on ports are compared with the board's oscillators (CLK005).
+- `smartdesign_dirs`: directories of SmartDesign and IP configuration Tcl.
+  A port is followed down the hierarchy, through clock buffers
+  (`fpga_pins.clock_passthrough`), to the IP pins in `fpga_pins.clock_params`
+  (PF_CCC `PLL_IN_FREQ_0`, PF_XCVR_ERM `UI_CDR_REFERENCE_CLK_FREQ`, PF_PCIE,
+  PF_TX_PLL, PF_DDR4), whose settings are the frequency the IP expects.
 - `unused_io` / `unused_pull`: what the build does with a user I/O no
   constraint names, as the build's pin report states it (PolarFire:
   tristated with a weak pull-up). FIO005 quotes `unused_io`; FIO015 uses
@@ -403,6 +408,7 @@ boardcheck/
   partsdb.py      optional electronic-parts-repository adapter
   fpga.py         reads FPGA constraint and top-level files (Libero Tcl subset, HDL headers)
   diff.py         net-level comparison of two exports
+  ipclocks.py     reference-clock settings of the IP an FPGA port reaches (SmartDesign)
   access.py       connector access report (what each connector pin reaches)
   checks/         export.py, fpga.py, levels.py, nets.py, parts.py, pins.py, power.py, powerup.py,
                   straps.py (one function per check)

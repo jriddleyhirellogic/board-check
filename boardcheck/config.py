@@ -136,6 +136,27 @@ DEFAULTS = {
         # Without a SmartDesign top level, ports whose names match this are
         # taken as reference clocks.
         "refclk_ports": r"ref_?clk",
+        # IP pins that take a reference clock, and the settings (MHz) that
+        # give its frequency, per IP core (ipclocks.Index.clock_settings).
+        # Several keys: they must agree.
+        "clock_params": {
+            "PF_CCC": {r"^REF_CLK_0$": ["PLL_IN_FREQ_0"], r"^REF_CLK_1$": ["PLL_IN_FREQ_1"]},
+            "PF_XCVR_ERM": {r"CDR_REF_CLK": ["UI_CDR_REFERENCE_CLK_FREQ"]},
+            "PF_TX_PLL": {r"^REF_CLK$": ["TxPLL_REF"]},
+            "PF_PCIE": {r"CDR_REF_CLK": ["UI_PCIE_0_REF_CLK_FREQ", "UI_PCIE_1_REF_CLK_FREQ"]},
+            "PF_DDR4": {r"PLL_REF_CLK": ["CLOCK_PLL_REFERENCE"]},
+            "PF_DDR3": {r"PLL_REF_CLK": ["CLOCK_PLL_REFERENCE"]},
+        },
+        # Clock buffers a reference clock passes through: {core or macro:
+        # {input pin regex: [output pins]}}.
+        "clock_passthrough": {
+            "PF_XCVR_REF_CLK": {r"^REF_CLK_PAD_[PN]$": ["REF_CLK", "FAB_REF_CLK"]},
+            "CLKINT": {r"^A$": ["Y"]},
+            "INBUF": {r"^PAD$": ["Y"]},
+            "CLKBUF": {r"^PAD$": ["Y"]},
+            "INBUF_DIFF": {r"^PAD[PN]$": ["Y"]},
+            "CLKBUF_DIFF": {r"^PAD[PN]$": ["Y"]},
+        },
     },
     "power": {
         # PWR009: a regulator's set output may differ from its rail's

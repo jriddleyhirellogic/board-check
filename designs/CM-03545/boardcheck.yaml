@@ -58,6 +58,8 @@ fpga:
       - ../farsight-fpga/bd/mpf500ts-fc1152m/top/components/top.tcl
     timing:       # create_clock periods on ports (CLK005/CLK006)
       - ../farsight-fpga/constr/mpf500ts-fc1152m/sdc/timing_user_constraints.sdc
+    smartdesign_dirs:   # SmartDesign and IP configuration: reference clock settings of the IP a port reaches
+      - ../farsight-fpga/bd/mpf500ts-fc1152m
     bank_pattern: '(?:GPIO|HSIO)\d+[PN]B(\d+)'   # HSIO162PB0 -> bank 0, GPIO261PB4 -> bank 4
     bank_supply: 'VDDI{bank}'
     bank_name: 'Bank{bank}'
