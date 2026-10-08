@@ -130,6 +130,46 @@ def shorted_parts(ctx):
                           refs=[comp.designator], nets=[comp.pins[0].net])
 
 
+@check("NET009", "Net held at one rail by 0 ohm and tied to another", WARNING)
+def conflicting_ties(ctx):
+    """A signal net tied to ground or a rail through a 0 ohm resistor and,
+    through another resistor, to a different rail. As drawn the 0 ohm sets
+    the level and the other resistor only draws current; if the two are
+    fit-one-of options, the export does not say which is fitted."""
+    from ..units import format_value
+    from .levels import _ohms
+    cfg = ctx.config
+    for net in sorted(ctx.design.nets.values(), key=lambda n: natural_key(n.name)):
+        if cfg.is_ground(net.name) or cfg.net_voltage(net.name) is not None:
+            continue
+        ties = []
+        for p in net.pins:
+            comp = p.component
+            if ctx.kind(comp) != "resistor" or len(comp.pins) != 2:
+                continue
+            other = next(x.net for x in comp.pins if x is not p)
+            if other and (cfg.is_ground(other) or cfg.is_rail(other)):
+                ties.append((comp, _ohms(ctx, comp), other))
+        zero = [t for t in ties if t[1] == 0]
+        if not zero:
+            continue
+        held = zero[0][2]
+        rivals = [t for t in ties if t[2] != held]
+        if not rivals:
+            continue
+        parts = []
+        for comp, ohms, rail in rivals:
+            text = f"{comp.designator} ({format_value(ohms, 'Ω') if ohms is not None else 'value unknown'}) to {rail}"
+            dv = abs((cfg.net_voltage(rail) or 0.0) - (cfg.net_voltage(held) or 0.0))
+            if ohms:
+                text += f", {dv / ohms * 1e3:.3g} mA"
+            parts.append(text)
+        yield Finding("NET009", f"'{net.name}' is held at {held} by {zero[0][0].designator} (0 Ω) and tied to "
+                                f"another rail by " + "; ".join(parts) + ": as drawn it sits at " + held
+                                + ", and if these are fit-one-of options the export does not say which is fitted",
+                      refs=[zero[0][0].designator] + [t[0].designator for t in rivals], nets=[net.name])
+
+
 @check("NET008", "Component with no connections", WARNING)
 def floating_components(ctx):
     unconnected = _unconnected(ctx)

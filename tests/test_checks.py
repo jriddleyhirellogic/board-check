@@ -365,3 +365,15 @@ def test_pwr011_enable_divider_turn_on_voltage():
     # 100k / 50k: off at 3.19 V, below the 4.5 V minimum input
     (w,) = findings(power.turn_on_voltage, _en_ctx(bottom="50k"))
     assert w.severity == "warning" and w.message.endswith("below the regulator's 4.5 V minimum input")
+
+
+def test_net_held_by_zero_ohm_and_tied_to_another_rail():
+    comps = [res("R174", "R0", "SPI_EN", "GND"), res("R363", "R1K", "SPI_EN", "3V3"),
+             ("U1", "FPGA", [("L13", "SPI_EN", "SPI_EN")]),
+             res("R1", "R0", "SEL", "GND"), res("R2", "R1K", "SEL", "GND")]      # both to ground: no conflict
+    ctx = build_ctx(comps, part_numbers={"R0": {"R_Value": "0R"}, "R1K": {"R_Value": "1K"}})
+    (f,) = findings(nets.conflicting_ties, ctx)
+    assert f.message == ("'SPI_EN' is held at GND by R174 (0 Ω) and tied to another rail by R363 (1kΩ) to 3V3, "
+                         "3.3 mA: as drawn it sits at GND, and if these are fit-one-of options the export does "
+                         "not say which is fitted")
+    assert f.refs == ["R174", "R363"]

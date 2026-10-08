@@ -138,6 +138,7 @@ the other board, from the system YAML's links.
 | NET006 | warning | `_P` without `_N` (and `_DP`/`_DN`, `+`/`-`); active-low `*_RESET_N` etc. are ignored |
 | NET007 | warning | Two-terminal part with both pins on one net |
 | NET008 | warning | Non-mechanical component with nothing connected |
+| NET009 | warning | A signal net held at ground or a rail by a 0 ohm resistor and tied to a different rail by another resistor: as drawn the 0 ohm wins and the other resistor only draws current; if they are fit-one-of options the export does not say which is fitted |
 | PRT001 | warning | Comment (what the BOM shows) differs from Part Number; **error** when both decode to different values |
 | PRT002 | warning | Required library parameters missing (C_Value, Voltage, R_Value, Power_Rating, ...) |
 | PRT003 | warning | Library parameters disagree with the decoded part number (value, voltage, power, tolerance, size, dielectric) |
